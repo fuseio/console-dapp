@@ -1,0 +1,16 @@
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(0, 0%, 85%);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #5a5858;
+  border-radius: 5px;
+}
+
+.main {
+  min-height: calc(100vh - 80px);
+}
