@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
-import ConnectWallet from "@/components/ui/ConnectWallet";
+import ConnectWallet from "@/components/ConnectWallet";
 import Deposit from "./Deposit";
 import Withdraw from "./Withdraw";
-import Footer from "@/components/ui/Footer";
+import Footer from "@/components/bridge/Footer";
 import history from "@/assets/history.svg";
-import Transactions from "@/components/ui/Transactions";
+import Transactions from "@/components/bridge/Transactions";
 import { useConnectWallet, useSetChain } from "@web3-onboard/react";
 import { appConfig } from "@/lib/config";
 import { selectBalanceSlice } from "@/store/balanceSlice";
@@ -28,9 +28,9 @@ import {
 } from "@/store/feeSlice";
 import { getNativeCurrency } from "@layerzerolabs/ui-core";
 import { getChainKey } from "@layerzerolabs/lz-sdk";
-import ToastPane from "@/components/ui/ToastPane";
-import Pill from "@/components/ui/Pill";
-import Disclaimer from "@/components/ui/Disclaimer";
+import ToastPane from "@/components/bridge/ToastPane";
+import Pill from "@/components/bridge/Pill";
+import Disclaimer from "@/components/bridge/Disclaimer";
 
 const Home = () => {
   const [{ connectedChain, chains }, switchChain] = useSetChain();

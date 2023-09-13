@@ -78,11 +78,11 @@ export const web3Onboard = init({
   wallets,
   chains,
   appMetadata: {
-    name: "Fuse Bridge",
+    name: "Fuse Console",
     icon: fuseIcon.src,
     logo: fuseConsoleLogo.src,
     description:
-      "The Fuse Bridge allows you to move funds from different networks and centralized exchanges to Fuse.",
+      "One-stop-shop for all Fuse token holders.",
   },
   accountCenter: {
     desktop: {

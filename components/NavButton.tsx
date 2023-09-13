@@ -1,5 +1,5 @@
-import ConnectWallet from "./ConnectWallet";
-import Hamburger from "./Hamburger";
+import ConnectWallet from "@/components/ConnectWallet";
+import Hamburger from "@/components/ui/Hamburger";
 
 type NavButtonProps = {
   isOpen: boolean;

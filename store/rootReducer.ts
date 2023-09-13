@@ -4,6 +4,8 @@ import {
   combineReducers,
   Reducer,
 } from "@reduxjs/toolkit";
+import validatorReducer from './validatorSlice';
+import searchReducer from './searchSlice';
 import chainReducer from "./chainSlice";
 import balanceReducer from "./balanceSlice";
 import contractReducer from "./contractSlice";
@@ -12,6 +14,8 @@ import feeReducer from "./feeSlice";
 import toastReducer from "./toastSlice";
 
 const appReducer = combineReducers({
+  validator: validatorReducer,
+  search: searchReducer,
   chain: chainReducer,
   balance: balanceReducer,
   contract: contractReducer,
@@ -21,6 +25,8 @@ const appReducer = combineReducers({
 });
 
 export type AppState = CombinedState<{
+  validator: ReturnType<typeof validatorReducer>;
+  search: ReturnType<typeof searchReducer>;
   chain: ReturnType<typeof chainReducer>;
   balance: ReturnType<typeof balanceReducer>;
   contract: ReturnType<typeof contractReducer>;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import store from "@/store/store";
 import { Provider } from "react-redux";
 import ReactGA from "react-ga4";
@@ -13,8 +13,14 @@ import {
 } from "@/lib/config";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  if(!window || typeof window === 'undefined') {
-    return
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  if(!isClient) {
+    return null;
   }
 
   ReactGA.initialize(NEXT_PUBLIC_GOOGLE_ANALYTICS_ID as string);

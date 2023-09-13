@@ -1,6 +1,6 @@
 "use client";
 
-import Topbar from "@/components/ui/Topbar";
+import Topbar from "@/components/Topbar";
 import Home from "./Home";
 
 const Bridge = () => {
