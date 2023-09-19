@@ -1,4 +1,6 @@
 import { MenuItems } from "@/lib/types";
+import { selectNavbarSlice } from "@/store/navbarSlice";
+import { useAppSelector } from "@/store/store";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from 'usehooks-ts'
@@ -25,6 +27,7 @@ const animateLI = {
 
 const NavMenu = ({ menuItems = [], isOpen = false }: NavMenuProps) => {
   const matches = useMediaQuery('(min-width: 768px)');
+  const navbarSlice = useAppSelector(selectNavbarSlice);
 
   return (
     <AnimatePresence>
@@ -43,7 +46,7 @@ const NavMenu = ({ menuItems = [], isOpen = false }: NavMenuProps) => {
           >
             {menuItems.map((item, index) =>
               <motion.li key={index} variants={animateLI}>
-                <a href={item.link} className={"block p-0 bg-transparent md:py-2 md:pl-3 md:pr-4 " + (item.selected ? "text-black md:text-white pointer-events-none" : "text-gray md:text-gray pointer-events-auto hover:text-text-darker-gray")} aria-current={item.selected ? "page" : "false"}>{item.title}</a>
+                <a href={item.link} className={"block p-0 bg-transparent md:py-2 md:pl-3 md:pr-4 " + (item.title.toLowerCase() === navbarSlice.selected ? "text-black md:text-white pointer-events-none" : "text-gray md:text-gray pointer-events-auto hover:text-text-darker-gray")} aria-current={item.title.toLowerCase() === navbarSlice.selected ? "page" : "false"}>{item.title}</a>
               </motion.li>
             )}
           </motion.ul>
