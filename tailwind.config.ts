@@ -27,6 +27,7 @@ const config: Config = {
       purple: "#7A159A",
       gray: "#BABABA",
       "dark-gray": "#E7E7E7",
+      "darker-gray": "#C2C2C2",
       "selected-gray": "#D0D7DE",
       "selected-light-gray": "#E5E7EB",
       "text-dark-gray": "#666666",
@@ -78,6 +79,10 @@ const config: Config = {
       animation: {
         "fade-in": "fadeIn 0.5s ease-in-out",
       },
+      transform: ["group-hover"],
+      gridTemplateColumns: {
+        'auto-fit-400': 'repeat(auto-fit, minmax(400px, 1fr))',
+      }
     },
   },
   plugins: [],
