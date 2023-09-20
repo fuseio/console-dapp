@@ -170,38 +170,38 @@ const Home = () => {
   ];
 
   const faqAnswers = [
-    <p>
+    <p key="one">
       The Fuse Staking Dapp is an application that enables users to view
       information about current validator nodes on the Fuse Network. It is
       designed to help users make informed decisions about staking their Fuse to
       validators.
     </p>,
-    <p>
+    <p key="two">
       On the Staking Dapp, you can view the amounts staked to each particular
       validator, as well as understand the APY and stability (Up Time) of each
       validator. Additionally, you can filter validators based on different
       criteria.
     </p>,
-    <p>
+    <p key="three">
       To interact with the Staking Dapp, you need a wallet. Click on the
-      "Connect Wallet" button on the top right to see all available options.
+      &quot;Connect Wallet&quot; button on the top right to see all available options.
       Please note that you must be connected to the Fuse network with your
       wallet.
     </p>,
-    <p>
+    <p key="four">
       If you need help using the Staking Dapp, you can refer to our
       easy-to-follow tutorials [link to tutorials].
     </p>,
-    <p>
+    <p key="five">
       Projected rewards depend on the total locked supply in the network at each
       checkpoint, which may vary as more FUSE tokens are staked. For details on
       staking economics, see this article.
     </p>,
-    <p>
+    <p key="six">
       Yes, you can stake or unstake your FUSE tokens at any time, without any
       locking periods.
     </p>,
-    <p>
+    <p key="seven">
       To become a validator, you must stake a minimum of 100K FUSE and run a
       full node. However, being a validator requires some technical knowledge,
       so if you lack it, it may be better to delegate your tokens. For more
@@ -213,14 +213,14 @@ const Home = () => {
         https://docs.fuse.io/docs/validators/how-to-become-a-validator/
       </a>
     </p>,
-    <p>
-      Validators can manage their own nodes' information by opening a pull
+    <p key="eight">
+      Validators can manage their own nodes&apos; information by opening a pull
       request (PR) in the repository{" "}
       <a href="https://github.com/fuseio/fuse-staking" className="underline">
         https://github.com/fuseio/fuse-staking.
       </a>
     </p>,
-    <p>
+    <p key="nine">
       You can find out all the information about Fuse Staking in our{" "}
       <a
         href="https://docs.fuse.io/docs/validators/participating-in-network-consensus/stake-delegate-and-withdraw"
@@ -241,7 +241,7 @@ const Home = () => {
             </h1>
             <span className="text-xl font-normal mt-4 text-text-dark-gray md:text-base">
               The Fuse Staking Dapp enables users to participate in the Fuse
-              network's consensus by staking FUSE tokens. Through a
+              network&apos;s consensus by staking FUSE tokens. Through a
               user-friendly interface, validators and delegators can manage
               their stakes, monitor rewards, and contribute to network security.
               Explore the Dapp to maximize your staking experience on the Fuse

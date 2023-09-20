@@ -59,10 +59,10 @@ const WarningModal = ({
             </div>
             <div className="flex flex-col w-full h-[87%] p-4 justify-between items-center">
               <span className="font-normal text-text-heading-gray text-sm">
-                If you unstake an amount that brings a validator's total staked
+                If you unstake an amount that brings a validator&apos;s total staked
                 FUSE below {new Intl.NumberFormat().format(parseInt(minStake))},
                 the validator node will be removed from the pending list. Your
-                unstaked funds won't be returned directly to your wallet in this
+                unstaked funds won&apos;t be returned directly to your wallet in this
                 cycle, but rest assured, your funds are safe. In the next cycle,
                 you can request to unstake again. This second request will
                 successfully return your unstaked funds to your wallet and
