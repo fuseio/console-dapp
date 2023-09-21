@@ -1,28 +1,19 @@
-"use client";
+// see https://stackoverflow.com/a/77090142/12656707
 
-import { useEffect } from "react";
-import Topbar from "@/components/Topbar";
-import Home from "./Home";
-import ChainModal from "@/components/staking/ChainModal";
+import Validators from '@/validators/validators.json';
+import PageWrapper from "./wrapper";
 
-import { useAppDispatch } from "@/store/store";
-import { setSelectedNavbar } from "@/store/navbarSlice";
+export async function generateStaticParams() {
+  const validators = Object.keys(Validators);
+
+  return validators.map((validator) => ({
+    id: validator,
+  }))
+}
 
 const Stake = ({ params }: { params: { id: string } }) => {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(setSelectedNavbar("staking"));
-  }, [])
-
   return (
-    <div className="w-full font-mona justify-end">
-      <div className="flex-col flex items-center bg-light-gray">
-        <ChainModal />
-        <Topbar />
-        <Home params={params} />
-      </div>
-    </div>
+    <PageWrapper params={params} />
   );
 };
 

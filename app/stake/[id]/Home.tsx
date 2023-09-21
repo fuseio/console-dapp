@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 import copy from "@/assets/copy.svg";
 import InfoCard from "@/components/staking/InfoCard";
@@ -29,7 +27,7 @@ import WarningModal from "@/components/staking/WarningModal";
 import { WalletState } from "@web3-onboard/core";
 import { delegate, withdraw } from "@/lib/contractInteract";
 const Stake = ({ params }: { params: { id: string } }) => {
-  const id = params.id;
+  const { id } = params;
   const [{ wallet }, connect, disconnect, updateBalances] = useConnectWallet();
   const [validator, setValidator] = useState<ValidatorType | undefined>(
     undefined
