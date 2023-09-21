@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
 import { useConnectWallet } from "@web3-onboard/react";
 import dollar from "@/assets/dollar.svg"
@@ -9,12 +10,35 @@ import sendMobile from "@/assets/send-mobile.svg"
 import rightArrow from "@/assets/right-arrow.svg"
 import { eclipseAddress } from "@/lib/helpers";
 import copy from "@/assets/copy2.svg";
+import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/store/store";
+import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
+import OnrampModal from "@/components/console/OnrampModal";
+import TransfiModal from "@/components/console/TransfiModal";
 
 const Home = () => {
   const [{ wallet }] = useConnectWallet();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const balanceSlice = useAppSelector(selectBalanceSlice);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isTransfiOpen, setIsTransfiOpen] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchUsdPrice())
+  }, [wallet])
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
+      <OnrampModal
+        isOpen={isOpen}
+        onToggle={setIsOpen}
+        onTransfiToggle={setIsTransfiOpen}
+      />
+      <TransfiModal
+        isTransfiOpen={isTransfiOpen}
+        onTransfiToggle={setIsTransfiOpen}
+      />
       <div className="w-8/9 flex flex-col gap-y-16 mt-14 mb-40 md:w-9/10 max-w-7xl">
         <div>
           <h1 className="font-black text-5xl leading-none md:text-4xl">
@@ -34,11 +58,18 @@ const Home = () => {
                   </p>
                   <div className="flex items-end gap-x-[30px] md:gap-x-4">
                     <h1 className="font-black text-5xl leading-none md:text-3xl whitespace-nowrap md:font-bold">
-                      0.4956 FUSE
+                      {new Intl.NumberFormat().format(
+                        parseFloat(wallet?.accounts[0]?.balance?.Fuse?.toString() ?? "0")
+                      )} FUSE
                     </h1>
-                    <p className="text-xl text-darker-gray">
-                      $2.0123
-                    </p>
+                    {balanceSlice.isUsdPriceLoading ?
+                      <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
+                      <p className="text-xl text-darker-gray">
+                        ${new Intl.NumberFormat().format(
+                          parseFloat((wallet?.accounts[0]?.balance?.Fuse ?? 0 * balanceSlice.price).toString())
+                        )}
+                      </p>
+                    }
                   </div>
                 </div>
                 {/* Buttons Desktop */}
@@ -46,8 +77,9 @@ const Home = () => {
                   <Button
                     text={"Buy Fuse"}
                     disabled={!!!wallet}
+                    onClick={() => setIsOpen(true)}
                     padding="py-5"
-                    className="flex items-center justify-center gap-x-2.5 w-40 bg-success text-black font-semibold rounded-full"
+                    className="flex items-center justify-center gap-x-2.5 w-40 bg-success text-black font-semibold rounded-full transition ease-in-out delay-150 hover:opacity-80"
                     disabledClassname="flex items-center justify-center gap-x-2.5 w-40 bg-button-inactive text-black font-semibold rounded-full"
                     isLeft
                   >
@@ -56,8 +88,9 @@ const Home = () => {
                   <Button
                     text={"Stake"}
                     disabled={!!!wallet}
+                    onClick={() => router.push("/staking")}
                     padding="py-5"
-                    className="flex items-center justify-center gap-x-2.5 w-40 bg-white text-black font-semibold rounded-full"
+                    className="flex items-center justify-center gap-x-2.5 w-40 bg-white text-black font-semibold rounded-full transition ease-in-out delay-150 hover:opacity-80"
                     disabledClassname="flex items-center justify-center gap-x-2.5 w-40 bg-button-inactive text-black font-semibold rounded-full"
                     isLeft
                   >
@@ -66,8 +99,9 @@ const Home = () => {
                   <Button
                     text={"Bridge"}
                     disabled={!!!wallet}
+                    onClick={() => router.push("/bridge")}
                     padding="py-5"
-                    className="flex items-center justify-center gap-x-2.5 w-40 bg-white text-black font-semibold rounded-full"
+                    className="flex items-center justify-center gap-x-2.5 w-40 bg-white text-black font-semibold rounded-full transition ease-in-out delay-150 hover:opacity-80"
                     disabledClassname="flex items-center justify-center gap-x-2.5 w-40 bg-button-inactive text-black font-semibold rounded-full"
                     isLeft
                   >
@@ -80,6 +114,7 @@ const Home = () => {
                     <Button
                       text={""}
                       disabled={!!!wallet}
+                      onClick={() => setIsOpen(true)}
                       padding=""
                       className="flex items-center justify-center w-16 h-16 bg-success text-black font-semibold rounded-full"
                       disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
@@ -90,26 +125,38 @@ const Home = () => {
                       Buy Fuse
                     </p>
                   </div>
-                  <Button
-                    text={""}
-                    disabled={!!!wallet}
-                    padding=""
-                    className="flex items-center justify-center w-16 h-16 bg-white text-black font-semibold rounded-full"
-                    disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
-                    isLeft
-                  >
-                    <img src={receiveMobile.src} alt="receive" />
-                  </Button>
-                  <Button
-                    text={""}
-                    disabled={!!!wallet}
-                    padding=""
-                    className="flex items-center justify-center w-16 h-16 bg-white text-black font-semibold rounded-full"
-                    disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
-                    isLeft
-                  >
-                    <img src={sendMobile.src} alt="send" />
-                  </Button>
+                  <div className="flex flex-col justify-center items-center gap-4">
+                    <Button
+                      text={""}
+                      disabled={!!!wallet}
+                      onClick={() => router.push("/staking")}
+                      padding=""
+                      className="flex items-center justify-center w-16 h-16 bg-white text-black font-semibold rounded-full"
+                      disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
+                      isLeft
+                    >
+                      <img src={receiveMobile.src} alt="receive" />
+                    </Button>
+                    <p className={(!!wallet ? "text-white" : "text-button-inactive") + "font-semibold whitespace-nowrap"}>
+                      Stake
+                    </p>
+                  </div>
+                  <div className="flex flex-col justify-center items-center gap-4">
+                    <Button
+                      text={""}
+                      disabled={!!!wallet}
+                      onClick={() => router.push("/bridge")}
+                      padding=""
+                      className="flex items-center justify-center w-16 h-16 bg-white text-black font-semibold rounded-full"
+                      disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
+                      isLeft
+                    >
+                      <img src={sendMobile.src} alt="send" />
+                    </Button>
+                    <p className={(!!wallet ? "text-white" : "text-button-inactive") + "font-semibold whitespace-nowrap"}>
+                      Bridge
+                    </p>
+                  </div>
                 </div>
               </div>
               {wallet &&
@@ -145,11 +192,11 @@ const Home = () => {
                 </p>
               </div>
               <div className="flex gap-8">
-                <a href="#" className="group flex gap-1 text-black font-semibold">
+                <a href="mailto:console@fuse.io" className="group flex gap-1 text-black font-semibold">
                   <p>Contact us</p>
                   <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />
                 </a>
-                <a href="#" className="group flex gap-1 text-black font-semibold">
+                <a href="https://docs.fuse.io" target="_blank" className="group flex gap-1 text-black font-semibold">
                   <p>Read docs</p>
                   <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />
                 </a>
@@ -167,7 +214,7 @@ const Home = () => {
                 </p>
               </div>
               <div className="flex gap-8">
-                <a href="#" className="group flex gap-1 text-black font-semibold">
+                <a href="https://developers.fuse.io" target="_blank" className="group flex gap-1 text-black font-semibold">
                   <p>Get API key</p>
                   <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />
                 </a>

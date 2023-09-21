@@ -35,7 +35,9 @@ const config: Config = {
       "text-gray": "#9F9F9F",
       "text-darker-gray": "#737373",
       "text-heading-gray": "#4D4D4D",
+      "lighter-gray": "#5F6B79",
       "text-inactive": "#D1D1D1",
+      "lighter-blue": "#EEF2F6",
       "fuse-green": "#20B92E",
       "fuse-green-light": "#B4F9BA",
       white: "#FFFFFF",
@@ -82,6 +84,10 @@ const config: Config = {
       transform: ["group-hover"],
       gridTemplateColumns: {
         'auto-fit-400': 'repeat(auto-fit, minmax(400px, 1fr))',
+        'auto-fit-250': 'repeat(auto-fit, minmax(250px, 1fr))',
+      },
+      colors: {
+        "light-blue": "#CDD9E5",
       }
     },
   },

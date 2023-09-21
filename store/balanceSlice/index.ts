@@ -3,6 +3,7 @@ import { AppState } from "../rootReducer";
 import { getERC20Allowance, getERC20Balance } from "@/lib/erc20";
 import { ethers } from "ethers";
 import { ChainStateType } from "../chainSlice";
+import { fetchTokenPrice } from "@/lib/api";
 
 export interface BalanceStateType {
   lzChainId: number;
@@ -15,6 +16,8 @@ export interface BalanceStateType {
   isApprovalLoading: boolean;
   isLiquidityLoading: boolean;
   isError: boolean;
+  price: number;
+  isUsdPriceLoading: boolean;
 }
 
 const INIT_STATE: BalanceStateType = {
@@ -28,6 +31,8 @@ const INIT_STATE: BalanceStateType = {
   isLiquidityLoading: false,
   lzChainId: 0,
   isError: false,
+  price: 0,
+  isUsdPriceLoading: false,
 };
 
 export const fetchBalance = createAsyncThunk(
@@ -78,6 +83,19 @@ export const setNativeBalanceThunk = createAsyncThunk(
     });
   }
 );
+
+export const fetchUsdPrice = createAsyncThunk(
+  'BALANCE/FETCH_USD_PRICE',
+  async () => {
+    return new Promise<any>(async (resolve, reject) => {
+      fetchTokenPrice("fuse-network-token").then(price => {
+        resolve(price)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  }
+)
 
 export const fetchApproval = createAsyncThunk(
   "BALANCE/FETCH_APPROVAL",
@@ -187,6 +205,16 @@ const balanceSlice = createSlice({
     [setNativeBalanceThunk.fulfilled.type]: (state, action) => {
       state.balance = action.payload;
       state.isBalanceLoading = false;
+    },
+    [fetchUsdPrice.pending.type]: (state, action) => {
+      state.isUsdPriceLoading = true;
+    },
+    [fetchUsdPrice.fulfilled.type]: (state, action) => {
+      state.price = action.payload;
+      state.isUsdPriceLoading = false;
+    },
+    [fetchUsdPrice.rejected.type]: (state, action) => {
+      state.isUsdPriceLoading = false;
     },
   },
 });
