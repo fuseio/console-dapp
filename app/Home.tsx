@@ -3,6 +3,9 @@ import { useConnectWallet } from "@web3-onboard/react";
 import dollar from "@/assets/dollar.svg"
 import receive from "@/assets/receive.svg"
 import send from "@/assets/send.svg"
+import dollarMobile from "@/assets/dollar-mobile.svg"
+import receiveMobile from "@/assets/receive-mobile.svg"
+import sendMobile from "@/assets/send-mobile.svg"
 import rightArrow from "@/assets/right-arrow.svg"
 import { eclipseAddress } from "@/lib/helpers";
 import copy from "@/assets/copy2.svg";
@@ -22,15 +25,15 @@ const Home = () => {
           </p>
         </div>
         <div className="flex flex-col gap-y-[30px]">
-          <div className="bg-fuse-black rounded-[20px] text-white px-12 py-14">
+          <div className="bg-fuse-black rounded-[20px] text-white px-12 md:px-8 py-14 md:py-10">
             <div className="flex flex-row justify-between md:flex-col gap-12">
               <div className="flex flex-col gap-y-[62px]">
                 <div className="flex flex-col gap-y-[18px]">
                   <p className="text-lg text-darker-gray">
                     Balance
                   </p>
-                  <div className="flex items-end gap-x-[30px]">
-                    <h1 className="font-black text-5xl leading-none md:text-4xl">
+                  <div className="flex items-end gap-x-[30px] md:gap-x-4">
+                    <h1 className="font-black text-5xl leading-none md:text-3xl whitespace-nowrap md:font-bold">
                       0.4956 FUSE
                     </h1>
                     <p className="text-xl text-darker-gray">
@@ -38,7 +41,8 @@ const Home = () => {
                     </p>
                   </div>
                 </div>
-                <div className="flex flex-row md:flex-col gap-[30px]">
+                {/* Buttons Desktop */}
+                <div className="flex md:hidden gap-[30px]">
                   <Button
                     text={"Buy Fuse"}
                     disabled={!!!wallet}
@@ -70,9 +74,46 @@ const Home = () => {
                     <img src={send.src} alt="send" />
                   </Button>
                 </div>
+                {/* Buttons Mobile */}
+                <div className="hidden md:flex gap-12">
+                  <div className="flex flex-col justify-center items-center gap-4">
+                    <Button
+                      text={""}
+                      disabled={!!!wallet}
+                      padding=""
+                      className="flex items-center justify-center w-16 h-16 bg-success text-black font-semibold rounded-full"
+                      disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
+                    >
+                      <img src={dollarMobile.src} alt="dollar" />
+                    </Button>
+                    <p className={(!!wallet ? "text-success" : "text-button-inactive") + "font-semibold whitespace-nowrap"}>
+                      Buy Fuse
+                    </p>
+                  </div>
+                  <Button
+                    text={""}
+                    disabled={!!!wallet}
+                    padding=""
+                    className="flex items-center justify-center w-16 h-16 bg-white text-black font-semibold rounded-full"
+                    disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
+                    isLeft
+                  >
+                    <img src={receiveMobile.src} alt="receive" />
+                  </Button>
+                  <Button
+                    text={""}
+                    disabled={!!!wallet}
+                    padding=""
+                    className="flex items-center justify-center w-16 h-16 bg-white text-black font-semibold rounded-full"
+                    disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
+                    isLeft
+                  >
+                    <img src={sendMobile.src} alt="send" />
+                  </Button>
+                </div>
               </div>
               {wallet &&
-                <div className="flex flex-col gap-4 md:flex-row">
+                <div className="flex flex-col gap-4 md:hidden">
                   <p className="text-success">
                     Wallet Address
                   </p>
@@ -138,7 +179,7 @@ const Home = () => {
                   Operator Account
                 </p>
                 <p className="text-xl font-normal text-text-dark-gray md:text-base">
-                  The Operator's account is a single
+                  The Operator&apos;s account is a single
                   information and control panel for
                   Operators.
                 </p>
