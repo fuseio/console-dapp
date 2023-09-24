@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import close from "@/assets/close.svg";
-import metamask from "@/assets/metamask.png";
+import metamask from "@/public/metamask.png";
 import wc from "@/assets/wc.svg";
 import volt from "@/assets/volt.svg";
 import coinbase from "@/assets/coinbase.svg";
-import trezor from "@/assets/trezor.png";
+import trezor from "@/public/trezor.png";
 import fb from "@/assets/fb.svg";
 import twitter2 from "@/assets/twitter2.svg";
 import discord2 from "@/assets/discord2.svg";
@@ -13,11 +13,11 @@ import google from "@/assets/google.svg";
 import twitch from "@/assets/twitch.svg";
 import gh from "@/assets/gh.svg";
 import arrow from "@/assets/back.svg";
-import qr from "@/assets/voltqrsample.png";
+import qr from "@/public/voltqrsample.png";
 import { useAppDispatch } from "@/store/store";
 import Image from "next/image";
-import WalletButton from "./ui/WalletButton";
-import SocialButton from "./ui/SocialButton";
+import WalletButton from "./WalletButton";
+import SocialButton from "./SocialButton";
 
 interface WalletModalProps {
   isOpen: boolean;
