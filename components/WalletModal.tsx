@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import close from "@/assets/close.svg";
 import metamask from "@/public/metamask.png";
@@ -14,24 +14,26 @@ import twitch from "@/assets/twitch.svg";
 import gh from "@/assets/gh.svg";
 import arrow from "@/assets/back.svg";
 import qr from "@/public/voltqrsample.png";
-import { useAppDispatch } from "@/store/store";
 import Image from "next/image";
 import WalletButton from "./WalletButton";
 import SocialButton from "./SocialButton";
+import { useConnect } from "wagmi";
+import { LOGIN_PROVIDER } from "@web3auth/openlogin-adapter";
+import Web3AuthConnectorInstance from "@/lib/web3Auth";
 
 interface WalletModalProps {
   isOpen: boolean;
   onToggle: (arg: boolean) => void;
-  isLoading?: boolean;
 }
 
 const WalletModal = ({
   isOpen,
   onToggle,
-  isLoading = false,
 }: WalletModalProps): JSX.Element => {
-  const dispatch = useAppDispatch();
   const [selected, setSelected] = useState<"HOME" | "VOLT">("HOME");
+  const { connect, connectors, error, isLoading, pendingConnector } = useConnect();
+  const emailRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     window.addEventListener("click", (e) => {
       if ((e.target as HTMLElement).id === "modal-bg") {
@@ -39,6 +41,34 @@ const WalletModal = ({
       }
     });
   }, [onToggle]);
+
+  const connectWallet = (id: string, isWeb3Auth: boolean = false) => {
+    if (isWeb3Auth) {
+      connect({
+        connector: connectors.find((connector) =>
+          connector.id === "web3auth" &&
+          connector.options.loginParams.loginProvider === id
+        )
+      });
+      return;
+    }
+
+    connect({ connector: connectors.find((connector) => connector.id === id) });
+  }
+
+  const emailLogin = () => {
+    if (!emailRef.current || !emailRef.current.value.length) {
+      return
+    }
+
+    connect({
+      connector:
+        Web3AuthConnectorInstance(LOGIN_PROVIDER.EMAIL_PASSWORDLESS, {
+          login_hint: emailRef.current.value,
+        })
+    })
+  }
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -86,11 +116,13 @@ const WalletModal = ({
                   icon={metamask}
                   text="MetaMask"
                   className="w-[35px]"
+                  onClick={() => connectWallet("injected")}
                 />
                 <WalletButton
                   icon={wc}
                   text="WalletConnect"
                   className="w-[35px]"
+                  onClick={() => connectWallet("walletConnect")}
                 />
                 <WalletButton
                   icon={volt}
@@ -104,6 +136,7 @@ const WalletModal = ({
                   icon={coinbase}
                   text="Coinbase"
                   className="h-[30px]"
+                  onClick={() => connectWallet("coinbaseWallet")}
                 />
                 <WalletButton
                   icon={trezor}
@@ -112,8 +145,9 @@ const WalletModal = ({
                 />
                 <WalletButton
                   icon={metamask}
-                  text="Metamask"
+                  text="Ledger"
                   className="w-[35px] h-[35px]"
+                  onClick={() => connectWallet("ledger")}
                 />
               </div>
               <div className="flex pt-4 w-full justify-between text-[#9F9F9F] items-center text-[10px]">
@@ -122,12 +156,36 @@ const WalletModal = ({
                 <hr className="w-[37%]" />
               </div>
               <div className="grid grid-cols-3 w-full gap-2 pt-4">
-                <SocialButton icon={fb} className="bg-[#C2D7F2]" />
-                <SocialButton icon={twitter2} className="bg-[#E5F5FF]" />
-                <SocialButton icon={discord2} className="bg-[#D8DAF0]" />
-                <SocialButton icon={google} className="bg-[#F3F3F3]" />
-                <SocialButton icon={twitch} className="bg-[#DBD8F0]" />
-                <SocialButton icon={gh} className="bg-[#F3F3F3]" />
+                <SocialButton
+                  icon={fb}
+                  className="bg-[#C2D7F2]"
+                  onClick={() => connectWallet(LOGIN_PROVIDER.FACEBOOK, true)}
+                />
+                <SocialButton
+                  icon={twitter2}
+                  className="bg-[#E5F5FF]"
+                  onClick={() => connectWallet(LOGIN_PROVIDER.TWITTER, true)}
+                />
+                <SocialButton
+                  icon={discord2}
+                  className="bg-[#D8DAF0]"
+                  onClick={() => connectWallet(LOGIN_PROVIDER.DISCORD, true)}
+                />
+                <SocialButton
+                  icon={google}
+                  className="bg-[#F3F3F3]"
+                  onClick={() => connectWallet(LOGIN_PROVIDER.GOOGLE, true)}
+                />
+                <SocialButton
+                  icon={twitch}
+                  className="bg-[#DBD8F0]"
+                  onClick={() => connectWallet(LOGIN_PROVIDER.TWITCH, true)}
+                />
+                <SocialButton
+                  icon={gh}
+                  className="bg-[#F3F3F3]"
+                  onClick={() => connectWallet(LOGIN_PROVIDER.GITHUB, true)}
+                />
               </div>
               <div className="flex pt-4 w-full justify-between text-[#9F9F9F] items-center text-[10px]">
                 <hr className="w-[40%]" />
@@ -140,9 +198,13 @@ const WalletModal = ({
                     type="text"
                     placeholder="Enter your email"
                     className="outline-none w-full bg-[#F2F2F2] text-xs p-1"
+                    ref={emailRef}
                   />
                 </div>
-                <button className="bg-black rounded-md w-1/3 text-xs font-medium ml-2 text-white">
+                <button
+                  className="bg-black rounded-md w-1/3 text-xs font-medium ml-2 text-white"
+                  onClick={emailLogin}
+                >
                   Connect
                 </button>
               </div>

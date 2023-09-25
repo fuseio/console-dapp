@@ -11,15 +11,17 @@ import {
   NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
   NEXT_PUBLIC_YANDEX_METRICA_ID
 } from "@/lib/config";
+import { WagmiConfig } from "wagmi";
+import { config } from "@/lib/web3Auth";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true)
+    setIsClient(true);
   }, [])
 
-  if(!isClient) {
+  if (!isClient) {
     return null;
   }
 
@@ -28,10 +30,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <Provider store={store}>
-      <YMInitializer
-        accounts={[parseInt(NEXT_PUBLIC_YANDEX_METRICA_ID)]}
-      />
-      {children}
+      <WagmiConfig config={config}>
+        <YMInitializer
+          accounts={[parseInt(NEXT_PUBLIC_YANDEX_METRICA_ID)]}
+        />
+        {children}
+      </WagmiConfig>
     </Provider>
   )
 }
