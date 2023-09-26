@@ -8,7 +8,14 @@ import Image from "next/image";
 import { motion, Variants } from "framer-motion";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import down from "@/assets/dropdown-down.svg";
-import { useAccount, useBalance, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
+import downWhite from "@/assets/down-white.svg";
+import {
+  useAccount,
+  useBalance,
+  useDisconnect,
+  useNetwork,
+  useSwitchNetwork,
+} from "wagmi";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import { eclipseAddress } from "@/lib/helpers";
 
@@ -45,14 +52,15 @@ const ConnectWallet = ({
   const dispatch = useAppDispatch();
   const [isChainOpen, setIsChainOpen] = React.useState(false);
   const [isAccountsOpen, setIsAccountsOpen] = React.useState(false);
+  const [isWrongNetwoksOpen, setIsWrongNetwoksOpen] = React.useState(false);
   const { address, connector, isConnected } = useAccount();
   const { chain, chains } = useNetwork();
-  const { switchNetwork } = useSwitchNetwork()
+  const { switchNetwork } = useSwitchNetwork();
   const { disconnect } = useDisconnect();
   const balance = useBalance({
     address,
     watch: true,
-  })
+  });
 
   const chainRef = useOutsideClick(() => {
     if (isChainOpen) {
@@ -64,6 +72,17 @@ const ConnectWallet = ({
       setIsAccountsOpen(false);
     }
   });
+  const wrongNetworkRef = useOutsideClick(() => {
+    if (isWrongNetwoksOpen) {
+      setIsWrongNetwoksOpen(false);
+    }
+  });
+
+  const checkCorrectNetwork = () => {
+    const network = chains.find((c) => c.id === chain?.id);
+    if (!network) return false;
+    return true;
+  };
 
   useEffect(() => {
     dispatch(fetchValidators());
@@ -79,11 +98,12 @@ const ConnectWallet = ({
     >
       Connect Wallet
     </button>
-  ) : !disableAccountCenter ? (
+  ) : !disableAccountCenter && checkCorrectNetwork() ? (
     <div className="flex relative min-w-[330px]">
       <div
-        className={`flex bg-white px-[10px] py-[6px] rounded cursor-pointer items-center relative text-[10px] font-medium border-[1px] ${isChainOpen ? "border-fuse-green-light" : "border-white"
-          }`}
+        className={`flex bg-white px-[10px] py-[6px] rounded cursor-pointer items-center relative text-[10px] font-medium border-[1px] justify-center min-w-[140px] ${
+          isChainOpen ? "border-fuse-green-light" : "border-white"
+        }`}
         ref={chainRef}
         onClick={() => setIsChainOpen(!isChainOpen)}
       >
@@ -106,14 +126,18 @@ const ConnectWallet = ({
         </div>
       </div>
       <div
-        className={`flex bg-white p-[2px] rounded cursor-pointer items-center relative font-medium border-[1px] ml-2 ${isAccountsOpen ? "border-fuse-green-light" : "border-white"
-          }`}
+        className={`flex bg-white p-[2px] rounded cursor-pointer items-center relative font-medium border-[1px] ml-2 ${
+          isAccountsOpen ? "border-fuse-green-light" : "border-white"
+        }`}
         ref={accountsRef}
         onClick={() => setIsAccountsOpen(!isAccountsOpen)}
       >
         <div className="flex w-full justify-center">
-          <div className="h-full px-[10px] py-[7px] bg-modal-bg rounded text-[10px]/[17px]">
-            {balance.data?.formatted} {balance.data?.symbol}
+          <div className="h-full px-[10px] py-[7px] bg-modal-bg rounded text-[10px]/[17px] min-w-[100px] flex justify-center">
+            {new Intl.NumberFormat().format(
+              parseFloat(balance.data?.formatted || "0")
+            )}{" "}
+            {balance.data?.symbol}
           </div>
           <Image
             src={fuseLogo.src}
@@ -122,7 +146,9 @@ const ConnectWallet = ({
             width={17}
             height={17}
           />
-          <p className="text-[10px]/[30px]">{eclipseAddress(String(address))}</p>
+          <p className="text-[10px]/[30px]">
+            {eclipseAddress(String(address))}
+          </p>
           <Image
             src={down.src}
             alt="down"
@@ -146,10 +172,14 @@ const ConnectWallet = ({
               width={15}
               height={15}
             />
-            <p>{balance.data?.formatted} {balance.data?.symbol}</p>
+            <p>
+              {parseFloat(balance.data?.formatted || "0").toFixed(6)}{" "}
+              {balance.data?.symbol}
+            </p>
             <p className="ml-auto">{eclipseAddress(String(address))}</p>
           </div>
-          <div className="bg-modal-bg w-full rounded px-[9px] py-[7px] flex"
+          <div
+            className="bg-modal-bg w-full rounded px-[9px] py-[7px] flex"
             onClick={() => {
               navigator.clipboard.writeText(String(address));
             }}
@@ -183,16 +213,18 @@ const ConnectWallet = ({
         initial="closed"
         exit="closed"
         variants={menu}
-        className="absolute top-[120%] bg-white rounded shadow-xl p-[6px] z-50 text-[10px]/[20px] font-medium"
+        className="absolute top-[120%] bg-white rounded shadow-xl p-[6px] z-50 text-[10px]/[20px] font-medium min-w-[192px]"
       >
-        {chains.map((c) =>
+        {chains.map((c) => (
           <div
             className={
               chain?.id === c.id
                 ? "flex items-center px-[6px] bg-modal-bg rounded cursor-pointer"
                 : "flex items-center px-[6px] cursor-pointer"
             }
-            onClick={() => {switchNetwork && switchNetwork(c.id)}}
+            onClick={() => {
+              switchNetwork && switchNetwork(c.id);
+            }}
             key={c.id}
           >
             <Image
@@ -205,17 +237,81 @@ const ConnectWallet = ({
             <p>{c.name}</p>
             {chain?.id === c.id && (
               <>
-                <div className="h-[6px] w-[6px] rounded-full bg-[#66E070] ml-7" />
+                <div className="h-[6px] w-[6px] rounded-full bg-[#66E070] ml-auto" />
                 <p className="text-[8px] font-medium ml-1">Connected</p>
               </>
             )}
           </div>
-        )}
+        ))}
+      </motion.div>
+    </div>
+  ) : !disableAccountCenter ? (
+    <div className="flex relative min-w-[330px] justify-end">
+      <div
+        className="flex bg-[#FD0F0F] text-white px-[10px] py-[6px] rounded cursor-pointer items-center relative text-[10px] font-medium justify-center"
+        ref={wrongNetworkRef}
+        onClick={() => setIsWrongNetwoksOpen(!isWrongNetwoksOpen)}
+      >
+        <div className="flex w-full justify-center">
+          <p className="text-[10px]/[20px]">Wrong Network</p>
+          <Image
+            src={downWhite.src}
+            alt="down"
+            className={`ml-2 ${isWrongNetwoksOpen && "rotate-180"}`}
+            width={10}
+            height={10}
+          />
+        </div>
+      </div>
+      <motion.div
+        animate={isWrongNetwoksOpen ? "open" : "closed"}
+        initial="closed"
+        exit="closed"
+        variants={menu}
+        className="absolute top-[120%] bg-white rounded shadow-xl z-50 text-[10px]/[20px] font-medium w-[192px]"
+      >
+        <div className="flex px-[12px] pt-[12px] pb-[6px] flex-col w-full border-b-[1px] border-lighter-blue mb-[6px]">
+          <p className="font-bold text-xs">Switch Network</p>
+          <p className="text-[10px]/[15px] font-normal text-text-heading-gray mt-1">
+            Wrong network detected, switch or disconnect to continue
+          </p>
+        </div>
+        {chains.map((c) => (
+          <div
+            className="flex items-center px-[12px] cursor-pointer"
+            onClick={() => {
+              switchNetwork && switchNetwork(c.id);
+            }}
+            key={c.id}
+          >
+            <Image
+              src={fuseLogo.src}
+              alt={"Fuse"}
+              className="h-8 me-2"
+              width={15}
+              height={15}
+            />
+            <p>{c.name}</p>
+          </div>
+        ))}
+        <div
+          className="bg-[#FD0F0F] text-white rounded px-[9px] py-[7px] flex mt-1 mx-[6px] mb-2 cursor-pointer"
+          onClick={() => disconnect()}
+        >
+          Disconnect
+          <Image
+            src={exit.src}
+            alt="exit"
+            className="ml-auto"
+            width={15}
+            height={15}
+          />
+        </div>
       </motion.div>
     </div>
   ) : (
     <></>
-  )
+  );
 };
 
 export default ConnectWallet;

@@ -12,7 +12,7 @@ import { InjectedConnector } from "wagmi/connectors/injected";
 import { publicProvider } from "wagmi/providers/public";
 import { LedgerConnector } from "wagmi/connectors/ledger";
 
-const { chains, publicClient, webSocketPublicClient } = configureChains([fuse, polygon, optimism, arbitrum, gnosis], [publicProvider()]);
+const { chains, publicClient, webSocketPublicClient } = configureChains([fuse, polygon, optimism, arbitrum], [publicProvider()]);
 
 export const config = createConfig({
   autoConnect: true,
