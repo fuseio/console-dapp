@@ -17,42 +17,52 @@ import qr from "@/public/voltqrsample.png";
 import Image from "next/image";
 import WalletButton from "./WalletButton";
 import SocialButton from "./SocialButton";
-import { useConnect } from "wagmi";
-import { LOGIN_PROVIDER } from "@web3auth/openlogin-adapter";
+import { useAccount, useConnect } from "wagmi";
+import { LOGIN_PROVIDER, LOGIN_PROVIDER_TYPE } from "@web3auth/openlogin-adapter";
 import Web3AuthConnectorInstance from "@/lib/web3Auth";
+import ReactGA from "react-ga4";
+import { useAppDispatch, useAppSelector } from "@/store/store";
+import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
 
-interface WalletModalProps {
-  isOpen: boolean;
-  onToggle: (arg: boolean) => void;
-}
-
-const WalletModal = ({
-  isOpen,
-  onToggle,
-}: WalletModalProps): JSX.Element => {
+const WalletModal = (): JSX.Element => {
   const [selected, setSelected] = useState<"HOME" | "VOLT">("HOME");
-  const { connect, connectors, error, isLoading, pendingConnector } = useConnect();
+  const [connectingWalletId, setConnectingWalletId] = useState<string>("");
+  const { connect, connectors } = useConnect();
   const emailRef = useRef<HTMLInputElement>(null);
+  const {isWalletModalOpen} = useAppSelector(selectNavbarSlice);
+  const dispatch = useAppDispatch();
+  const { isConnected } = useAccount();
 
   useEffect(() => {
     window.addEventListener("click", (e) => {
       if ((e.target as HTMLElement).id === "modal-bg") {
-        onToggle(false);
+        dispatch(setIsWalletModalOpen(false));
       }
     });
-  }, [onToggle]);
+  }, []);
+
+  useEffect(() => {
+    dispatch(setIsWalletModalOpen(false));
+  }, [isConnected])
+
+  const connectionEvent = (id: string) => {
+    ReactGA.event({
+      category: "Connection",
+      action: "Connecting wallet",
+      label: id,
+    });
+  };
 
   const connectWallet = (id: string, isWeb3Auth: boolean = false) => {
+    connectionEvent(id)
+
     if (isWeb3Auth) {
-      connect({
-        connector: connectors.find((connector) =>
-          connector.id === "web3auth" &&
-          connector.options.loginParams.loginProvider === id
-        )
-      });
+      setConnectingWalletId(`web3auth-${id}`);
+      connect({ connector: Web3AuthConnectorInstance(id as unknown as LOGIN_PROVIDER_TYPE)});
       return;
     }
 
+    setConnectingWalletId(id);
     connect({ connector: connectors.find((connector) => connector.id === id) });
   }
 
@@ -60,6 +70,8 @@ const WalletModal = ({
     if (!emailRef.current || !emailRef.current.value.length) {
       return
     }
+
+    connectionEvent(LOGIN_PROVIDER.EMAIL_PASSWORDLESS)
 
     connect({
       connector:
@@ -71,7 +83,7 @@ const WalletModal = ({
 
   return (
     <AnimatePresence>
-      {isOpen && (
+      {isWalletModalOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -95,7 +107,7 @@ const WalletModal = ({
                   src={close}
                   alt="close"
                   className="cursor-pointer w-6"
-                  onClick={() => onToggle(false)}
+                  onClick={() => dispatch(setIsWalletModalOpen(false))}
                 />
               </span>
               <span className="text-sm pt-2">
@@ -116,18 +128,24 @@ const WalletModal = ({
                   icon={metamask}
                   text="MetaMask"
                   className="w-[35px]"
+                  id="injected"
+                  connectingWalletId={connectingWalletId}
                   onClick={() => connectWallet("injected")}
                 />
                 <WalletButton
                   icon={wc}
                   text="WalletConnect"
                   className="w-[35px]"
+                  id="WalletConnect"
+                  connectingWalletId={connectingWalletId}
                   onClick={() => connectWallet("walletConnect")}
                 />
                 <WalletButton
                   icon={volt}
                   text="Volt"
                   className="h-[27px]"
+                  id="volt"
+                  connectingWalletId={connectingWalletId}
                   onClick={() => {
                     setSelected("VOLT");
                   }}
@@ -136,17 +154,24 @@ const WalletModal = ({
                   icon={coinbase}
                   text="Coinbase"
                   className="h-[30px]"
+                  id="coinbaseWallet"
+                  connectingWalletId={connectingWalletId}
                   onClick={() => connectWallet("coinbaseWallet")}
                 />
+                {/* TODO: remove Trezor */}
                 <WalletButton
                   icon={trezor}
                   text="Trezor"
                   className="h-[35px] w-[27px]"
+                  id="trezor"
+                  connectingWalletId={connectingWalletId}
                 />
                 <WalletButton
                   icon={metamask}
                   text="Ledger"
                   className="w-[35px] h-[35px]"
+                  id="ledger"
+                  connectingWalletId={connectingWalletId}
                   onClick={() => connectWallet("ledger")}
                 />
               </div>
@@ -159,31 +184,43 @@ const WalletModal = ({
                 <SocialButton
                   icon={fb}
                   className="bg-[#C2D7F2]"
+                  id={`web3auth-${LOGIN_PROVIDER.FACEBOOK}`}
+                  connectingWalletId={connectingWalletId}
                   onClick={() => connectWallet(LOGIN_PROVIDER.FACEBOOK, true)}
                 />
                 <SocialButton
                   icon={twitter2}
                   className="bg-[#E5F5FF]"
+                  id={`web3auth-${LOGIN_PROVIDER.TWITTER}`}
+                  connectingWalletId={connectingWalletId}
                   onClick={() => connectWallet(LOGIN_PROVIDER.TWITTER, true)}
                 />
                 <SocialButton
                   icon={discord2}
                   className="bg-[#D8DAF0]"
+                  id={`web3auth-${LOGIN_PROVIDER.DISCORD}`}
+                  connectingWalletId={connectingWalletId}
                   onClick={() => connectWallet(LOGIN_PROVIDER.DISCORD, true)}
                 />
                 <SocialButton
                   icon={google}
                   className="bg-[#F3F3F3]"
+                  id={`web3auth-${LOGIN_PROVIDER.GOOGLE}`}
+                  connectingWalletId={connectingWalletId}
                   onClick={() => connectWallet(LOGIN_PROVIDER.GOOGLE, true)}
                 />
                 <SocialButton
                   icon={twitch}
                   className="bg-[#DBD8F0]"
+                  id={`web3auth-${LOGIN_PROVIDER.TWITCH}`}
+                  connectingWalletId={connectingWalletId}
                   onClick={() => connectWallet(LOGIN_PROVIDER.TWITCH, true)}
                 />
                 <SocialButton
                   icon={gh}
                   className="bg-[#F3F3F3]"
+                  id={`web3auth-${LOGIN_PROVIDER.GITHUB}`}
+                  connectingWalletId={connectingWalletId}
                   onClick={() => connectWallet(LOGIN_PROVIDER.GITHUB, true)}
                 />
               </div>
@@ -233,7 +270,7 @@ const WalletModal = ({
                   src={close}
                   alt="close"
                   className="cursor-pointer w-6"
-                  onClick={() => onToggle(false)}
+                  onClick={() => dispatch(setIsWalletModalOpen(false))}
                 />
               </span>
               <div className="w-full flex flex-col h-full justify-center items-center">

@@ -1,8 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useConnectWallet, useSetChain } from "@web3-onboard/react";
-import ReactGA from "react-ga4";
-import { setWeb3OnboardProvider } from "@/lib/provider";
-import { EIP1193Provider } from "@web3-onboard/core";
 import { useAppDispatch } from "@/store/store";
 import { fetchValidators } from "@/store/validatorSlice";
 import fuseLogo from "@/assets/fuseToken.svg";
@@ -12,6 +8,9 @@ import Image from "next/image";
 import { motion, Variants } from "framer-motion";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import down from "@/assets/dropdown-down.svg";
+import { useAccount, useBalance, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
+import { setIsWalletModalOpen } from "@/store/navbarSlice";
+import { eclipseAddress } from "@/lib/helpers";
 
 const menu: Variants = {
   closed: {
@@ -43,12 +42,18 @@ const ConnectWallet = ({
   disableAccountCenter?: boolean;
   className?: string;
 }) => {
-  const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
-  const [{ connectedChain }] = useSetChain();
-  const [connected, setConnected] = useState(false);
   const dispatch = useAppDispatch();
   const [isChainOpen, setIsChainOpen] = React.useState(false);
   const [isAccountsOpen, setIsAccountsOpen] = React.useState(false);
+  const { address, connector, isConnected } = useAccount();
+  const { chain, chains } = useNetwork();
+  const { switchNetwork } = useSwitchNetwork()
+  const { disconnect } = useDisconnect();
+  const balance = useBalance({
+    address,
+    watch: true,
+  })
+
   const chainRef = useOutsideClick(() => {
     if (isChainOpen) {
       setIsChainOpen(false);
@@ -59,46 +64,26 @@ const ConnectWallet = ({
       setIsAccountsOpen(false);
     }
   });
-  const [selected, setSelected] = useState(0);
+
   useEffect(() => {
-    setWeb3OnboardProvider(wallet?.provider as EIP1193Provider);
     dispatch(fetchValidators());
-    connectionEvent(wallet);
-  }, [wallet, connectedChain]);
+  }, [connector, chain]);
 
-  const connectionEvent = (wallet: any) => {
-    if (wallet)
-      ReactGA.event({
-        category: "Connection",
-        action: "Connecting wallet",
-        label: wallet?.label,
-      });
-  };
-
-  return !connected ? (
+  return !isConnected ? (
     <button
       className={
-        wallet
-          ? "hidden"
-          : "bg-fuse-black text-white px-4 py-2 rounded-full font-medium md:text-sm " +
-            className
+        "bg-fuse-black text-white px-4 py-2 rounded-full font-medium md:text-sm " +
+        className
       }
-      onClick={() => {
-        wallet ? disconnect(wallet) : connect();
-      }}
+      onClick={() => dispatch(setIsWalletModalOpen(true))}
     >
-      {wallet
-        ? "Disconnect Wallet"
-        : connecting
-        ? "Connecting..."
-        : "Connect Wallet"}
+      Connect Wallet
     </button>
   ) : !disableAccountCenter ? (
     <div className="flex relative min-w-[330px]">
       <div
-        className={`flex bg-white px-[10px] py-[6px] rounded cursor-pointer items-center relative text-[10px] font-medium border-[1px] ${
-          isChainOpen ? "border-fuse-green-light" : "border-white"
-        }`}
+        className={`flex bg-white px-[10px] py-[6px] rounded cursor-pointer items-center relative text-[10px] font-medium border-[1px] ${isChainOpen ? "border-fuse-green-light" : "border-white"
+          }`}
         ref={chainRef}
         onClick={() => setIsChainOpen(!isChainOpen)}
       >
@@ -110,7 +95,7 @@ const ConnectWallet = ({
             width={17}
             height={17}
           />
-          <p className="text-[10px]/[20px]">Fuse Mainnet</p>
+          <p className="text-[10px]/[20px]">{chain?.name}</p>
           <Image
             src={down.src}
             alt="down"
@@ -121,15 +106,14 @@ const ConnectWallet = ({
         </div>
       </div>
       <div
-        className={`flex bg-white p-[2px] rounded cursor-pointer items-center relative font-medium border-[1px] ml-2 ${
-          isAccountsOpen ? "border-fuse-green-light" : "border-white"
-        }`}
+        className={`flex bg-white p-[2px] rounded cursor-pointer items-center relative font-medium border-[1px] ml-2 ${isAccountsOpen ? "border-fuse-green-light" : "border-white"
+          }`}
         ref={accountsRef}
         onClick={() => setIsAccountsOpen(!isAccountsOpen)}
       >
         <div className="flex w-full justify-center">
           <div className="h-full px-[10px] py-[7px] bg-modal-bg rounded text-[10px]/[17px]">
-            0.444 FUSE
+            {balance.data?.formatted} {balance.data?.symbol}
           </div>
           <Image
             src={fuseLogo.src}
@@ -138,7 +122,7 @@ const ConnectWallet = ({
             width={17}
             height={17}
           />
-          <p className="text-[10px]/[30px]">0x49839....232</p>
+          <p className="text-[10px]/[30px]">{eclipseAddress(String(address))}</p>
           <Image
             src={down.src}
             alt="down"
@@ -162,10 +146,14 @@ const ConnectWallet = ({
               width={15}
               height={15}
             />
-            <p>0.444343 FUSE</p>
-            <p className="ml-auto">0x7589....344</p>
+            <p>{balance.data?.formatted} {balance.data?.symbol}</p>
+            <p className="ml-auto">{eclipseAddress(String(address))}</p>
           </div>
-          <div className="bg-modal-bg w-full rounded px-[9px] py-[7px] flex">
+          <div className="bg-modal-bg w-full rounded px-[9px] py-[7px] flex"
+            onClick={() => {
+              navigator.clipboard.writeText(String(address));
+            }}
+          >
             Copy address
             <Image
               src={copy.src}
@@ -175,7 +163,10 @@ const ConnectWallet = ({
               height={15}
             />
           </div>
-          <div className="bg-[#FD0F0F] text-white w-full rounded px-[9px] py-[7px] flex mt-1">
+          <div
+            className="bg-[#FD0F0F] text-white w-full rounded px-[9px] py-[7px] flex mt-1"
+            onClick={() => disconnect()}
+          >
             Disconnect
             <Image
               src={exit.src}
@@ -194,45 +185,37 @@ const ConnectWallet = ({
         variants={menu}
         className="absolute top-[120%] bg-white rounded shadow-xl p-[6px] z-50 text-[10px]/[20px] font-medium"
       >
-        <div
-          className={
-            selected == 0
-              ? "flex items-center px-[6px] bg-modal-bg rounded cursor-pointer"
-              : "flex items-center px-[6px] cursor-pointer"
-          }
-          onClick={() => {}}
-          key={0}
-        >
-          <Image
-            src={fuseLogo.src}
-            alt={"Fuse"}
-            className="h-8 me-2"
-            width={15}
-            height={15}
-          />
-          <p>Fuse Mainnet</p>
-          {selected == 0 && (
-            <>
-              <div className="h-[6px] w-[6px] rounded-full bg-[#66E070] ml-7" />
-              <p className="text-[8px] font-medium ml-1">Connected</p>
-            </>
-          )}
-        </div>
-        <div className="flex items-center px-[6px]" onClick={() => {}} key={0}>
-          <Image
-            src={fuseLogo.src}
-            alt={"Fuse"}
-            className="h-8 me-2"
-            width={15}
-            height={15}
-          />
-          <p className="font-medium cursor-pointer">Fuse Mainnet</p>
-        </div>
+        {chains.map((c) =>
+          <div
+            className={
+              chain?.id === c.id
+                ? "flex items-center px-[6px] bg-modal-bg rounded cursor-pointer"
+                : "flex items-center px-[6px] cursor-pointer"
+            }
+            onClick={() => {switchNetwork && switchNetwork(c.id)}}
+            key={c.id}
+          >
+            <Image
+              src={fuseLogo.src}
+              alt={"Fuse"}
+              className="h-8 me-2"
+              width={15}
+              height={15}
+            />
+            <p>{c.name}</p>
+            {chain?.id === c.id && (
+              <>
+                <div className="h-[6px] w-[6px] rounded-full bg-[#66E070] ml-7" />
+                <p className="text-[8px] font-medium ml-1">Connected</p>
+              </>
+            )}
+          </div>
+        )}
       </motion.div>
     </div>
   ) : (
     <></>
-  );
+  )
 };
 
 export default ConnectWallet;

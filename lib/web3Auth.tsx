@@ -1,18 +1,18 @@
 import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-import { OpenloginAdapter, OPENLOGIN_NETWORK, LOGIN_PROVIDER, LOGIN_PROVIDER_TYPE, ExtraLoginOptions } from "@web3auth/openlogin-adapter";
+import { OpenloginAdapter, OPENLOGIN_NETWORK, LOGIN_PROVIDER_TYPE, ExtraLoginOptions } from "@web3auth/openlogin-adapter";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { configureChains, createConfig } from "wagmi";
 import { NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID, NEXT_PUBLIC_WEB3AUTH_CLIENT_ID } from "./config";
-import { mainnet, arbitrum, polygon } from "wagmi/chains";
+import { arbitrum, polygon, fuse, optimism, gnosis } from "wagmi/chains";
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { publicProvider } from "wagmi/providers/public";
 import { LedgerConnector } from "wagmi/connectors/ledger";
 
-const { chains, publicClient, webSocketPublicClient } = configureChains([mainnet, arbitrum, polygon], [publicProvider()]);
+const { chains, publicClient, webSocketPublicClient } = configureChains([fuse, polygon, optimism, arbitrum, gnosis], [publicProvider()]);
 
 export const config = createConfig({
   autoConnect: true,
@@ -43,12 +43,6 @@ export const config = createConfig({
         projectId: NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
       }
     }),
-    Web3AuthConnectorInstance(LOGIN_PROVIDER.FACEBOOK),
-    Web3AuthConnectorInstance(LOGIN_PROVIDER.TWITTER),
-    Web3AuthConnectorInstance(LOGIN_PROVIDER.DISCORD),
-    Web3AuthConnectorInstance(LOGIN_PROVIDER.GOOGLE),
-    Web3AuthConnectorInstance(LOGIN_PROVIDER.TWITCH),
-    Web3AuthConnectorInstance(LOGIN_PROVIDER.GITHUB),
   ],
   publicClient,
   webSocketPublicClient,
