@@ -5,7 +5,7 @@ import { OpenloginAdapter, OPENLOGIN_NETWORK, LOGIN_PROVIDER_TYPE, ExtraLoginOpt
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { configureChains, createConfig } from "wagmi";
 import { NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID, NEXT_PUBLIC_WEB3AUTH_CLIENT_ID } from "./config";
-import { arbitrum, polygon, fuse, optimism, gnosis } from "wagmi/chains";
+import { arbitrum, polygon, fuse, optimism } from "wagmi/chains";
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { InjectedConnector } from "wagmi/connectors/injected";

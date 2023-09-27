@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch } from "@/store/store";
 import { fetchValidators } from "@/store/validatorSlice";
-import fuseLogo from "@/assets/fuseToken.svg";
 import copy from "@/assets/copy-black.svg";
 import exit from "@/assets/sign-out.svg";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import { motion, Variants } from "framer-motion";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import down from "@/assets/dropdown-down.svg";
@@ -18,6 +17,11 @@ import {
 } from "wagmi";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import { eclipseAddress } from "@/lib/helpers";
+import { arbitrum, polygon, fuse, optimism } from "wagmi/chains";
+import fuseIcon from "@/assets/fuse-icon.svg"
+import polygonIcon from "@/assets/polygon-icon.svg"
+import optimismIcon from "@/assets/optimism-icon.svg"
+import arbitrumIcon from "@/assets/arbitrum-icon.svg"
 
 const menu: Variants = {
   closed: {
@@ -41,6 +45,17 @@ const menu: Variants = {
     y: 0,
   },
 };
+
+type Icons = {
+  [key: string]: string | StaticImageData
+}
+
+const icons: Icons = {
+  [fuse.id]: fuseIcon,
+  [polygon.id]: polygonIcon,
+  [optimism.id]: optimismIcon,
+  [arbitrum.id]: arbitrumIcon,
+}
 
 const ConnectWallet = ({
   disableAccountCenter = false,
@@ -101,15 +116,14 @@ const ConnectWallet = ({
   ) : !disableAccountCenter && checkCorrectNetwork() ? (
     <div className="flex relative min-w-[330px]">
       <div
-        className={`flex bg-white px-[10px] py-[6px] rounded cursor-pointer items-center relative text-[10px] font-medium border-[1px] justify-center min-w-[140px] ${
-          isChainOpen ? "border-fuse-green-light" : "border-white"
-        }`}
+        className={`flex bg-white px-[10px] py-[6px] rounded cursor-pointer items-center relative text-[10px] font-medium border-[1px] justify-center min-w-[140px] ${isChainOpen ? "border-fuse-green-light" : "border-white"
+          }`}
         ref={chainRef}
         onClick={() => setIsChainOpen(!isChainOpen)}
       >
         <div className="flex w-full justify-center">
           <Image
-            src={fuseLogo.src}
+            src={icons[chain?.id ?? 0]}
             alt="Fuse"
             className="me-2"
             width={17}
@@ -126,9 +140,8 @@ const ConnectWallet = ({
         </div>
       </div>
       <div
-        className={`flex bg-white p-[2px] rounded cursor-pointer items-center relative font-medium border-[1px] ml-2 ${
-          isAccountsOpen ? "border-fuse-green-light" : "border-white"
-        }`}
+        className={`flex bg-white p-[2px] rounded cursor-pointer items-center relative font-medium border-[1px] ml-2 ${isAccountsOpen ? "border-fuse-green-light" : "border-white"
+          }`}
         ref={accountsRef}
         onClick={() => setIsAccountsOpen(!isAccountsOpen)}
       >
@@ -140,8 +153,8 @@ const ConnectWallet = ({
             {balance.data?.symbol}
           </div>
           <Image
-            src={fuseLogo.src}
-            alt="Fuse"
+            src={icons[chain?.id ?? 0]}
+            alt={chain?.name ?? "Fuse"}
             className="mx-2"
             width={17}
             height={17}
@@ -166,8 +179,8 @@ const ConnectWallet = ({
         >
           <div className="flex items-center px-[6px] rounded">
             <Image
-              src={fuseLogo.src}
-              alt={"Fuse"}
+              src={icons[chain?.id ?? 0]}
+              alt={chain?.name ?? "Fuse"}
               className="h-8 me-2"
               width={15}
               height={15}
@@ -228,8 +241,8 @@ const ConnectWallet = ({
             key={c.id}
           >
             <Image
-              src={fuseLogo.src}
-              alt={"Fuse"}
+              src={icons[c.id]}
+              alt={c.name}
               className="h-8 me-2"
               width={15}
               height={15}
@@ -285,8 +298,8 @@ const ConnectWallet = ({
             key={c.id}
           >
             <Image
-              src={fuseLogo.src}
-              alt={"Fuse"}
+              src={icons[c.id]}
+              alt={c.name}
               className="h-8 me-2"
               width={15}
               height={15}
