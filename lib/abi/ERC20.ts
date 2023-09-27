@@ -1,4 +1,6 @@
-export const ERC20ABI = [
+import { narrow } from 'abitype'
+
+export const ERC20ABI = narrow([
   {
     inputs: [
       {
@@ -344,4 +346,4 @@ export const ERC20ABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
-];
+]);

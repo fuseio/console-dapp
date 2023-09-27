@@ -1,4 +1,6 @@
-export const Consensus = [
+import { narrow } from 'abitype'
+
+export const Consensus = narrow([
   {
     "constant": true,
     "inputs": [],
@@ -850,4 +852,4 @@ export const Consensus = [
     "stateMutability": "nonpayable",
     "type": "function"
   }
-]
+])
