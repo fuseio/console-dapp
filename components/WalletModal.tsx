@@ -123,7 +123,7 @@ const WalletModal = (): JSX.Element => {
                   What is Web3 wallet?
                 </a>
               </span>
-              <div className="grid grid-cols-3 w-full gap-2 pt-4">
+              <div className="grid grid-cols-2 w-full gap-2 pt-4">
                 <WalletButton
                   icon={metamask}
                   text="MetaMask"
@@ -157,22 +157,6 @@ const WalletModal = (): JSX.Element => {
                   id="coinbaseWallet"
                   connectingWalletId={connectingWalletId}
                   onClick={() => connectWallet("coinbaseWallet")}
-                />
-                {/* TODO: remove Trezor */}
-                <WalletButton
-                  icon={trezor}
-                  text="Trezor"
-                  className="h-[35px] w-[27px]"
-                  id="trezor"
-                  connectingWalletId={connectingWalletId}
-                />
-                <WalletButton
-                  icon={metamask}
-                  text="Ledger"
-                  className="w-[35px] h-[35px]"
-                  id="ledger"
-                  connectingWalletId={connectingWalletId}
-                  onClick={() => connectWallet("ledger")}
                 />
               </div>
               <div className="flex pt-4 w-full justify-between text-[#9F9F9F] items-center text-[10px]">

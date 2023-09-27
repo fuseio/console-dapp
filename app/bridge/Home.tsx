@@ -31,6 +31,7 @@ import { getChainKey } from "@layerzerolabs/lz-sdk";
 import ToastPane from "@/components/bridge/ToastPane";
 import Pill from "@/components/bridge/Pill";
 import Disclaimer from "@/components/bridge/Disclaimer";
+import { useAccount } from "wagmi";
 
 const Home = () => {
   const [{ connectedChain, chains }, switchChain] = useSetChain();
@@ -58,6 +59,7 @@ const Home = () => {
   const [isExchange, setIsExchange] = useState(false);
   const [isDisabledChain, setIsDisabledChain] = useState(false);
   const [pendingPromise, setPendingPromise] = React.useState<any>();
+  const { address, connector, isConnected } = useAccount();
   useEffect(() => {
     if (wallet?.accounts[0].address) {
       dispatch(fetchBridgeTransactions(wallet?.accounts[0].address));
@@ -450,8 +452,8 @@ const Home = () => {
                 setPendingPromise={setPendingPromise}
               />
             )}
-            {!connectedChain && displayButton ? (
-              <ConnectWallet className="mt-6 py-4 " />
+            {!isConnected && displayButton ? (
+              <ConnectWallet className="mt-6 py-4 " disableAccountCenter />
             ) : displayButton &&
               selected === 1 &&
               !appConfig.wrappedBridge.chains[withdrawSelectedChainItem].tokens[

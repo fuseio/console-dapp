@@ -304,7 +304,7 @@ const StakeCard = ({
           }}
         />
       ) : (
-        <ConnectWallet className="mt-6" />
+        <ConnectWallet className="mt-6" disableAccountCenter />
       )}
     </div>
   );
