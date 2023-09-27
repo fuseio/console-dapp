@@ -4,6 +4,7 @@ import { getERC20Allowance, getERC20Balance } from "@/lib/erc20";
 import { ethers } from "ethers";
 import { ChainStateType } from "../chainSlice";
 import { fetchTokenPrice } from "@/lib/api";
+import { Address } from "abitype";
 
 export interface BalanceStateType {
   lzChainId: number;
@@ -44,9 +45,9 @@ export const fetchBalance = createAsyncThunk(
       bridge,
       decimals = 18,
     }: {
-      contractAddress: string;
-      address: string;
-      bridge: string;
+      contractAddress: Address;
+      address: Address;
+      bridge: Address;
       decimals: number;
     },
     thunkAPI
@@ -107,9 +108,9 @@ export const fetchApproval = createAsyncThunk(
       spender,
       decimals = 18,
     }: {
-      contractAddress: string;
-      address: string;
-      spender: string;
+      contractAddress: Address;
+      address: Address;
+      spender: Address;
       decimals: number;
     },
     thunkAPI
@@ -144,8 +145,8 @@ export const fetchLiquidity = createAsyncThunk(
       decimals = 18,
       rpcUrl,
     }: {
-      contractAddress: string;
-      bridge: string;
+      contractAddress: Address;
+      bridge: Address;
       decimals: number;
       rpcUrl: string;
     },

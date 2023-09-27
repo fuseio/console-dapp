@@ -3,6 +3,7 @@ import { AppState } from "../rootReducer";
 import { ethers } from "ethers";
 import { estimateOriginalNativeFee } from "@/lib/originalBridge";
 import { estimateWrappedNativeFee } from "@/lib/wrappedBridge";
+import { Address } from "abitype";
 
 export interface FeeStateType {
   isGasFeeLoading: boolean;
@@ -23,7 +24,7 @@ export const estimateOriginalFee = createAsyncThunk(
       contractAddress,
       rpcUrl,
     }: {
-      contractAddress: string;
+      contractAddress: Address;
       rpcUrl: string;
     },
     thunkAPI
@@ -49,7 +50,7 @@ export const estimateWrappedFee = createAsyncThunk(
       lzChainId,
       rpcUrl,
     }: {
-      contractAddress: string;
+      contractAddress: Address;
       lzChainId: number;
       rpcUrl: string;
     },

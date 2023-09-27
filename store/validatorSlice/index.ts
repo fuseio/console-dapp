@@ -3,6 +3,7 @@ import { AppState } from '../rootReducer'
 import { getDelegatedAmount, fetchValidatorData, getJailedValidators, getStake, getTotalStakeAmount, getValidators, getMaxStake, getMinStake, getPendingValidators } from '@/lib/contractInteract'
 import Validators from '@/validators/validators.json'
 import { fetchNodeByAddress, fetchTokenPrice, fetchTotalSupply } from '@/lib/api'
+import { Address } from 'viem'
 
 export interface ValidatorType {
     address: string
@@ -88,7 +89,7 @@ export const fetchValidators = createAsyncThunk(
 
 export const fetchValidatorMetadata = createAsyncThunk(
     'VALIDATORS/FETCH_METADATA',
-    async (validators: string[], thunkAPI) => {
+    async (validators: Address[], thunkAPI) => {
         return new Promise<any>(async (resolve, reject) => {
             const validatorMetadata: Array<ValidatorType> = []
             let totalDelegators = 0
@@ -145,7 +146,7 @@ export const fetchValidatorMetadata = createAsyncThunk(
 
 export const fetchSelfStake = createAsyncThunk(
     'VALIDATORS/FETCH_SELF_STAKE',
-    async ({ address, validators }: { address: string, validators: string[] }, thunkAPI) => {
+    async ({ address, validators }: { address: Address, validators: Address[] }, thunkAPI) => {
         return new Promise<any>(async (resolve, reject) => {
             const delegatedAmounts: Array<Array<string>> = []
             let amount = 0
@@ -164,7 +165,7 @@ export const fetchSelfStake = createAsyncThunk(
 
 export const fetchDelegatedAmounts = createAsyncThunk(
     'VALIDATORS/FETCH_DELEGATED_AMOUNTS',
-    async ({ address, delegators }: { address: string, delegators: string[] }, thunkAPI) => {
+    async ({ address, delegators }: { address: Address, delegators: Address[] }, thunkAPI) => {
         return new Promise<any>(async (resolve, reject) => {
             let delegatedAmounts: Array<Array<string>> = []
             Promise.all(delegators.map(async (delegator) => {

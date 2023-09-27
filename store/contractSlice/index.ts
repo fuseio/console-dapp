@@ -9,9 +9,9 @@ import {
 } from "@/lib/wrappedBridge";
 import { insertTransactionToLocalStorage } from "@/lib/helpers";
 import { updateTransactions } from "../transactionsSlice";
-import { updateAllBalances } from "@/lib/web3onboard";
 import * as amplitude from "@amplitude/analytics-browser";
 import { fetchTokenPrice } from "@/lib/api";
+import { Address } from "abitype";
 
 export interface ContractStateType {
   isBridgeLoading: boolean;
@@ -40,10 +40,10 @@ export const increaseERC20Allowance = createAsyncThunk(
       tokenId,
     }: {
       amount: string;
-      contractAddress: string;
-      bridge: string;
+      contractAddress: Address;
+      bridge: Address;
       decimals: number;
-      address: string;
+      address: Address;
       type: number;
       token: string;
       network: string;
@@ -62,7 +62,6 @@ export const increaseERC20Allowance = createAsyncThunk(
               decimals,
             })
           );
-          updateAllBalances();
           if (type === 0)
             fetchTokenPrice(tokenId).then((price) => {
               amplitude.track("Deposit: Amount Approved", {
@@ -106,10 +105,10 @@ export const bridgeOriginalTokens = createAsyncThunk(
       network,
     }: {
       amount: string;
-      contractAddress: string;
-      bridge: string;
+      contractAddress: Address;
+      bridge: Address;
       decimals: number;
-      address: string;
+      address: Address;
       srcChainId: number;
       symbol: string;
       dstChainId: number;
@@ -162,7 +161,6 @@ export const bridgeOriginalTokens = createAsyncThunk(
               amountUSD: price * parseFloat(amount),
             });
           });
-          updateAllBalances();
           resolve(txHash);
         })
         .catch((err) => {
@@ -188,9 +186,9 @@ export const bridgeNativeTokens = createAsyncThunk(
       network,
     }: {
       amount: string;
-      bridge: string;
+      bridge: Address;
       decimals: number;
-      address: string;
+      address: Address;
       srcChainId: number;
       symbol: string;
       dstChainId: number;
@@ -220,7 +218,6 @@ export const bridgeNativeTokens = createAsyncThunk(
               dstChainId,
             })
           );
-          updateAllBalances();
           fetchTokenPrice(tokenId).then((price) => {
             amplitude.track("Withdraw: Successful Bridge", {
               amount: parseFloat(amount),
@@ -255,10 +252,10 @@ export const bridgeWrappedTokens = createAsyncThunk(
       network,
     }: {
       amount: string;
-      contractAddress: string;
-      bridge: string;
+      contractAddress: Address;
+      bridge: Address;
       decimals: number;
-      address: string;
+      address: Address;
       chainId: number;
       symbol: string;
       srcChainId: number;
@@ -304,7 +301,6 @@ export const bridgeWrappedTokens = createAsyncThunk(
               amountUSD: price * parseFloat(amount),
             });
           });
-          updateAllBalances();
           resolve(txHash);
         })
         .catch((err) => {
@@ -330,10 +326,10 @@ export const bridgeAndUnwrap = createAsyncThunk(
       network,
     }: {
       amount: string;
-      contractAddress: string;
-      bridge: string;
+      contractAddress: Address;
+      bridge: Address;
       decimals: number;
-      address: string;
+      address: Address;
       chainId: number;
       symbol: string;
       srcChainId: number;
@@ -386,7 +382,6 @@ export const bridgeAndUnwrap = createAsyncThunk(
               amountUSD: price * parseFloat(amount),
             });
           });
-          updateAllBalances();
           resolve(txHash);
         })
         .catch((err) => {

@@ -41,8 +41,9 @@ export const bridgeOriginal = async (
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
   const walletClient = await getWalletClient()
+  let tx: Address = "0x";
   if (walletClient) {
-    const tx = await walletClient.writeContract({
+    tx = await walletClient.writeContract({
       address: bridgeAddress,
       abi: OriginalTokenBridgeAbi,
       functionName: 'bridge',
@@ -55,8 +56,8 @@ export const bridgeOriginal = async (
       ],
       value: BigInt(increasedNativeFee)
     })
-    return tx
   }
+  return tx
 };
 
 export const bridgeNative = async (
@@ -87,8 +88,9 @@ export const bridgeNative = async (
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
   const walletClient = await getWalletClient()
+  let tx: Address = "0x";
   if (walletClient) {
-    const tx = await walletClient.writeContract({
+    tx = await walletClient.writeContract({
       address: bridgeAddress,
       abi: OriginalTokenBridgeAbi,
       functionName: 'bridgeNative',
@@ -100,8 +102,8 @@ export const bridgeNative = async (
       ],
       value: amt + BigInt(increasedNativeFee)
     })
-    return tx
   }
+  return tx
 };
 
 export const estimateOriginalNativeFee = async (
