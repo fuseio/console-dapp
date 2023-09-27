@@ -86,13 +86,14 @@ export const setNativeBalanceThunk = createAsyncThunk(
 
 export const fetchUsdPrice = createAsyncThunk(
   'BALANCE/FETCH_USD_PRICE',
-  async () => {
+  async (controller: AbortController) => {
     return new Promise<any>(async (resolve, reject) => {
       fetchTokenPrice("fuse-network-token").then(price => {
         resolve(price)
       }).catch((error) => {
         reject(error)
       })
+      controller.signal.addEventListener('abort', () => reject());
     })
   }
 )

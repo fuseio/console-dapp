@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
-import { useConnectWallet } from "@web3-onboard/react";
 import dollar from "@/assets/dollar.svg"
 import receive from "@/assets/receive.svg"
 import send from "@/assets/send.svg"
@@ -13,28 +12,33 @@ import copy from "@/assets/copy2.svg";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
-import OnrampModal from "@/components/console/OnrampModal";
 import TransfiModal from "@/components/console/TransfiModal";
+import { useAccount, useBalance } from "wagmi";
+import { fuse } from "wagmi/chains";
 
 const Home = () => {
-  const [{ wallet }] = useConnectWallet();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
-  const [isOpen, setIsOpen] = useState(false);
   const [isTransfiOpen, setIsTransfiOpen] = useState(false);
-
+  const controller = new AbortController();
+  const { address, isConnected } = useAccount();
+  const balance = useBalance({
+    address,
+    watch: true,
+    chainId: fuse.id
+  });
+  
   useEffect(() => {
-    dispatch(fetchUsdPrice())
-  }, [wallet])
+    dispatch(fetchUsdPrice(controller))
+
+    return () => {
+      controller.abort();
+    }
+  }, [isConnected])
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
-      <OnrampModal
-        isOpen={isOpen}
-        onToggle={setIsOpen}
-        onTransfiToggle={setIsTransfiOpen}
-      />
       <TransfiModal
         isTransfiOpen={isTransfiOpen}
         onTransfiToggle={setIsTransfiOpen}
@@ -59,14 +63,14 @@ const Home = () => {
                   <div className="flex items-end gap-x-[30px] md:gap-x-4">
                     <h1 className="font-black text-5xl leading-none md:text-3xl whitespace-nowrap md:font-bold">
                       {new Intl.NumberFormat().format(
-                        parseFloat(wallet?.accounts[0]?.balance?.Fuse?.toString() ?? "0")
+                        parseFloat(balance.data?.formatted ?? "0")
                       )} FUSE
                     </h1>
                     {balanceSlice.isUsdPriceLoading ?
                       <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
                       <p className="text-xl text-darker-gray">
                         ${new Intl.NumberFormat().format(
-                          parseFloat((wallet?.accounts[0]?.balance?.Fuse ?? 0 * balanceSlice.price).toString())
+                          parseFloat((balance.data?.formatted ?? 0 * balanceSlice.price).toString())
                         )}
                       </p>
                     }
@@ -76,8 +80,8 @@ const Home = () => {
                 <div className="flex md:hidden gap-[30px]">
                   <Button
                     text={"Buy Fuse"}
-                    disabled={!!!wallet}
-                    onClick={() => setIsOpen(true)}
+                    disabled={!isConnected}
+                    onClick={() => setIsTransfiOpen(true)}
                     padding="py-5"
                     className="flex items-center justify-center gap-x-2.5 w-40 bg-success text-black font-semibold rounded-full transition ease-in-out delay-150 hover:opacity-80"
                     disabledClassname="flex items-center justify-center gap-x-2.5 w-40 bg-button-inactive text-black font-semibold rounded-full"
@@ -87,7 +91,7 @@ const Home = () => {
                   </Button>
                   <Button
                     text={"Stake"}
-                    disabled={!!!wallet}
+                    disabled={!isConnected}
                     onClick={() => router.push("/staking")}
                     padding="py-5"
                     className="flex items-center justify-center gap-x-2.5 w-40 bg-white text-black font-semibold rounded-full transition ease-in-out delay-150 hover:opacity-80"
@@ -98,7 +102,7 @@ const Home = () => {
                   </Button>
                   <Button
                     text={"Bridge"}
-                    disabled={!!!wallet}
+                    disabled={!isConnected}
                     onClick={() => router.push("/bridge")}
                     padding="py-5"
                     className="flex items-center justify-center gap-x-2.5 w-40 bg-white text-black font-semibold rounded-full transition ease-in-out delay-150 hover:opacity-80"
@@ -113,22 +117,22 @@ const Home = () => {
                   <div className="flex flex-col justify-center items-center gap-4">
                     <Button
                       text={""}
-                      disabled={!!!wallet}
-                      onClick={() => setIsOpen(true)}
+                      disabled={!isConnected}
+                      onClick={() => setIsTransfiOpen(true)}
                       padding=""
                       className="flex items-center justify-center w-16 h-16 bg-success text-black font-semibold rounded-full"
                       disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
                     >
                       <img src={dollarMobile.src} alt="dollar" />
                     </Button>
-                    <p className={(!!wallet ? "text-success" : "text-button-inactive") + "font-semibold whitespace-nowrap"}>
+                    <p className={(isConnected ? "text-success" : "text-button-inactive") + "font-semibold whitespace-nowrap"}>
                       Buy Fuse
                     </p>
                   </div>
                   <div className="flex flex-col justify-center items-center gap-4">
                     <Button
                       text={""}
-                      disabled={!!!wallet}
+                      disabled={!isConnected}
                       onClick={() => router.push("/staking")}
                       padding=""
                       className="flex items-center justify-center w-16 h-16 bg-white text-black font-semibold rounded-full"
@@ -137,14 +141,14 @@ const Home = () => {
                     >
                       <img src={receiveMobile.src} alt="receive" />
                     </Button>
-                    <p className={(!!wallet ? "text-white" : "text-button-inactive") + "font-semibold whitespace-nowrap"}>
+                    <p className={(isConnected ? "text-white" : "text-button-inactive") + "font-semibold whitespace-nowrap"}>
                       Stake
                     </p>
                   </div>
                   <div className="flex flex-col justify-center items-center gap-4">
                     <Button
                       text={""}
-                      disabled={!!!wallet}
+                      disabled={!isConnected}
                       onClick={() => router.push("/bridge")}
                       padding=""
                       className="flex items-center justify-center w-16 h-16 bg-white text-black font-semibold rounded-full"
@@ -153,25 +157,25 @@ const Home = () => {
                     >
                       <img src={sendMobile.src} alt="send" />
                     </Button>
-                    <p className={(!!wallet ? "text-white" : "text-button-inactive") + "font-semibold whitespace-nowrap"}>
+                    <p className={(isConnected ? "text-white" : "text-button-inactive") + "font-semibold whitespace-nowrap"}>
                       Bridge
                     </p>
                   </div>
                 </div>
               </div>
-              {wallet &&
+              {isConnected &&
                 <div className="flex flex-col gap-4 md:hidden">
                   <p className="text-success">
                     Wallet Address
                   </p>
                   <span className="text-darker-gray text-base flex">
-                    {eclipseAddress(wallet?.accounts[0].address)}
+                    {eclipseAddress(String(address))}
                     <img
                       src={copy.src}
                       alt="Copy"
                       className="ms-2 cursor-pointer"
                       onClick={() => {
-                        navigator.clipboard.writeText(wallet?.accounts[0].address);
+                        navigator.clipboard.writeText(String(address));
                       }}
                     />
                   </span>
