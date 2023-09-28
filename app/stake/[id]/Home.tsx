@@ -17,18 +17,16 @@ import {
   fetchValidators,
   selectValidatorSlice,
 } from "@/store/validatorSlice";
-import { eclipseAddress } from "@/lib/helpers";
+import { eclipseAddress, hex } from "@/lib/helpers";
 import Jazzicon from "react-jazzicon";
-import { useConnectWallet } from "@web3-onboard/react";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Modal from "@/components/staking/Modal";
 import FAQ from "@/components/staking/FAQ";
 import WarningModal from "@/components/staking/WarningModal";
-import { WalletState } from "@web3-onboard/core";
 import { delegate, withdraw } from "@/lib/contractInteract";
+import { Address, useAccount } from "wagmi";
 const Stake = ({ params }: { params: { id: string } }) => {
   const { id } = params;
-  const [{ wallet }, connect, disconnect, updateBalances] = useConnectWallet();
   const [validator, setValidator] = useState<ValidatorType | undefined>(
     undefined
   );
@@ -39,18 +37,20 @@ const Stake = ({ params }: { params: { id: string } }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isWarningOpen, setIsWarningOpen] = useState(false);
   const [isWarningAknowledged, setIsWarningAknowledged] = useState(false);
+  const { address } = useAccount();
+
   const getAmount = () => {
     if (isNaN(parseFloat(amount as string))) return 0;
     return parseFloat(amount as string);
   };
   const handleStake = () => {
     setIsLoading(true);
-    delegate(getAmount().toString(), validator?.address as string)
+    delegate(getAmount().toString(), validator?.address ?? hex)
       .then(() => {
         dispatch(
           fetchSelfStake({
-            address: (wallet as WalletState).accounts[0].address,
-            validators: [validator?.address as string],
+            address: address ?? hex,
+            validators: [validator?.address ?? hex],
           })
         );
         ReactGA.event({
@@ -61,7 +61,6 @@ const Stake = ({ params }: { params: { id: string } }) => {
         ym("reachGoal", "stake");
         setAmount(null);
         setIsLoading(false);
-        updateBalances();
       })
       .catch((e) => {
         console.log(e);
@@ -71,12 +70,12 @@ const Stake = ({ params }: { params: { id: string } }) => {
 
   const handleUnstake = () => {
     setIsLoading(true);
-    withdraw(getAmount().toString(), validator?.address as string)
+    withdraw(getAmount().toString(), validator?.address ?? hex)
       .then(() => {
         dispatch(
           fetchSelfStake({
-            address: (wallet as WalletState).accounts[0].address,
-            validators: [validator?.address as string],
+            address: address ?? hex,
+            validators: [validator?.address ?? hex],
           })
         );
         ReactGA.event({
@@ -87,7 +86,6 @@ const Stake = ({ params }: { params: { id: string } }) => {
         ym("reachGoal", "unstake");
         setAmount(null);
         setIsLoading(false);
-        updateBalances();
       })
       .catch((e) => {
         console.log(e);
@@ -117,22 +115,22 @@ const Stake = ({ params }: { params: { id: string } }) => {
   }, [validators.validators]);
 
   useEffect(() => {
-    if (wallet && validator) {
+    if (address && validator) {
       dispatch(
         fetchSelfStake({
-          address: wallet.accounts[0].address,
+          address: address,
           validators: validators.validators,
         })
       );
-    } else if (!wallet && validator) {
+    } else if (!address && validator) {
       dispatch(
         fetchSelfStake({
-          address: "",
+          address: hex,
           validators: validators.validators,
         })
       );
     }
-  }, [wallet, validator]);
+  }, [address, validator]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -332,13 +330,13 @@ const Stake = ({ params }: { params: { id: string } }) => {
                 icon={arrow.src}
                 onClick={() => {
                   setIsOpen(true);
-                  let delegatorsFilter: string[] = [];
+                  let delegatorsFilter: Address[] = [];
                   validator?.delegators.forEach((delegator) => {
                     delegatorsFilter.push(delegator[0]);
                   });
                   dispatch(
                     fetchDelegatedAmounts({
-                      address: validator?.address as string,
+                      address: validator?.address ?? hex,
                       delegators: delegatorsFilter,
                     })
                   );

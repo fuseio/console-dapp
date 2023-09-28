@@ -6,11 +6,11 @@ import { fetchNodeByAddress, fetchTokenPrice, fetchTotalSupply } from '@/lib/api
 import { Address } from 'viem'
 
 export interface ValidatorType {
-    address: string
+    address: Address
     stakeAmount: string
     fee: string
     delegatorsLength: string
-    delegators: Array<Array<string>>
+    delegators: [Address, string][]
     selfStakeAmount?: string
     name?: string
     website?: string
@@ -28,7 +28,7 @@ export interface ValidatorStateType {
     totalStakeAmount: string
     myStakeAmount: string
     validatorMetadata: ValidatorType[]
-    validators: string[]
+    validators: Address[]
     isLoading: boolean
     isMetadataLoading: boolean
     isBalanceLoading: boolean
@@ -148,7 +148,7 @@ export const fetchSelfStake = createAsyncThunk(
     'VALIDATORS/FETCH_SELF_STAKE',
     async ({ address, validators }: { address: Address, validators: Address[] }, thunkAPI) => {
         return new Promise<any>(async (resolve, reject) => {
-            const delegatedAmounts: Array<Array<string>> = []
+            const delegatedAmounts: [Address, string][] = []
             let amount = 0
             Promise.all(validators.map(async (validator) => {
                 const delegatedAmount = await getStake(validator, address)
@@ -167,7 +167,7 @@ export const fetchDelegatedAmounts = createAsyncThunk(
     'VALIDATORS/FETCH_DELEGATED_AMOUNTS',
     async ({ address, delegators }: { address: Address, delegators: Address[] }, thunkAPI) => {
         return new Promise<any>(async (resolve, reject) => {
-            let delegatedAmounts: Array<Array<string>> = []
+            let delegatedAmounts: [Address, string][] = []
             Promise.all(delegators.map(async (delegator) => {
                 const delegatedAmount = await getDelegatedAmount(delegator, address)
                 delegatedAmounts.push([delegator, delegatedAmount])
@@ -242,7 +242,7 @@ const validatorSlice = createSlice({
         },
         [fetchDelegatedAmounts.fulfilled.toString()]: (state, { payload }) => {
             let validator = state.validatorMetadata.filter((validator) => validator.address === payload.address)[0]
-            validator.delegators = (payload.delegatedAmounts as Array<Array<string>>).sort((a, b) => {
+            validator.delegators = (payload.delegatedAmounts).sort((a: [Address, string], b: [Address, string]) => {
                 return parseInt(b[1]) - parseInt(a[1]);
             })
             const index = state.validatorMetadata.findIndex((validator) => validator.address === payload.address)

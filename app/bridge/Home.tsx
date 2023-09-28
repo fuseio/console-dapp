@@ -6,7 +6,7 @@ import Withdraw from "./Withdraw";
 import Footer from "@/components/bridge/Footer";
 import history from "@/assets/history.svg";
 import Transactions from "@/components/bridge/Transactions";
-import { useConnectWallet, useSetChain } from "@web3-onboard/react";
+import fuseToken from "@/assets/tokenLogo";
 import { appConfig } from "@/lib/config";
 import { selectBalanceSlice } from "@/store/balanceSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
@@ -32,10 +32,11 @@ import ToastPane from "@/components/bridge/ToastPane";
 import Pill from "@/components/bridge/Pill";
 import Disclaimer from "@/components/bridge/Disclaimer";
 import { useAccount } from "wagmi";
+import { fuse } from "viem/chains";
+import { getNetwork, switchNetwork } from "wagmi/actions";
+import { hex } from "@/lib/helpers";
 
 const Home = () => {
-  const [{ connectedChain, chains }, switchChain] = useSetChain();
-  const [{ wallet }] = useConnectWallet();
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const contractSlice = useAppSelector(selectContractSlice);
@@ -59,13 +60,15 @@ const Home = () => {
   const [isExchange, setIsExchange] = useState(false);
   const [isDisabledChain, setIsDisabledChain] = useState(false);
   const [pendingPromise, setPendingPromise] = React.useState<any>();
-  const { address, connector, isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
+  const { chain } = getNetwork()
+
   useEffect(() => {
-    if (wallet?.accounts[0].address) {
-      dispatch(fetchBridgeTransactions(wallet?.accounts[0].address));
+    if (address) {
+      dispatch(fetchBridgeTransactions(address));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet?.accounts[0].address]);
+  }, [address]);
   const feeSlice = useAppSelector(selectFeeSlice);
   useEffect(() => {
     if (!contractSlice.isBridgeLoading) {
@@ -73,14 +76,14 @@ const Home = () => {
     }
   }, [contractSlice.isBridgeLoading]);
   const handleIncreaseAllowance = () => {
-    switchChain({
+
+    switchNetwork({
       chainId:
         selected === 0
-          ? "0x" +
-            appConfig.wrappedBridge.chains[
+          ? appConfig.wrappedBridge.chains[
               depositSelectedChainItem
-            ].chainId.toString(16)
-          : "0x7A",
+            ].chainId
+          : fuse.id,
     }).then((res) => {
       if (res && selected === 0)
         dispatch(
@@ -96,7 +99,7 @@ const Home = () => {
               appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
                 depositSelectedTokenItem
               ].decimals,
-            address: wallet?.accounts[0].address as string,
+            address: address ?? hex,
             type: 0,
             network:
               appConfig.wrappedBridge.chains[depositSelectedChainItem].name,
@@ -121,7 +124,7 @@ const Home = () => {
             decimals:
               appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
                 .decimals,
-            address: wallet?.accounts[0].address as string,
+            address: address ?? hex,
             type: 1,
             network: "Fuse",
             token:
@@ -136,12 +139,11 @@ const Home = () => {
   };
 
   const handleDeposit = () => {
-    switchChain({
+    switchNetwork({
       chainId:
-        "0x" +
         appConfig.wrappedBridge.chains[
           depositSelectedChainItem
-        ].chainId.toString(16),
+        ].chainId,
     }).then((res) => {
       if (res) {
         if (
@@ -154,7 +156,7 @@ const Home = () => {
         ) {
           dispatch(
             bridgeAndUnwrap({
-              address: wallet?.accounts[0].address as string,
+              address: address ?? hex,
               amount: amount,
               bridge:
                 appConfig.wrappedBridge.chains[depositSelectedChainItem]
@@ -187,7 +189,7 @@ const Home = () => {
         )
           dispatch(
             bridgeOriginalTokens({
-              address: wallet?.accounts[0].address as string,
+              address: address ?? hex,
               amount: amount,
               bridge:
                 appConfig.wrappedBridge.chains[depositSelectedChainItem]
@@ -221,8 +223,8 @@ const Home = () => {
   };
 
   const handleWithdraw = () => {
-    switchChain({
-      chainId: "0x7A",
+    switchNetwork({
+      chainId: fuse.id,
     }).then((res) => {
       if (res) {
         if (
@@ -235,7 +237,7 @@ const Home = () => {
         ) {
           dispatch(
             bridgeNativeTokens({
-              address: wallet?.accounts[0].address as string,
+              address: address ?? hex,
               amount: amount,
               bridge:
                 appConfig.wrappedBridge.chains[withdrawSelectedChainItem]
@@ -256,7 +258,7 @@ const Home = () => {
         } else
           dispatch(
             bridgeWrappedTokens({
-              address: wallet?.accounts[0].address as string,
+              address: address ?? hex,
               amount: amount,
               bridge: appConfig.wrappedBridge.fuse.wrapped,
               contractAddress:
@@ -335,7 +337,7 @@ const Home = () => {
                         dispatch(
                           setChain({
                             chainId: 122,
-                            icon: chains[0].icon as string,
+                            icon: fuseToken,
                             lzChainId: 138,
                             name: "Fuse",
                             rpcUrl: "https://rpc.fuse.io",
@@ -495,12 +497,12 @@ const Home = () => {
                 <Button
                   className="bg-fuse-black text-white px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
                   onClick={async () => {
-                    if (selected === 1 && connectedChain?.id !== "0x7a") {
-                      await switchChain({
-                        chainId: "0x7a",
+                    if (selected === 1 && chain?.id !== fuse.id) {
+                      await switchNetwork({
+                        chainId: fuse.id,
                       });
                     } else {
-                      if (!wallet) return;
+                      if (!isConnected) return;
                       if (!amount) return;
                       if (
                         selected === 1 &&
@@ -521,7 +523,7 @@ const Home = () => {
                     }
                   }}
                   disabled={
-                    (selected === 1 && connectedChain?.id === "0x7a") ||
+                    (selected === 1 && chain?.id === fuse.id) ||
                     selected === 0
                       ? balanceSlice.isApprovalLoading ||
                         contractSlice.isBridgeLoading ||
@@ -536,7 +538,7 @@ const Home = () => {
                     contractSlice.isBridgeLoading ||
                     contractSlice.isApprovalLoading
                       ? "Loading..."
-                      : selected === 1 && connectedChain?.id !== "0x7a"
+                      : selected === 1 && chain?.id !== fuse.id
                       ? "Switch To Fuse"
                       : selected === 1 &&
                         appConfig.wrappedBridge.chains[

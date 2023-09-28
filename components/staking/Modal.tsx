@@ -5,9 +5,10 @@ import search from "@/assets/search.svg";
 import { motion } from "framer-motion";
 import { eclipseAddress } from "@/lib/helpers";
 import copy from "@/assets/copy.svg";
+import { Address } from "abitype";
 
 interface ModalProps {
-  delegators?: Array<Array<string>> | undefined;
+  delegators?: [Address, string][] | undefined;
   isOpen: boolean;
   onToggle: (arg: boolean) => void;
   isLoading?: boolean;
@@ -19,7 +20,7 @@ const Modal = ({
   isLoading = false,
 }: ModalProps): JSX.Element => {
   const [delegatorsToDisplay, setDelegatorsToDisplay] = useState<
-    Array<Array<string>>
+    [Address, string][]
   >([]);
   useEffect(() => {
     window.addEventListener("click", (e) => {

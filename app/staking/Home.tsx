@@ -20,15 +20,16 @@ import {
     setReduxMyStakeFilter,
      setReduxSort 
 } from "@/store/searchSlice";
-import { useConnectWallet } from "@web3-onboard/react";
 import ValidatorsPane from "./ValidatorsPane";
 import SortBar from "@/components/staking/SortBar";
+import { useAccount } from "wagmi";
+import { hex } from "@/lib/helpers";
 
 
 const Home = () => {
-  const [{ wallet }] = useConnectWallet();
   const validatorSlice = useAppSelector(selectValidatorSlice);
   const SearchSlice = useAppSelector(selectSearchSlice);
+  const { address } = useAccount();
 
   const dispatch = useAppDispatch();
   useEffect(() => {
@@ -51,22 +52,22 @@ const Home = () => {
   }, [validatorSlice.validators]);
 
   useEffect(() => {
-    if (wallet && validatorSlice.validatorMetadata.length > 0) {
+    if (address && validatorSlice.validatorMetadata.length > 0) {
       dispatch(
         fetchSelfStake({
-          address: wallet.accounts[0].address,
+          address: address,
           validators: validatorSlice.validators,
         })
       );
-    } else if (!wallet && validatorSlice.validatorMetadata.length > 0) {
+    } else if (!address && validatorSlice.validatorMetadata.length > 0) {
       dispatch(
         fetchSelfStake({
-          address: "",
+          address: hex,
           validators: validatorSlice.validators,
         })
       );
     }
-  }, [wallet, validatorSlice.validatorMetadata.length]);
+  }, [address, validatorSlice.validatorMetadata.length]);
 
   const [filter, setFilter] = useState(SearchSlice);
 

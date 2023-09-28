@@ -1,4 +1,7 @@
-export const bridgeConfig = {
+import { hex } from "./helpers";
+import { BridgeConfigLike } from "./types";
+
+export const bridgeConfig: BridgeConfigLike = {
   version: 2,
   fuse: {
     chainId: 138,
@@ -114,7 +117,7 @@ export const bridgeConfig = {
         name: "FUSE",
         isBridged: false,
         isNative: true,
-        address: "",
+        address: hex,
       },
       {
         chainId: 109,

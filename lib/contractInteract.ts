@@ -2,6 +2,7 @@ import { Address, formatEther, formatUnits, parseEther } from 'viem'
 import { CONFIG } from './config'
 import { Consensus } from './abi/Consensus'
 import { getPublicClient, getWalletClient } from 'wagmi/actions'
+import { hex } from './helpers'
 
 const contractProperties = {
     address: CONFIG.consensusAddress,
@@ -68,7 +69,7 @@ export const fetchValidatorData = async (address: Address) => {
         functionName: "validatorFee",
         args: [address]
     })
-    let delegators: Array<Array<string>> = []
+    let delegators: [Address, string][] = []
     const delegatorsMap = await publicClient.readContract({
         ...contractProperties,
         functionName: "delegators",
@@ -87,7 +88,7 @@ export const fetchValidatorData = async (address: Address) => {
 
 export const getStake = async (address: Address, wallet: Address | undefined) => {
     let delegatedAmount = BigInt(0)
-    if (wallet) {
+    if (wallet && wallet !== hex) {
         const publicClient = getPublicClient()
         delegatedAmount = await publicClient.readContract({
             ...contractProperties,

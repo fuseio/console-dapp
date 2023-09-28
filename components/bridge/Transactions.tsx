@@ -8,9 +8,10 @@ import {
   selectTransactionsSlice,
 } from "@/store/transactionsSlice";
 import { useConnectWallet } from "@web3-onboard/react";
+import { Address } from "abitype";
 
 interface TransactionProps {
-  delegators?: Array<Array<string>> | undefined;
+  delegators?: [Address, string][] | undefined;
   isOpen: boolean;
   onToggle: (arg: boolean) => void;
   isLoading?: boolean;

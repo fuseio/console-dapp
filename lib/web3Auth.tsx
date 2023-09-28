@@ -11,6 +11,7 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { publicProvider } from "wagmi/providers/public";
 import { LedgerConnector } from "wagmi/connectors/ledger";
+import { hex } from "./helpers";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains([fuse, polygon, optimism, arbitrum], [publicProvider()]);
 
@@ -52,7 +53,7 @@ export const config = createConfig({
 export default function Web3AuthConnectorInstance(loginProvider: LOGIN_PROVIDER_TYPE, extraLoginOptions?: ExtraLoginOptions) {
   const chainConfig = {
     chainNamespace: CHAIN_NAMESPACES.EIP155,
-    chainId: "0x" + chains[0].id.toString(16),
+    chainId: hex + chains[0].id.toString(16),
     rpcTarget: chains[0].rpcUrls.default.http[0],
     displayName: chains[0].name,
     tickerName: chains[0].nativeCurrency?.name,

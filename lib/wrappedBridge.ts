@@ -5,6 +5,7 @@ import { serializeAdapterParams } from "@layerzerolabs/ui-evm";
 import { getPublicClient, getWalletClient } from "wagmi/actions";
 import { Address } from "abitype";
 import { createPublicClient, http, parseUnits } from "viem";
+import { hex } from "./helpers";
 
 const publicClient = (rpcUrl: string) => {
   return createPublicClient({
@@ -41,7 +42,7 @@ export const bridgeWrapped = async (
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
   const walletClient = await getWalletClient()
-  let tx: Address = "0x"
+  let tx: Address = hex
   if (walletClient) {
     tx = await walletClient.writeContract({
       address: bridgeAddress,
@@ -91,7 +92,7 @@ export const bridgeAndUnwrapNative = async (
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
   const walletClient = await getWalletClient()
-  let tx: Address = "0x"
+  let tx: Address = hex
   if (walletClient) {
     tx = await walletClient.writeContract({
       address: bridgeAddress,
