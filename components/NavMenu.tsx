@@ -33,7 +33,7 @@ const NavMenu = ({ menuItems = [], isOpen = false }: NavMenuProps) => {
     <AnimatePresence>
       {(isOpen || matches) && (
         <motion.div
-          className="items-center justify-between w-auto order-1 md:w-full md:absolute md:translate-y-8 md:left-0 md:top-1/2 md:bg-black absolute left-[50%] -translate-x-[50%]"
+          className="items-center justify-between w-auto order-1 md:w-full absolute md:translate-y-8 md:top-1/2 md:bg-black left-[50%] -translate-x-[50%]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
