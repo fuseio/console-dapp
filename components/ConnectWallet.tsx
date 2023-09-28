@@ -118,7 +118,7 @@ const ConnectWallet = ({
   ) : !disableAccountCenter && checkCorrectNetwork() ? (
     <div className="flex relative w-[410px] md:w-[90%] h-9 md:h-7">
       <div
-        className={`flex bg-white px-[10px] py-[6px] md:p-0 rounded cursor-pointer items-center relative text-xs md:text-[8px] font-medium border-[1px] justify-center w-[150px] md:w-[105px] ${
+        className={`flex bg-white px-[10px] py-[6px] md:p-0 rounded cursor-pointer items-center relative text-xs md:text-[8px] font-medium border-[1px] justify-center w-[150px] ${
           isChainOpen ? "border-fuse-green-light" : "border-white"
         }`}
         ref={chainRef}
@@ -143,14 +143,14 @@ const ConnectWallet = ({
         </div>
       </div>
       <div
-        className={`flex bg-white p-[2px] md:p-[1px] rounded cursor-pointer items-center relative font-medium border-[1px] ml-2 ${
+        className={`flex bg-white p-[2px] md:p-[1px] rounded cursor-pointer items-center relative font-medium border-[1px] ml-2 md:ml-1 ${
           isAccountsOpen ? "border-fuse-green-light" : "border-white"
         }`}
         ref={accountsRef}
         onClick={() => setIsAccountsOpen(!isAccountsOpen)}
       >
         <div className="flex w-full justify-center">
-          <div className="px-[12px] py-[7px] md:py-1 md:px-2 bg-modal-bg rounded text-xs/[16px] md:text-[8px] w-[120px] md:w-[100px] flex justify-center">
+          <div className="px-[12px] py-[7px] md:py-1 md:px-[2px] bg-modal-bg rounded text-xs/[16px] md:text-[8px] w-[120px] md:w-[100px] flex justify-center">
             {new Intl.NumberFormat().format(
               parseFloat(balance.data?.formatted || "0")
             )}{" "}
@@ -159,7 +159,7 @@ const ConnectWallet = ({
           <Image
             src={icons[chain?.id ?? 0]}
             alt={chain?.name ?? "Fuse"}
-            className="mx-2"
+            className="mx-2 md:mx-1"
             width={17}
             height={17}
           />
@@ -169,7 +169,7 @@ const ConnectWallet = ({
           <Image
             src={down.src}
             alt="down"
-            className={`mx-2 ${isAccountsOpen && "rotate-180"}`}
+            className={`ms-2 ${isAccountsOpen && "rotate-180"} md:ms-1`}
             width={10}
             height={10}
           />
@@ -257,7 +257,9 @@ const ConnectWallet = ({
             {chain?.id === c.id && (
               <>
                 <div className="h-[6px] w-[6px] rounded-full bg-[#66E070] ml-auto" />
-                <p className="text-[10px] md:text-[8px] font-medium ml-1">Connected</p>
+                <p className="text-[10px] md:text-[8px] font-medium ml-1">
+                  Connected
+                </p>
               </>
             )}
           </div>
