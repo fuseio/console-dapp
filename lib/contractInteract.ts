@@ -1,7 +1,7 @@
-import { Address, formatEther, formatUnits, parseEther } from 'viem'
+import { Address, createPublicClient, formatEther, formatUnits, http, parseEther } from 'viem'
 import { CONFIG } from './config'
 import { Consensus } from './abi/Consensus'
-import { getPublicClient, getWalletClient } from 'wagmi/actions'
+import { getWalletClient } from 'wagmi/actions'
 import { hex } from './helpers'
 
 const contractProperties = {
@@ -9,9 +9,14 @@ const contractProperties = {
     abi: Consensus,
 }
 
+const publicClient = () => {
+    return createPublicClient({
+      transport: http(CONFIG.fuseRPC)
+    })
+  }
+
 export const getTotalStakeAmount = async () => {
-    const publicClient = getPublicClient()
-    const totalStakeAmount = await publicClient.readContract({
+    const totalStakeAmount = await publicClient().readContract({
         ...contractProperties,
         functionName: "totalStakeAmount",
     })
@@ -19,8 +24,7 @@ export const getTotalStakeAmount = async () => {
 }
 
 export const getValidators = async () => {
-    const publicClient = getPublicClient()
-    const validatorsMap = await publicClient.readContract({
+    const validatorsMap = await publicClient().readContract({
         ...contractProperties,
         functionName: "getValidators",
     })
@@ -32,8 +36,7 @@ export const getValidators = async () => {
 }
 
 export const getJailedValidators = async () => {
-    const publicClient = getPublicClient()
-    const validatorsMap = await publicClient.readContract({
+    const validatorsMap = await publicClient().readContract({
         ...contractProperties,
         functionName: "jailedValidators",
     })
@@ -45,8 +48,7 @@ export const getJailedValidators = async () => {
 }
 
 export const getPendingValidators = async () => {
-    const publicClient = getPublicClient()
-    const validatorsMap = await publicClient.readContract({
+    const validatorsMap = await publicClient().readContract({
         ...contractProperties,
         functionName: "pendingValidators",
     })
@@ -58,19 +60,18 @@ export const getPendingValidators = async () => {
 }
 
 export const fetchValidatorData = async (address: Address) => {
-    const publicClient = getPublicClient()
-    const stakeAmount = await publicClient.readContract({
+    const stakeAmount = await publicClient().readContract({
         ...contractProperties,
         functionName: "stakeAmount",
         args: [address]
     })
-    const fee = await publicClient.readContract({
+    const fee = await publicClient().readContract({
         ...contractProperties,
         functionName: "validatorFee",
         args: [address]
     })
     let delegators: [Address, string][] = []
-    const delegatorsMap = await publicClient.readContract({
+    const delegatorsMap = await publicClient().readContract({
         ...contractProperties,
         functionName: "delegators",
         args: [address]
@@ -89,8 +90,7 @@ export const fetchValidatorData = async (address: Address) => {
 export const getStake = async (address: Address, wallet: Address | undefined) => {
     let delegatedAmount = BigInt(0)
     if (wallet && wallet !== hex) {
-        const publicClient = getPublicClient()
-        delegatedAmount = await publicClient.readContract({
+        delegatedAmount = await publicClient().readContract({
             ...contractProperties,
             functionName: "delegatedAmount",
             args: [wallet, address]
@@ -125,8 +125,7 @@ export const withdraw = async (amount: string, validator: Address) => {
 }
 
 export const getDelegatedAmount = async (delegator: Address, validator: Address) => {
-    const publicClient = getPublicClient()
-    const delegatedAmount = await publicClient.readContract({
+    const delegatedAmount = await publicClient().readContract({
         ...contractProperties,
         functionName: "delegatedAmount",
         args: [delegator, validator]
@@ -135,8 +134,7 @@ export const getDelegatedAmount = async (delegator: Address, validator: Address)
 }
 
 export const getMaxStake = async () => {
-    const publicClient = getPublicClient()
-    const maxStake = await publicClient.readContract({
+    const maxStake = await publicClient().readContract({
         ...contractProperties,
         functionName: "getMaxStake",
     })
@@ -144,8 +142,7 @@ export const getMaxStake = async () => {
 }
 
 export const getMinStake = async () => {
-    const publicClient = getPublicClient()
-    const minStake = await publicClient.readContract({
+    const minStake = await publicClient().readContract({
         ...contractProperties,
         functionName: "getMinStake",
     })

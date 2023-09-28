@@ -7,6 +7,7 @@ const publicClient = (rpcUrl: string) => {
     transport: http(rpcUrl)
   })
 }
+
 export const getERC20Balance = async (
   contractAddress: Address,
   address: Address,
