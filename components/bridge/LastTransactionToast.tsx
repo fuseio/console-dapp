@@ -19,7 +19,7 @@ const LastTransactionToast = () => {
         <img src={historyPurple.src} alt="history" className="h-6 w-[5%]" />
         <div className="flex flex-col w-[95%] ml-3">
           <div className="flex items-center justify-between">
-            <p className="font-bold">Your last transaction</p>
+            <p className="font-bold md:text-sm">Your last transaction</p>
             <img
               src={dismiss.src}
               alt="dismiss"
@@ -29,9 +29,9 @@ const LastTransactionToast = () => {
               }}
             />
           </div>
-          <div className="flex text-sm text-secondary-gray mt-3">
+          <div className="flex text-sm md:text-xs text-secondary-gray mt-3">
             <div className="flex flex-col w-2/5">
-              <p className="text-sm text-secondary-gray">From</p>
+              <p className="text-sm md:text-xs text-secondary-gray">From</p>
               <div className="flex font-medium mt-1 text-black">
                 <span>
                   {

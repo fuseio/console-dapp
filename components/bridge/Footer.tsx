@@ -11,12 +11,6 @@ const Footer = () => {
           <img src={lzlogo.src} alt="logo" className="ml-2 h-6" />
         </a>
       </div>
-      <div className="flex justify-start items-center ml-6">
-        <span className="font-medium text-sm">Monitoring by</span>
-        <a href="https://www.ironblocks.com/" target="_blank" rel="noreferrer">
-          <img src={ironblocks.src} alt="logo" className="ml-2 h-4" />
-        </a>
-      </div>
     </footer>
   );
 };

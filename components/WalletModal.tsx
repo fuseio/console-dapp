@@ -99,7 +99,7 @@ const WalletModal = (): JSX.Element => {
               transition={{
                 duration: 0.3,
               }}
-              className="bg-white h-[504px] w-[396px] max-w-[95%] z-50 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-lg p-5 items-center flex flex-col"
+              className="bg-white min-h-[504px] w-[396px] max-w-[95%] z-50 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-lg p-5 items-center flex flex-col"
             >
               <span className="flex w-full justify-between items-start">
                 <p className="text-[20px] font-bold">Connect Wallet</p>

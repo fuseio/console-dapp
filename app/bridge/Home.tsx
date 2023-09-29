@@ -285,10 +285,10 @@ const Home = () => {
   return (
     <>
       <Transactions isOpen={isOpen} onToggle={setIsOpen} />
-      <div className="w-8/9 flex md:w-9/10 main relative max-w-7xl">
-        <div className="flex flex-col pt-14 w-2/3 me-[100px]">
+      <div className="w-8/9 flex md:w-9/10 main relative max-w-7xl md:flex-col">
+        <div className="flex flex-col pt-14 w-2/3 me-[100px] md:w-full">
           <span className="flex items-center">
-            <h1 className="font-black text-4xl">Bridge</h1>
+            <h1 className="font-black text-4xl md:text-[32px] ">Bridge</h1>
             <Pill
               text="Beta"
               type="success"
@@ -300,9 +300,9 @@ const Home = () => {
             centralized exchanges to Fuse.
           </p>
           <Disclaimer />
-          <ToastPane />
+          <ToastPane className="md:hidden" />
         </div>
-        <div className="flex-col items-center flex pt-14">
+        <div className="flex-col items-center flex pt-14 md:w-full md:pt-0 md:mt-3">
           <span
             className="flex bg-white ms-auto px-2 items-center rounded-md cursor-pointer"
             onClick={() => {
@@ -310,17 +310,17 @@ const Home = () => {
             }}
           >
             <img src={history.src} alt="history" className="h-9" />
-            <p className="font-medium ml-1 text-sm">History</p>
+            <p className="font-medium ml-1 text-sm md:text-xs">History</p>
           </span>
-          <motion.div className="flex bg-white w-[525px] mt-3 rounded-lg px-8 pt-8 pb-9 flex-col">
+          <motion.div className="flex bg-white w-[525px] mt-3 rounded-lg px-8 pt-8 pb-9 flex-col max-w-full md:p-5">
             <div className="flex w-full bg-modal-bg rounded-md p-[2px]">
               {filters.map((filter, index) => {
                 return (
                   <motion.p
                     className={
                       selected === index
-                        ? "text-primary font-semibold py-2 rounded-md cursor-pointer w-1/2 bg-white text-center text-sm"
-                        : "text-primary font-medium py-2 cursor-pointer w-1/2 text-center text-sm"
+                        ? "text-primary font-semibold py-2 rounded-md cursor-pointer w-1/2 bg-white text-center text-sm md:text-xs"
+                        : "text-primary font-medium py-2 cursor-pointer w-1/2 text-center text-sm md:text-xs"
                     }
                     onClick={() => {
                       setSelected(index);
@@ -453,7 +453,7 @@ const Home = () => {
               />
             )}
             {!isConnected && displayButton ? (
-              <ConnectWallet className="mt-6 py-4 " disableAccountCenter />
+              <ConnectWallet className="mt-6 py-4 w-full" disableAccountCenter />
             ) : displayButton &&
               selected === 1 &&
               !appConfig.wrappedBridge.chains[withdrawSelectedChainItem].tokens[
@@ -552,7 +552,7 @@ const Home = () => {
               )
             )}
           </motion.div>
-          <motion.div className="flex bg-white w-[525px] mt-2 rounded-lg px-8 py-5 flex-col font-medium text-sm">
+          <motion.div className="flex bg-white w-[525px] mt-2 rounded-lg px-8 py-5 flex-col font-medium text-sm max-w-full md:text-xs">
             <div className="flex justify-between">
               <span className="text-black/50">Bridge Fee</span>
               <span>Free</span>
@@ -585,6 +585,7 @@ const Home = () => {
               <span>0.5 Min - 10,000 max</span>
             </div>
           </motion.div>
+          <ToastPane className="" />
           <Footer />
         </div>
       </div>
