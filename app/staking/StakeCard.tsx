@@ -7,10 +7,12 @@ import {
   selectMinStake,
   selectValidatorSlice,
 } from "@/store/validatorSlice";
-import { useConnectWallet } from "@web3-onboard/react";
 import { useAppSelector } from "@/store/store";
 import info from "@/assets/info-black.svg";
 import ConnectWallet from "@/components/ConnectWallet";
+import { fetchBalance } from '@wagmi/core';
+import { useAccount } from "wagmi";
+import { fuse } from "viem/chains";
 
 type StakeCardProps = {
   className?: string;
@@ -41,6 +43,7 @@ const StakeCard = ({
   const [cardMode, setCardMode] = React.useState(closed ? 1 : 0);
   const maxStake = useAppSelector(selectMaxStake);
   const minStake = useAppSelector(selectMinStake);
+  const { address, isConnected } = useAccount();
 
   useEffect(() => {
     if (closed) {
@@ -54,15 +57,19 @@ const StakeCard = ({
     if (closed) return;
     setCardMode(mode);
   };
-  const [{ wallet }] = useConnectWallet();
-  const [balance, setBalance] = React.useState<number>(0.0);
+  const [balance, setBalance] = React.useState<string>("0.0");
   useEffect(() => {
-    // @ts-ignore
-    if (wallet?.accounts[0].balance) {
-      // @ts-ignore
-      setBalance(wallet?.accounts[0].balance["Fuse"]);
+    async function updateBalance() {
+      if(address) {
+        const balance = await fetchBalance({
+          address,
+          chainId: fuse.id,
+        })
+        setBalance(balance.formatted)
+      }
     }
-  }, [wallet?.accounts[0].balance]);
+    updateBalance();
+  }, [address]);
 
   const getPredictedReward = (amt: number) => {
     if (validator) {
@@ -159,7 +166,7 @@ const StakeCard = ({
         {cardMode === 0 && (
           <p className="text-xs text-text-gray">
             Available Balance:{" "}
-            {wallet ? new Intl.NumberFormat().format(balance) : "0"} Fuse
+            {isConnected ? new Intl.NumberFormat().format(parseFloat(balance)) : "0"} Fuse
           </p>
         )}
       </div>
@@ -183,8 +190,8 @@ const StakeCard = ({
               padding="px-[8px] py-[6px] "
               onClick={() => {
                 if (cardMode === 0) {
-                  if (balance < 0.1) return;
-                  setAmount((balance - 0.1).toString());
+                  if (parseFloat(balance) < 0.1) return;
+                  setAmount((parseFloat(balance) - 0.1).toString());
                 } else {
                   setAmount(validator?.selfStakeAmount as string);
                 }
@@ -270,7 +277,7 @@ const StakeCard = ({
           <span className="ms-2 px-11 py-1 bg-dark-gray rounded-lg animate-pulse" />
         )}
       </div>
-      {wallet ? (
+      {isConnected ? (
         <Button
           text={
             isLoading
@@ -293,7 +300,7 @@ const StakeCard = ({
               parseFloat(maxStake))
           }
           onClick={() => {
-            if (!wallet) return;
+            if (!isConnected) return;
             if (!validator) return;
             if (getAmount() === 0) return;
             if (cardMode === 0) {

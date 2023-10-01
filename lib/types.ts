@@ -1,3 +1,4 @@
+import { Address } from "abitype";
 import { disabledChains } from "./disabledChains";
 
 export interface ChainConfigLike {
@@ -72,19 +73,19 @@ export interface BridgeConfigLike {
   version: number;
   original: {
     chainId: number;
-    address: string;
+    address: Address;
   }[];
   wrapped: {
     chainId: number;
-    address: string;
+    address: Address;
   }[];
   originalFuse: {
     chainId: number;
-    address: string;
+    address: Address;
   }[];
   fuse: {
     chainId: number;
-    wrapped: string;
+    wrapped: Address;
   };
   tokens: TokenStateType[][];
 }
@@ -93,7 +94,7 @@ interface TokenStateType {
   decimals: number;
   symbol: string;
   name: string;
-  address: string;
+  address: Address;
   isNative: boolean;
   isBridged: boolean;
 }
@@ -101,12 +102,12 @@ interface WrappedBridgeConfig {
   version: number;
   fuse: {
     lzChainId: number;
-    wrapped: string;
+    wrapped: Address;
     tokens: {
       decimals: number;
       symbol: string;
       name: string;
-      address: string;
+      address: Address;
       icon: string;
       coinGeckoId: string;
     }[];
@@ -117,15 +118,15 @@ interface WrappedBridgeConfig {
     chainId: number;
     name: string;
     icon: string;
-    original: string;
-    wrapped: string;
-    originalFuse: string;
+    original: Address;
+    wrapped: Address;
+    originalFuse: Address;
     rpcUrl: string;
     tokens: {
       decimals: number;
       symbol: string;
       name: string;
-      address: string;
+      address: Address;
       icon: string;
       isNative: boolean;
       isBridged: boolean;
@@ -147,7 +148,7 @@ export const createAppConfig = (
     decimals: number;
     symbol: string;
     name: string;
-    address: string;
+    address: Address;
     icon: string;
     coinGeckoId: string;
   }[] = [];
@@ -179,7 +180,7 @@ export const createAppConfig = (
           decimals: number;
           symbol: string;
           name: string;
-          address: string;
+          address: Address;
           icon: string;
           isNative: boolean;
           isBridged: boolean;
@@ -211,13 +212,13 @@ export const createAppConfig = (
           icon: chain.icon,
           original: bridgeConfig.original.find(
             (bridge) => bridge.chainId === chain.lzChainId
-          )?.address as string,
+          )?.address as Address,
           wrapped: bridgeConfig.wrapped.find(
             (bridge) => bridge.chainId === chain.lzChainId
-          )?.address as string,
+          )?.address as Address,
           originalFuse: bridgeConfig.originalFuse.find(
             (bridge) => bridge.chainId === chain.lzChainId
-          )?.address as string,
+          )?.address as Address,
           tokens: tokens,
           rpcUrl: chain.rpc,
         };

@@ -2,17 +2,19 @@ import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import warning from "@/assets/warning.svg";
 import Button from "@/components/ui/Button";
-import { useConnectWallet, useSetChain } from "@web3-onboard/react";
+import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
+import { fuse } from "viem/chains";
 
 const ChainModal = (): JSX.Element => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [{ connectedChain }, setChain] = useSetChain();
-  const [{ wallet }] = useConnectWallet();
+  const { switchNetwork } = useSwitchNetwork()
+  const { isConnected } = useAccount();
+  const { chain } = useNetwork();
 
   useEffect(() => {
-    if (wallet && connectedChain?.id !== "0x7a") setIsOpen(true);
+    if (isConnected && chain?.id !== fuse.id) setIsOpen(true);
     else setIsOpen(false);
-  }, [connectedChain, wallet]);
+  }, [chain, isConnected]);
 
   return (
     <>
@@ -44,9 +46,7 @@ const ChainModal = (): JSX.Element => {
                 className="bg-black font-medium text-white rounded-full w-full"
                 padding="py-3"
                 onClick={() => {
-                  setChain({
-                    chainId: "0x7a",
-                  })
+                  switchNetwork && switchNetwork(fuse.id)
                 }}
               />
             </div>

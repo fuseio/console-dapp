@@ -1,4 +1,6 @@
-export const OriginalTokenBridgeAbi = [
+import { narrow } from 'abitype'
+
+export const OriginalTokenBridgeAbi = narrow([
   {
     inputs: [
       {
@@ -1065,4 +1067,4 @@ export const OriginalTokenBridgeAbi = [
     stateMutability: "payable",
     type: "receive",
   },
-];
+]);

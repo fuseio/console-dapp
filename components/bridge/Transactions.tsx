@@ -7,10 +7,11 @@ import {
   fetchBridgeTransactions,
   selectTransactionsSlice,
 } from "@/store/transactionsSlice";
-import { useConnectWallet } from "@web3-onboard/react";
+import { Address } from "abitype";
+import { useAccount } from "wagmi";
 
 interface TransactionProps {
-  delegators?: Array<Array<string>> | undefined;
+  delegators?: [Address, string][] | undefined;
   isOpen: boolean;
   onToggle: (arg: boolean) => void;
   isLoading?: boolean;
@@ -21,8 +22,9 @@ const Transactions = ({
   onToggle,
   isLoading = false,
 }: TransactionProps): JSX.Element => {
-  const [{ wallet }] = useConnectWallet();
   const dispatch = useAppDispatch();
+  const { address } = useAccount();
+
   useEffect(() => {
     window.addEventListener("click", (e) => {
       if ((e.target as HTMLElement).id === "modal-bg") {
@@ -32,11 +34,10 @@ const Transactions = ({
   }, [onToggle]);
   const transactionsSlice = useAppSelector(selectTransactionsSlice);
   useEffect(() => {
-    if (wallet?.accounts[0].address && isOpen) {
-      dispatch(fetchBridgeTransactions(wallet?.accounts[0].address));
+    if (address && isOpen) {
+      dispatch(fetchBridgeTransactions(address));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet?.accounts[0].address, isOpen]);
+  }, [address, isOpen]);
   return (
     <AnimatePresence>
       {isOpen && (

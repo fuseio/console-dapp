@@ -1,53 +1,56 @@
-import { Signer, ethers } from "ethers";
 import { ERC20ABI } from "@/lib/abi/ERC20";
-import { web3OnboardProvider } from "./provider";
+import { Address, createPublicClient, http, parseUnits } from "viem";
+import { getWalletClient } from "wagmi/actions";
 
-const getERC20Contract = (
-  address: string,
-  signerOrProvider: Signer | ethers.providers.Provider | undefined
-) => {
-  const contract = new ethers.Contract(address, ERC20ABI, signerOrProvider);
-  return contract;
-};
-
-const getERC20ContractWithoutSigner = (address: string, rpcUrl: string) => {
-  const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-  const contract = new ethers.Contract(address, ERC20ABI, provider);
-  return contract;
-};
+const publicClient = (rpcUrl: string) => {
+  return createPublicClient({
+    transport: http(rpcUrl)
+  })
+}
 
 export const getERC20Balance = async (
-  contractAddress: string,
-  address: string,
+  contractAddress: Address,
+  address: Address,
   rpcUrl: string
 ) => {
-  const contract = getERC20ContractWithoutSigner(contractAddress, rpcUrl);
-  const balance = await contract.balanceOf(address);
+  const balance = await publicClient(rpcUrl).readContract({
+    address: contractAddress,
+    abi: ERC20ABI,
+    functionName: "balanceOf",
+    args: [address]
+  })
   return balance;
 };
 
 export const getERC20Allowance = async (
-  contractAddress: string,
-  address: string,
-  spender: string,
+  contractAddress: Address,
+  address: Address,
+  spender: Address,
   rpcUrl: string
 ) => {
-  const contract = getERC20ContractWithoutSigner(contractAddress, rpcUrl);
-  const allowance = await contract.allowance(address, spender);
+  const allowance = await publicClient(rpcUrl).readContract({
+    address: contractAddress,
+    abi: ERC20ABI,
+    functionName: "allowance",
+    args: [address, spender]
+  })
   return allowance;
 };
 
 export const approveSpend = async (
-  address: string,
-  spender: string,
+  address: Address,
+  spender: Address,
   amount: string,
   decimals: number = 18
 ) => {
-  const contract = getERC20Contract(address, web3OnboardProvider);
-  const tx = await contract.approve(
-    spender,
-    ethers.utils.parseUnits(amount, decimals)
-  );
-  await tx.wait();
-  return tx.hash;
+  const walletClient = await getWalletClient()
+  if (walletClient) {
+    const tx = await walletClient.writeContract({
+      address,
+      abi: ERC20ABI,
+      functionName: 'approve',
+      args: [spender, parseUnits(amount, decimals)],
+    })
+    return tx
+  }
 };

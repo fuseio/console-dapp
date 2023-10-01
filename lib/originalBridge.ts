@@ -1,105 +1,131 @@
-import { Signer, ethers } from "ethers";
+import { ethers } from "ethers";
 import { OriginalTokenBridgeAbi } from "@/lib/abi/OriginalTokenBridge";
-import { web3OnboardProvider } from "./provider";
 import { AdapterParams } from "@layerzerolabs/ui-core";
 import { serializeAdapterParams } from "@layerzerolabs/ui-evm";
+import { getPublicClient, getWalletClient } from "wagmi/actions";
+import { Address } from "abitype";
+import { createPublicClient, http, parseEther, parseUnits } from "viem";
+import { hex } from "./helpers";
 
-const getOriginalTokenBridge = (
-  contractAddress: string,
-  signerOrProvider: Signer | ethers.providers.Provider | undefined
-) => {
-  const contract = new ethers.Contract(
-    contractAddress,
-    OriginalTokenBridgeAbi,
-    signerOrProvider
-  );
-  return contract;
-};
+const publicClient = (rpcUrl: string) => {
+  return createPublicClient({
+    transport: http(rpcUrl)
+  })
+}
 
 export const bridgeOriginal = async (
-  bridgeAddress: string,
-  address: string,
-  tokenAddres: string,
+  bridgeAddress: Address,
+  address: Address,
+  tokenAddres: Address,
   amount: string,
   decimals: number,
   dstChainId: number
 ) => {
-  const contract = getOriginalTokenBridge(bridgeAddress, web3OnboardProvider);
-  const dstGasLimit = await contract.minDstGasLookup(dstChainId, 0);
+  const publicClient = getPublicClient()
+  const dstGasLimit = await publicClient.readContract({
+    address: bridgeAddress,
+    abi: OriginalTokenBridgeAbi,
+    functionName: "minDstGasLookup",
+    args: [dstChainId, 0]
+  })
   const adapterParams = AdapterParams.forV1(Number(dstGasLimit));
-  const nativeFee = (
-    await contract.estimateBridgeFee(
-      false,
-      serializeAdapterParams(adapterParams)
-    )
-  ).nativeFee;
+  const nativeFee = (await publicClient.readContract({
+    address: bridgeAddress,
+    abi: OriginalTokenBridgeAbi,
+    functionName: "estimateBridgeFee",
+    args: [false, serializeAdapterParams(adapterParams) as Address]
+  }))[0]
   const increasedNativeFee = (Number(nativeFee) * 1.2).toFixed(0)
-  const amt = ethers.utils.parseUnits(amount, decimals);
+  const amt = parseUnits(amount, decimals);
   const callParams = {
     refundAddress: address,
-    zroPaymentAddress: ethers.constants.AddressZero,
+    zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const tx = await contract.bridge(
-    tokenAddres,
-    amt,
-    address,
-    callParams,
-    serializeAdapterParams(adapterParams),
-    { value: increasedNativeFee }
-  );
-  await tx.wait();
-  return tx.hash;
+  const walletClient = await getWalletClient()
+  let tx: Address = hex;
+  if (walletClient) {
+    tx = await walletClient.writeContract({
+      address: bridgeAddress,
+      abi: OriginalTokenBridgeAbi,
+      functionName: 'bridge',
+      args: [
+        tokenAddres,
+        amt,
+        address,
+        callParams,
+        serializeAdapterParams(adapterParams) as Address
+      ],
+      value: BigInt(increasedNativeFee)
+    })
+  }
+  return tx
 };
 
 export const bridgeNative = async (
-  bridgeAddress: string,
-  address: string,
+  bridgeAddress: Address,
+  address: Address,
   amount: string,
   decimals: number,
   dstChainId: number
 ) => {
-  const contract = getOriginalTokenBridge(bridgeAddress, web3OnboardProvider);
-  const dstGasLimit = await contract.minDstGasLookup(dstChainId, 0);
+  const publicClient = getPublicClient()
+  const dstGasLimit = await publicClient.readContract({
+    address: bridgeAddress,
+    abi: OriginalTokenBridgeAbi,
+    functionName: "minDstGasLookup",
+    args: [dstChainId, 0]
+  })
   const adapterParams = AdapterParams.forV1(Number(dstGasLimit));
-  const nativeFee = (
-    await contract.estimateBridgeFee(
-      false,
-      serializeAdapterParams(adapterParams)
-    )
-  ).nativeFee;
+  const nativeFee = (await publicClient.readContract({
+    address: bridgeAddress,
+    abi: OriginalTokenBridgeAbi,
+    functionName: "estimateBridgeFee",
+    args: [false, serializeAdapterParams(adapterParams) as Address]
+  }))[0]
   const increasedNativeFee = (Number(nativeFee) * 1.2).toFixed(0);
-  const amt = ethers.utils.parseEther(amount);
+  const amt = parseEther(amount);
   const callParams = {
     refundAddress: address,
-    zroPaymentAddress: ethers.constants.AddressZero,
+    zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const tx = await contract.bridgeNative(
-    amt,
-    address,
-    callParams,
-    serializeAdapterParams(adapterParams),
-    { value: amt.add(increasedNativeFee) }
-  );
-  await tx.wait();
-  return tx.hash;
+  const walletClient = await getWalletClient()
+  let tx: Address = hex;
+  if (walletClient) {
+    tx = await walletClient.writeContract({
+      address: bridgeAddress,
+      abi: OriginalTokenBridgeAbi,
+      functionName: 'bridgeNative',
+      args: [
+        amt,
+        address,
+        callParams,
+        serializeAdapterParams(adapterParams) as Address
+      ],
+      value: amt + BigInt(increasedNativeFee)
+    })
+  }
+  return tx
 };
 
 export const estimateOriginalNativeFee = async (
-  bridgeAddress: string,
+  bridgeAddress: Address,
   rpcUrl: string
 ) => {
-  let provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-  const contract = getOriginalTokenBridge(bridgeAddress, provider);
-  const dstGasLimit = await contract.minDstGasLookup(138, 0);
+  const dstGasLimit = await publicClient(rpcUrl).readContract({
+    address: bridgeAddress,
+    abi: OriginalTokenBridgeAbi,
+    functionName: "minDstGasLookup",
+    args: [138, 0]
+  })
   const adapterParams = AdapterParams.forV1(Number(dstGasLimit));
-  const nativeFee = parseInt(
-    (
-      await contract.estimateBridgeFee(
-        false,
-        serializeAdapterParams(adapterParams)
-      )
-    ).nativeFee
-  );
+  const nativeFee = (
+    await publicClient(rpcUrl).readContract({
+      address: bridgeAddress,
+      abi: OriginalTokenBridgeAbi,
+      functionName: "estimateBridgeFee",
+      args: [false, serializeAdapterParams(adapterParams) as Address]
+    })
+  )[0]
   const increasedNativeFee = (Number(nativeFee) * 1.2).toFixed(0);
   return increasedNativeFee;
 };

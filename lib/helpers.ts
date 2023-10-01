@@ -40,3 +40,5 @@ export const insertTransactionToLocalStorage = (
   transactions = [transaction, ...transactions];
   localStorage.setItem("transactions", JSON.stringify(transactions));
 };
+
+export const hex = "0x";
