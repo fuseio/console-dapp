@@ -18,10 +18,10 @@ import {
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import { eclipseAddress } from "@/lib/helpers";
 import { arbitrum, polygon, fuse, optimism } from "wagmi/chains";
-import fuseIcon from "@/assets/fuse-icon.svg"
-import polygonIcon from "@/assets/polygon-icon.svg"
-import optimismIcon from "@/assets/optimism-icon.svg"
-import arbitrumIcon from "@/assets/arbitrum-icon.svg"
+import fuseIcon from "@/assets/fuse-icon.svg";
+import polygonIcon from "@/assets/polygon-icon.svg";
+import optimismIcon from "@/assets/optimism-icon.svg";
+import arbitrumIcon from "@/assets/arbitrum-icon.svg";
 
 const menu: Variants = {
   closed: {
@@ -47,15 +47,15 @@ const menu: Variants = {
 };
 
 type Icons = {
-  [key: string]: string | StaticImageData
-}
+  [key: string]: string | StaticImageData;
+};
 
 const icons: Icons = {
   [fuse.id]: fuseIcon,
   [polygon.id]: polygonIcon,
   [optimism.id]: optimismIcon,
   [arbitrum.id]: arbitrumIcon,
-}
+};
 
 const ConnectWallet = ({
   disableAccountCenter = false,
@@ -104,20 +104,23 @@ const ConnectWallet = ({
   }, [connector, chain]);
 
   return !isConnected ? (
-    <button
-      className={
-        "bg-fuse-black text-white px-4 py-2 rounded-full font-medium md:text-sm " +
-        className
-      }
-      onClick={() => dispatch(setIsWalletModalOpen(true))}
-    >
-      Connect Wallet
-    </button>
+    <div className="flex min-w-[410px] justify-end">
+      <button
+        className={
+          "bg-fuse-black text-white px-4 py-2 rounded-full font-medium md:text-sm " +
+          className
+        }
+        onClick={() => dispatch(setIsWalletModalOpen(true))}
+      >
+        Connect Wallet
+      </button>
+    </div>
   ) : !disableAccountCenter && checkCorrectNetwork() ? (
-    <div className="flex relative min-w-[330px]">
+    <div className="flex relative min-w-[410px]">
       <div
-        className={`flex bg-white px-[10px] py-[6px] rounded cursor-pointer items-center relative text-[10px] font-medium border-[1px] justify-center min-w-[140px] ${isChainOpen ? "border-fuse-green-light" : "border-white"
-          }`}
+        className={`flex bg-white px-[10px] py-[6px] rounded cursor-pointer items-center relative text-xs font-medium border-[1px] justify-center min-w-[150px] ${
+          isChainOpen ? "border-fuse-green-light" : "border-white"
+        }`}
         ref={chainRef}
         onClick={() => setIsChainOpen(!isChainOpen)}
       >
@@ -129,7 +132,7 @@ const ConnectWallet = ({
             width={17}
             height={17}
           />
-          <p className="text-[10px]/[20px]">{chain?.name}</p>
+          <p className="text-xs/5">{chain?.name}</p>
           <Image
             src={down.src}
             alt="down"
@@ -140,13 +143,14 @@ const ConnectWallet = ({
         </div>
       </div>
       <div
-        className={`flex bg-white p-[2px] rounded cursor-pointer items-center relative font-medium border-[1px] ml-2 ${isAccountsOpen ? "border-fuse-green-light" : "border-white"
-          }`}
+        className={`flex bg-white p-[2px] rounded cursor-pointer items-center relative font-medium border-[1px] ml-2 ${
+          isAccountsOpen ? "border-fuse-green-light" : "border-white"
+        }`}
         ref={accountsRef}
         onClick={() => setIsAccountsOpen(!isAccountsOpen)}
       >
         <div className="flex w-full justify-center">
-          <div className="h-full px-[10px] py-[7px] bg-modal-bg rounded text-[10px]/[17px] min-w-[100px] flex justify-center">
+          <div className="h-full px-[12px] py-[7px] bg-modal-bg rounded text-xs/[16px] min-w-[100px] flex justify-center">
             {new Intl.NumberFormat().format(
               parseFloat(balance.data?.formatted || "0")
             )}{" "}
@@ -159,9 +163,7 @@ const ConnectWallet = ({
             width={17}
             height={17}
           />
-          <p className="text-[10px]/[30px]">
-            {eclipseAddress(String(address))}
-          </p>
+          <p className="text-xs/[30px]">{eclipseAddress(String(address))}</p>
           <Image
             src={down.src}
             alt="down"
@@ -175,7 +177,7 @@ const ConnectWallet = ({
           initial="closed"
           exit="closed"
           variants={menu}
-          className="absolute top-[120%] left-0 bg-white rounded shadow-xl p-[6px] z-50 w-full text-[10px]/[20px] font-medium"
+          className="absolute top-[120%] left-0 bg-white rounded shadow-xl p-[6px] z-50 w-full text-xs font-medium"
         >
           <div className="flex items-center px-[6px] rounded">
             <Image
@@ -186,10 +188,12 @@ const ConnectWallet = ({
               height={15}
             />
             <p>
-              {parseFloat(balance.data?.formatted || "0").toFixed(6)}{" "}
+              {parseFloat(balance.data?.formatted || "0").toFixed(4)}{" "}
               {balance.data?.symbol}
             </p>
-            <p className="ml-auto">{eclipseAddress(String(address))}</p>
+            <p className="ml-auto text-[10px]">
+              {eclipseAddress(String(address))}
+            </p>
           </div>
           <div
             className="bg-modal-bg w-full rounded px-[9px] py-[7px] flex"
@@ -226,7 +230,7 @@ const ConnectWallet = ({
         initial="closed"
         exit="closed"
         variants={menu}
-        className="absolute top-[120%] bg-white rounded shadow-xl p-[6px] z-50 text-[10px]/[20px] font-medium min-w-[192px]"
+        className="absolute top-[120%] bg-white rounded shadow-xl p-[6px] z-50 text-xs font-medium min-w-[230px]"
       >
         {chains.map((c) => (
           <div
@@ -251,7 +255,7 @@ const ConnectWallet = ({
             {chain?.id === c.id && (
               <>
                 <div className="h-[6px] w-[6px] rounded-full bg-[#66E070] ml-auto" />
-                <p className="text-[8px] font-medium ml-1">Connected</p>
+                <p className="text-[10px] font-medium ml-1">Connected</p>
               </>
             )}
           </div>
@@ -259,14 +263,14 @@ const ConnectWallet = ({
       </motion.div>
     </div>
   ) : !disableAccountCenter ? (
-    <div className="flex relative min-w-[330px] justify-end">
+    <div className="flex relative min-w-[410px] justify-end">
       <div
-        className="flex bg-[#FD0F0F] text-white px-[10px] py-[6px] rounded cursor-pointer items-center relative text-[10px] font-medium justify-center"
+        className="flex bg-[#FD0F0F] text-white px-[10px] py-[6px] rounded cursor-pointer items-center relative text-xs font-medium justify-center"
         ref={wrongNetworkRef}
         onClick={() => setIsWrongNetwoksOpen(!isWrongNetwoksOpen)}
       >
         <div className="flex w-full justify-center">
-          <p className="text-[10px]/[20px]">Wrong Network</p>
+          <p className="text-xs/5">Wrong Network</p>
           <Image
             src={downWhite.src}
             alt="down"
@@ -281,11 +285,11 @@ const ConnectWallet = ({
         initial="closed"
         exit="closed"
         variants={menu}
-        className="absolute top-[120%] bg-white rounded shadow-xl z-50 text-[10px]/[20px] font-medium w-[192px]"
+        className="absolute top-[120%] bg-white rounded shadow-xl z-50 text-xs/5 font-medium w-[192px]"
       >
         <div className="flex px-[12px] pt-[12px] pb-[6px] flex-col w-full border-b-[1px] border-lighter-blue mb-[6px]">
           <p className="font-bold text-xs">Switch Network</p>
-          <p className="text-[10px]/[15px] font-normal text-text-heading-gray mt-1">
+          <p className="text-xs/[15px] font-normal text-text-heading-gray mt-1">
             Wrong network detected, switch or disconnect to continue
           </p>
         </div>
