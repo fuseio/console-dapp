@@ -33,13 +33,13 @@ const NavMenu = ({ menuItems = [], isOpen = false }: NavMenuProps) => {
     <AnimatePresence>
       {(isOpen || matches) && (
         <motion.div
-          className="items-center justify-between w-auto order-1 md:w-full md:absolute md:translate-y-8 md:left-0 md:top-1/2 md:bg-black absolute left-[50%] -translate-x-[50%]"
+          className="items-center justify-between w-auto order-1 md:w-full absolute md:translate-y-8 md:top-1/2 md:bg-black left-[50%] -translate-x-[50%] rounded-md"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
           <motion.ul
-            className="flex flex-row p-0 md:p-4 mt-0 font-medium md:flex-col space-x-8 md:space-x-0 md:mt-4"
+            className="flex flex-row p-0 md:p-4 mt-0 font-medium md:flex-col space-x-8 md:space-x-0 rounded"
             variants={animateUL}
             initial="hidden"
             animate="show"
