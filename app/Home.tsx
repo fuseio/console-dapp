@@ -183,8 +183,8 @@ const Home = () => {
               }
             </div>
           </div>
-          <div className="grid grid-cols-auto-fit-400 gap-[30px]">
-            <div className="flex flex-col justify-start items-start gap-y-[34px] max-w-[407px] md:w-9/10 rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[35px]">
+          <div className="flex md:flex-col gap-[30px]">
+            <div className="flex flex-col justify-start items-start gap-y-[34px] max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[35px]">
               <div className="flex flex-col gap-4">
                 <p className="text-lg font-bold">
                   Build on Fuse
@@ -206,7 +206,7 @@ const Home = () => {
                 </a>
               </div>
             </div>
-            <div className="flex flex-col justify-start items-start gap-y-[34px] max-w-[407px] md:w-9/10 rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[35px]">
+            <div className="flex flex-col justify-start items-start gap-y-[34px] max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[35px]">
               <div className="flex flex-col gap-4">
                 <p className="text-lg font-bold">
                   Get API Key
@@ -224,7 +224,7 @@ const Home = () => {
                 </a>
               </div>
             </div>
-            <div className="flex flex-col justify-start items-start gap-y-[34px] max-w-[407px] md:w-9/10 rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[35px]">
+            <div className="flex flex-col justify-start items-start gap-y-[34px] max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[35px]">
               <div className="flex flex-col gap-4">
                 <p className="text-lg font-bold">
                   Operator Account
