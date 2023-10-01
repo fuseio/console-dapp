@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { eclipseAddress } from "@/lib/helpers";
 import copy from "@/assets/copy.svg";
 import { Address } from "abitype";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 interface ModalProps {
   delegators?: [Address, string][] | undefined;
@@ -30,7 +31,7 @@ const Modal = ({
     });
   }, [onToggle]);
   const [page, setPage] = useState(1);
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     setDelegatorsToDisplay(delegators);
   }, [delegators]);
   return (

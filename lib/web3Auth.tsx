@@ -13,7 +13,15 @@ import { publicProvider } from "wagmi/providers/public";
 import { LedgerConnector } from "wagmi/connectors/ledger";
 import { hex } from "./helpers";
 
-const { chains, publicClient, webSocketPublicClient } = configureChains([fuse, polygon, optimism, arbitrum], [publicProvider()]);
+const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [
+    { ...fuse, rpcUrls: { ...fuse.rpcUrls, public: fuse.rpcUrls.default } },
+    polygon,
+    optimism,
+    arbitrum
+  ],
+  [publicProvider()]
+);
 
 export const config = createConfig({
   autoConnect: true,
