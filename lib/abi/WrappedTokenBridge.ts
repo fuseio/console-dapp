@@ -1,4 +1,6 @@
-export const WrappedTokenBridgeAbi = [
+import { narrow } from 'abitype'
+
+export const WrappedTokenBridgeAbi = narrow([
   {
     inputs: [
       {
@@ -1009,4 +1011,4 @@ export const WrappedTokenBridgeAbi = [
     stateMutability: "view",
     type: "function",
   },
-];
+]);

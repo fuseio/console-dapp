@@ -7,9 +7,10 @@ import {
 } from "@layerzerolabs/scan-client";
 import { fetchTransactionsFromLocalStorage } from "@/lib/helpers";
 import { toggleLastTransactionToast } from "../toastSlice";
+import { Address } from "abitype";
 
 export type TransactionType = {
-  hash: string;
+  hash: Address;
   srcChainId: number;
   dstChainId: number;
   address: string;

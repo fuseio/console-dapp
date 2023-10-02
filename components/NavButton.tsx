@@ -20,6 +20,8 @@ const NavButton = ({ isOpen, setOpen }: NavButtonProps) => {
         <span className="sr-only">Open main menu</span>
         <Hamburger
           isOpen={isOpen}
+          height={18}
+          strokeWidth={3}
         />
       </button>
     </div>

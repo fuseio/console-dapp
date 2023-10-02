@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { appConfig } from "@/lib/config";
 import Dropdown from "@/components/ui/Dropdown";
 import switchImg from "@/assets/switch.svg";
-import { useSetChain, useConnectWallet } from "@web3-onboard/react";
+import fuseToken from "@/assets/tokenLogo";
 import {
   selectBalanceSlice,
   fetchBalance,
@@ -16,9 +16,13 @@ import alert from "@/assets/alert.svg";
 import visit from "@/assets/visit.svg";
 import sFuse from "@/assets/sFuse.svg";
 import { estimateWrappedFee } from "@/store/feeSlice";
-import { Balances } from "@web3-onboard/core/dist/types";
 import { toggleLiquidityToast } from "@/store/toastSlice";
 import * as amplitude from "@amplitude/analytics-browser";
+import { useAccount } from "wagmi";
+import { fetchBalance as fetchWalletBalance } from '@wagmi/core';
+import { fuse } from "viem/chains";
+import { hex } from "@/lib/helpers";
+import { getNetwork } from "wagmi/actions";
 
 type WithdrawProps = {
   selectedChainSection: number;
@@ -62,20 +66,25 @@ const Withdraw = ({
   pendingPromise,
   setPendingPromise,
 }: WithdrawProps) => {
-  const [{ chains, connectedChain }] = useSetChain();
-  const [{ wallet }] = useConnectWallet();
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const chainSlice = useAppSelector(selectChainSlice);
-  const [nativeBalance, setNativeBalance] = React.useState<number>(0);
+  const [nativeBalance, setNativeBalance] = React.useState<string>("0");
+  const { address } = useAccount();
+  const { chain } = getNetwork()
+
   useEffect(() => {
-    if (wallet?.accounts[0].balance) {
-      setNativeBalance(
-        // @ts-ignore
-        (wallet?.accounts[0].balance as Balances)["Fuse"]
-      );
+    async function updateBalance() {
+      if(address) {
+        const balance = await fetchWalletBalance({
+          address,
+          chainId: fuse.id,
+        })
+        setNativeBalance(balance.formatted)
+      }
     }
-  }, [wallet, connectedChain, wallet?.accounts[0].balance]);
+    updateBalance();
+  }, [address]);
 
   useEffect(() => {
     if (
@@ -100,16 +109,17 @@ const Withdraw = ({
     }
   }, [selectedTokenItem, selectedChainItem]);
   useEffect(() => {
-    if (wallet && selectedChainSection === 0) {
+    if (address && selectedChainSection === 0) {
       if (pendingPromise) {
         pendingPromise.abort();
       }
-      const promise = appConfig.wrappedBridge.fuse.tokens[selectedTokenItem].address === "" &&
-      connectedChain?.id === "0x7a"
+      const tokenAddress = appConfig.wrappedBridge.fuse.tokens[selectedTokenItem].address;
+      const promise = (!tokenAddress || tokenAddress === hex) &&
+      chain?.id === fuse.id
         ? dispatch(setNativeBalanceThunk(nativeBalance.toString()))
         : dispatch(
             fetchBalance({
-              address: wallet.accounts[0].address,
+              address: address,
               contractAddress:
                 appConfig.wrappedBridge.fuse.tokens[selectedTokenItem].address,
               decimals:
@@ -122,7 +132,7 @@ const Withdraw = ({
   }, [
     selectedTokenItem,
     selectedTokenSection,
-    wallet?.accounts[0].address,
+    address,
     chainSlice.chainId,
     nativeBalance,
   ]);
@@ -152,7 +162,7 @@ const Withdraw = ({
       dispatch(
         setChain({
           chainId: 122,
-          icon: chains[0].icon as string,
+          icon: fuseToken,
           lzChainId: 138,
           name: "Fuse",
           rpcUrl: "https://rpc.fuse.io",
@@ -219,12 +229,12 @@ const Withdraw = ({
               (appConfig.wrappedBridge.chains[selectedChainItem].tokens[
                 selectedTokenItem
               ].isNative &&
-                connectedChain?.id !== "0x7a") ? (
+                chain?.id !== fuse.id) ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : appConfig.wrappedBridge.chains[selectedChainItem].tokens[
                   selectedTokenItem
-                ].isNative && connectedChain?.id === "0x7a" ? (
-                new Intl.NumberFormat().format(nativeBalance)
+                ].isNative && chain?.id === fuse.id ? (
+                new Intl.NumberFormat().format(parseFloat(nativeBalance))
               ) : (
                 balanceSlice.balance
               )}

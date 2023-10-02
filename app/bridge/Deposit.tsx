@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { exchangeConfig, appConfig } from "@/lib/config";
 import Dropdown from "@/components/ui/Dropdown";
 import switchImg from "@/assets/switch.svg";
-import { useConnectWallet, useSetChain } from "@web3-onboard/react";
+import fuseToken from "@/assets/tokenLogo";
 import { selectChainSlice, setChain } from "@/store/chainSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchBalance, selectBalanceSlice } from "@/store/balanceSlice";
@@ -12,6 +12,7 @@ import visit from "@/assets/visit.svg";
 import sFuse from "@/assets/sFuse.svg";
 import { estimateOriginalFee } from "@/store/feeSlice";
 import * as amplitude from "@amplitude/analytics-browser";
+import { useAccount } from "wagmi";
 
 type DepositProps = {
   selectedChainSection: number;
@@ -59,19 +60,18 @@ const Deposit = ({
   pendingPromise,
   setPendingPromise,
 }: DepositProps) => {
-  const [{ chains }] = useSetChain();
-  const [{ wallet }] = useConnectWallet();
+  const { address, connector, isConnected } = useAccount();
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const chainSlice = useAppSelector(selectChainSlice);
   useEffect(() => {
-    if (wallet && selectedChainSection === 0) {
+    if (address && selectedChainSection === 0) {
       if (pendingPromise) {
         pendingPromise.abort();
       }
       const promise = dispatch(
         fetchBalance({
-          address: wallet?.accounts[0].address as string,
+          address: address,
           contractAddress:
             appConfig.wrappedBridge.chains[selectedChainItem].tokens[
               selectedTokenItem
@@ -88,7 +88,7 @@ const Deposit = ({
   }, [
     selectedTokenItem,
     selectedTokenSection,
-    wallet,
+    address,
     chainSlice.chainId,
     selectedChainSection,
   ]);
@@ -352,7 +352,7 @@ const Deposit = ({
                 dispatch(
                   setChain({
                     chainId: 122,
-                    icon: chains[0].icon as string,
+                    icon: fuseToken,
                     lzChainId: 138,
                     name: "Fuse",
                     rpcUrl: "https://rpc.fuse.io",
