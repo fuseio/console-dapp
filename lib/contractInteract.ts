@@ -3,6 +3,7 @@ import { CONFIG } from './config'
 import { Consensus } from './abi/Consensus'
 import { getWalletClient } from 'wagmi/actions'
 import { hex } from './helpers'
+import { fuse } from 'viem/chains'
 
 const contractProperties = {
     address: CONFIG.consensusAddress,
@@ -100,10 +101,13 @@ export const getStake = async (address: Address, wallet: Address | undefined) =>
 }
 
 export const delegate = async (amount: string, validator: Address) => {
-    const walletClient = await getWalletClient()
+    const walletClient = await getWalletClient({ chainId: fuse.id })
     if (walletClient) {
+        const accounts = await walletClient.getAddresses();
+        const account = accounts[0];
         const tx = await walletClient.writeContract({
             ...contractProperties,
+            account,
             functionName: 'delegate',
             args: [validator],
             value: parseEther(amount)
@@ -113,10 +117,13 @@ export const delegate = async (amount: string, validator: Address) => {
 }
 
 export const withdraw = async (amount: string, validator: Address) => {
-    const walletClient = await getWalletClient()
+    const walletClient = await getWalletClient({ chainId: fuse.id })
     if (walletClient) {
+        const accounts = await walletClient.getAddresses();
+        const account = accounts[0];
         const tx = await walletClient.writeContract({
             ...contractProperties,
+            account,
             functionName: 'withdraw',
             args: [validator, parseEther(amount)],
         })

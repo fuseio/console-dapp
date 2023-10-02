@@ -1,6 +1,7 @@
 import { ERC20ABI } from "@/lib/abi/ERC20";
 import { Address, createPublicClient, http, parseUnits } from "viem";
 import { getWalletClient } from "wagmi/actions";
+import { hex } from "./helpers";
 
 const publicClient = (rpcUrl: string) => {
   return createPublicClient({
@@ -41,16 +42,21 @@ export const approveSpend = async (
   address: Address,
   spender: Address,
   amount: string,
-  decimals: number = 18
+  decimals: number = 18,
+  selectedChainId: number,
 ) => {
-  const walletClient = await getWalletClient()
+  const walletClient = await getWalletClient({ chainId: selectedChainId })
+  let tx: Address = hex;
   if (walletClient) {
-    const tx = await walletClient.writeContract({
+    const accounts = await walletClient.getAddresses();
+    const account = accounts[0];
+    tx = await walletClient.writeContract({
+      account,
       address,
       abi: ERC20ABI,
       functionName: 'approve',
       args: [spender, parseUnits(amount, decimals)],
     })
-    return tx
   }
+  return tx
 };
