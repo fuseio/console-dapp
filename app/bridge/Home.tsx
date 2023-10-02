@@ -76,15 +76,12 @@ const Home = () => {
     }
   }, [contractSlice.isBridgeLoading]);
   const handleIncreaseAllowance = () => {
-
-    switchNetwork({
-      chainId:
-        selected === 0
-          ? appConfig.wrappedBridge.chains[
-              depositSelectedChainItem
-            ].chainId
-          : fuse.id,
-    }).then((res) => {
+    const selectedChainId = selected === 0
+      ? appConfig.wrappedBridge.chains[
+        depositSelectedChainItem
+      ].chainId
+      : fuse.id;
+    switchNetwork({ chainId: selectedChainId }).then((res) => {
       if (res && selected === 0)
         dispatch(
           increaseERC20Allowance({
@@ -111,6 +108,7 @@ const Home = () => {
               appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
                 depositSelectedTokenItem
               ].coinGeckoId,
+            selectedChainId,
           })
         );
       else if (res && selected === 1)
@@ -133,18 +131,17 @@ const Home = () => {
             tokenId:
               appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
                 .coinGeckoId,
+            selectedChainId,
           })
         );
     });
   };
 
   const handleDeposit = () => {
-    switchNetwork({
-      chainId:
-        appConfig.wrappedBridge.chains[
-          depositSelectedChainItem
-        ].chainId,
-    }).then((res) => {
+    const selectedChainId = appConfig.wrappedBridge.chains[
+      depositSelectedChainItem
+    ].chainId
+    switchNetwork({ chainId: selectedChainId }).then((res) => {
       if (res) {
         if (
           appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
@@ -180,6 +177,7 @@ const Home = () => {
               network:
                 appConfig.wrappedBridge.chains[depositSelectedChainItem].name,
               tokenId: "fuse-network-token",
+              selectedChainId,
             })
           );
         } else if (
@@ -216,6 +214,7 @@ const Home = () => {
                 appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
                   depositSelectedTokenItem
                 ].coinGeckoId,
+              selectedChainId,
             })
           );
       }
@@ -366,7 +365,7 @@ const Home = () => {
                         dispatch(
                           setChain(
                             appConfig.wrappedBridge.chains[
-                              depositSelectedChainItem
+                            depositSelectedChainItem
                             ]
                           )
                         );
@@ -476,20 +475,19 @@ const Home = () => {
                 disabled
                 text={
                   parseFloat(amount) > parseFloat(balanceSlice.balance)
-                    ? `Insufficient ${
-                        appConfig.wrappedBridge.chains[
-                          selected
-                            ? withdrawSelectedChainItem
-                            : depositSelectedChainItem
-                        ].tokens[
-                          selected
-                            ? withdrawSelectedTokenItem
-                            : depositSelectedTokenItem
-                        ].symbol
-                      } Balance`
+                    ? `Insufficient ${appConfig.wrappedBridge.chains[
+                      selected
+                        ? withdrawSelectedChainItem
+                        : depositSelectedChainItem
+                    ].tokens[
+                      selected
+                        ? withdrawSelectedTokenItem
+                        : depositSelectedTokenItem
+                    ].symbol
+                    } Balance`
                     : parseFloat(amount) > 10000
-                    ? "Exceeds Daily Limit"
-                    : "Minimum 0.5"
+                      ? "Exceeds Daily Limit"
+                      : "Minimum 0.5"
                 }
               />
             ) : (
@@ -524,30 +522,30 @@ const Home = () => {
                   }}
                   disabled={
                     (selected === 1 && chain?.id === fuse.id) ||
-                    selected === 0
+                      selected === 0
                       ? balanceSlice.isApprovalLoading ||
-                        contractSlice.isBridgeLoading ||
-                        contractSlice.isApprovalLoading ||
-                        balanceSlice.isBalanceLoading ||
-                        !amount ||
-                        parseFloat(amount) === 0 ||
-                        isNaN(parseFloat(amount))
+                      contractSlice.isBridgeLoading ||
+                      contractSlice.isApprovalLoading ||
+                      balanceSlice.isBalanceLoading ||
+                      !amount ||
+                      parseFloat(amount) === 0 ||
+                      isNaN(parseFloat(amount))
                       : false
                   }
                   text={
                     contractSlice.isBridgeLoading ||
-                    contractSlice.isApprovalLoading
+                      contractSlice.isApprovalLoading
                       ? "Loading..."
                       : selected === 1 && chain?.id !== fuse.id
-                      ? "Switch To Fuse"
-                      : selected === 1 &&
-                        appConfig.wrappedBridge.chains[
-                          withdrawSelectedChainItem
-                        ].tokens[withdrawSelectedTokenItem].isNative
-                      ? "Bridge"
-                      : parseFloat(balanceSlice.approval) < parseFloat(amount)
-                      ? "Approve"
-                      : "Bridge"
+                        ? "Switch To Fuse"
+                        : selected === 1 &&
+                          appConfig.wrappedBridge.chains[
+                            withdrawSelectedChainItem
+                          ].tokens[withdrawSelectedTokenItem].isNative
+                          ? "Bridge"
+                          : parseFloat(balanceSlice.approval) < parseFloat(amount)
+                            ? "Approve"
+                            : "Bridge"
                   }
                   disabledClassname="bg-fuse-black/20 text-black px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
                 />
@@ -571,8 +569,8 @@ const Home = () => {
                       getChainKey(
                         selected === 0
                           ? appConfig.wrappedBridge.chains[
-                              depositSelectedChainItem
-                            ].lzChainId
+                            depositSelectedChainItem
+                          ].lzChainId
                           : 138
                       )
                     ).symbol

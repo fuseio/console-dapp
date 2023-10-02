@@ -6,6 +6,7 @@ import { getPublicClient, getWalletClient } from "wagmi/actions";
 import { Address } from "abitype";
 import { createPublicClient, http, parseUnits } from "viem";
 import { hex } from "./helpers";
+import { fuse } from "viem/chains";
 
 const publicClient = (rpcUrl: string) => {
   return createPublicClient({
@@ -41,10 +42,13 @@ export const bridgeWrapped = async (
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const walletClient = await getWalletClient()
+  const walletClient = await getWalletClient({ chainId: fuse.id })
   let tx: Address = hex
   if (walletClient) {
+    const accounts = await walletClient.getAddresses();
+    const account = accounts[0];
     tx = await walletClient.writeContract({
+      account,
       address: bridgeAddress,
       abi: WrappedTokenBridgeAbi,
       functionName: 'bridge',
@@ -69,7 +73,8 @@ export const bridgeAndUnwrapNative = async (
   tokenAddress: Address,
   amount: string,
   decimals: number,
-  lzChainId: number
+  lzChainId: number,
+  selectedChainId: number
 ) => {
   const publicClient = getPublicClient()
   const dstGasLimit = await publicClient.readContract({
@@ -91,10 +96,13 @@ export const bridgeAndUnwrapNative = async (
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const walletClient = await getWalletClient()
+  const walletClient = await getWalletClient({ chainId: selectedChainId })
   let tx: Address = hex
   if (walletClient) {
+    const accounts = await walletClient.getAddresses();
+    const account = accounts[0];
     tx = await walletClient.writeContract({
+      account,
       address: bridgeAddress,
       abi: WrappedTokenBridgeAbi,
       functionName: 'bridge',

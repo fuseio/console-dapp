@@ -38,6 +38,7 @@ export const increaseERC20Allowance = createAsyncThunk(
       token,
       network,
       tokenId,
+      selectedChainId,
     }: {
       amount: string;
       contractAddress: Address;
@@ -48,11 +49,12 @@ export const increaseERC20Allowance = createAsyncThunk(
       token: string;
       network: string;
       tokenId: string;
+      selectedChainId: number;
     },
     thunkAPI
   ) => {
     return new Promise<any>(async (resolve, reject) => {
-      approveSpend(contractAddress, bridge, amount, decimals)
+      approveSpend(contractAddress, bridge, amount, decimals, selectedChainId)
         .then((txHash) => {
           thunkAPI.dispatch(
             fetchApproval({
@@ -103,6 +105,7 @@ export const bridgeOriginalTokens = createAsyncThunk(
       dstChainId,
       tokenId,
       network,
+      selectedChainId,
     }: {
       amount: string;
       contractAddress: Address;
@@ -114,6 +117,7 @@ export const bridgeOriginalTokens = createAsyncThunk(
       dstChainId: number;
       tokenId: string;
       network: string;
+      selectedChainId: number;
     },
     thunkAPI
   ) => {
@@ -124,7 +128,8 @@ export const bridgeOriginalTokens = createAsyncThunk(
         contractAddress,
         amount,
         decimals,
-        dstChainId
+        dstChainId,
+        selectedChainId
       )
         .then((txHash) => {
           thunkAPI.dispatch(
@@ -324,6 +329,7 @@ export const bridgeAndUnwrap = createAsyncThunk(
       srcChainId,
       tokenId,
       network,
+      selectedChainId,
     }: {
       amount: string;
       contractAddress: Address;
@@ -335,6 +341,7 @@ export const bridgeAndUnwrap = createAsyncThunk(
       srcChainId: number;
       tokenId: string;
       network: string;
+      selectedChainId: number;
     },
     thunkAPI
   ) => {
@@ -345,7 +352,8 @@ export const bridgeAndUnwrap = createAsyncThunk(
         contractAddress,
         amount,
         decimals,
-        chainId
+        chainId,
+        selectedChainId
       )
         .then((txHash) => {
           thunkAPI.dispatch(
