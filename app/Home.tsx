@@ -113,7 +113,7 @@ const Home = () => {
                   </Button>
                 </div>
                 {/* Buttons Mobile */}
-                <div className="hidden md:flex gap-12">
+                <div className="hidden md:flex justify-between">
                   <div className="flex flex-col justify-center items-center gap-4">
                     <Button
                       text={""}
