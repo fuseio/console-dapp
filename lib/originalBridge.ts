@@ -2,7 +2,11 @@ import { ethers } from "ethers";
 import { OriginalTokenBridgeAbi } from "@/lib/abi/OriginalTokenBridge";
 import { AdapterParams } from "@layerzerolabs/ui-core";
 import { serializeAdapterParams } from "@layerzerolabs/ui-evm";
-import { getPublicClient, getWalletClient } from "wagmi/actions";
+import {
+  getPublicClient,
+  getWalletClient,
+  waitForTransaction,
+} from "wagmi/actions";
 import { Address } from "abitype";
 import { createPublicClient, http, parseEther, parseUnits } from "viem";
 import { hex } from "./helpers";
@@ -10,9 +14,9 @@ import { fuse } from "viem/chains";
 
 const publicClient = (rpcUrl: string) => {
   return createPublicClient({
-    transport: http(rpcUrl)
-  })
-}
+    transport: http(rpcUrl),
+  });
+};
 
 export const bridgeOriginal = async (
   bridgeAddress: Address,
@@ -23,27 +27,29 @@ export const bridgeOriginal = async (
   dstChainId: number,
   selectedChainId: number
 ) => {
-  const publicClient = getPublicClient()
+  const publicClient = getPublicClient();
   const dstGasLimit = await publicClient.readContract({
     address: bridgeAddress,
     abi: OriginalTokenBridgeAbi,
     functionName: "minDstGasLookup",
-    args: [dstChainId, 0]
-  })
+    args: [dstChainId, 0],
+  });
   const adapterParams = AdapterParams.forV1(Number(dstGasLimit));
-  const nativeFee = (await publicClient.readContract({
-    address: bridgeAddress,
-    abi: OriginalTokenBridgeAbi,
-    functionName: "estimateBridgeFee",
-    args: [false, serializeAdapterParams(adapterParams) as Address]
-  }))[0]
-  const increasedNativeFee = (Number(nativeFee) * 1.2).toFixed(0)
+  const nativeFee = (
+    await publicClient.readContract({
+      address: bridgeAddress,
+      abi: OriginalTokenBridgeAbi,
+      functionName: "estimateBridgeFee",
+      args: [false, serializeAdapterParams(adapterParams) as Address],
+    })
+  )[0];
+  const increasedNativeFee = (Number(nativeFee) * 1.2).toFixed(0);
   const amt = parseUnits(amount, decimals);
   const callParams = {
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const walletClient = await getWalletClient({ chainId: selectedChainId })
+  const walletClient = await getWalletClient({ chainId: selectedChainId });
   let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
@@ -52,18 +58,21 @@ export const bridgeOriginal = async (
       account,
       address: bridgeAddress,
       abi: OriginalTokenBridgeAbi,
-      functionName: 'bridge',
+      functionName: "bridge",
       args: [
         tokenAddres,
         amt,
         address,
         callParams,
-        serializeAdapterParams(adapterParams) as Address
+        serializeAdapterParams(adapterParams) as Address,
       ],
-      value: BigInt(increasedNativeFee)
-    })
+      value: BigInt(increasedNativeFee),
+    });
   }
-  return tx
+  const txWait = await waitForTransaction({
+    hash: tx,
+  });
+  return txWait.transactionHash;
 };
 
 export const bridgeNative = async (
@@ -73,27 +82,29 @@ export const bridgeNative = async (
   decimals: number,
   dstChainId: number
 ) => {
-  const publicClient = getPublicClient()
+  const publicClient = getPublicClient();
   const dstGasLimit = await publicClient.readContract({
     address: bridgeAddress,
     abi: OriginalTokenBridgeAbi,
     functionName: "minDstGasLookup",
-    args: [dstChainId, 0]
-  })
+    args: [dstChainId, 0],
+  });
   const adapterParams = AdapterParams.forV1(Number(dstGasLimit));
-  const nativeFee = (await publicClient.readContract({
-    address: bridgeAddress,
-    abi: OriginalTokenBridgeAbi,
-    functionName: "estimateBridgeFee",
-    args: [false, serializeAdapterParams(adapterParams) as Address]
-  }))[0]
+  const nativeFee = (
+    await publicClient.readContract({
+      address: bridgeAddress,
+      abi: OriginalTokenBridgeAbi,
+      functionName: "estimateBridgeFee",
+      args: [false, serializeAdapterParams(adapterParams) as Address],
+    })
+  )[0];
   const increasedNativeFee = (Number(nativeFee) * 1.2).toFixed(0);
   const amt = parseEther(amount);
   const callParams = {
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const walletClient = await getWalletClient({ chainId: fuse.id })
+  const walletClient = await getWalletClient({ chainId: fuse.id });
   let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
@@ -102,17 +113,20 @@ export const bridgeNative = async (
       account,
       address: bridgeAddress,
       abi: OriginalTokenBridgeAbi,
-      functionName: 'bridgeNative',
+      functionName: "bridgeNative",
       args: [
         amt,
         address,
         callParams,
-        serializeAdapterParams(adapterParams) as Address
+        serializeAdapterParams(adapterParams) as Address,
       ],
-      value: amt + BigInt(increasedNativeFee)
-    })
+      value: amt + BigInt(increasedNativeFee),
+    });
   }
-  return tx
+  const txWait = await waitForTransaction({
+    hash: tx,
+  });
+  return txWait.transactionHash;
 };
 
 export const estimateOriginalNativeFee = async (
@@ -123,17 +137,17 @@ export const estimateOriginalNativeFee = async (
     address: bridgeAddress,
     abi: OriginalTokenBridgeAbi,
     functionName: "minDstGasLookup",
-    args: [138, 0]
-  })
+    args: [138, 0],
+  });
   const adapterParams = AdapterParams.forV1(Number(dstGasLimit));
   const nativeFee = (
     await publicClient(rpcUrl).readContract({
       address: bridgeAddress,
       abi: OriginalTokenBridgeAbi,
       functionName: "estimateBridgeFee",
-      args: [false, serializeAdapterParams(adapterParams) as Address]
+      args: [false, serializeAdapterParams(adapterParams) as Address],
     })
-  )[0]
+  )[0];
   const increasedNativeFee = (Number(nativeFee) * 1.2).toFixed(0);
   return increasedNativeFee;
 };

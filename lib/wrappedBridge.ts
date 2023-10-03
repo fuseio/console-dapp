@@ -2,7 +2,11 @@ import { ethers } from "ethers";
 import { WrappedTokenBridgeAbi } from "@/lib/abi/WrappedTokenBridge";
 import { AdapterParams } from "@layerzerolabs/ui-core";
 import { serializeAdapterParams } from "@layerzerolabs/ui-evm";
-import { getPublicClient, getWalletClient } from "wagmi/actions";
+import {
+  getPublicClient,
+  getWalletClient,
+  waitForTransaction,
+} from "wagmi/actions";
 import { Address } from "abitype";
 import { createPublicClient, http, parseUnits } from "viem";
 import { hex } from "./helpers";
@@ -10,9 +14,9 @@ import { fuse } from "viem/chains";
 
 const publicClient = (rpcUrl: string) => {
   return createPublicClient({
-    transport: http(rpcUrl)
-  })
-}
+    transport: http(rpcUrl),
+  });
+};
 
 export const bridgeWrapped = async (
   bridgeAddress: Address,
@@ -22,28 +26,34 @@ export const bridgeWrapped = async (
   decimals: number,
   lzChainId: number
 ) => {
-  const publicClient = getPublicClient()
+  const publicClient = getPublicClient();
   const dstGasLimit = await publicClient.readContract({
     address: bridgeAddress,
     abi: WrappedTokenBridgeAbi,
     functionName: "minDstGasLookup",
-    args: [lzChainId, 1]
-  })
+    args: [lzChainId, 1],
+  });
   const amt = parseUnits(amount, decimals);
   const adapterParams = AdapterParams.forV1(Number(dstGasLimit));
-  const nativeFee = (await publicClient.readContract({
-    address: bridgeAddress,
-    abi: WrappedTokenBridgeAbi,
-    functionName: "estimateBridgeFee",
-    args: [lzChainId, false, serializeAdapterParams(adapterParams) as Address]
-  }))[0]
+  const nativeFee = (
+    await publicClient.readContract({
+      address: bridgeAddress,
+      abi: WrappedTokenBridgeAbi,
+      functionName: "estimateBridgeFee",
+      args: [
+        lzChainId,
+        false,
+        serializeAdapterParams(adapterParams) as Address,
+      ],
+    })
+  )[0];
   const increasedNativeFee = BigInt(Number(nativeFee) * 1.2); // 20% increase
   const callParams = {
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const walletClient = await getWalletClient({ chainId: fuse.id })
-  let tx: Address = hex
+  const walletClient = await getWalletClient({ chainId: fuse.id });
+  let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
     const account = accounts[0];
@@ -51,7 +61,7 @@ export const bridgeWrapped = async (
       account,
       address: bridgeAddress,
       abi: WrappedTokenBridgeAbi,
-      functionName: 'bridge',
+      functionName: "bridge",
       args: [
         tokenAddress,
         lzChainId,
@@ -59,12 +69,15 @@ export const bridgeWrapped = async (
         address,
         false,
         callParams,
-        serializeAdapterParams(adapterParams) as Address
+        serializeAdapterParams(adapterParams) as Address,
       ],
-      value: increasedNativeFee
-    })
+      value: increasedNativeFee,
+    });
   }
-  return tx
+  const txWait = await waitForTransaction({
+    hash: tx,
+  });
+  return txWait.transactionHash;
 };
 
 export const bridgeAndUnwrapNative = async (
@@ -76,28 +89,30 @@ export const bridgeAndUnwrapNative = async (
   lzChainId: number,
   selectedChainId: number
 ) => {
-  const publicClient = getPublicClient()
+  const publicClient = getPublicClient();
   const dstGasLimit = await publicClient.readContract({
     address: bridgeAddress,
     abi: WrappedTokenBridgeAbi,
     functionName: "minDstGasLookup",
-    args: [lzChainId, 1]
-  })
+    args: [lzChainId, 1],
+  });
   const amt = parseUnits(amount, decimals);
   const adapterParams = AdapterParams.forV1(Number(dstGasLimit));
-  const nativeFee = (await publicClient.readContract({
-    address: bridgeAddress,
-    abi: WrappedTokenBridgeAbi,
-    functionName: "estimateBridgeFee",
-    args: [lzChainId, true, serializeAdapterParams(adapterParams) as Address]
-  }))[0]
+  const nativeFee = (
+    await publicClient.readContract({
+      address: bridgeAddress,
+      abi: WrappedTokenBridgeAbi,
+      functionName: "estimateBridgeFee",
+      args: [lzChainId, true, serializeAdapterParams(adapterParams) as Address],
+    })
+  )[0];
   const increasedNativeFee = (Number(nativeFee) * 1.2).toFixed(0);
   const callParams = {
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const walletClient = await getWalletClient({ chainId: selectedChainId })
-  let tx: Address = hex
+  const walletClient = await getWalletClient({ chainId: selectedChainId });
+  let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
     const account = accounts[0];
@@ -105,7 +120,7 @@ export const bridgeAndUnwrapNative = async (
       account,
       address: bridgeAddress,
       abi: WrappedTokenBridgeAbi,
-      functionName: 'bridge',
+      functionName: "bridge",
       args: [
         tokenAddress,
         lzChainId,
@@ -113,12 +128,15 @@ export const bridgeAndUnwrapNative = async (
         address,
         true,
         callParams,
-        serializeAdapterParams(adapterParams) as Address
+        serializeAdapterParams(adapterParams) as Address,
       ],
-      value: BigInt(increasedNativeFee)
-    })
+      value: BigInt(increasedNativeFee),
+    });
   }
-  return tx
+  const txWait = await waitForTransaction({
+    hash: tx,
+  });
+  return txWait.transactionHash;
 };
 
 export const estimateWrappedNativeFee = async (
@@ -130,17 +148,21 @@ export const estimateWrappedNativeFee = async (
     address: bridgeAddress,
     abi: WrappedTokenBridgeAbi,
     functionName: "minDstGasLookup",
-    args: [lzChainId, 1]
-  })
+    args: [lzChainId, 1],
+  });
   const adapterParams = AdapterParams.forV1(Number(dstGasLimit));
   const nativeFee = (
     await publicClient(rpcUrl).readContract({
       address: bridgeAddress,
       abi: WrappedTokenBridgeAbi,
       functionName: "estimateBridgeFee",
-      args: [lzChainId, false, serializeAdapterParams(adapterParams) as Address]
+      args: [
+        lzChainId,
+        false,
+        serializeAdapterParams(adapterParams) as Address,
+      ],
     })
-  )[0]
+  )[0];
   const increasedNativeFee = (Number(nativeFee) * 1.2).toFixed(0);
   return increasedNativeFee;
 };
