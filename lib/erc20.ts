@@ -2,12 +2,13 @@ import { ERC20ABI } from "@/lib/abi/ERC20";
 import { Address, createPublicClient, http, parseUnits } from "viem";
 import { getWalletClient } from "wagmi/actions";
 import { hex } from "./helpers";
+import { waitForTransaction } from "@wagmi/core";
 
 const publicClient = (rpcUrl: string) => {
   return createPublicClient({
-    transport: http(rpcUrl)
-  })
-}
+    transport: http(rpcUrl),
+  });
+};
 
 export const getERC20Balance = async (
   contractAddress: Address,
@@ -18,8 +19,8 @@ export const getERC20Balance = async (
     address: contractAddress,
     abi: ERC20ABI,
     functionName: "balanceOf",
-    args: [address]
-  })
+    args: [address],
+  });
   return balance;
 };
 
@@ -33,8 +34,8 @@ export const getERC20Allowance = async (
     address: contractAddress,
     abi: ERC20ABI,
     functionName: "allowance",
-    args: [address, spender]
-  })
+    args: [address, spender],
+  });
   return allowance;
 };
 
@@ -43,9 +44,9 @@ export const approveSpend = async (
   spender: Address,
   amount: string,
   decimals: number = 18,
-  selectedChainId: number,
+  selectedChainId: number
 ) => {
-  const walletClient = await getWalletClient({ chainId: selectedChainId })
+  const walletClient = await getWalletClient({ chainId: selectedChainId });
   let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
@@ -54,9 +55,12 @@ export const approveSpend = async (
       account,
       address,
       abi: ERC20ABI,
-      functionName: 'approve',
+      functionName: "approve",
       args: [spender, parseUnits(amount, decimals)],
-    })
+    });
   }
-  return tx
+  const txWait = await waitForTransaction({
+    hash: tx,
+  });
+  return txWait.transactionHash;
 };
