@@ -44,11 +44,13 @@ export const fetchBalance = createAsyncThunk(
       address,
       bridge,
       decimals = 18,
+      rpc,
     }: {
       contractAddress: Address;
       address: Address;
       bridge: Address;
       decimals: number;
+      rpc?: string;
     },
     thunkAPI
   ) => {
@@ -56,7 +58,8 @@ export const fetchBalance = createAsyncThunk(
       const state = thunkAPI.getState();
       // @ts-ignore
       const chain: ChainStateType = state.chain;
-      getERC20Balance(contractAddress, address, chain.rpcUrl as string)
+      if (!rpc) rpc = chain.rpcUrl as string;
+      getERC20Balance(contractAddress, address, rpc)
         .then((balance) => {
           const bal = ethers.utils.formatUnits(balance, decimals);
           thunkAPI.dispatch(
@@ -86,18 +89,20 @@ export const setNativeBalanceThunk = createAsyncThunk(
 );
 
 export const fetchUsdPrice = createAsyncThunk(
-  'BALANCE/FETCH_USD_PRICE',
+  "BALANCE/FETCH_USD_PRICE",
   async (controller: AbortController) => {
     return new Promise<any>(async (resolve, reject) => {
-      fetchTokenPrice("fuse-network-token").then(price => {
-        resolve(price)
-      }).catch((error) => {
-        reject(error)
-      })
-      controller.signal.addEventListener('abort', () => reject());
-    })
+      fetchTokenPrice("fuse-network-token")
+        .then((price) => {
+          resolve(price);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+      controller.signal.addEventListener("abort", () => reject());
+    });
   }
-)
+);
 
 export const fetchApproval = createAsyncThunk(
   "BALANCE/FETCH_APPROVAL",
