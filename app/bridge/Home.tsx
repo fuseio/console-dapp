@@ -61,7 +61,7 @@ const Home = () => {
   const [isDisabledChain, setIsDisabledChain] = useState(false);
   const [pendingPromise, setPendingPromise] = React.useState<any>();
   const { address, isConnected } = useAccount();
-  const { chain } = getNetwork()
+  const { chain } = getNetwork();
 
   useEffect(() => {
     if (address) {
@@ -76,11 +76,10 @@ const Home = () => {
     }
   }, [contractSlice.isBridgeLoading]);
   const handleIncreaseAllowance = () => {
-    const selectedChainId = selected === 0
-      ? appConfig.wrappedBridge.chains[
-        depositSelectedChainItem
-      ].chainId
-      : fuse.id;
+    const selectedChainId =
+      selected === 0
+        ? appConfig.wrappedBridge.chains[depositSelectedChainItem].chainId
+        : fuse.id;
     switchNetwork({ chainId: selectedChainId }).then((res) => {
       if (res && selected === 0)
         dispatch(
@@ -138,9 +137,8 @@ const Home = () => {
   };
 
   const handleDeposit = () => {
-    const selectedChainId = appConfig.wrappedBridge.chains[
-      depositSelectedChainItem
-    ].chainId
+    const selectedChainId =
+      appConfig.wrappedBridge.chains[depositSelectedChainItem].chainId;
     switchNetwork({ chainId: selectedChainId }).then((res) => {
       if (res) {
         if (
@@ -365,7 +363,7 @@ const Home = () => {
                         dispatch(
                           setChain(
                             appConfig.wrappedBridge.chains[
-                            depositSelectedChainItem
+                              depositSelectedChainItem
                             ]
                           )
                         );
@@ -454,7 +452,10 @@ const Home = () => {
               />
             )}
             {!isConnected && displayButton ? (
-              <ConnectWallet className="mt-6 py-4 w-full" disableAccountCenter />
+              <ConnectWallet
+                className="mt-6 py-4 w-full"
+                disableAccountCenter
+              />
             ) : displayButton &&
               selected === 1 &&
               !appConfig.wrappedBridge.chains[withdrawSelectedChainItem].tokens[
@@ -475,19 +476,20 @@ const Home = () => {
                 disabled
                 text={
                   parseFloat(amount) > parseFloat(balanceSlice.balance)
-                    ? `Insufficient ${appConfig.wrappedBridge.chains[
-                      selected
-                        ? withdrawSelectedChainItem
-                        : depositSelectedChainItem
-                    ].tokens[
-                      selected
-                        ? withdrawSelectedTokenItem
-                        : depositSelectedTokenItem
-                    ].symbol
-                    } Balance`
+                    ? `Insufficient ${
+                        appConfig.wrappedBridge.chains[
+                          selected
+                            ? withdrawSelectedChainItem
+                            : depositSelectedChainItem
+                        ].tokens[
+                          selected
+                            ? withdrawSelectedTokenItem
+                            : depositSelectedTokenItem
+                        ].symbol
+                      } Balance`
                     : parseFloat(amount) > 10000
-                      ? "Exceeds Daily Limit"
-                      : "Minimum 0.5"
+                    ? "Exceeds Daily Limit"
+                    : "Minimum 0.5"
                 }
               />
             ) : (
@@ -521,31 +523,30 @@ const Home = () => {
                     }
                   }}
                   disabled={
-                    (selected === 1 && chain?.id === fuse.id) ||
-                      selected === 0
+                    (selected === 1 && chain?.id === fuse.id) || selected === 0
                       ? balanceSlice.isApprovalLoading ||
-                      contractSlice.isBridgeLoading ||
-                      contractSlice.isApprovalLoading ||
-                      balanceSlice.isBalanceLoading ||
-                      !amount ||
-                      parseFloat(amount) === 0 ||
-                      isNaN(parseFloat(amount))
+                        contractSlice.isBridgeLoading ||
+                        contractSlice.isApprovalLoading ||
+                        balanceSlice.isBalanceLoading ||
+                        !amount ||
+                        parseFloat(amount) === 0 ||
+                        isNaN(parseFloat(amount))
                       : false
                   }
                   text={
                     contractSlice.isBridgeLoading ||
-                      contractSlice.isApprovalLoading
+                    contractSlice.isApprovalLoading
                       ? "Loading..."
                       : selected === 1 && chain?.id !== fuse.id
-                        ? "Switch To Fuse"
-                        : selected === 1 &&
-                          appConfig.wrappedBridge.chains[
-                            withdrawSelectedChainItem
-                          ].tokens[withdrawSelectedTokenItem].isNative
-                          ? "Bridge"
-                          : parseFloat(balanceSlice.approval) < parseFloat(amount)
-                            ? "Approve"
-                            : "Bridge"
+                      ? "Switch To Fuse"
+                      : selected === 1 &&
+                        appConfig.wrappedBridge.chains[
+                          withdrawSelectedChainItem
+                        ].tokens[withdrawSelectedTokenItem].isNative
+                      ? "Bridge"
+                      : parseFloat(balanceSlice.approval) < parseFloat(amount)
+                      ? "Approve"
+                      : "Bridge"
                   }
                   disabledClassname="bg-fuse-black/20 text-black px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
                 />
@@ -569,8 +570,8 @@ const Home = () => {
                       getChainKey(
                         selected === 0
                           ? appConfig.wrappedBridge.chains[
-                            depositSelectedChainItem
-                          ].lzChainId
+                              depositSelectedChainItem
+                            ].lzChainId
                           : 138
                       )
                     ).symbol
@@ -580,12 +581,12 @@ const Home = () => {
                 <></>
               )}
             </div>
-            <div className="flex justify-between mt-2">
+            {/* <div className="flex justify-between mt-2">
               <span className="text-black/50">Daily Limits</span>
               <span>0.5 Min - 10,000 max</span>
-            </div>
+            </div> */}
           </motion.div>
-          <ToastPane className="" />
+          <ToastPane className="hidden md:flex" />
           <Footer />
         </div>
       </div>

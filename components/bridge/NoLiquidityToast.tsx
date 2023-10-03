@@ -8,7 +8,7 @@ import { toggleLiquidityToast } from "@/store/toastSlice";
 const NoLiquidityToast = () => {
   const transactionsSlice = useAppSelector(selectTransactionsSlice);
   const dispatch = useAppDispatch();
-  return transactionsSlice.transactionHashes.length > 0 ? (
+  return (
     <div className="w-full rounded-md border-[#FD0F0F66]/40 border-[1px] bg-[#FFEBE9] md:mt-8">
       <div className="flex p-4">
         <img src={stop.src} alt="history" className="h-6 w-[5%]" />
@@ -32,8 +32,6 @@ const NoLiquidityToast = () => {
         </div>
       </div>
     </div>
-  ) : (
-    <></>
   );
 };
 

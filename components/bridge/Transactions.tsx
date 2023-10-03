@@ -90,7 +90,7 @@ const Transactions = ({
             <span className="text-base font-semibold mb-2">
               Transactions History
             </span>
-            <div className="flex w-full h-[75%]">
+            <div className="flex w-full h-[75%] flex-col overflow-y-auto">
               {transactionsSlice.transactions.map((transaction, i) => {
                 return (
                   <Transaction
