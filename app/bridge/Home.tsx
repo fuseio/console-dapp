@@ -35,6 +35,88 @@ import { useAccount } from "wagmi";
 import { fuse } from "viem/chains";
 import { getNetwork, switchNetwork } from "wagmi/actions";
 import { hex } from "@/lib/helpers";
+import FAQ from "@/components/bridge/FAQ";
+
+const faqs = [
+  "What tokens can be transferred using the Fuse Token Bridge?",
+  "Between which networks can the tokens be transferred?",
+  "Is there a guide available on how to use the Fuse Token Bridge?",
+  "What is the native token of the Fuse Network?",
+  "What technology powers the Fuse bridge, and who monitors its security?",
+  "Are there any fees associated with using the Fuse Token Bridge?",
+  "Is there any liquidity concern users should know?",
+  "What are OP, ARB, and MATIC token addresses on Fuse?",
+  "How are gas fees on Fuse Network calculated?",
+];
+
+const faqAnswers = [
+  <p key="1">The Fuse Token Bridge can send FUSE, USDC, and WETH tokens.</p>,
+  <p key="2">
+    The tokens can be transferred between the Fuse Network and Polygon,
+    Optimism, and Arbitrum.
+  </p>,
+  <p key="3">
+    Yes, a guide on how to use the Fuse Token Bridge is available on the
+    provided link.{" "}
+    <a
+      href="https://youtu.be/LUsoAdsTWM4?si=LuOxRsTlMZ9RSsHh"
+      className="underline"
+    >
+      https://youtu.be/LUsoAdsTWM4?si=LuOxRsTlMZ9RSsHh
+    </a>
+  </p>,
+  <p key="4">The native token of the Fuse Network is the Fuse token (FUSE).</p>,
+  <p key="5">
+    The token bridge is powered by LayerZero technology, and its security is
+    monitored by blockchain security experts Ironblocks.
+  </p>,
+  <p key="6">
+    Currently, there are zero bridge fees on the Fuse Token Bridge.
+  </p>,
+  <p key="7">
+    Users should be aware that liquidity at this stage is minimal, so they are
+    advised to avoid trying to bridge substantial amounts.
+  </p>,
+  <p key="8">
+    Optimistic (OP): 0xe453d6649643F1F460C371dC3D1da98F7922fe51
+    <br />
+    <a
+      href="https://optimistic.etherscan.io/token/0xe453d6649643f1f460c371dc3d1da98f7922fe51"
+      className="underline"
+    >
+      https://optimistic.etherscan.io/token/0xe453d6649643f1f460c371dc3d1da98f7922fe51
+    </a>
+    <br />
+    Arbitrum (ARB): 0x6b021b3f68491974bE6D4009fEe61a4e3C708fD6
+    <br />
+    <a
+      href="https://arbiscan.io/token/0x6b021b3f68491974be6d4009fee61a4e3c708fd6"
+      className="underline"
+    >
+      https://arbiscan.io/token/0x6b021b3f68491974be6d4009fee61a4e3c708fd6
+    </a>
+    <br />
+    Polygon (MATIC): 0x6b021b3f68491974bE6D4009fEe61a4e3C708fD6
+    <br />
+    <a
+      href="https://polygonscan.com/token/0x6b021b3f68491974be6d4009fee61a4e3c708fd6"
+      className="underline"
+    >
+      https://polygonscan.com/token/0x6b021b3f68491974be6d4009fee61a4e3c708fd6
+    </a>
+  </p>,
+  <p key="9">
+    Blockchain gas fees are calculated based on the complexity of the
+    transaction or contract interaction on the network. Every operation, such as
+    sending tokens, interacting with a contract, or transferring assets,
+    requires a certain amount of computational work measured in
+    &ldquo;gas.&rdquo;
+    <br />
+    The total gas fee is determined by multiplying the gas used by the gas
+    price, which is set by the user and measured in units like gwei for
+    Ethereum.
+  </p>,
+];
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -284,311 +366,314 @@ const Home = () => {
   return (
     <>
       <Transactions isOpen={isOpen} onToggle={setIsOpen} />
-      <div className="w-8/9 flex md:w-9/10 main relative max-w-7xl md:flex-col">
-        <div className="flex flex-col pt-14 w-2/3 me-[100px] md:w-full">
-          <span className="flex items-center">
-            <h1 className="font-black text-4xl md:text-[32px] ">Bridge</h1>
-            <Pill
-              text="Beta"
-              type="success"
-              className="ml-3 text-base font-medium"
-            />
-          </span>
-          <p className="text-text-heading-gray text-base mt-4">
-            The Fuse Bridge allows you to move funds from different networks and
-            centralized exchanges to Fuse.
-          </p>
-          <Disclaimer />
-          <ToastPane className="md:hidden" />
-        </div>
-        <div className="flex-col items-center flex pt-14 md:w-full md:pt-0 md:mt-3">
-          <span
-            className="flex bg-white ms-auto px-2 items-center rounded-md cursor-pointer"
-            onClick={() => {
-              setIsOpen(true);
-            }}
-          >
-            <img src={history.src} alt="history" className="h-9" />
-            <p className="font-medium ml-1 text-sm md:text-xs">History</p>
-          </span>
-          <motion.div className="flex bg-white w-[525px] mt-3 rounded-lg px-8 pt-8 pb-9 flex-col max-w-full md:p-5">
-            <div className="flex w-full bg-modal-bg rounded-md p-[2px]">
-              {filters.map((filter, index) => {
-                return (
-                  <motion.p
-                    className={
-                      selected === index
-                        ? "text-primary font-semibold py-2 rounded-md cursor-pointer w-1/2 bg-white text-center text-sm md:text-xs"
-                        : "text-primary font-medium py-2 cursor-pointer w-1/2 text-center text-sm md:text-xs"
-                    }
-                    onClick={() => {
-                      setSelected(index);
-                      if (isExchange) return;
-                      if (index === 1) {
-                        if (withdrawSelectedChainSection === 1) {
-                          setIsDisabledChain(true);
-                          return;
+      <div className="flex flex-col main w-8/9 md:w-9/10 max-w-7xl md:flex-col">
+        <div className="flex relative md:flex-col">
+          <div className="flex flex-col pt-14 w-2/3 me-[100px] md:w-full">
+            <span className="flex items-center">
+              <h1 className="font-black text-4xl md:text-[32px] ">Bridge</h1>
+              <Pill
+                text="Beta"
+                type="success"
+                className="ml-3 text-base font-medium"
+              />
+            </span>
+            <p className="text-text-heading-gray text-base mt-4">
+              The Fuse Bridge allows you to move funds from different networks
+              and centralized exchanges to Fuse.
+            </p>
+            <Disclaimer />
+            <ToastPane className="md:hidden" />
+          </div>
+          <div className="flex-col items-center flex pt-14 md:w-full md:pt-0 md:mt-3">
+            <span
+              className="flex bg-white ms-auto px-2 items-center rounded-md cursor-pointer"
+              onClick={() => {
+                setIsOpen(true);
+              }}
+            >
+              <img src={history.src} alt="history" className="h-9" />
+              <p className="font-medium ml-1 text-sm md:text-xs">History</p>
+            </span>
+            <motion.div className="flex bg-white w-[525px] mt-3 rounded-lg px-8 pt-8 pb-9 flex-col max-w-full md:p-5">
+              <div className="flex w-full bg-modal-bg rounded-md p-[2px]">
+                {filters.map((filter, index) => {
+                  return (
+                    <motion.p
+                      className={
+                        selected === index
+                          ? "text-primary font-semibold py-2 rounded-md cursor-pointer w-1/2 bg-white text-center text-sm md:text-xs"
+                          : "text-primary font-medium py-2 cursor-pointer w-1/2 text-center text-sm md:text-xs"
+                      }
+                      onClick={() => {
+                        setSelected(index);
+                        if (isExchange) return;
+                        if (index === 1) {
+                          if (withdrawSelectedChainSection === 1) {
+                            setIsDisabledChain(true);
+                            return;
+                          } else {
+                            setIsDisabledChain(false);
+                          }
+                          dispatch(
+                            setChain({
+                              chainId: 122,
+                              icon: fuseToken,
+                              lzChainId: 138,
+                              name: "Fuse",
+                              rpcUrl: "https://rpc.fuse.io",
+                              tokens: [],
+                              wrapped: appConfig.wrappedBridge.fuse.wrapped,
+                            })
+                          );
+                          dispatch(
+                            estimateWrappedFee({
+                              contractAddress:
+                                appConfig.wrappedBridge.fuse.wrapped,
+                              lzChainId:
+                                appConfig.wrappedBridge.chains[
+                                  withdrawSelectedChainItem
+                                ].lzChainId,
+                              rpcUrl: "https://rpc.fuse.io",
+                            })
+                          );
                         } else {
-                          setIsDisabledChain(false);
-                        }
-                        dispatch(
-                          setChain({
-                            chainId: 122,
-                            icon: fuseToken,
-                            lzChainId: 138,
-                            name: "Fuse",
-                            rpcUrl: "https://rpc.fuse.io",
-                            tokens: [],
-                            wrapped: appConfig.wrappedBridge.fuse.wrapped,
-                          })
-                        );
-                        dispatch(
-                          estimateWrappedFee({
-                            contractAddress:
-                              appConfig.wrappedBridge.fuse.wrapped,
-                            lzChainId:
+                          if (depositSelectedChainSection === 1) {
+                            setIsDisabledChain(true);
+                            return;
+                          } else {
+                            setIsDisabledChain(false);
+                          }
+                          dispatch(
+                            setChain(
                               appConfig.wrappedBridge.chains[
-                                withdrawSelectedChainItem
-                              ].lzChainId,
-                            rpcUrl: "https://rpc.fuse.io",
-                          })
-                        );
+                                depositSelectedChainItem
+                              ]
+                            )
+                          );
+                          dispatch(
+                            estimateOriginalFee({
+                              contractAddress:
+                                appConfig.wrappedBridge.chains[
+                                  depositSelectedChainItem
+                                ].original,
+                              rpcUrl:
+                                appConfig.wrappedBridge.chains[
+                                  depositSelectedChainItem
+                                ].rpcUrl,
+                            })
+                          );
+                        }
+                      }}
+                      key={index}
+                    >
+                      {filter}
+                    </motion.p>
+                  );
+                })}
+              </div>
+              {selected === 0 ? (
+                <Deposit
+                  selectedChainItem={depositSelectedChainItem}
+                  selectedChainSection={depositSelectedChainSection}
+                  setSelectedChainItem={setDepositSelectedChainItem}
+                  setSelectedChainSection={setDepositSelectedChainSection}
+                  selectedTokenItem={depositSelectedTokenItem}
+                  selectedTokenSection={depositSelectedTokenSection}
+                  setSelectedTokenItem={setDepositSelectedTokenItem}
+                  setSelectedTokenSection={setDepositSelectedTokenSection}
+                  onSwitch={(
+                    tokenSection,
+                    tokenItem,
+                    chainSection,
+                    chainItem
+                  ) => {
+                    setWithdrawSelectedChainSection(chainSection);
+                    setWithdrawSelectedChainItem(chainItem);
+                    setWithdrawSelectedTokenSection(tokenSection);
+                    setWithdrawSelectedTokenItem(tokenItem);
+                    setSelected(1);
+                  }}
+                  amount={amount}
+                  setAmount={setAmount}
+                  setDisplayButton={setDisplayButton}
+                  isExchange={isExchange}
+                  setIsExchange={setIsExchange}
+                  isDisabledChain={isDisabledChain}
+                  setIsDisabledChain={setIsDisabledChain}
+                  pendingPromise={pendingPromise}
+                  setPendingPromise={setPendingPromise}
+                />
+              ) : (
+                <Withdraw
+                  selectedChainItem={withdrawSelectedChainItem}
+                  selectedChainSection={withdrawSelectedChainSection}
+                  setSelectedChainItem={setWithdrawSelectedChainItem}
+                  setSelectedChainSection={setWithdrawSelectedChainSection}
+                  selectedTokenItem={withdrawSelectedTokenItem}
+                  selectedTokenSection={withdrawSelectedTokenSection}
+                  setSelectedTokenItem={setWithdrawSelectedTokenItem}
+                  setSelectedTokenSection={setWithdrawSelectedTokenSection}
+                  onSwitch={(
+                    tokenSection,
+                    tokenItem,
+                    chainSection,
+                    chainItem
+                  ) => {
+                    setDepositSelectedChainSection(chainSection);
+                    setDepositSelectedChainItem(chainItem);
+                    setDepositSelectedTokenSection(tokenSection);
+                    setDepositSelectedTokenItem(tokenItem);
+                    setSelected(0);
+                  }}
+                  amount={amount}
+                  setAmount={setAmount}
+                  isDisabledChain={isDisabledChain}
+                  setIsDisabledChain={setIsDisabledChain}
+                  setDisplayButton={setDisplayButton}
+                  pendingPromise={pendingPromise}
+                  setPendingPromise={setPendingPromise}
+                />
+              )}
+              {!isConnected && displayButton ? (
+                <ConnectWallet
+                  className="mt-6 py-4 w-full"
+                  disableAccountCenter
+                />
+              ) : displayButton &&
+                selected === 1 &&
+                !appConfig.wrappedBridge.chains[withdrawSelectedChainItem]
+                  .tokens[withdrawSelectedTokenItem].isNative &&
+                parseFloat(amount) > parseFloat(balanceSlice.liquidity) ? (
+                <Button
+                  className="bg-[#FFEBE9] text-[#FD0F0F] px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
+                  disabled
+                  text="No Liquidity"
+                />
+              ) : displayButton &&
+                parseFloat(amount) > parseFloat(balanceSlice.balance) ? (
+                // || parseFloat(amount) > 10000
+                // || parseFloat(amount) < 0.5
+                <Button
+                  className="bg-[#FFEBE9] text-[#FD0F0F] px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
+                  disabled
+                  text={
+                    parseFloat(amount) > parseFloat(balanceSlice.balance)
+                      ? `Insufficient ${
+                          appConfig.wrappedBridge.chains[
+                            selected
+                              ? withdrawSelectedChainItem
+                              : depositSelectedChainItem
+                          ].tokens[
+                            selected
+                              ? withdrawSelectedTokenItem
+                              : depositSelectedTokenItem
+                          ].symbol
+                        } Balance`
+                      : parseFloat(amount) > 10000
+                      ? "Exceeds Daily Limit"
+                      : "Minimum 0.5"
+                  }
+                />
+              ) : (
+                displayButton && (
+                  <Button
+                    className="bg-fuse-black text-white px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
+                    onClick={async () => {
+                      if (selected === 1 && chain?.id !== fuse.id) {
+                        await switchNetwork({
+                          chainId: fuse.id,
+                        });
                       } else {
-                        if (depositSelectedChainSection === 1) {
-                          setIsDisabledChain(true);
-                          return;
-                        } else {
-                          setIsDisabledChain(false);
+                        if (!isConnected) return;
+                        if (!amount) return;
+                        if (
+                          selected === 1 &&
+                          appConfig.wrappedBridge.chains[
+                            withdrawSelectedChainItem
+                          ].tokens[withdrawSelectedTokenItem].isNative
+                        ) {
+                          handleWithdraw();
+                        } else if (
+                          parseFloat(balanceSlice.approval) < parseFloat(amount)
+                        ) {
+                          handleIncreaseAllowance();
+                        } else if (selected === 0) {
+                          handleDeposit();
+                        } else if (selected === 1) {
+                          handleWithdraw();
                         }
-                        dispatch(
-                          setChain(
-                            appConfig.wrappedBridge.chains[
-                              depositSelectedChainItem
-                            ]
-                          )
-                        );
-                        dispatch(
-                          estimateOriginalFee({
-                            contractAddress:
-                              appConfig.wrappedBridge.chains[
-                                depositSelectedChainItem
-                              ].original,
-                            rpcUrl:
-                              appConfig.wrappedBridge.chains[
-                                depositSelectedChainItem
-                              ].rpcUrl,
-                          })
-                        );
                       }
                     }}
-                    key={index}
-                  >
-                    {filter}
-                  </motion.p>
-                );
-              })}
-            </div>
-            {selected === 0 ? (
-              <Deposit
-                selectedChainItem={depositSelectedChainItem}
-                selectedChainSection={depositSelectedChainSection}
-                setSelectedChainItem={setDepositSelectedChainItem}
-                setSelectedChainSection={setDepositSelectedChainSection}
-                selectedTokenItem={depositSelectedTokenItem}
-                selectedTokenSection={depositSelectedTokenSection}
-                setSelectedTokenItem={setDepositSelectedTokenItem}
-                setSelectedTokenSection={setDepositSelectedTokenSection}
-                onSwitch={(
-                  tokenSection,
-                  tokenItem,
-                  chainSection,
-                  chainItem
-                ) => {
-                  setWithdrawSelectedChainSection(chainSection);
-                  setWithdrawSelectedChainItem(chainItem);
-                  setWithdrawSelectedTokenSection(tokenSection);
-                  setWithdrawSelectedTokenItem(tokenItem);
-                  setSelected(1);
-                }}
-                amount={amount}
-                setAmount={setAmount}
-                setDisplayButton={setDisplayButton}
-                isExchange={isExchange}
-                setIsExchange={setIsExchange}
-                isDisabledChain={isDisabledChain}
-                setIsDisabledChain={setIsDisabledChain}
-                pendingPromise={pendingPromise}
-                setPendingPromise={setPendingPromise}
-              />
-            ) : (
-              <Withdraw
-                selectedChainItem={withdrawSelectedChainItem}
-                selectedChainSection={withdrawSelectedChainSection}
-                setSelectedChainItem={setWithdrawSelectedChainItem}
-                setSelectedChainSection={setWithdrawSelectedChainSection}
-                selectedTokenItem={withdrawSelectedTokenItem}
-                selectedTokenSection={withdrawSelectedTokenSection}
-                setSelectedTokenItem={setWithdrawSelectedTokenItem}
-                setSelectedTokenSection={setWithdrawSelectedTokenSection}
-                onSwitch={(
-                  tokenSection,
-                  tokenItem,
-                  chainSection,
-                  chainItem
-                ) => {
-                  setDepositSelectedChainSection(chainSection);
-                  setDepositSelectedChainItem(chainItem);
-                  setDepositSelectedTokenSection(tokenSection);
-                  setDepositSelectedTokenItem(tokenItem);
-                  setSelected(0);
-                }}
-                amount={amount}
-                setAmount={setAmount}
-                isDisabledChain={isDisabledChain}
-                setIsDisabledChain={setIsDisabledChain}
-                setDisplayButton={setDisplayButton}
-                pendingPromise={pendingPromise}
-                setPendingPromise={setPendingPromise}
-              />
-            )}
-            {!isConnected && displayButton ? (
-              <ConnectWallet
-                className="mt-6 py-4 w-full"
-                disableAccountCenter
-              />
-            ) : displayButton &&
-              selected === 1 &&
-              !appConfig.wrappedBridge.chains[withdrawSelectedChainItem].tokens[
-                withdrawSelectedTokenItem
-              ].isNative &&
-              parseFloat(amount) > parseFloat(balanceSlice.liquidity) ? (
-              <Button
-                className="bg-[#FFEBE9] text-[#FD0F0F] px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
-                disabled
-                text="No Liquidity"
-              />
-            ) : displayButton &&
-              parseFloat(amount) > parseFloat(balanceSlice.balance) ? (
-              // || parseFloat(amount) > 10000
-              // || parseFloat(amount) < 0.5
-              <Button
-                className="bg-[#FFEBE9] text-[#FD0F0F] px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
-                disabled
-                text={
-                  parseFloat(amount) > parseFloat(balanceSlice.balance)
-                    ? `Insufficient ${
-                        appConfig.wrappedBridge.chains[
-                          selected
-                            ? withdrawSelectedChainItem
-                            : depositSelectedChainItem
-                        ].tokens[
-                          selected
-                            ? withdrawSelectedTokenItem
-                            : depositSelectedTokenItem
-                        ].symbol
-                      } Balance`
-                    : parseFloat(amount) > 10000
-                    ? "Exceeds Daily Limit"
-                    : "Minimum 0.5"
-                }
-              />
-            ) : (
-              displayButton && (
-                <Button
-                  className="bg-fuse-black text-white px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
-                  onClick={async () => {
-                    if (selected === 1 && chain?.id !== fuse.id) {
-                      await switchNetwork({
-                        chainId: fuse.id,
-                      });
-                    } else {
-                      if (!isConnected) return;
-                      if (!amount) return;
-                      if (
-                        selected === 1 &&
-                        appConfig.wrappedBridge.chains[
-                          withdrawSelectedChainItem
-                        ].tokens[withdrawSelectedTokenItem].isNative
-                      ) {
-                        handleWithdraw();
-                      } else if (
-                        parseFloat(balanceSlice.approval) < parseFloat(amount)
-                      ) {
-                        handleIncreaseAllowance();
-                      } else if (selected === 0) {
-                        handleDeposit();
-                      } else if (selected === 1) {
-                        handleWithdraw();
-                      }
+                    disabled={
+                      (selected === 1 && chain?.id === fuse.id) ||
+                      selected === 0
+                        ? balanceSlice.isApprovalLoading ||
+                          contractSlice.isBridgeLoading ||
+                          contractSlice.isApprovalLoading ||
+                          balanceSlice.isBalanceLoading ||
+                          !amount ||
+                          parseFloat(amount) === 0 ||
+                          isNaN(parseFloat(amount))
+                        : false
                     }
-                  }}
-                  disabled={
-                    (selected === 1 && chain?.id === fuse.id) || selected === 0
-                      ? balanceSlice.isApprovalLoading ||
-                        contractSlice.isBridgeLoading ||
-                        contractSlice.isApprovalLoading ||
-                        balanceSlice.isBalanceLoading ||
-                        !amount ||
-                        parseFloat(amount) === 0 ||
-                        isNaN(parseFloat(amount))
-                      : false
-                  }
-                  text={
-                    contractSlice.isBridgeLoading ||
-                    contractSlice.isApprovalLoading
-                      ? "Loading..."
-                      : selected === 1 && chain?.id !== fuse.id
-                      ? "Switch To Fuse"
-                      : selected === 1 &&
-                        appConfig.wrappedBridge.chains[
-                          withdrawSelectedChainItem
-                        ].tokens[withdrawSelectedTokenItem].isNative
-                      ? "Bridge"
-                      : parseFloat(balanceSlice.approval) < parseFloat(amount)
-                      ? "Approve"
-                      : "Bridge"
-                  }
-                  disabledClassname="bg-fuse-black/20 text-black px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
-                />
-              )
-            )}
-          </motion.div>
-          <motion.div className="flex bg-white w-[525px] mt-2 rounded-lg px-8 py-5 flex-col font-medium text-sm max-w-full md:text-xs">
-            <div className="flex justify-between">
-              <span className="text-black/50">Bridge Fee</span>
-              <span>Free</span>
-            </div>
-            <div className="flex justify-between mt-2">
-              <span className="text-black/50">Gas Estimation</span>
-              {feeSlice.isGasFeeLoading ? (
-                <span className="px-14 rounded-md animate-pulse bg-fuse-black/10"></span>
-              ) : !(isExchange || isDisabledChain) ? (
-                <span>
-                  {feeSlice.gasFee}{" "}
-                  {
-                    getNativeCurrency(
-                      getChainKey(
-                        selected === 0
-                          ? appConfig.wrappedBridge.chains[
-                              depositSelectedChainItem
-                            ].lzChainId
-                          : 138
-                      )
-                    ).symbol
-                  }
-                </span>
-              ) : (
-                <></>
+                    text={
+                      contractSlice.isBridgeLoading ||
+                      contractSlice.isApprovalLoading
+                        ? "Loading..."
+                        : selected === 1 && chain?.id !== fuse.id
+                        ? "Switch To Fuse"
+                        : selected === 1 &&
+                          appConfig.wrappedBridge.chains[
+                            withdrawSelectedChainItem
+                          ].tokens[withdrawSelectedTokenItem].isNative
+                        ? "Bridge"
+                        : parseFloat(balanceSlice.approval) < parseFloat(amount)
+                        ? "Approve"
+                        : "Bridge"
+                    }
+                    disabledClassname="bg-fuse-black/20 text-black px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
+                  />
+                )
               )}
-            </div>
-            {/* <div className="flex justify-between mt-2">
+            </motion.div>
+            <motion.div className="flex bg-white w-[525px] mt-2 rounded-lg px-8 py-5 flex-col font-medium text-sm max-w-full md:text-xs">
+              <div className="flex justify-between">
+                <span className="text-black/50">Bridge Fee</span>
+                <span>Free</span>
+              </div>
+              <div className="flex justify-between mt-2">
+                <span className="text-black/50">Gas Estimation</span>
+                {feeSlice.isGasFeeLoading ? (
+                  <span className="px-14 rounded-md animate-pulse bg-fuse-black/10"></span>
+                ) : !(isExchange || isDisabledChain) ? (
+                  <span>
+                    {feeSlice.gasFee}{" "}
+                    {
+                      getNativeCurrency(
+                        getChainKey(
+                          selected === 0
+                            ? appConfig.wrappedBridge.chains[
+                                depositSelectedChainItem
+                              ].lzChainId
+                            : 138
+                        )
+                      ).symbol
+                    }
+                  </span>
+                ) : (
+                  <></>
+                )}
+              </div>
+              {/* <div className="flex justify-between mt-2">
               <span className="text-black/50">Daily Limits</span>
               <span>0.5 Min - 10,000 max</span>
             </div> */}
-          </motion.div>
-          <ToastPane className="hidden md:flex" />
-          <Footer />
+            </motion.div>
+            <ToastPane className="hidden md:flex" />
+            <Footer />
+          </div>
         </div>
+        <FAQ className="mt-28 mb-16" questions={faqs} answers={faqAnswers} />
       </div>
     </>
   );
