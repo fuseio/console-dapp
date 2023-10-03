@@ -4,6 +4,7 @@ import { exchangeConfig, appConfig } from "@/lib/config";
 import Dropdown from "@/components/ui/Dropdown";
 import switchImg from "@/assets/switch.svg";
 import fuseToken from "@/assets/tokenLogo";
+import metamask from "@/assets/metamask.svg";
 import { selectChainSlice, setChain } from "@/store/chainSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchBalance, selectBalanceSlice } from "@/store/balanceSlice";
@@ -260,7 +261,9 @@ const Deposit = ({
                   >
                     <img src={bridge.icon} alt="icon" />
                     <div className="flex flex-col ml-3">
-                      <p className="font-semibold text-base md:text-sm">{bridge.name}</p>
+                      <p className="font-semibold text-base md:text-sm">
+                        {bridge.name}
+                      </p>
                       <p className="font-medium text-[#898888] text-sm md:text-xs">
                         {bridge.website}
                       </p>
@@ -363,25 +366,56 @@ const Deposit = ({
               }}
             />
           </div>
-          <div className="flex bg-modal-bg rounded-md px-4 py-[10px] mt-3 w-full flex-col">
-            <span className="font-semibold text-base md:text-sm">
-              To
-              <img
-                src={sFuse.src}
-                alt="sFuse"
-                className="inline-block ml-2 mr-2 h-7"
-              />
-              Fuse Network
-            </span>
-            <span className="font-medium mt-1 text-sm md:text-xs">
-              You will receive{" "}
-              {amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0}{" "}
-              {
-                appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                  selectedTokenItem
-                ].symbol
-              }
-            </span>
+          <div className="flex bg-modal-bg rounded-md px-4 py-[10px] mt-3 w-full justify-between items-center">
+            <div className="flex flex-col">
+              <span className="font-semibold text-base">
+                To
+                <img
+                  src={sFuse.src}
+                  alt="sFuse"
+                  className="inline-block ml-2 mr-2 h-7"
+                />
+                Fuse Network
+              </span>
+              <span className="font-medium mt-1 text-sm">
+                You will receive{" "}
+                {amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0}{" "}
+                {
+                  appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                    selectedTokenItem
+                  ].symbol
+                }
+              </span>
+            </div>
+            {appConfig.wrappedBridge.fuse.tokens[selectedTokenItem].address && (
+              <div
+                className="flex px-[10px] py-2 bg-white rounded-lg cursor-pointer text-xs font-medium items-center"
+                onClick={() => {
+                  // @ts-ignore
+                  window.ethereum.request({
+                    method: "wallet_watchAsset",
+                    params: {
+                      type: "ERC20",
+                      options: {
+                        address:
+                          appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
+                            .address,
+                        symbol:
+                          appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
+                            .symbol,
+                        decimals:
+                          appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
+                            .decimals,
+                        chainId: 138,
+                      },
+                    },
+                  });
+                }}
+              >
+                <img src={metamask.src} alt="metamask" className="h-5 mr-1" />
+                Add Token
+              </div>
+            )}
           </div>
         </>
       )}

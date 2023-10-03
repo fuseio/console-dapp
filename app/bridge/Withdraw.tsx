@@ -4,6 +4,7 @@ import { appConfig } from "@/lib/config";
 import Dropdown from "@/components/ui/Dropdown";
 import switchImg from "@/assets/switch.svg";
 import fuseToken from "@/assets/tokenLogo";
+import metamask from "@/assets/metamask.svg";
 import {
   selectBalanceSlice,
   fetchBalance,
@@ -320,19 +321,54 @@ const Withdraw = ({
             }
           }}
         />
-        <span className="text-black/50 font-medium mt-3 text-sm md:text-xs">
-          You will receive:{" "}
-          <span className="text-black font-medium">
-            {" "}
-            {amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0}{" "}
-            <span className="font-bold">
-              {
-                appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                  selectedTokenItem
-                ].symbol
-              }
+        <span className="text-black/50 font-medium mt-3 text-sm flex items-center justify-between">
+          <span>
+            You will receive: <br />
+            <span className="text-black font-medium">
+              {" "}
+              {amount && !isNaN(parseFloat(amount))
+                ? parseFloat(amount)
+                : 0}{" "}
+              <span className="font-bold">
+                {
+                  appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                    selectedTokenItem
+                  ].symbol
+                }
+              </span>
             </span>
           </span>
+          <div
+            className="flex px-[10px] py-2 bg-white rounded-lg cursor-pointer text-xs font-medium items-center text-black"
+            onClick={() => {
+              // @ts-ignore
+              window.ethereum.request({
+                method: "wallet_watchAsset",
+                params: {
+                  type: "ERC20",
+                  options: {
+                    address:
+                      appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                        selectedTokenItem
+                      ].address,
+                    symbol:
+                      appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                        selectedTokenItem
+                      ].symbol,
+                    decimals:
+                      appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                        selectedTokenItem
+                      ].decimals,
+                    chainId:
+                      appConfig.wrappedBridge.chains[selectedChainItem].chainId,
+                  },
+                },
+              });
+            }}
+          >
+            <img src={metamask.src} alt="metamask" className="h-5 mr-1" />
+            Add Token
+          </div>
         </span>
       </div>
       {isDisabledChain && (
