@@ -1,7 +1,12 @@
 import React from "react";
 import right from "@/assets/right.svg";
+import info from "@/assets/info.svg";
 import { MessageStatus } from "@layerzerolabs/scan-client";
-import { getNetworkByChainKey, getScanLink } from "@layerzerolabs/ui-core";
+import {
+  getEstimatedTransactionTime,
+  getNetworkByChainKey,
+  getScanLink,
+} from "@layerzerolabs/ui-core";
 import { getChainKey } from "@layerzerolabs/lz-sdk";
 import { TransactionType } from "@/store/transactionsSlice";
 import Pill from "./Pill";
@@ -15,7 +20,7 @@ const Transaction = ({
 }) => {
   return (
     <div
-      className="flex justify-between px-10 py-5 bg-transaction-bg w-full rounded-md mt-3 border-border-gray border-solid border font-medium cursor-pointer text-sm"
+      className="flex flex-col justify-between px-10 md:px-4 py-5 md:py-3 bg-transaction-bg w-full rounded-md mt-3 border-border-gray border-solid border font-medium cursor-pointer text-sm min-h-24 items-center"
       onClick={() => {
         window.open(
           getScanLink(transactionHashes.srcChainId, transactionHashes.hash),
@@ -23,33 +28,61 @@ const Transaction = ({
         );
       }}
     >
-      <div className="flex w-[25%] justify-between">
-        <span>
-          {getNetworkByChainKey(getChainKey(transactionHashes.srcChainId)).name}
+      <div className="grid-cols-12 grid md:grid-cols-6 w-full justify-between gap-y-4">
+        <div className="flex col-span-4 justify-between md:col-span-4">
+          <span>
+            {
+              getNetworkByChainKey(getChainKey(transactionHashes.srcChainId))
+                .name
+            }
+          </span>
+          <img src={right.src} alt="right" className="h-3" />
+          <span>
+            {
+              getNetworkByChainKey(getChainKey(transactionHashes.dstChainId))
+                .name
+            }
+          </span>
+        </div>
+        <span className="col-span-3 md:col-span-2 md:text-right text-center">
+          {transactionHashes.amount}
         </span>
-        <img src={right.src} alt="right" className="h-3" />
-        <span>
-          {getNetworkByChainKey(getChainKey(transactionHashes.dstChainId)).name}
+        <span className="col-span-3 md:text-left md:col-span-4 text-center">
+          {new Date(transactionHashes.timestamp).toLocaleDateString()}
+        </span>
+        <span className="col-span-2 justify-end ml-auto">
+          <Pill
+            text={
+              transaction === MessageStatus.DELIVERED
+                ? "Complete"
+                : transaction === MessageStatus.INFLIGHT
+                ? "Finishing"
+                : "Failed"
+            }
+            type={
+              transaction === MessageStatus.DELIVERED
+                ? "success"
+                : transaction === MessageStatus.INFLIGHT
+                ? "warning"
+                : "error"
+            }
+            className="mr-auto"
+          />
         </span>
       </div>
-      <span className="w-[15%] flex justify-center text-right">{transactionHashes.amount}</span>
-      <span className="w-[15%] flex justify-center" >{new Date(transactionHashes.timestamp).toLocaleDateString()}</span>
-      <Pill
-        text={
-          transaction === MessageStatus.DELIVERED
-            ? "Complete"
-            : transaction === MessageStatus.INFLIGHT
-            ? "Finishing"
-            : "Failed"
-        }
-        type={
-          transaction === MessageStatus.DELIVERED
-            ? "success"
-            : transaction === MessageStatus.INFLIGHT
-            ? "warning"
-            : "error"
-        }
-      />
+      {transaction === MessageStatus.INFLIGHT && (
+        <div className="flex rounded-md px-3 md:px-2 py-[6px] bg-[#E9E9E9] mt-3 items-center mr-auto md:text-[10px]">
+          <img src={info.src} alt="info" className="h-3 mr-2 md:mr-1" />
+          <span className="text-xs flex">
+            Expected transaction completion time:{" "}
+            <p className="font-semibold ml-1">
+              {(
+                getEstimatedTransactionTime(transactionHashes.srcChainId) / 60
+              ).toFixed(1) + " min"}
+            </p>
+          </span>
+        </div>
+      )}
     </div>
   );
 };

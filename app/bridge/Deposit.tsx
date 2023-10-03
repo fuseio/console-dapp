@@ -173,10 +173,10 @@ const Deposit = ({
           <>
             <span className="font-medium mt-2 text-xs">Amount</span>
             <div className="flex w-full items-center mt-2">
-              <div className="bg-white p-4 rounded-s-md border-[1px] border-border-gray w-2/3">
+              <div className="bg-white p-4 md:p-2 rounded-s-md border-[1px] border-border-gray w-2/3 md:w-3/5">
                 <input
                   type="text"
-                  className="w-full bg-transparent focus:outline-none text-sm"
+                  className="w-full bg-transparent focus:outline-none text-sm md:text-xs"
                   placeholder="0.00"
                   value={amount}
                   onChange={(e) => {
@@ -201,7 +201,7 @@ const Deposit = ({
                 ]}
                 selectedSection={selectedTokenSection}
                 selectedItem={selectedTokenItem}
-                className="rounded-e-md rounded-s-none border-s-0 w-1/3"
+                className="rounded-e-md rounded-s-none border-s-0 w-1/3 md:w-2/5"
                 onClick={(section, item) => {
                   setSelectedTokenSection(section);
                   setSelectedTokenItem(item);
@@ -222,11 +222,11 @@ const Deposit = ({
       </div>
       {isExchange ? (
         <>
-          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm">
-            <div className="flex p-2 w-[15%] items-start">
+          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm md:text-xs md:flex-col">
+            <div className="flex p-2 w-[15%] items-start md:p-0">
               <img src={alert.src} alt="warning" className="h-5" />
             </div>
-            <div className="flex flex-col font-medium">
+            <div className="flex flex-col font-medium md:mt-2">
               <p>
                 To move tokens from{" "}
                 {exchangeConfig.exchanges[selectedChainItem].name} to Fuse you
@@ -255,13 +255,13 @@ const Deposit = ({
                   }}
                 >
                   <div
-                    className="flex mt-2 bg-modal-bg py-4 px-5 rounded-md items-center cursor-pointer"
+                    className="flex mt-2 bg-modal-bg py-4 px-5 md:py-2 md:px-3 rounded-md items-center cursor-pointer"
                     key={i}
                   >
                     <img src={bridge.icon} alt="icon" />
                     <div className="flex flex-col ml-3">
-                      <p className="font-semibold text-base">{bridge.name}</p>
-                      <p className="font-medium text-[#898888] text-sm">
+                      <p className="font-semibold text-base md:text-sm">{bridge.name}</p>
+                      <p className="font-medium text-[#898888] text-sm md:text-xs">
                         {bridge.website}
                       </p>
                     </div>
@@ -274,7 +274,7 @@ const Deposit = ({
         </>
       ) : isDisabledChain ? (
         <>
-          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm">
+          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm md:text-xs">
             <div className="flex p-2 w-[10%] items-start">
               <img src={alert.src} alt="warning" className="h-5" />
             </div>
@@ -324,7 +324,7 @@ const Deposit = ({
                       .appName
                   }
                 </p>
-                <p className="font-medium text-[#898888] text-sm">
+                <p className="font-medium text-[#898888] text-sm md:text-xs">
                   {
                     appConfig.wrappedBridge.disabledChains[selectedChainItem]
                       .appURL
@@ -364,7 +364,7 @@ const Deposit = ({
             />
           </div>
           <div className="flex bg-modal-bg rounded-md px-4 py-[10px] mt-3 w-full flex-col">
-            <span className="font-semibold text-base">
+            <span className="font-semibold text-base md:text-sm">
               To
               <img
                 src={sFuse.src}
@@ -373,7 +373,7 @@ const Deposit = ({
               />
               Fuse Network
             </span>
-            <span className="font-medium mt-1 text-sm">
+            <span className="font-medium mt-1 text-sm md:text-xs">
               You will receive{" "}
               {amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0}{" "}
               {

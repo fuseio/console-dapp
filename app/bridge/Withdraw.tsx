@@ -187,10 +187,10 @@ const Withdraw = ({
               Fuse Network
             </span>
             <div className="flex w-full items-center mt-2">
-              <div className="bg-white w-2/3 p-4 rounded-s-md border-[1px] border-border-gray">
+              <div className="bg-white w-2/3 md:w-3/5 p-4 md:p-2 rounded-s-md border-[1px] border-border-gray">
                 <input
                   type="text"
-                  className="w-full bg-transparent focus:outline-none text-sm"
+                  className="w-full bg-transparent focus:outline-none text-sm md:text-xs"
                   placeholder="0.00"
                   value={amount}
                   onChange={(e) => {
@@ -215,7 +215,7 @@ const Withdraw = ({
                 ]}
                 selectedSection={selectedTokenSection}
                 selectedItem={selectedTokenItem}
-                className="rounded-e-md rounded-s-none border-s-0 w-1/3"
+                className="rounded-e-md rounded-s-none border-s-0 w-1/3 md:w-2/5"
                 onClick={(section, item) => {
                   setSelectedTokenSection(section);
                   setSelectedTokenItem(item);
@@ -306,7 +306,7 @@ const Withdraw = ({
             }
           }}
         />
-        <span className="text-black/50 font-medium mt-3 text-sm">
+        <span className="text-black/50 font-medium mt-3 text-sm md:text-xs">
           You will receive:{" "}
           <span className="text-black font-medium">
             {" "}
@@ -323,11 +323,11 @@ const Withdraw = ({
       </div>
       {isDisabledChain && (
         <>
-          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex">
-            <div className="flex p-2 w-[10%] items-start">
+          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex md:flex-col">
+            <div className="flex p-2 w-[10%] items-start md:p-0">
               <img src={alert.src} alt="warning" className="h-5" />
             </div>
-            <div className="flex flex-col font-medium text-sm">
+            <div className="flex flex-col font-medium text-sm md:text-xs md:mt-2">
               <p>
                 To move tokens from Fuse to{" "}
                 {
@@ -358,7 +358,7 @@ const Withdraw = ({
               });
             }}
           >
-            <div className="flex mt-2 bg-modal-bg py-4 px-5 rounded-md items-center cursor-pointer">
+            <div className="flex mt-2 bg-modal-bg py-4 px-5 rounded-md items-center cursor-pointer md:py-2 md:px-3">
               <img
                 src={
                   appConfig.wrappedBridge.disabledChains[selectedChainItem]
@@ -367,13 +367,13 @@ const Withdraw = ({
                 alt="icon"
               />
               <div className="flex flex-col ml-3">
-                <p className="font-semibold text-base">
+                <p className="font-semibold text-base md:text-sm">
                   {
                     appConfig.wrappedBridge.disabledChains[selectedChainItem]
                       .appName
                   }
                 </p>
-                <p className="font-medium text-[#898888] text-sm">
+                <p className="font-medium text-[#898888] text-sm md:text-[10px]">
                   {
                     appConfig.wrappedBridge.disabledChains[selectedChainItem]
                       .appURL

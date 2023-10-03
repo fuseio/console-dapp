@@ -55,7 +55,7 @@ const Transactions = ({
             transition={{
               duration: 0.3,
             }}
-            className="bg-white h-screen w-[50%] right-0 absolute p-6 flex flex-col items-start overflow-y-auto z-50"
+            className="bg-white h-screen w-[50%] right-0 absolute p-6 flex flex-col items-start overflow-y-auto z-50 md:hidden"
           >
             <img
               src={cross.src}
@@ -77,6 +77,30 @@ const Transactions = ({
                 />
               );
             })}
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, top: "100%" }}
+            animate={{ opacity: 1, top: "20%" }}
+            exit={{ opacity: 0, top: "100%" }}
+            transition={{
+              duration: 0.3,
+            }}
+            className="bg-white h-screen w-[100%] absolute p-6 flex-col items-start overflow-y-auto z-50 hidden md:flex rounded-lg"
+          >
+            <span className="text-base font-semibold mb-2">
+              Transactions History
+            </span>
+            <div className="flex w-full h-[75%] flex-col overflow-y-auto">
+              {transactionsSlice.transactions.map((transaction, i) => {
+                return (
+                  <Transaction
+                    transaction={transaction}
+                    transactionHashes={transactionsSlice.transactionHashes[i]}
+                    key={i}
+                  />
+                );
+              })}
+            </div>
           </motion.div>
         </motion.div>
       )}

@@ -60,9 +60,11 @@ const icons: Icons = {
 const ConnectWallet = ({
   disableAccountCenter = false,
   className = "",
+  containerClassName = "",
 }: {
   disableAccountCenter?: boolean;
   className?: string;
+  containerClassName?: string;
 }) => {
   const dispatch = useAppDispatch();
   const [isChainOpen, setIsChainOpen] = React.useState(false);
@@ -104,7 +106,7 @@ const ConnectWallet = ({
   }, [connector, chain]);
 
   return !isConnected ? (
-    <div className="flex w-[410px] md:w-[90%] justify-end md:me-2">
+    <div className={"flex justify-end " + containerClassName}>
       <button
         className={
           "bg-fuse-black text-white px-4 py-2 rounded-full font-medium md:text-sm " +

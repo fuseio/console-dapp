@@ -8,13 +8,13 @@ import { toggleLiquidityToast } from "@/store/toastSlice";
 const NoLiquidityToast = () => {
   const transactionsSlice = useAppSelector(selectTransactionsSlice);
   const dispatch = useAppDispatch();
-  return transactionsSlice.transactionHashes.length > 0 ? (
-    <div className="w-full rounded-md border-[#FD0F0F66]/40 border-[1px] bg-[#FFEBE9]">
+  return (
+    <div className="w-full rounded-md border-[#FD0F0F66]/40 border-[1px] bg-[#FFEBE9] md:mt-8">
       <div className="flex p-4">
         <img src={stop.src} alt="history" className="h-6 w-[5%]" />
         <div className="flex flex-col w-[95%] ml-3">
           <div className="flex items-center justify-between">
-            <p className="font-bold">No Liquidity</p>
+            <p className="font-bold md:text-sm">No Liquidity</p>
             <img
               src={dismiss.src}
               alt="dismiss"
@@ -24,7 +24,7 @@ const NoLiquidityToast = () => {
               }}
             />
           </div>
-          <p className="mt-1">
+          <p className="mt-1 md:text-sm">
             Unfortunately, at the moment there is not enough liquidity to
             complete the transaction. Choose a different token or a smaller
             amount.
@@ -32,8 +32,6 @@ const NoLiquidityToast = () => {
         </div>
       </div>
     </div>
-  ) : (
-    <></>
   );
 };
 
