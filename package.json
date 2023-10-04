@@ -23,6 +23,7 @@
     "@web3auth/ethereum-provider": "^7.0.2",
     "@web3auth/no-modal": "^7.0.1",
     "@web3auth/openlogin-adapter": "^7.0.1",
+    "@web3auth/torus-wallet-connector-plugin": "^7.0.1",
     "@web3auth/web3auth-wagmi-connector": "^5.0.0",
     "abitype": "^0.9.8",
     "autoprefixer": "10.4.15",

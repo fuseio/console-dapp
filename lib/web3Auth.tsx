@@ -2,6 +2,7 @@ import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { OpenloginAdapter, OPENLOGIN_NETWORK, LOGIN_PROVIDER_TYPE, ExtraLoginOptions } from "@web3auth/openlogin-adapter";
+import { TorusWalletConnectorPlugin } from "@web3auth/torus-wallet-connector-plugin";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { configureChains, createConfig } from "wagmi";
 import { NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID, NEXT_PUBLIC_WEB3AUTH_CLIENT_ID } from "./config";
@@ -57,6 +58,7 @@ export const config = createConfig({
   webSocketPublicClient,
 });
 
+const iconUrl = "https://news.fuse.io/wp-content/uploads/2023/10/fuse-white-icon.png";
 
 export default function Web3AuthConnectorInstance(loginProvider: LOGIN_PROVIDER_TYPE, extraLoginOptions?: ExtraLoginOptions) {
   const chainConfig = {
@@ -81,6 +83,22 @@ export default function Web3AuthConnectorInstance(loginProvider: LOGIN_PROVIDER_
     privateKeyProvider,
   });
   web3AuthInstance.configureAdapter(openloginAdapterInstance);
+
+  const torusPlugin = new TorusWalletConnectorPlugin({
+    torusWalletOpts: {
+      buttonPosition: "bottom-left",
+    },
+    walletInitOptions: {
+      whiteLabel: {
+        theme: { isDark: false, colors: { primary: "#00a8ff" } },
+        logoDark: iconUrl,
+        logoLight: iconUrl,
+      },
+      useWalletConnect: true,
+      enableLogging: true,
+    },
+  });
+  web3AuthInstance.addPlugin(torusPlugin);
 
   return new Web3AuthConnector({
     chains: chains,
