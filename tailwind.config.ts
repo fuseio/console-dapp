@@ -40,6 +40,7 @@ const config: Config = {
       "lighter-blue": "#EEF2F6",
       "fuse-green": "#20B92E",
       "fuse-green-light": "#B4F9BA",
+      "fuse-green-bright": "#8EFF98",
       white: "#FFFFFF",
       "fuse-black": "#1A1A1A",
       black: "#000000",

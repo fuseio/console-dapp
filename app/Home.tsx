@@ -61,7 +61,7 @@ const Home = () => {
                     Balance
                   </p>
                   <div className="flex items-end gap-x-[30px] md:gap-x-4">
-                    <h1 className="font-black text-5xl leading-none md:text-3xl whitespace-nowrap md:font-bold">
+                    <h1 className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
                       {new Intl.NumberFormat().format(
                         parseFloat(balance.data?.formatted ?? "0")
                       )} FUSE
@@ -81,9 +81,8 @@ const Home = () => {
                   <Button
                     text={"Buy Fuse"}
                     onClick={() => setIsTransfiOpen(true)}
-                    padding="py-5"
-                    className="flex items-center justify-center gap-x-2.5 w-40 bg-success text-black font-semibold rounded-full transition ease-in-out delay-150 hover:opacity-80"
-                    disabledClassname="flex items-center justify-center gap-x-2.5 w-40 bg-button-inactive text-black font-semibold rounded-full"
+                    padding="py-[17.73px]"
+                    className="flex items-center justify-center gap-x-2.5 w-40 bg-success text-black font-semibold rounded-full transition ease-in-out delay-150 hover:bg-fuse-green-bright"
                     isLeft
                   >
                     <img src={dollar.src} alt="dollar" />
@@ -92,7 +91,7 @@ const Home = () => {
                     text={"Stake"}
                     disabled={!isConnected}
                     onClick={() => router.push("/staking")}
-                    padding="py-5"
+                    padding="py-[17.73px]"
                     className="flex items-center justify-center gap-x-2.5 w-40 bg-white text-black font-semibold rounded-full transition ease-in-out delay-150 hover:opacity-80"
                     disabledClassname="flex items-center justify-center gap-x-2.5 w-40 bg-button-inactive text-black font-semibold rounded-full"
                     isLeft
@@ -103,7 +102,7 @@ const Home = () => {
                     text={"Bridge"}
                     disabled={!isConnected}
                     onClick={() => router.push("/bridge")}
-                    padding="py-5"
+                    padding="py-[17.73px]"
                     className="flex items-center justify-center gap-x-2.5 w-40 bg-white text-black font-semibold rounded-full transition ease-in-out delay-150 hover:opacity-80"
                     disabledClassname="flex items-center justify-center gap-x-2.5 w-40 bg-button-inactive text-black font-semibold rounded-full"
                     isLeft

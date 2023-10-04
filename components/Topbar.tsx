@@ -30,7 +30,7 @@ const Topbar = () => {
             <img
               src={fuseLogo.src}
               alt="fuse logo"
-              className="h-10 md:h-6 z-50 md:hidden"
+              className="h-6 z-50 md:hidden"
             />
             <img
               src={fuseLogoMobile.src}

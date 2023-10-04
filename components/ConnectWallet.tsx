@@ -171,7 +171,7 @@ const ConnectWallet = ({
           <Image
             src={down.src}
             alt="down"
-            className={`ms-2 ${isAccountsOpen && "rotate-180"} md:ms-1`}
+            className={`ms-2 mr-2 ${isAccountsOpen && "rotate-180"} md:ms-1`}
             width={10}
             height={10}
           />
@@ -255,7 +255,7 @@ const ConnectWallet = ({
               width={15}
               height={15}
             />
-            <p>{c.name}</p>
+            <p className="text-xs/3 font-medium">{c.name}</p>
             {chain?.id === c.id && (
               <>
                 <div className="h-[6px] w-[6px] rounded-full bg-[#66E070] ml-auto" />
