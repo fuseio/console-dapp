@@ -29,7 +29,7 @@ const WalletModal = (): JSX.Element => {
   const [connectingWalletId, setConnectingWalletId] = useState<string>("");
   const { connect, connectors } = useConnect();
   const emailRef = useRef<HTMLInputElement>(null);
-  const {isWalletModalOpen} = useAppSelector(selectNavbarSlice);
+  const { isWalletModalOpen } = useAppSelector(selectNavbarSlice);
   const dispatch = useAppDispatch();
   const { isConnected } = useAccount();
 
@@ -58,7 +58,7 @@ const WalletModal = (): JSX.Element => {
 
     if (isWeb3Auth) {
       setConnectingWalletId(`web3auth-${id}`);
-      connect({ connector: Web3AuthConnectorInstance(id as unknown as LOGIN_PROVIDER_TYPE)});
+      connect({ connector: Web3AuthConnectorInstance(id as unknown as LOGIN_PROVIDER_TYPE) });
       return;
     }
 
@@ -99,7 +99,7 @@ const WalletModal = (): JSX.Element => {
               transition={{
                 duration: 0.3,
               }}
-              className="bg-white min-h-[504px] w-[396px] max-w-[95%] z-50 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-lg p-5 items-center flex flex-col"
+              className="bg-white min-h-[400px] w-[396px] max-w-[95%] z-50 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-lg p-5 items-center flex flex-col"
             >
               <span className="flex w-full justify-between items-start">
                 <p className="text-[20px] font-bold">Connect Wallet</p>
@@ -123,7 +123,7 @@ const WalletModal = (): JSX.Element => {
                   What is Web3 wallet?
                 </a>
               </span>
-              <div className="grid grid-cols-2 w-full gap-2 pt-4">
+              <div className="grid grid-cols-3 w-full gap-2 pt-4">
                 <WalletButton
                   icon={metamask}
                   text="MetaMask"
@@ -136,19 +136,9 @@ const WalletModal = (): JSX.Element => {
                   icon={wc}
                   text="WalletConnect"
                   className="w-[35px]"
-                  id="WalletConnect"
+                  id="walletConnect"
                   connectingWalletId={connectingWalletId}
                   onClick={() => connectWallet("walletConnect")}
-                />
-                <WalletButton
-                  icon={volt}
-                  text="Volt"
-                  className="h-[27px]"
-                  id="volt"
-                  connectingWalletId={connectingWalletId}
-                  onClick={() => {
-                    setSelected("VOLT");
-                  }}
                 />
                 <WalletButton
                   icon={coinbase}
@@ -165,6 +155,13 @@ const WalletModal = (): JSX.Element => {
                 <hr className="w-[37%]" />
               </div>
               <div className="grid grid-cols-3 w-full gap-2 pt-4">
+                <SocialButton
+                  icon={google}
+                  className="bg-[#F3F3F3]"
+                  id={`web3auth-${LOGIN_PROVIDER.GOOGLE}`}
+                  connectingWalletId={connectingWalletId}
+                  onClick={() => connectWallet(LOGIN_PROVIDER.GOOGLE, true)}
+                />
                 <SocialButton
                   icon={fb}
                   className="bg-[#C2D7F2]"
@@ -185,13 +182,6 @@ const WalletModal = (): JSX.Element => {
                   id={`web3auth-${LOGIN_PROVIDER.DISCORD}`}
                   connectingWalletId={connectingWalletId}
                   onClick={() => connectWallet(LOGIN_PROVIDER.DISCORD, true)}
-                />
-                <SocialButton
-                  icon={google}
-                  className="bg-[#F3F3F3]"
-                  id={`web3auth-${LOGIN_PROVIDER.GOOGLE}`}
-                  connectingWalletId={connectingWalletId}
-                  onClick={() => connectWallet(LOGIN_PROVIDER.GOOGLE, true)}
                 />
                 <SocialButton
                   icon={twitch}

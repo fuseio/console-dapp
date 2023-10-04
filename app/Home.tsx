@@ -70,7 +70,7 @@ const Home = () => {
                       <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
                       <p className="text-xl text-darker-gray">
                         ${new Intl.NumberFormat().format(
-                          parseFloat((balance.data?.formatted ?? 0 * balanceSlice.price).toString())
+                          parseFloat((parseFloat(balance.data?.formatted ?? "0") * balanceSlice.price).toString())
                         )}
                       </p>
                     }
@@ -80,7 +80,6 @@ const Home = () => {
                 <div className="flex md:hidden gap-[30px]">
                   <Button
                     text={"Buy Fuse"}
-                    disabled={!isConnected}
                     onClick={() => setIsTransfiOpen(true)}
                     padding="py-5"
                     className="flex items-center justify-center gap-x-2.5 w-40 bg-success text-black font-semibold rounded-full transition ease-in-out delay-150 hover:opacity-80"
@@ -117,7 +116,6 @@ const Home = () => {
                   <div className="flex flex-col justify-center items-center gap-4">
                     <Button
                       text={""}
-                      disabled={!isConnected}
                       onClick={() => setIsTransfiOpen(true)}
                       padding=""
                       className="flex items-center justify-center w-16 h-16 bg-success text-black font-semibold rounded-full"
