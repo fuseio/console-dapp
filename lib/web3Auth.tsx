@@ -68,7 +68,7 @@ export default function Web3AuthConnectorInstance(loginProvider: LOGIN_PROVIDER_
     displayName: chains[0].name,
     tickerName: chains[0].nativeCurrency?.name,
     ticker: chains[0].nativeCurrency?.symbol,
-    blockExplorer: chains[0].blockExplorers?.default.url[0] as string,
+    blockExplorer: chains[0].blockExplorers?.default.url,
   }
 
   const web3AuthInstance = new Web3AuthNoModal({
