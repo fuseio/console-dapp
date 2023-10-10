@@ -42,3 +42,5 @@ export const insertTransactionToLocalStorage = (
 };
 
 export const hex = "0x";
+
+export const IS_SERVER = typeof window === "undefined";

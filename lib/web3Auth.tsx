@@ -1,10 +1,10 @@
-import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector";
+import { Options } from "@web3auth/web3auth-wagmi-connector";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-import { OpenloginAdapter, OPENLOGIN_NETWORK, LOGIN_PROVIDER_TYPE, ExtraLoginOptions } from "@web3auth/openlogin-adapter";
+import { OpenloginAdapter, OPENLOGIN_NETWORK, LOGIN_PROVIDER_TYPE, ExtraLoginOptions, LOGIN_PROVIDER } from "@web3auth/openlogin-adapter";
 import { TorusWalletConnectorPlugin } from "@web3auth/torus-wallet-connector-plugin";
-import { CHAIN_NAMESPACES } from "@web3auth/base";
-import { configureChains, createConfig } from "wagmi";
+import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from "@web3auth/base";
+import { Chain, Connector, configureChains, createConfig } from "wagmi";
 import { NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID, NEXT_PUBLIC_WEB3AUTH_CLIENT_ID } from "./config";
 import { arbitrum, polygon, fuse, optimism } from "wagmi/chains";
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
@@ -12,7 +12,14 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { publicProvider } from "wagmi/providers/public";
 import { LedgerConnector } from "wagmi/connectors/ledger";
-import { hex } from "./helpers";
+import { IS_SERVER, hex } from "./helpers";
+import { Web3AuthGoogleConnector } from "./connectors/google";
+import { Web3AuthEmailConnector } from "./connectors/email";
+import { Web3AuthFacebookConnector } from "./connectors/facebook";
+import { Web3AuthTwitterConnector } from "./connectors/twitter";
+import { Web3AuthDiscordConnector } from "./connectors/discord";
+import { Web3AuthTwitchConnector } from "./connectors/twitch";
+import { Web3AuthGithubConnector } from "./connectors/github";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
@@ -25,7 +32,10 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 );
 
 export const config = createConfig({
-  autoConnect: true,
+  // Checking wagmi.connected is a workaround, as Web3Auth keeps opening
+  // last connected social login even after disconnecting it, see:
+  // https://web3auth.io/community/t/using-web3auth-wagmi-connector-setting-autoconnect-opens-the-web3authmodal-on-page-load/5279
+  autoConnect: !IS_SERVER && !!localStorage.getItem("wagmi.connected"),
   connectors: [
     new InjectedConnector({
       chains,
@@ -53,22 +63,39 @@ export const config = createConfig({
         projectId: NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
       }
     }),
+    Web3AuthConnectorInstance(Web3AuthGoogleConnector, LOGIN_PROVIDER.GOOGLE),
+    Web3AuthConnectorInstance(Web3AuthFacebookConnector, LOGIN_PROVIDER.FACEBOOK),
+    Web3AuthConnectorInstance(Web3AuthTwitterConnector, LOGIN_PROVIDER.TWITTER),
+    Web3AuthConnectorInstance(Web3AuthDiscordConnector, LOGIN_PROVIDER.DISCORD),
+    Web3AuthConnectorInstance(Web3AuthTwitchConnector, LOGIN_PROVIDER.TWITCH),
+    Web3AuthConnectorInstance(Web3AuthGithubConnector, LOGIN_PROVIDER.GITHUB),
+    Web3AuthConnectorInstance(Web3AuthEmailConnector, LOGIN_PROVIDER.EMAIL_PASSWORDLESS),
   ],
   publicClient,
   webSocketPublicClient,
 });
 
-const iconUrl = "https://news.fuse.io/wp-content/uploads/2023/10/fuse-white-icon.png";
+type LoginConnectorArgs = {
+  chains?: Chain[];
+  options: Options;
+}
 
-export default function Web3AuthConnectorInstance(loginProvider: LOGIN_PROVIDER_TYPE, extraLoginOptions?: ExtraLoginOptions) {
+export default function Web3AuthConnectorInstance
+  <T extends Connector<SafeEventEmitterProvider, Options>>
+  (
+    LoginConnector: new (args: LoginConnectorArgs) => T,
+    loginProvider: LOGIN_PROVIDER_TYPE,
+    chain: Chain = fuse
+  ) {
+  const iconUrl = "https://news.fuse.io/wp-content/uploads/2023/10/fuse-white-icon.png";
   const chainConfig = {
     chainNamespace: CHAIN_NAMESPACES.EIP155,
-    chainId: hex + chains[0].id.toString(16),
-    rpcTarget: chains[0].rpcUrls.default.http[0],
-    displayName: chains[0].name,
-    tickerName: chains[0].nativeCurrency?.name,
-    ticker: chains[0].nativeCurrency?.symbol,
-    blockExplorer: chains[0].blockExplorers?.default.url,
+    chainId: hex + chain.id.toString(16),
+    rpcTarget: chain.rpcUrls.default.http[0],
+    displayName: chain.name,
+    tickerName: chain.nativeCurrency?.name,
+    ticker: chain.nativeCurrency?.symbol,
+    blockExplorer: chain.blockExplorers?.default.url ?? "https://etherscan.io",
   }
 
   const web3AuthInstance = new Web3AuthNoModal({
@@ -100,13 +127,12 @@ export default function Web3AuthConnectorInstance(loginProvider: LOGIN_PROVIDER_
   });
   web3AuthInstance.addPlugin(torusPlugin);
 
-  return new Web3AuthConnector({
+  return new LoginConnector({
     chains: chains,
     options: {
       web3AuthInstance,
       loginParams: {
         loginProvider,
-        extraLoginOptions,
       },
     },
   });

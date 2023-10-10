@@ -28,12 +28,12 @@ const SocialButton = ({
         className
       }
       onClick={onClick}
-      disabled={isConnected && connector?.id === id.split("-")[0] && connector.options.loginParams.loginProvider === id.split("-")[1]}
+      disabled={isConnected && connector?.id === id}
     >
-      {((isConnecting && connectingWalletId === id) || (isLoading && pendingConnector?.id === id.split("-")[0] && pendingConnector.options.loginParams.loginProvider === id.split("-")[1])) &&
+      {((isConnecting && connectingWalletId === id) || (isLoading && pendingConnector?.id === id)) &&
         <span className="absolute left-2 top-2 animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>
       }
-      {isConnected && connector?.id === id.split("-")[0] && connector.options.loginParams.loginProvider === id.split("-")[1] &&
+      {isConnected && connector?.id === id &&
         <Image src={checkCircle} alt="connected" className="absolute left-2 top-2 w-4 h-4" />
       }
       <Image src={icon} alt="icon" className="max-w-[35px] max-h-[35px]" />

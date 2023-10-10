@@ -18,8 +18,6 @@ import Image from "next/image";
 import WalletButton from "./WalletButton";
 import SocialButton from "./SocialButton";
 import { useAccount, useConnect } from "wagmi";
-import { LOGIN_PROVIDER, LOGIN_PROVIDER_TYPE } from "@web3auth/openlogin-adapter";
-import Web3AuthConnectorInstance from "@/lib/web3Auth";
 import ReactGA from "react-ga4";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
@@ -53,32 +51,10 @@ const WalletModal = (): JSX.Element => {
     });
   };
 
-  const connectWallet = (id: string, isWeb3Auth: boolean = false) => {
-    connectionEvent(id)
-
-    if (isWeb3Auth) {
-      setConnectingWalletId(`web3auth-${id}`);
-      connect({ connector: Web3AuthConnectorInstance(id as unknown as LOGIN_PROVIDER_TYPE) });
-      return;
-    }
-
+  const connectWallet = (id: string) => {
+    connectionEvent(id);
     setConnectingWalletId(id);
     connect({ connector: connectors.find((connector) => connector.id === id) });
-  }
-
-  const emailLogin = () => {
-    if (!emailRef.current || !emailRef.current.value.length) {
-      return
-    }
-
-    connectionEvent(LOGIN_PROVIDER.EMAIL_PASSWORDLESS)
-
-    connect({
-      connector:
-        Web3AuthConnectorInstance(LOGIN_PROVIDER.EMAIL_PASSWORDLESS, {
-          login_hint: emailRef.current.value,
-        })
-    })
   }
 
   return (
@@ -158,44 +134,44 @@ const WalletModal = (): JSX.Element => {
                 <SocialButton
                   icon={google}
                   className="bg-[#F3F3F3]"
-                  id={`web3auth-${LOGIN_PROVIDER.GOOGLE}`}
+                  id="google"
                   connectingWalletId={connectingWalletId}
-                  onClick={() => connectWallet(LOGIN_PROVIDER.GOOGLE, true)}
+                  onClick={() => connectWallet("google")}
                 />
                 <SocialButton
                   icon={fb}
                   className="bg-[#C2D7F2]"
-                  id={`web3auth-${LOGIN_PROVIDER.FACEBOOK}`}
+                  id="facebook"
                   connectingWalletId={connectingWalletId}
-                  onClick={() => connectWallet(LOGIN_PROVIDER.FACEBOOK, true)}
+                  onClick={() => connectWallet("facebook")}
                 />
                 <SocialButton
                   icon={twitter2}
                   className="bg-[#E5F5FF]"
-                  id={`web3auth-${LOGIN_PROVIDER.TWITTER}`}
+                  id="twitter"
                   connectingWalletId={connectingWalletId}
-                  onClick={() => connectWallet(LOGIN_PROVIDER.TWITTER, true)}
+                  onClick={() => connectWallet("twitter")}
                 />
                 <SocialButton
                   icon={discord2}
                   className="bg-[#D8DAF0]"
-                  id={`web3auth-${LOGIN_PROVIDER.DISCORD}`}
+                  id="discord"
                   connectingWalletId={connectingWalletId}
-                  onClick={() => connectWallet(LOGIN_PROVIDER.DISCORD, true)}
+                  onClick={() => connectWallet("discord")}
                 />
                 <SocialButton
                   icon={twitch}
                   className="bg-[#DBD8F0]"
-                  id={`web3auth-${LOGIN_PROVIDER.TWITCH}`}
+                  id="twitch"
                   connectingWalletId={connectingWalletId}
-                  onClick={() => connectWallet(LOGIN_PROVIDER.TWITCH, true)}
+                  onClick={() => connectWallet("twitch")}
                 />
                 <SocialButton
                   icon={gh}
                   className="bg-[#F3F3F3]"
-                  id={`web3auth-${LOGIN_PROVIDER.GITHUB}`}
+                  id="github"
                   connectingWalletId={connectingWalletId}
-                  onClick={() => connectWallet(LOGIN_PROVIDER.GITHUB, true)}
+                  onClick={() => connectWallet("github")}
                 />
               </div>
               <div className="flex pt-4 w-full justify-between text-[#9F9F9F] items-center text-[10px]">
@@ -214,7 +190,13 @@ const WalletModal = (): JSX.Element => {
                 </div>
                 <button
                   className="bg-black rounded-md w-1/3 text-xs font-medium ml-2 text-white"
-                  onClick={emailLogin}
+                  onClick={() => {
+                    if(!emailRef.current || !emailRef.current.value.length) {
+                      return
+                    }
+                    localStorage.setItem("Fuse-loginHint", emailRef.current.value);
+                    connectWallet("email");
+                  }}
                 >
                   Connect
                 </button>
