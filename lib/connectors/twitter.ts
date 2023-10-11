@@ -41,6 +41,7 @@ export class Web3AuthTwitterConnector extends Connector<SafeEventEmitterProvider
     this.web3AuthInstance = options.web3AuthInstance;
     this.loginParams = options.loginParams || null;
     this.modalConfig = options.modalConfig || null;
+    this.updateChainConfig();
   }
 
   async connect({ chainId }: { chainId?: number } = {}): Promise<Required<ConnectorData>> {
@@ -117,6 +118,7 @@ export class Web3AuthTwitterConnector extends Connector<SafeEventEmitterProvider
           modalConfig: this.modalConfig!,
         });
       } else if (this.loginParams) {
+        this.updateChainConfig();
         await this.web3AuthInstance.init();
       } else {
         log.error("please provide valid loginParams when using @web3auth/no-modal");
@@ -139,6 +141,12 @@ export class Web3AuthTwitterConnector extends Connector<SafeEventEmitterProvider
 
   async getChainId(): Promise<number> {
     await this.getProvider();
+
+    const updatedChainId = this.updateChainConfig();
+    if(updatedChainId) {
+      return updatedChainId;
+    }
+
     const chainId = await this.provider!.request<unknown, string>({ method: "eth_chainId" });
     log.info("chainId", chainId);
     return normalizeChainId(chainId!);
@@ -154,7 +162,7 @@ export class Web3AuthTwitterConnector extends Connector<SafeEventEmitterProvider
         chainId: `0x${chain.id.toString(16)}`,
         rpcTarget: chain.rpcUrls.default.http[0],
         displayName: chain.name,
-        blockExplorer: chain.blockExplorers?.default.url[0] || "",
+        blockExplorer: chain.blockExplorers?.default.url || "",
         ticker: chain.nativeCurrency?.symbol || "ETH",
         tickerName: chain.nativeCurrency?.name || "Ethereum",
         decimals: chain.nativeCurrency.decimals || 18,
@@ -162,6 +170,9 @@ export class Web3AuthTwitterConnector extends Connector<SafeEventEmitterProvider
       log.info("Chain Added: ", chain.name);
       await this.web3AuthInstance.switchChain({ chainId: `0x${chain.id.toString(16)}` });
       log.info("Chain Switched to ", chain.name);
+
+      await this.switchTorusChain(chain);
+
       return chain;
     } catch (error: unknown) {
       log.error("Error: Cannot change chain", error);
@@ -194,5 +205,42 @@ export class Web3AuthTwitterConnector extends Connector<SafeEventEmitterProvider
 
   protected onDisconnect(): void {
     this.emit("disconnect");
+  }
+
+  protected updateChainConfig() {
+    if(!this.ready) {
+      return null;
+    }
+
+    const wagmiStore = JSON.parse(localStorage.getItem("wagmi.store") ?? "{}");
+    if(!wagmiStore?.state?.data?.chain?.id) {
+      return null;
+    }
+
+    const wagmiChainId = wagmiStore.state.data.chain.id;
+    const chain = this.chains.find((x) => x.id === wagmiChainId);
+    if (!chain) throw new SwitchChainError(new Error("chain not found on connector."));
+
+    const chainConfig = {
+      chainNamespace: CHAIN_NAMESPACES.EIP155,
+      chainId: `0x${chain.id.toString(16)}`,
+      rpcTarget: chain.rpcUrls.default.http[0],
+      displayName: chain.name,
+      blockExplorer: chain.blockExplorers?.default.url || "",
+      ticker: chain.nativeCurrency?.symbol || "ETH",
+      tickerName: chain.nativeCurrency?.name || "Ethereum",
+      decimals: chain.nativeCurrency.decimals || 18,
+    };
+
+    (this.web3AuthInstance as any).coreOptions.chainConfig = chainConfig;
+    (this.web3AuthInstance as any).walletAdapters.openlogin.privateKeyProvider.chainConfig = chainConfig;
+    this.onChainChanged(chain.id);
+    return chain.id;
+  }
+
+  protected async switchTorusChain(chain: Chain) {
+    const torus = (this.web3AuthInstance as any).plugins.TORUS_WALLET_CONNECTOR_PLUGIN;
+    await torus.setChainID(chain.id);
+    this.onChainChanged(chain.id);
   }
 }
