@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
-import warning from "@/assets/warning.svg";
+import refresh from "@/assets/refresh.svg"
 import Button from "@/components/ui/Button";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { fuse } from "viem/chains";
@@ -29,27 +29,21 @@ const ChainModal = (): JSX.Element => {
             transition={{
               duration: 0.5,
             }}
-            className="bg-white w-[400px] h-[170px] rounded-xl flex flex-col items-start justify-start relative top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 md:w-full md:top-full md:-translate-y-full md:rounded-b-none"
+            className="bg-white w-[525] h-fit rounded-xl flex flex-col items-center justify-start text-center gap-4 p-8 relative top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 md:w-full md:top-full md:-translate-y-full md:rounded-b-none md:p-4"
           >
-            <div className="flex w-full bg-warning-yellow rounded-t-xl h-[50px] items-center px-4 border-b-[1px] border-warning-gray">
-              <img src={warning.src} alt="warning" />
-              <span className="text-base/4 font-bold text-warning-gray ms-3">
-                Warning
-              </span>
+            <img src={refresh.src} alt="Switch network" />
+            <p className="text-xl/5 font-bold">You need to switch network</p>
+            <div className="max-w-[461px]">
+              <p>To use Staking on Fuse you must be connected to the Fuse network</p>
             </div>
-            <div className="flex flex-col w-full h-[87%] p-4 justify-between items-center">
-              <span className="font-semibold text-text-heading-gray text-lg">
-                You are not connected to Fuse Mainnet
-              </span>
-              <Button
+            <Button
                 text="Switch To Fuse"
-                className="bg-black font-medium text-white rounded-full w-full"
-                padding="py-3"
+                className="bg-black text-sm font-medium text-white rounded-full"
+                padding="px-4 py-3"
                 onClick={() => {
                   switchNetwork && switchNetwork(fuse.id)
                 }}
               />
-            </div>
           </motion.div>
         </div>
       )}
