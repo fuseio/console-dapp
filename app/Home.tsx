@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import TransfiModal from "@/components/console/TransfiModal";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance, useNetwork } from "wagmi";
 import { fuse } from "wagmi/chains";
 
 const Home = () => {
@@ -23,12 +23,13 @@ const Home = () => {
   const [isTransfiOpen, setIsTransfiOpen] = useState(false);
   const controller = new AbortController();
   const { address, isConnected } = useAccount();
+  const { chain } = useNetwork();
   const balance = useBalance({
     address,
     watch: true,
     chainId: fuse.id
   });
-  
+
   useEffect(() => {
     dispatch(fetchUsdPrice(controller))
 
@@ -62,16 +63,22 @@ const Home = () => {
                   </p>
                   <div className="flex items-end gap-x-[30px] md:gap-x-4">
                     <h1 className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
-                      {new Intl.NumberFormat().format(
-                        parseFloat(balance.data?.formatted ?? "0")
-                      )} FUSE
+                      {(chain && chain.id === fuse.id) ?
+                        new Intl.NumberFormat().format(
+                          parseFloat(balance.data?.formatted ?? "0")
+                        ) :
+                        0
+                      } FUSE
                     </h1>
                     {balanceSlice.isUsdPriceLoading ?
                       <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
                       <p className="text-xl text-darker-gray">
-                        ${new Intl.NumberFormat().format(
-                          parseFloat((parseFloat(balance.data?.formatted ?? "0") * balanceSlice.price).toString())
-                        )}
+                        ${(chain && chain.id === fuse.id) ?
+                          new Intl.NumberFormat().format(
+                            parseFloat((parseFloat(balance.data?.formatted ?? "0") * balanceSlice.price).toString())
+                          ) :
+                          0
+                        }
                       </p>
                     }
                   </div>
