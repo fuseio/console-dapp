@@ -4,11 +4,13 @@ import { AppState } from "../rootReducer";
 export interface NavbarStateType {
   selected: string;
   isWalletModalOpen: boolean;
+  isTransfiModalOpen: boolean;
 }
 
 const INIT_STATE: NavbarStateType = {
   selected: "console",
   isWalletModalOpen: false,
+  isTransfiModalOpen: false,
 };
 
 const navbarSlice = createSlice({
@@ -21,11 +23,14 @@ const navbarSlice = createSlice({
     setIsWalletModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isWalletModalOpen = action.payload
     },
+    setIsTransfiModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isTransfiModalOpen = action.payload
+    },
   },
 });
 
 export const selectNavbarSlice = (state: AppState): NavbarStateType => state.navbar;
 
-export const { setSelectedNavbar, setIsWalletModalOpen } = navbarSlice.actions;
+export const { setSelectedNavbar, setIsWalletModalOpen, setIsTransfiModalOpen } = navbarSlice.actions;
 
 export default navbarSlice.reducer;

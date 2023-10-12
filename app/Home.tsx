@@ -15,12 +15,12 @@ import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import TransfiModal from "@/components/console/TransfiModal";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { fuse } from "wagmi/chains";
+import { setIsTransfiModalOpen } from "@/store/navbarSlice";
 
 const Home = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
-  const [isTransfiOpen, setIsTransfiOpen] = useState(false);
   const controller = new AbortController();
   const { address, isConnected } = useAccount();
   const { chain } = useNetwork();
@@ -40,10 +40,7 @@ const Home = () => {
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
-      <TransfiModal
-        isTransfiOpen={isTransfiOpen}
-        onTransfiToggle={setIsTransfiOpen}
-      />
+      <TransfiModal />
       <div className="w-8/9 flex flex-col gap-y-16 mt-14 mb-40 md:w-9/10 max-w-7xl">
         <div>
           <h1 className="font-black text-5xl leading-none md:text-4xl">
@@ -87,7 +84,7 @@ const Home = () => {
                 <div className="flex md:hidden gap-[30px]">
                   <Button
                     text={"Buy Fuse"}
-                    onClick={() => setIsTransfiOpen(true)}
+                    onClick={() => dispatch(setIsTransfiModalOpen(true))}
                     padding="py-[17.73px]"
                     className="flex items-center justify-center gap-x-2.5 w-40 bg-success text-black font-semibold rounded-full transition ease-in-out delay-150 hover:bg-fuse-green-bright"
                     isLeft
@@ -122,7 +119,7 @@ const Home = () => {
                   <div className="flex flex-col justify-center items-center gap-4">
                     <Button
                       text={""}
-                      onClick={() => setIsTransfiOpen(true)}
+                      onClick={() => dispatch(setIsTransfiModalOpen(true))}
                       padding=""
                       className="flex items-center justify-center w-16 h-16 bg-success text-black font-semibold rounded-full"
                       disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
