@@ -19,12 +19,13 @@ import {
 } from "@/store/validatorSlice";
 import { eclipseAddress, hex } from "@/lib/helpers";
 import Jazzicon from "react-jazzicon";
-import Breadcrumb from "@/components/ui/Breadcrumb";
 import Modal from "@/components/staking/Modal";
 import FAQ from "@/components/staking/FAQ";
 import WarningModal from "@/components/staking/WarningModal";
 import { delegate, withdraw } from "@/lib/contractInteract";
 import { Address, useAccount } from "wagmi";
+import * as amplitude from "@amplitude/analytics-browser";
+
 const Stake = ({ params }: { params: { id: string } }) => {
   const { id } = params;
   const [validator, setValidator] = useState<ValidatorType | undefined>(
@@ -59,6 +60,9 @@ const Stake = ({ params }: { params: { id: string } }) => {
           value: getAmount(),
         });
         ym("reachGoal", "stake");
+        amplitude.track("Stake", {
+          amount: getAmount(),
+        });
         setAmount(null);
         setIsLoading(false);
       })
@@ -84,6 +88,9 @@ const Stake = ({ params }: { params: { id: string } }) => {
           value: getAmount(),
         });
         ym("reachGoal", "unstake");
+        amplitude.track("Unstake", {
+          amount: getAmount(),
+        });
         setAmount(null);
         setIsLoading(false);
       })

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Button from "@/components/ui/Button";
 import dollar from "@/assets/dollar.svg"
 import receive from "@/assets/receive.svg"
@@ -16,6 +16,7 @@ import TransfiModal from "@/components/console/TransfiModal";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { fuse } from "wagmi/chains";
 import { setIsTransfiModalOpen } from "@/store/navbarSlice";
+import * as amplitude from "@amplitude/analytics-browser";
 
 const Home = () => {
   const router = useRouter();
@@ -84,7 +85,10 @@ const Home = () => {
                 <div className="flex md:hidden gap-[30px]">
                   <Button
                     text={"Buy Fuse"}
-                    onClick={() => dispatch(setIsTransfiModalOpen(true))}
+                    onClick={() => {
+                      amplitude.track("On-Ramp opened");
+                      dispatch(setIsTransfiModalOpen(true));
+                    }}
                     padding="py-[17.73px]"
                     className="flex items-center justify-center gap-x-2.5 w-40 bg-success text-black font-semibold rounded-full transition ease-in-out delay-150 hover:bg-fuse-green-bright"
                     isLeft
@@ -94,7 +98,10 @@ const Home = () => {
                   <Button
                     text={"Stake"}
                     disabled={!isConnected}
-                    onClick={() => router.push("/staking")}
+                    onClick={() => {
+                      amplitude.track("Go to Staking");
+                      router.push("/staking");
+                    }}
                     padding="py-[17.73px]"
                     className="flex items-center justify-center gap-x-2.5 w-40 bg-white text-black font-semibold rounded-full transition ease-in-out delay-150 hover:opacity-80"
                     disabledClassname="flex items-center justify-center gap-x-2.5 w-40 bg-button-inactive text-black font-semibold rounded-full"
@@ -105,7 +112,10 @@ const Home = () => {
                   <Button
                     text={"Bridge"}
                     disabled={!isConnected}
-                    onClick={() => router.push("/bridge")}
+                    onClick={() => {
+                      amplitude.track("Go to Bridge");
+                      router.push("/bridge");
+                    }}
                     padding="py-[17.73px]"
                     className="flex items-center justify-center gap-x-2.5 w-40 bg-white text-black font-semibold rounded-full transition ease-in-out delay-150 hover:opacity-80"
                     disabledClassname="flex items-center justify-center gap-x-2.5 w-40 bg-button-inactive text-black font-semibold rounded-full"
@@ -119,7 +129,10 @@ const Home = () => {
                   <div className="flex flex-col justify-center items-center gap-4">
                     <Button
                       text={""}
-                      onClick={() => dispatch(setIsTransfiModalOpen(true))}
+                      onClick={() => {
+                        amplitude.track("On-Ramp opened");
+                        dispatch(setIsTransfiModalOpen(true));
+                      }}
                       padding=""
                       className="flex items-center justify-center w-16 h-16 bg-success text-black font-semibold rounded-full"
                       disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
@@ -134,7 +147,10 @@ const Home = () => {
                     <Button
                       text={""}
                       disabled={!isConnected}
-                      onClick={() => router.push("/staking")}
+                      onClick={() => {
+                        amplitude.track("Go to Staking");
+                        router.push("/staking");
+                      }}
                       padding=""
                       className="flex items-center justify-center w-16 h-16 bg-white text-black font-semibold rounded-full"
                       disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
@@ -150,7 +166,10 @@ const Home = () => {
                     <Button
                       text={""}
                       disabled={!isConnected}
-                      onClick={() => router.push("/bridge")}
+                      onClick={() => {
+                        amplitude.track("Go to Bridge");
+                        router.push("/bridge");
+                      }}
                       padding=""
                       className="flex items-center justify-center w-16 h-16 bg-white text-black font-semibold rounded-full"
                       disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
@@ -197,11 +216,20 @@ const Home = () => {
                 </p>
               </div>
               <div className="flex gap-8">
-                <a href="mailto:console@fuse.io" className="group flex gap-1 text-black font-semibold">
+                <a
+                  href="mailto:console@fuse.io"
+                  className="group flex gap-1 text-black font-semibold"
+                  onClick={() => amplitude.track("Contact us")}
+                >
                   <p>Contact us</p>
                   <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />
                 </a>
-                <a href="https://docs.fuse.io" target="_blank" className="group flex gap-1 text-black font-semibold">
+                <a
+                  href="https://docs.fuse.io"
+                  target="_blank"
+                  className="group flex gap-1 text-black font-semibold"
+                  onClick={() => amplitude.track("Go to Docs")}
+                >
                   <p>Read docs</p>
                   <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />
                 </a>
@@ -219,7 +247,12 @@ const Home = () => {
                 </p>
               </div>
               <div className="flex gap-8">
-                <a href="https://developers.fuse.io" target="_blank" className="group flex gap-1 text-black font-semibold">
+                <a
+                  href="https://developers.fuse.io"
+                  target="_blank"
+                  className="group flex gap-1 text-black font-semibold"
+                  onClick={() => amplitude.track("Go to Developers app")}
+                >
                   <p>Get API key</p>
                   <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />
                 </a>

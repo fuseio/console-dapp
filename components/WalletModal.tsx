@@ -21,6 +21,23 @@ import { useAccount, useConnect } from "wagmi";
 import ReactGA from "react-ga4";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
+import * as amplitude from "@amplitude/analytics-browser";
+
+type WalletType = {
+  [k: string]: string;
+}
+
+const walletType: WalletType = {
+  "injected": "MetaMask",
+  "walletConnect": "WalletConnect",
+  "coinbaseWallet": "Coinbase", 
+  "google": "Google",
+  "facebook": "Facebook",
+  "twitter": "Twitter",
+  "discord": "Discord",
+  "twitch": "Twitch",
+  "github": "GitHub"
+}
 
 const WalletModal = (): JSX.Element => {
   const [selected, setSelected] = useState<"HOME" | "VOLT">("HOME");
@@ -29,7 +46,7 @@ const WalletModal = (): JSX.Element => {
   const emailRef = useRef<HTMLInputElement>(null);
   const { isWalletModalOpen } = useAppSelector(selectNavbarSlice);
   const dispatch = useAppDispatch();
-  const { isConnected } = useAccount();
+  const { address, connector, isConnected } = useAccount();
 
   useEffect(() => {
     window.addEventListener("click", (e) => {
@@ -41,6 +58,12 @@ const WalletModal = (): JSX.Element => {
 
   useEffect(() => {
     dispatch(setIsWalletModalOpen(false));
+    if(address && connector) {
+      amplitude.track("Wallet connected", {
+        walletType: walletType[connector.id],
+        walletAddress: address
+      });
+    }
   }, [isConnected])
 
   const connectionEvent = (id: string) => {

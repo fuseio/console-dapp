@@ -4,6 +4,7 @@ import { useAppSelector } from "@/store/store";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "usehooks-ts";
+import * as amplitude from "@amplitude/analytics-browser";
 
 type NavMenuProps = {
   menuItems?: MenuItems;
@@ -24,6 +25,15 @@ const animateLI = {
   hidden: { opacity: 0 },
   show: { opacity: 1 },
 };
+
+type OpenMenuItemEvent = {
+  [k: string]: string;
+}
+
+const openMenuItemEvent: OpenMenuItemEvent = {
+  "Staking": "Go to Staking",
+  "Bridge": "Go to Bridge"
+}
 
 const NavMenu = ({ menuItems = [], isOpen = false }: NavMenuProps) => {
   const matches = useMediaQuery("(min-width: 768px)");
@@ -59,6 +69,7 @@ const NavMenu = ({ menuItems = [], isOpen = false }: NavMenuProps) => {
                       ? "page"
                       : "false"
                   }
+                  onClick={() => amplitude.track(openMenuItemEvent[item.title])}
                 >
                   {item.title}
                 </a>
