@@ -50,6 +50,17 @@ const menu: Variants = {
       display: "none",
     },
   },
+  closedWrongChain: {
+    opacity: 0,
+    transition: {
+      delay: 0.15,
+      duration: 0.3,
+    },
+    y: -50,
+    transitionEnd: {
+      display: "none",
+    },
+  },
   open: {
     opacity: 1,
     display: "block",
@@ -93,8 +104,7 @@ const ConnectWallet = ({
     address,
     watch: true,
   });
-  const matches = useMediaQuery(`(min-width: ${screenMediumWidth})`);
-
+  const matches = useMediaQuery(`(min-width: ${screenMediumWidth}px)`);
 
   const chainRef = useOutsideClick(() => {
     if (isChainOpen) {
@@ -287,9 +297,9 @@ const ConnectWallet = ({
         </div>
       </div>
       <motion.div
-        animate={isWrongNetwoksOpen ? "open" : "closed"}
-        initial="closed"
-        exit="closed"
+        animate={isWrongNetwoksOpen ? "open" : "closedWrongChain"}
+        initial="closedWrongChain"
+        exit="closedWrongChain"
         variants={menu}
         className="absolute top-[120%] bg-white rounded shadow-xl z-50 text-xs/5 md:text-[8px] font-medium w-[192px]"
       >

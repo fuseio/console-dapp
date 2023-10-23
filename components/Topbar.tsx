@@ -12,10 +12,6 @@ const menuItems = [
     link: "/",
   },
   {
-    title: "Operator",
-    link: "#",
-  },
-  {
     title: "Bridge",
     link: "/bridge",
   },

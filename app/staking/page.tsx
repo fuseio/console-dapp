@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Topbar from "@/components/Topbar";
 import Home from "./Home";
-import Footer from "@/components/staking/Footer";
+import Footer from "@/components/Footer";
 import ChainModal from "@/components/staking/ChainModal";
 
 import { useAppDispatch } from "@/store/store";

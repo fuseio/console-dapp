@@ -219,7 +219,10 @@ export class Web3AuthFacebookConnector extends Connector<SafeEventEmitterProvide
 
     const wagmiChainId = wagmiStore.state.data.chain.id;
     const chain = this.chains.find((x) => x.id === wagmiChainId);
-    if (!chain) throw new SwitchChainError(new Error("chain not found on connector."));
+    if (!chain) {
+      console.error("chain not found on connector.")
+      return;
+    }
 
     const chainConfig = {
       chainNamespace: CHAIN_NAMESPACES.EIP155,

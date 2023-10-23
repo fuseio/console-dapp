@@ -6,7 +6,7 @@ import Home from "./Home";
 
 import { useAppDispatch } from "@/store/store";
 import { setSelectedNavbar } from "@/store/navbarSlice";
-import Footer from "@/components/console/Footer";
+import Footer from "@/components/Footer";
 
 const Console = () => {
   const dispatch = useAppDispatch();
