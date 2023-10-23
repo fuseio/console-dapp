@@ -6,6 +6,7 @@ import Home from "./Home";
 
 import { useAppDispatch } from "@/store/store";
 import { setSelectedNavbar } from "@/store/navbarSlice";
+import Footer from "@/components/console/Footer";
 
 const Console = () => {
   const dispatch = useAppDispatch();
@@ -19,6 +20,7 @@ const Console = () => {
       <div className="flex-col flex items-center bg-light-gray h-screen">
         <Topbar />
         <Home />
+        <Footer />
       </div>
     </div>
   );

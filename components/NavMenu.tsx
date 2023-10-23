@@ -49,20 +49,20 @@ const NavMenu = ({ menuItems = [], isOpen = false }: NavMenuProps) => {
           exit={{ opacity: 0 }}
         >
           <motion.ul
-            className="flex flex-row p-0 md:p-4 mt-0 font-medium md:flex-col space-x-8 md:space-x-0 rounded"
+            className="flex flex-row items-center md:items-start p-0 md:p-4 mt-0 font-medium text-base/4 md:flex-col space-x-8 md:space-x-0 rounded"
             variants={animateUL}
             initial="hidden"
             animate="show"
           >
             {menuItems.map((item, index) => (
-              <motion.li key={index} variants={animateLI}>
+              <motion.li key={index} variants={animateLI} className="md:w-full">
                 <a
                   href={item.link}
                   className={
                     "block p-0 bg-transparent md:py-2 md:pl-3 md:pr-4 " +
                     (item.title.toLowerCase() === navbarSlice.selected
-                      ? "text-black md:text-white pointer-events-none"
-                      : "text-gray md:text-gray pointer-events-auto hover:text-text-darker-gray")
+                      ? "bg-lightest-gray py-2.5 px-4 rounded-full md:text-white pointer-events-none"
+                      : "md:text-gray pointer-events-auto hover:text-text-darker-gray")
                   }
                   aria-current={
                     item.title.toLowerCase() === navbarSlice.selected

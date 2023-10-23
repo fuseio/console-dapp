@@ -6,7 +6,7 @@ import exit from "@/assets/sign-out.svg";
 import Image, { StaticImageData } from "next/image";
 import { motion, Variants } from "framer-motion";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
-import down from "@/assets/dropdown-down.svg";
+import down from "@/assets/down-arrow.svg";
 import downWhite from "@/assets/down-white.svg";
 import {
   useAccount,
@@ -16,13 +16,15 @@ import {
   useSwitchNetwork,
 } from "wagmi";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
-import { eclipseAddress } from "@/lib/helpers";
+import { IS_SERVER, eclipseAddress } from "@/lib/helpers";
 import { arbitrum, polygon, fuse, optimism } from "wagmi/chains";
 import fuseIcon from "@/assets/fuse-icon.svg";
 import polygonIcon from "@/assets/polygon-icon.svg";
 import optimismIcon from "@/assets/optimism-icon.svg";
 import arbitrumIcon from "@/assets/arbitrum-icon.svg";
+import { useMediaQuery } from "usehooks-ts";
 
+const screenMediumWidth = 768;
 const menu: Variants = {
   closed: {
     opacity: 0,
@@ -30,6 +32,19 @@ const menu: Variants = {
       delay: 0.15,
       duration: 0.3,
     },
+    x: -50,
+    y: -50,
+    transitionEnd: {
+      display: "none",
+    },
+  },
+  closedChain: {
+    opacity: 0,
+    transition: {
+      delay: 0.15,
+      duration: 0.3,
+    },
+    x: `${!IS_SERVER && window.innerWidth > screenMediumWidth ? "-50%" : "0" }`,
     y: -50,
     transitionEnd: {
       display: "none",
@@ -78,6 +93,8 @@ const ConnectWallet = ({
     address,
     watch: true,
   });
+  const matches = useMediaQuery(`(min-width: ${screenMediumWidth})`);
+
 
   const chainRef = useOutsideClick(() => {
     if (isChainOpen) {
@@ -118,54 +135,37 @@ const ConnectWallet = ({
       </button>
     </div>
   ) : !disableAccountCenter && checkCorrectNetwork() ? (
-    <div className="flex relative w-[410px] md:w-[90%] h-9 md:h-7">
+    <div className="flex justify-end md:justify-center relative w-[410px] md:w-[90%] h-9 md:h-7">
       <div
-        className={`flex bg-white px-[10px] py-[6px] md:p-0 rounded cursor-pointer items-center relative text-xs md:text-[8px] font-medium border-[1px] justify-center w-[150px] ${
-          isChainOpen ? "border-fuse-green-light" : "border-white"
-        }`}
+        className="flex bg-lightest-gray px-[14.8px] py-[7px] md:py-3.5 rounded-full cursor-pointer items-center relative text-base/4 md:text-[8px] font-bold whitespace-nowrap justify-center"
         ref={chainRef}
         onClick={() => setIsChainOpen(!isChainOpen)}
       >
-        <div className="flex w-full justify-center">
+        <div className="flex w-full justify-center items-center">
           <Image
             src={icons[chain?.id ?? 0]}
             alt="Fuse"
-            className="me-2 md:me-[2px]"
-            width={17}
-            height={17}
+            className="border-[0.5px] border-gray-alpha-40 rounded-full me-2 md:me-[2px]"
+            width={matches ? 25 : 17}
+            height={matches ? 25 : 17}
           />
-          <p className="text-xs/5 md:text-[8px]">{chain?.name}</p>
+          <p>{chain?.name}</p>
           <Image
             src={down.src}
             alt="down"
             className={`ms-2 md:ms-[2px] ${isChainOpen && "rotate-180"}`}
-            width={10}
-            height={10}
+            width={11.39}
+            height={5.7}
           />
         </div>
       </div>
       <div
-        className={`flex bg-white p-[2px] md:p-[1px] rounded cursor-pointer items-center relative font-medium border-[1px] ml-2 md:ml-1 ${
-          isAccountsOpen ? "border-fuse-green-light" : "border-white"
-        }`}
+        className="flex bg-lightest-gray px-[20.3px] py-3 md:py-3.5 rounded-full cursor-pointer items-center relative text-base/4 md:text-[8px]/[25px] font-normal ml-2 md:ml-1"
         ref={accountsRef}
         onClick={() => setIsAccountsOpen(!isAccountsOpen)}
       >
-        <div className="flex w-full justify-center">
-          <div className="px-[12px] py-[7px] md:py-1 md:px-[2px] bg-modal-bg rounded text-xs/[16px] md:text-[8px] w-[120px] md:w-[100px] flex justify-center">
-            {new Intl.NumberFormat().format(
-              parseFloat(balance.data?.formatted || "0")
-            )}{" "}
-            {balance.data?.symbol}
-          </div>
-          <Image
-            src={icons[chain?.id ?? 0]}
-            alt={chain?.name ?? "Fuse"}
-            className="mx-2 md:mx-1"
-            width={17}
-            height={17}
-          />
-          <p className="text-xs/[30px] md:text-[8px]/[25px]">
+        <div className="flex w-full justify-between">
+          <p>
             {eclipseAddress(String(address))}
           </p>
           <Image
@@ -181,7 +181,7 @@ const ConnectWallet = ({
           initial="closed"
           exit="closed"
           variants={menu}
-          className="absolute top-[120%] left-0 bg-white rounded shadow-xl p-[6px] z-50 w-full text-xs md:text-[8px] font-medium"
+          className="absolute top-[120%] left-0 bg-white rounded shadow-xl p-[6px] z-50 w-60 text-xs md:text-[8px] font-medium"
         >
           <div className="flex items-center px-[6px] rounded">
             <Image
@@ -230,9 +230,9 @@ const ConnectWallet = ({
         </motion.div>
       </div>
       <motion.div
-        animate={isChainOpen ? "open" : "closed"}
-        initial="closed"
-        exit="closed"
+        animate={isChainOpen ? "open" : "closedChain"}
+        initial="closedChain"
+        exit="closedChain"
         variants={menu}
         className="absolute top-[120%] bg-white rounded shadow-xl p-[6px] z-50 text-xs md:text-[8px] font-medium min-w-[230px]"
       >
@@ -240,7 +240,7 @@ const ConnectWallet = ({
           <div
             className={
               chain?.id === c.id
-                ? "flex items-center px-[6px] bg-modal-bg rounded cursor-pointer"
+                ? "flex items-center px-[6px] bg-lightest-gray rounded cursor-pointer"
                 : "flex items-center px-[6px] cursor-pointer"
             }
             onClick={() => {

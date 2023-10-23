@@ -1,5 +1,5 @@
 import { useState } from "react";
-import fuseLogo from "@/assets/fuselogo.svg";
+import fuseConsoleLogo from "@/assets/fuse-console-logo.svg";
 import fuseLogoMobile from "@/assets/logo-mobile.svg";
 import NavMenu from "./NavMenu";
 import NavButton from "./NavButton";
@@ -12,12 +12,16 @@ const menuItems = [
     link: "/",
   },
   {
-    title: "Staking",
-    link: "/staking",
+    title: "Operator",
+    link: "#",
   },
   {
     title: "Bridge",
     link: "/bridge",
+  },
+  {
+    title: "Staking",
+    link: "/staking",
   },
 ];
 
@@ -26,13 +30,13 @@ const Topbar = () => {
   const { isTransfiModalOpen } = useAppSelector(selectNavbarSlice);
 
   return (
-    <nav className={"w-full h-20 sticky top-0 bg-light-gray/60 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2" + " " + (isTransfiModalOpen ? "z-0" : "z-40")}>
+    <nav className={"w-full h-20 sticky top-0 bg-light-gray/60 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-gray-alpha-40" + " " + (isTransfiModalOpen ? "z-0" : "z-40")}>
       <div className="flex justify-between h-full items-center w-8/9 md:w-9/10 max-w-7xl relative">
         <span>
           <a href="/">
             <img
-              src={fuseLogo.src}
-              alt="fuse logo"
+              src={fuseConsoleLogo.src}
+              alt="fuse console logo"
               className="h-6 z-50 md:hidden"
             />
             <img
