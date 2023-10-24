@@ -32,6 +32,7 @@ const config: Config = {
       "selected-light-gray": "#E5E7EB",
       "text-dark-gray": "#666666",
       "secondary-gray": "#797979",
+      "tertiary-gray": "##525252",
       "text-gray": "#9F9F9F",
       "text-darker-gray": "#737373",
       "text-heading-gray": "#4D4D4D",

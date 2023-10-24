@@ -55,7 +55,7 @@ const ValidatorsPane = ({
           );
         })}
       </div>
-      <div className="w-full grid grid-cols-4 mt-4 gap-x-8 gap-y-10 md:grid-cols-1 md:gap-y-6">
+      <div className="w-full grid grid-cols-4 mt-4 gap-4 md:grid-cols-1 md:gap-y-5">
         {isLoading &&
           Array.from([1, 2, 3, 4, 5, 6]).map((i) => {
             return (
@@ -105,11 +105,11 @@ const ValidatorsPane = ({
           </p>
         </div>
       )}
-      <div className="flex w-full justify-center mt-6">
+      <div className="flex w-full justify-center mt-12">
         {validatorsToDisplay.length < validators.length ? (
           <Button
             text="See more"
-            className="flex items-center gap-1 border border-fuse-black text-black rounded-full font-medium"
+            className="flex items-center gap-1 border border-fuse-black text-sm/[13.54px] text-black rounded-full font-medium"
             onClick={() => {
               setPage(page + 1);
             }}
@@ -119,7 +119,7 @@ const ValidatorsPane = ({
         ) : validatorsToDisplay.length > 12 ? (
           <Button
             text="See less"
-            className="flex items-center gap-1 border border-fuse-black text-black rounded-full font-medium"
+            className="flex items-center gap-1 border border-fuse-black text-sm/[13.54px] text-black rounded-full font-medium"
             onClick={() => {
               setPage(1);
             }}

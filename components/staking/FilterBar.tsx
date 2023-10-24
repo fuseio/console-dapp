@@ -33,7 +33,7 @@ const FilterBar = ({
         "relative flex justify-end md:w-full md:justify-center " + className
       }
     >
-      <span className="font-normal text-base text-text-dark-gray pe-2 md:text-sm">
+      <span className="font-normal text-base text-text-gray pe-1 md:text-sm">
         {name}
       </span>
       <img src={info.src} alt="info" className="peer cursor-pointer mb-0.5" />
@@ -42,7 +42,7 @@ const FilterBar = ({
           {tooltip}
         </div>
       )}
-      <div className="ps-2">
+      <div className="ps-3">
         {states.map((state, index) => {
           if (index === 0) {
             return (

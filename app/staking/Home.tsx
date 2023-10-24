@@ -234,13 +234,13 @@ const Home = () => {
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
-      <div className="w-8/9 flex flex-col mt-14 md:w-9/10 max-w-7xl">
+      <div className="w-8/9 flex flex-col mt-[63px] md:w-9/10 max-w-7xl">
         <div className="flex w-fit items-start">
           <div className="flex flex-col w-6/12 md:w-full">
-            <h1 className="font-black text-5xl leading-none md:text-4xl">
+            <h1 className="font-semibold text-5xl text-fuse-black leading-none md:text-4xl">
               Staking
             </h1>
-            <span className="text-xl font-normal mt-4 text-text-dark-gray md:text-base">
+            <span className="text-base font-normal mt-4 text-text-heading-gray">
               The Fuse Staking Dapp enables users to participate in the Fuse
               network&apos;s consensus by staking FUSE tokens. Through a
               user-friendly interface, validators and delegators can manage
@@ -253,7 +253,7 @@ const Home = () => {
             <img src={piggybank.src} alt="piggybank" />
           </div>
         </div>
-        <div className="grid grid-cols-4 mt-9 gap-x-2 justify-between md:mt-12 md:grid-cols-1 md:gap-y-3 md:gap-x-3">
+        <div className="grid grid-cols-4 mt-0 gap-x-4 justify-between md:mt-12 md:grid-cols-1 md:gap-y-3 md:gap-x-3">
           <InfoCard
             Header={
               new Intl.NumberFormat().format(
@@ -342,7 +342,7 @@ const Home = () => {
             name="State"
             states={["All", "Open", "Closed"]}
             background={["#DDF5FF", "#E0FFDD", "#EBEBEB"]}
-            text={["#003D75", "#0A7500", "#000000"]}
+            text={["#003D75", "#success-dark", "#000000"]}
             onClick={(i, _) => {
               setStateFilter(i);
             }}
@@ -354,7 +354,7 @@ const Home = () => {
             name="Status"
             states={["All", "Active", "Inactive"]}
             background={["#DDF5FF", "#E0FFDD", "#FFDDDD"]}
-            text={["#003D75", "#0A7500", "#750000"]}
+            text={["#003D75", "#success-dark", "#750000"]}
             onClick={(i, _) => {
               setStatusFilter(i);
             }}
@@ -374,7 +374,7 @@ const Home = () => {
             setMyStakeFilter(i);
           }}
         />
-        <FAQ className="mt-28 mb-16" questions={faqs} answers={faqAnswers} />
+        <FAQ className="mt-[106px] mb-16" questions={faqs} answers={faqAnswers} />
       </div>
     </div>
   );

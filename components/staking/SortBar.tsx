@@ -44,7 +44,7 @@ const SortBar = ({
   return (
     <div ref={ref} className={"relative cursor-pointer " + className}>
       <div
-        className="flex items-center py-4 px-5 justify-between bg-white rounded-full w-full h-full"
+        className="flex items-center p-3.5 justify-between bg-white rounded-full w-full h-full"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="font-medium text-sm">

@@ -32,7 +32,7 @@ const FaqQuestion = ({
 }: FaqQuestionProps) => {
   const [isAnswerVisible, setIsAnswerVisible] = React.useState(false);
   return (
-    <div className="flex justify-start border-t-[0.5px] px-5 py-7 items-start cursor-pointer">
+    <div className="flex justify-start border-t-[0.5px] px-4 py-7 items-start cursor-pointer">
       <div
         className="w-[5%] md:w-1/10"
         onClick={() => {
@@ -56,7 +56,7 @@ const FaqQuestion = ({
         </span>
         {isAnswerVisible && (
           <motion.span>
-            <p className="text-text-dark-gray font-normal text-base leading-[22.4px] mt-3 md:text-sm">{answer}</p>
+            <p className="text-text-dark-gray font-normal text-base leading-[22.4px] mt-3.5 md:text-sm">{answer}</p>
           </motion.span>
         )}
       </span>

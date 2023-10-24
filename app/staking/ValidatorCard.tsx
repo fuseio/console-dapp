@@ -62,13 +62,14 @@ const ValidatorCard = ({
             )}
           </div>
         )}
-        <span className="text-black font-bold text-base ms-3">
-          {isLoading ? (
-            <span className="px-12 py-[1px] bg-dark-gray rounded-md animate-pulse"></span>
-          ) : (
-            name
-          )}
-          <br />
+        <div className="flex flex-col gap-2 ms-3">
+          <span className="text-black font-bold text-base/[22.4px]">
+            {isLoading ? (
+              <span className="px-12 py-[1px] bg-dark-gray rounded-md animate-pulse"></span>
+            ) : (
+              name
+            )}
+          </span>
           <p className="font-normal text-sm text-text-gray">
             {isLoading ? (
               <span className="px-16 py-[1px] bg-dark-gray rounded-md animate-pulse"></span>
@@ -80,47 +81,47 @@ const ValidatorCard = ({
               ""
             )}
           </p>
-        </span>
+        </div>
       </div>
       <div className="flex justify-between pt-3">
-        <p className="text-base font-normal text-text-gray">Staked</p>
+        <p className="text-sm font-normal text-text-gray">Staked</p>
         {isLoading ? (
           <span className="px-14 bg-dark-gray rounded-md animate-pulse"></span>
         ) : (
-          <p className="text-base font-normal text-secondary-gray">
+          <p className="text-sm font-normal text-tertiary-gray">
             {stakedAmount}
           </p>
         )}
       </div>
-      <div className="flex justify-between pt-3">
-        <p className="text-base font-normal text-text-gray">Total Delegators</p>
+      <div className="flex justify-between pt-4">
+        <p className="text-sm font-normal text-text-gray">Total Delegators</p>
         {isLoading ? (
           <span className="px-5 bg-dark-gray rounded-md animate-pulse"></span>
         ) : (
-          <p className="text-base font-normal text-secondary-gray">
+          <p className="text-sm font-normal text-tertiary-gray">
             {totalDelegators}
           </p>
         )}
       </div>
-      <div className="flex justify-between pt-3">
-        <p className="text-base font-normal text-text-gray">Uptime</p>
+      <div className="flex justify-between pt-4">
+        <p className="text-sm font-normal text-text-gray">Uptime</p>
         {isLoading ? (
           <span className="px-5 bg-dark-gray rounded-md animate-pulse"></span>
         ) : (
-          <p className="text-base font-normal text-secondary-gray">{uptime}%</p>
+          <p className="text-sm font-normal text-tertiary-gray">{uptime}%</p>
         )}
       </div>
-      <div className="flex justify-between pt-3">
-        <p className="text-base font-normal text-text-gray">Commission</p>
+      <div className="flex justify-between pt-4">
+        <p className="text-sm font-normal text-text-gray">Commission</p>
         {isLoading ? (
           <span className="px-5 bg-dark-gray rounded-md animate-pulse"></span>
         ) : (
-          <p className="text-base font-normal text-secondary-gray">
+          <p className="text-sm font-normal text-tertiary-gray">
             {commission}
           </p>
         )}
       </div>
-      <div className="flex justify-start pt-3">
+      <div className="flex justify-start pt-4">
         {state === "Open" ? (
           <Pill type="success" text={state} isLoading={isLoading} />
         ) : (

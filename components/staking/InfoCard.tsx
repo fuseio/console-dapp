@@ -27,12 +27,12 @@ const InfoCard = ({
     <div
       className={
         size === "small"
-          ? "p-5 w-1/4 bg-white rounded-lg flex flex-col justify-between " +
+          ? "px-5 py-[17px] w-1/4 bg-white rounded-lg flex flex-col justify-between " +
             classname
           : size === "medium"
-          ? "p-5 w-1/2 bg-white rounded-lg flex flex-col justify-between " +
+          ? "px-5 py-[17px] w-1/2 bg-white rounded-lg flex flex-col justify-between " +
             classname
-          : "p-5 w-full bg-white rounded-lg flex flex-col justify-between " +
+          : "px-5 py-[17px] w-full bg-white rounded-lg flex flex-col justify-between " +
             classname
       }
     >
@@ -58,15 +58,15 @@ const InfoCard = ({
         <div
           className={
             type === 1
-              ? "text-base text-black font-normal opacity-50 mt-3"
-              : "text-base text-black font-normal mt-3"
+              ? "text-sm/4 text-black font-normal opacity-50 mt-3"
+              : "text-sm/4 text-black font-normal mt-3"
           }
         >
           {Body}
         </div>
       )}
       {type !== 3 && (
-        <div className="text-base text-black font-normal mt-3">{Footer}</div>
+        <div className="text-sm/4 text-black font-normal mt-3">{Footer}</div>
       )}
     </div>
   );
