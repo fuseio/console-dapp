@@ -238,7 +238,7 @@ const Stake = ({ params }: { params: { id: string } }) => {
       <div className="flex w-8/9 flex-col md:w-9/10 max-w-7xl">
         <div className="flex w-full md:flex-col">
           <div className="w-[65%] flex flex-col md:w-full">
-            <div className="flex mt-14 items-start justify-start md:flex-col">
+            <div className="flex mt-[63px] items-start justify-start md:flex-col">
               <div className="w-2/3 flex justify-start h-20 md:w-full">
                 <div className="h-20">
                   {!validator ? (
@@ -247,20 +247,20 @@ const Stake = ({ params }: { params: { id: string } }) => {
                     <img
                       src={`/${validator.image}`}
                       alt="validator"
-                      width="80"
-                      height="80"
+                      width="78"
+                      height="78"
                       className="rounded-md"
                     />
                   ) : (
                     <Jazzicon
-                      diameter={80}
+                      diameter={78}
                       seed={parseInt(validator.name as string, 16)}
                     />
                   )}
                 </div>
                 <div className="flex flex-col h-full justify-between ms-6">
                   {validator ? (
-                    <p className="font-black text-fuse-black text-[40px]/10 md:text-2xl">
+                    <p className="font-semibold text-5xl text-fuse-black leading-none md:text-2xl">
                       {validator.name}
                     </p>
                   ) : (
@@ -284,10 +284,10 @@ const Stake = ({ params }: { params: { id: string } }) => {
                 </div>
               </div>
               <div className="flex flex-col items-end justify-center w-1/3 h-full ms-6 md:w-full md:items-start md:ms-0 md:mt-8">
-                <p className="text-text-heading-gray text-base mb-1">
+                <p className="text-text-heading-gray text-base mb-2">
                   Validating Since
                   {validator ? (
-                    <span className="ms-1 font-semibold">
+                    <span className="ms-1.5 font-semibold">
                       {new Date(
                         parseInt(validator.firstSeen as string) * 1000
                       ).toLocaleDateString()}
@@ -296,10 +296,10 @@ const Stake = ({ params }: { params: { id: string } }) => {
                     <span className="ms-2 px-14 py-1 bg-dark-gray rounded-lg animate-pulse" />
                   )}
                 </p>
-                <p className="text-text-heading-gray text-base md:mt-4 mt-1">
+                <p className="text-text-heading-gray text-base md:mt-4 mt-2">
                   Validated Blocks
                   {validator ? (
-                    <span className="ms-1 font-semibold">
+                    <span className="ms-1.5 font-semibold">
                       {validator.totalValidated}
                     </span>
                   ) : (
@@ -308,7 +308,7 @@ const Stake = ({ params }: { params: { id: string } }) => {
                 </p>
               </div>
             </div>
-            <div className="grid grid-cols-2 mt-10 gap-4 md:grid-cols-1">
+            <div className="grid grid-cols-2 mt-8 gap-4 md:grid-cols-1">
               <InfoCard
                 Header={
                   new Intl.NumberFormat().format(
@@ -372,9 +372,9 @@ const Stake = ({ params }: { params: { id: string } }) => {
                 {!validator ? (
                   <span className="px-8 mt-4 py-3 me-auto bg-dark-gray rounded-lg animate-pulse" />
                 ) : validator?.forDelegation ? (
-                  <Pill type="success" text={"Open"} className="me-auto mt-4" />
+                  <Pill type="success" text={"Open"} className="me-auto mt-4 px-3 py-2.5" />
                 ) : (
-                  <Pill type="error" text={"Closed"} className="me-auto mt-4" />
+                  <Pill type="error" text={"Closed"} className="me-auto mt-4 px-3 py-2.5" />
                 )}
               </div>
               <div className="flex flex-col w-1/2">
@@ -385,13 +385,13 @@ const Stake = ({ params }: { params: { id: string } }) => {
                   <Pill
                     type="success"
                     text={"Active"}
-                    className="me-auto mt-4"
+                    className="me-auto mt-4 px-3 py-2.5"
                   />
                 ) : (
                   <Pill
                     type="error"
                     text={"Inactive"}
-                    className="me-auto mt-4"
+                    className="me-auto mt-4 px-3 py-2.5"
                   />
                 )}
               </div>
@@ -422,7 +422,7 @@ const Stake = ({ params }: { params: { id: string } }) => {
               </div>
             )}
           </div>
-          <div className="w-[35%] ps-16 pt-14 md:pt-8 md:pb-6 md:w-full md:ps-0">
+          <div className="w-[35%] ps-16 pt-[63px] md:pt-8 md:pb-6 md:w-full md:ps-0">
             <StickyBox offsetTop={90}>
               <StakeCard
                 validator={validator}

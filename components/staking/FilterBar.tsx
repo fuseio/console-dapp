@@ -38,7 +38,7 @@ const FilterBar = ({
       </span>
       <img src={info.src} alt="info" className="peer cursor-pointer mb-0.5" />
       {tooltip && (
-        <div className="hidden absolute top-11 left-0 bg-white rounded-lg shadow-lg w-80 py-3 px-4 md:w-full peer-hover:block text-sm z-50">
+        <div className="hidden absolute top-11 left-0 bg-white rounded-lg shadow-lg w-80 py-2 px-3 md:w-full peer-hover:block text-[10px]/[16px] z-50">
           {tooltip}
         </div>
       )}

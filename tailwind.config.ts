@@ -48,6 +48,7 @@ const config: Config = {
       warning: "#FFF3DD",
       error: "#FFDDDD",
       success: "#B4F9BA",
+      "success-light": "#E0FFDD",
       inactive: "#EBEBEB",
       "warning-dark": "#A86D00",
       "error-dark": "#750000",

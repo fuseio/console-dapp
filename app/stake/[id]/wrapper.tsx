@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Topbar from "@/components/Topbar";
 import Home from "./Home";
 import ChainModal from "@/components/staking/ChainModal";
+import Footer from "@/components/Footer";
 
 import { useAppDispatch } from "@/store/store";
 import { setSelectedNavbar } from "@/store/navbarSlice";
@@ -21,6 +22,7 @@ const PageWrapper = ({ params }: { params: { id: string } }) => {
         <ChainModal />
         <Topbar />
         <Home params={params} />
+        <Footer />
       </div>
     </div>
   );

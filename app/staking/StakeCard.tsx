@@ -133,7 +133,7 @@ const StakeCard = ({
 
   const validatorSlice = useAppSelector(selectValidatorSlice);
   return (
-    <div className="w-full bg-white rounded-xl p-4 flex flex-col">
+    <div className="w-full bg-white rounded-xl p-6 flex flex-col">
       <div className="flex w-full bg-modal-bg rounded-md p-[2px]">
         <p
           className={

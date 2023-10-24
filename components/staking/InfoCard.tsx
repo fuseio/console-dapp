@@ -40,7 +40,7 @@ const InfoCard = ({
         <div className="py-3 w-2/3 rounded-md bg-black/25 animate-pulse"></div>
       ) : (
         <div className="flex justify-start items-start">
-          <div className="text-2xl font-black text-black w-[95%]">{Header}</div>
+          <div className="text-xl/5 font-black text-black w-[95%]">{Header}</div>
           {icon && (
             <img
               src={icon}

@@ -25,11 +25,11 @@ const Pill = ({ className = "", type, text, isLoading = false }: PillProps) => {
         paddingBottom: "0.125rem",
       }}
       className={
-        "px-3 rounded-full text-sm " +
+        "px-3 rounded-full text-sm font-medium " +
         className +
         " " +
         (type === "success"
-          ? "bg-success text-success-dark"
+          ? "bg-success-light text-success-dark"
           : type === "error"
           ? "bg-error text-error-dark"
           : type === "inactive"
