@@ -411,7 +411,6 @@ const Home = () => {
               The Fuse Bridge allows you to move funds from different networks
               and centralized exchanges to Fuse.
             </p>
-            <Disclaimer />
             <ToastPane className="md:hidden" />
           </div>
           <div className="flex-col items-center flex pt-16 md:w-full md:pt-0 md:mt-3">
