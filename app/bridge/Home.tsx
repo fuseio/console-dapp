@@ -398,7 +398,7 @@ const Home = () => {
       <Transactions isOpen={isOpen} onToggle={setIsOpen} />
       <div className="flex flex-col main w-8/9 md:w-9/10 max-w-7xl md:flex-col">
         <div className="flex relative md:flex-col">
-          <div className="flex flex-col pt-14 w-2/3 me-[100px] md:w-full">
+          <div className="flex flex-col pt-16 w-2/3 me-[100px] md:w-full">
             <span className="flex items-center">
               <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-[32px]">Bridge</h1>
               <Pill
@@ -414,7 +414,7 @@ const Home = () => {
             <Disclaimer />
             <ToastPane className="md:hidden" />
           </div>
-          <div className="flex-col items-center flex pt-14 md:w-full md:pt-0 md:mt-3">
+          <div className="flex-col items-center flex pt-16 md:w-full md:pt-0 md:mt-3">
             <span
               className="flex bg-white ms-auto px-2 items-center rounded-md cursor-pointer"
               onClick={() => {
