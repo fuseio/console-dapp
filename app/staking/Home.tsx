@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import piggybank from "@/assets/piggybank.svg";
-import FAQ from "@/components/staking/FAQ";
+import FAQ from "@/components/FAQ";
 import FilterBar from "@/components/staking/FilterBar";
 import InfoCard from "@/components/staking/InfoCard";
 import SearchBar from "@/components/staking/SearchBar";

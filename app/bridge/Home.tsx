@@ -35,7 +35,7 @@ import { useAccount } from "wagmi";
 import { fuse } from "viem/chains";
 import { getNetwork, switchNetwork } from "wagmi/actions";
 import { hex } from "@/lib/helpers";
-import FAQ from "@/components/bridge/FAQ";
+import FAQ from "@/components/FAQ";
 
 const faqs = [
   "What tokens can be transferred using the Fuse Token Bridge?",

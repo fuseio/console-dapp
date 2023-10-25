@@ -20,7 +20,7 @@ import {
 import { eclipseAddress, hex } from "@/lib/helpers";
 import Jazzicon from "react-jazzicon";
 import Modal from "@/components/staking/Modal";
-import FAQ from "@/components/staking/FAQ";
+import FAQ from "@/components/FAQ";
 import WarningModal from "@/components/staking/WarningModal";
 import { delegate, withdraw } from "@/lib/contractInteract";
 import { Address, useAccount } from "wagmi";
