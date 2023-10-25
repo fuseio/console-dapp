@@ -400,7 +400,7 @@ const Home = () => {
         <div className="flex relative md:flex-col">
           <div className="flex flex-col pt-14 w-2/3 me-[100px] md:w-full">
             <span className="flex items-center">
-              <h1 className="font-black text-4xl md:text-[32px] ">Bridge</h1>
+              <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-[32px]">Bridge</h1>
               <Pill
                 text="Beta"
                 type="success"

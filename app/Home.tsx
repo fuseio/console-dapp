@@ -42,7 +42,7 @@ const Home = () => {
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TransfiModal />
-      <div className="w-8/9 flex flex-col gap-y-16 mt-14 mb-80 md:w-9/10 max-w-7xl">
+      <div className="w-8/9 flex flex-col gap-y-16 mt-16 mb-80 md:w-9/10 max-w-7xl">
         <div>
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
             Console

@@ -234,7 +234,7 @@ const Home = () => {
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
-      <div className="w-8/9 flex flex-col mt-[63px] md:w-9/10 max-w-7xl">
+      <div className="w-8/9 flex flex-col mt-14 md:w-9/10 max-w-7xl">
         <div className="flex w-fit items-start">
           <div className="flex flex-col w-6/12 md:w-full">
             <h1 className="font-semibold text-5xl text-fuse-black leading-none md:text-4xl">
