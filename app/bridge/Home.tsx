@@ -30,7 +30,6 @@ import { getNativeCurrency } from "@layerzerolabs/ui-core";
 import { getChainKey } from "@layerzerolabs/lz-sdk";
 import ToastPane from "@/components/bridge/ToastPane";
 import Pill from "@/components/bridge/Pill";
-import Disclaimer from "@/components/bridge/Disclaimer";
 import { useAccount } from "wagmi";
 import { fuse } from "viem/chains";
 import { getNetwork, switchNetwork } from "wagmi/actions";
@@ -38,6 +37,9 @@ import { hex } from "@/lib/helpers";
 import FAQ from "@/components/FAQ";
 
 const faqs = [
+  "I have USDC or WETH on the Fuse network and want to bridge it to another network. But the Bridge shows me a balance of 0.",
+  "I deposited USDC or WETH into the Fuse network, but I don't see the tokens in my wallet.",
+  "What are Fuse token addresses on Polygon, Optimism and Arbitrum?",
   "What tokens can be transferred using the Fuse Token Bridge?",
   "Between which networks can the tokens be transferred?",
   "Is there a guide available on how to use the Fuse Token Bridge?",
@@ -45,39 +47,55 @@ const faqs = [
   "What technology powers the Fuse bridge, and who monitors its security?",
   "Are there any fees associated with using the Fuse Token Bridge?",
   "Is there any liquidity concern users should know?",
-  "What are OP, ARB, and MATIC token addresses on Fuse?",
-  "How are gas fees on Fuse Network calculated?",
+  "How are gas fees on Fuse Network calculated?"
 ];
 
 const faqAnswers = [
-  <p key="1">The Fuse Token Bridge can send FUSE, USDC, and WETH tokens.</p>,
-  <p key="2">
-    The tokens can be transferred between the Fuse Network and Polygon,
-    Optimism, and Arbitrum.
-  </p>,
-  <p key="3">
-    Yes, a guide on how to use the Fuse Token Bridge is available on the
-    provided link.{" "}
+  <p>
+    The Fuse Bridge uses other tokens USDC V2 and WETH V2 on the bridge.
+    Don't worry, their value is identical to standard USDC and WETH on the Fuse network.
+    <br />
+    So first you need to swap your USDC/WETH tokens for USDC V2/WETH V2 on the{" "}
     <a
-      href="https://youtu.be/LUsoAdsTWM4?si=LuOxRsTlMZ9RSsHh"
+      href="https://app.voltage.finance/#/swap"
       className="underline"
     >
-      https://youtu.be/LUsoAdsTWM4?si=LuOxRsTlMZ9RSsHh
+      Voltage Finance dapp
+    </a>{" "}
+    and then bridge tokens from Fuse to another network.
+  </p>,
+  <p>
+    By depositing USDC or WETH into the Fuse network, you receive new tokens
+    which exist specifically for the bridge. Therefore, to see them in your wallet,
+    you need to add them. You can use the "Add Token" button or add them manually
+    using the contract address.
+    <br />
+    USDC V2 contract address:{" "}
+    <a
+      href="https://explorer.fuse.io/token/0x28C3d1cD466Ba22f6cae51b1a4692a831696391A/token-transfers"
+      className="underline"
+    >
+      0x28c3d1cd466ba22f6cae51b1a4692a831696391a
+    </a>
+    <br />
+    WETH V2 contract address:{" "}
+    <a
+      href="https://explorer.fuse.io/token/0x5622F6dC93e08a8b717B149677930C38d5d50682/token-transfers"
+      className="underline"
+    >
+      0x5622f6dc93e08a8b717b149677930c38d5d50682
+    </a>
+    <br />
+    After that, you can swap these tokens for standard USDC and WETH on Fuse
+    on the Voltage Finance dapp:{" "}
+    <a
+      href="https://app.voltage.finance/#/swap"
+      className="underline"
+    >
+      https://app.voltage.finance/#/swap
     </a>
   </p>,
-  <p key="4">The native token of the Fuse Network is the Fuse token (FUSE).</p>,
-  <p key="5">
-    The token bridge is powered by LayerZero technology, and its security is
-    monitored by blockchain security experts Ironblocks.
-  </p>,
-  <p key="6">
-    Currently, there are zero bridge fees on the Fuse Token Bridge.
-  </p>,
-  <p key="7">
-    Users should be aware that liquidity at this stage is minimal, so they are
-    advised to avoid trying to bridge substantial amounts.
-  </p>,
-  <p key="8">
+  <p>
     Optimistic (OP): 0xe453d6649643F1F460C371dC3D1da98F7922fe51
     <br />
     <a
@@ -105,16 +123,43 @@ const faqAnswers = [
       https://polygonscan.com/token/0x6b021b3f68491974be6d4009fee61a4e3c708fd6
     </a>
   </p>,
-  <p key="9">
-    Blockchain gas fees are calculated based on the complexity of the
-    transaction or contract interaction on the network. Every operation, such as
-    sending tokens, interacting with a contract, or transferring assets,
-    requires a certain amount of computational work measured in
-    &ldquo;gas.&rdquo;
+  <p>
+    The Fuse Token Bridge can send FUSE, USDC, and WETH tokens.
+  </p>,
+  <p>
+    The tokens can be transferred between the Fuse Network and Polygon, Optimism, and Arbitrum.
+  </p>,
+  <p>
+    Yes, a guide on how to use the Fuse Token Bridge is available on the provided link.{" "}
+    <a
+      href="https://youtu.be/LUsoAdsTWM4?si=LuOxRsTlMZ9RSsHh"
+      className="underline"
+    >
+      https://youtu.be/LUsoAdsTWM4?si=LuOxRsTlMZ9RSsHh
+    </a>
+  </p>,
+  <p>
+    The native token of the Fuse Network is the Fuse token (FUSE).
+  </p>,
+  <p>
+    The token bridge is powered by LayerZero technology,
+    and its security is monitored by blockchain security experts Ironblocks.
+  </p>,
+  <p>
+    Currently, there are zero bridge fees on the Fuse Token Bridge.
+  </p>,
+  <p>
+    Users should be aware that liquidity at this stage is minimal,
+    so they are advised to avoid trying to bridge substantial amounts.
+  </p>,
+  <p>
+    Blockchain gas fees are calculated based on the complexity of the transaction
+    or contract interaction on the network. Every operation, such as sending tokens,
+    interacting with a contract, or transferring assets, requires a certain amount of
+    computational work measured in "gas."
     <br />
-    The total gas fee is determined by multiplying the gas used by the gas
-    price, which is set by the user and measured in units like gwei for
-    Ethereum.
+    The total gas fee is determined by multiplying the gas used by the gas price,
+    which is set by the user and measured in units like gwei for Ethereum.
   </p>,
 ];
 
@@ -392,7 +437,7 @@ const Home = () => {
     });
   };
 
-  
+
   return (
     <>
       <Transactions isOpen={isOpen} onToggle={setIsOpen} />
@@ -475,7 +520,7 @@ const Home = () => {
                           dispatch(
                             setChain(
                               appConfig.wrappedBridge.chains[
-                                depositSelectedChainItem
+                              depositSelectedChainItem
                               ]
                             )
                           );
@@ -588,20 +633,19 @@ const Home = () => {
                   disabled
                   text={
                     parseFloat(amount) > parseFloat(balanceSlice.balance)
-                      ? `Insufficient ${
-                          appConfig.wrappedBridge.chains[
-                            selected
-                              ? withdrawSelectedChainItem
-                              : depositSelectedChainItem
-                          ].tokens[
-                            selected
-                              ? withdrawSelectedTokenItem
-                              : depositSelectedTokenItem
-                          ].symbol
-                        } Balance`
+                      ? `Insufficient ${appConfig.wrappedBridge.chains[
+                        selected
+                          ? withdrawSelectedChainItem
+                          : depositSelectedChainItem
+                      ].tokens[
+                        selected
+                          ? withdrawSelectedTokenItem
+                          : depositSelectedTokenItem
+                      ].symbol
+                      } Balance`
                       : parseFloat(amount) > 10000
-                      ? "Exceeds Daily Limit"
-                      : "Minimum 0.5"
+                        ? "Exceeds Daily Limit"
+                        : "Minimum 0.5"
                   }
                 />
               ) : (
@@ -636,30 +680,30 @@ const Home = () => {
                     }}
                     disabled={
                       (selected === 1 && chain?.id === fuse.id) ||
-                      selected === 0
+                        selected === 0
                         ? balanceSlice.isApprovalLoading ||
-                          contractSlice.isBridgeLoading ||
-                          contractSlice.isApprovalLoading ||
-                          balanceSlice.isBalanceLoading ||
-                          !amount ||
-                          parseFloat(amount) === 0 ||
-                          isNaN(parseFloat(amount))
+                        contractSlice.isBridgeLoading ||
+                        contractSlice.isApprovalLoading ||
+                        balanceSlice.isBalanceLoading ||
+                        !amount ||
+                        parseFloat(amount) === 0 ||
+                        isNaN(parseFloat(amount))
                         : false
                     }
                     text={
                       contractSlice.isBridgeLoading ||
-                      contractSlice.isApprovalLoading
+                        contractSlice.isApprovalLoading
                         ? "Loading..."
                         : selected === 1 && chain?.id !== fuse.id
-                        ? "Switch To Fuse"
-                        : selected === 1 &&
-                          appConfig.wrappedBridge.chains[
-                            withdrawSelectedChainItem
-                          ].tokens[withdrawSelectedTokenItem].isNative
-                        ? "Bridge"
-                        : parseFloat(balanceSlice.approval) < parseFloat(amount)
-                        ? "Approve"
-                        : "Bridge"
+                          ? "Switch To Fuse"
+                          : selected === 1 &&
+                            appConfig.wrappedBridge.chains[
+                              withdrawSelectedChainItem
+                            ].tokens[withdrawSelectedTokenItem].isNative
+                            ? "Bridge"
+                            : parseFloat(balanceSlice.approval) < parseFloat(amount)
+                              ? "Approve"
+                              : "Bridge"
                     }
                     disabledClassname="bg-fuse-black/20 text-black px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
                   />
@@ -683,8 +727,8 @@ const Home = () => {
                         getChainKey(
                           selected === 0
                             ? appConfig.wrappedBridge.chains[
-                                depositSelectedChainItem
-                              ].lzChainId
+                              depositSelectedChainItem
+                            ].lzChainId
                             : 138
                         )
                       ).symbol
