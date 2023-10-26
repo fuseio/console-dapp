@@ -53,7 +53,7 @@ const faqs = [
 const faqAnswers = [
   <p key="one">
     The Fuse Bridge uses other tokens USDC V2 and WETH V2 on the bridge.
-    Don't worry, their value is identical to standard USDC and WETH on the Fuse network.
+    Don&apos;t worry, their value is identical to standard USDC and WETH on the Fuse network.
     <br />
     So first you need to swap your USDC/WETH tokens for USDC V2/WETH V2 on the{" "}
     <a
@@ -67,7 +67,7 @@ const faqAnswers = [
   <p key="two">
     By depositing USDC or WETH into the Fuse network, you receive new tokens
     which exist specifically for the bridge. Therefore, to see them in your wallet,
-    you need to add them. You can use the "Add Token" button or add them manually
+    you need to add them. You can use the &quot;Add Token&quot; button or add them manually
     using the contract address.
     <br />
     USDC V2 contract address:{" "}
@@ -156,7 +156,7 @@ const faqAnswers = [
     Blockchain gas fees are calculated based on the complexity of the transaction
     or contract interaction on the network. Every operation, such as sending tokens,
     interacting with a contract, or transferring assets, requires a certain amount of
-    computational work measured in "gas."
+    computational work measured in &quot;gas.&quot;
     <br />
     The total gas fee is determined by multiplying the gas used by the gas price,
     which is set by the user and measured in units like gwei for Ethereum.
