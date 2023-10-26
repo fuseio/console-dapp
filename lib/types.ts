@@ -233,3 +233,7 @@ export type MenuItem = {
 }
 
 export type MenuItems = MenuItem[];
+
+export type WalletType = {
+  [k: string]: string;
+}

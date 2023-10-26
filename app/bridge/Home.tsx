@@ -33,7 +33,7 @@ import Pill from "@/components/bridge/Pill";
 import { useAccount } from "wagmi";
 import { fuse } from "viem/chains";
 import { getNetwork, switchNetwork } from "wagmi/actions";
-import { hex } from "@/lib/helpers";
+import { hex, walletType } from "@/lib/helpers";
 import FAQ from "@/components/FAQ";
 
 const faqs = [
@@ -187,7 +187,7 @@ const Home = () => {
   const [isExchange, setIsExchange] = useState(false);
   const [isDisabledChain, setIsDisabledChain] = useState(false);
   const [pendingPromise, setPendingPromise] = React.useState<any>();
-  const { address, isConnected } = useAccount();
+  const { address, connector, isConnected } = useAccount();
   const { chain } = getNetwork();
 
   useEffect(() => {
@@ -230,6 +230,7 @@ const Home = () => {
               depositSelectedTokenItem
             ].coinGeckoId,
           selectedChainId,
+          walletType: connector ? walletType[connector.id] : undefined,
         })
       );
     else if (res && selected === 1)
@@ -253,6 +254,7 @@ const Home = () => {
             appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
               .coinGeckoId,
           selectedChainId,
+          walletType: connector ? walletType[connector.id] : undefined,
         })
       );
   };
@@ -308,6 +310,7 @@ const Home = () => {
               appConfig.wrappedBridge.chains[depositSelectedChainItem].name,
             tokenId: "fuse-network-token",
             selectedChainId,
+            walletType: connector ? walletType[connector.id] : undefined,
           })
         );
       } else if (
@@ -344,6 +347,7 @@ const Home = () => {
                 depositSelectedTokenItem
               ].coinGeckoId,
             selectedChainId,
+            walletType: connector ? walletType[connector.id] : undefined,
           })
         );
     }
@@ -392,6 +396,7 @@ const Home = () => {
             network:
               appConfig.wrappedBridge.chains[withdrawSelectedChainItem].name,
             tokenId: "fuse-network-token",
+            walletType: connector ? walletType[connector.id] : undefined,
           })
         );
       } else
@@ -418,6 +423,7 @@ const Home = () => {
             tokenId:
               appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
                 .coinGeckoId,
+            walletType: connector ? walletType[connector.id] : undefined,
           })
         );
     }

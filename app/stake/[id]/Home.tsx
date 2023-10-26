@@ -17,7 +17,7 @@ import {
   fetchValidators,
   selectValidatorSlice,
 } from "@/store/validatorSlice";
-import { eclipseAddress, hex } from "@/lib/helpers";
+import { eclipseAddress, hex, walletType } from "@/lib/helpers";
 import Jazzicon from "react-jazzicon";
 import Modal from "@/components/staking/Modal";
 import FAQ from "@/components/FAQ";
@@ -38,7 +38,7 @@ const Stake = ({ params }: { params: { id: string } }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isWarningOpen, setIsWarningOpen] = useState(false);
   const [isWarningAknowledged, setIsWarningAknowledged] = useState(false);
-  const { address } = useAccount();
+  const { address, connector } = useAccount();
 
   const getAmount = () => {
     if (isNaN(parseFloat(amount as string))) return 0;
@@ -62,6 +62,8 @@ const Stake = ({ params }: { params: { id: string } }) => {
         ym("reachGoal", "stake");
         amplitude.track("Stake", {
           amount: getAmount(),
+          walletType: connector ? walletType[connector.id] : undefined,
+          walletAddress: address
         });
         setAmount(null);
         setIsLoading(false);
@@ -90,6 +92,8 @@ const Stake = ({ params }: { params: { id: string } }) => {
         ym("reachGoal", "unstake");
         amplitude.track("Unstake", {
           amount: getAmount(),
+          walletType: connector ? walletType[connector.id] : undefined,
+          walletAddress: address
         });
         setAmount(null);
         setIsLoading(false);

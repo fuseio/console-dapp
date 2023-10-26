@@ -7,7 +7,7 @@ import dollarMobile from "@/assets/dollar-mobile.svg"
 import receiveMobile from "@/assets/receive-mobile.svg"
 import sendMobile from "@/assets/send-mobile.svg"
 import rightArrow from "@/assets/right-arrow.svg"
-import { eclipseAddress } from "@/lib/helpers";
+import { eclipseAddress, walletType } from "@/lib/helpers";
 import copy from "@/assets/copy2.svg";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/store";
@@ -23,7 +23,7 @@ const Home = () => {
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const controller = new AbortController();
-  const { address, isConnected } = useAccount();
+  const { address, connector, isConnected } = useAccount();
   const { chain } = useNetwork();
   const balance = useBalance({
     address,
@@ -86,7 +86,10 @@ const Home = () => {
                   <Button
                     text={"Buy Fuse"}
                     onClick={() => {
-                      amplitude.track("On-Ramp opened");
+                      amplitude.track("On-Ramp opened", {
+                        walletType: connector ? walletType[connector.id] : undefined,
+                        walletAddress: address
+                      });
                       dispatch(setIsTransfiModalOpen(true));
                     }}
                     padding="py-[17.73px]"
@@ -99,7 +102,10 @@ const Home = () => {
                     text={"Stake"}
                     disabled={!isConnected}
                     onClick={() => {
-                      amplitude.track("Go to Staking");
+                      amplitude.track("Go to Staking", {
+                        walletType: connector ? walletType[connector.id] : undefined,
+                        walletAddress: address
+                      });
                       router.push("/staking");
                     }}
                     padding="py-[17.73px]"
@@ -113,7 +119,10 @@ const Home = () => {
                     text={"Bridge"}
                     disabled={!isConnected}
                     onClick={() => {
-                      amplitude.track("Go to Bridge");
+                      amplitude.track("Go to Bridge", {
+                        walletType: connector ? walletType[connector.id] : undefined,
+                        walletAddress: address
+                      });
                       router.push("/bridge");
                     }}
                     padding="py-[17.73px]"
@@ -130,7 +139,10 @@ const Home = () => {
                     <Button
                       text={""}
                       onClick={() => {
-                        amplitude.track("On-Ramp opened");
+                        amplitude.track("On-Ramp opened", {
+                          walletType: connector ? walletType[connector.id] : undefined,
+                          walletAddress: address
+                        });
                         dispatch(setIsTransfiModalOpen(true));
                       }}
                       padding=""
@@ -148,7 +160,10 @@ const Home = () => {
                       text={""}
                       disabled={!isConnected}
                       onClick={() => {
-                        amplitude.track("Go to Staking");
+                        amplitude.track("Go to Staking", {
+                          walletType: connector ? walletType[connector.id] : undefined,
+                          walletAddress: address
+                        });
                         router.push("/staking");
                       }}
                       padding=""
@@ -167,7 +182,10 @@ const Home = () => {
                       text={""}
                       disabled={!isConnected}
                       onClick={() => {
-                        amplitude.track("Go to Bridge");
+                        amplitude.track("Go to Bridge", {
+                          walletType: connector ? walletType[connector.id] : undefined,
+                          walletAddress: address
+                        });
                         router.push("/bridge");
                       }}
                       padding=""
@@ -219,7 +237,10 @@ const Home = () => {
                 <a
                   href="mailto:console@fuse.io"
                   className="group flex gap-1 text-black font-semibold"
-                  onClick={() => amplitude.track("Contact us")}
+                  onClick={() => amplitude.track("Contact us", {
+                    walletType: connector ? walletType[connector.id] : undefined,
+                    walletAddress: address
+                  })}
                 >
                   <p>Contact us</p>
                   <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />
@@ -228,7 +249,10 @@ const Home = () => {
                   href="https://docs.fuse.io"
                   target="_blank"
                   className="group flex gap-1 text-black font-semibold"
-                  onClick={() => amplitude.track("Go to Docs")}
+                  onClick={() => amplitude.track("Go to Docs", {
+                    walletType: connector ? walletType[connector.id] : undefined,
+                    walletAddress: address
+                  })}
                 >
                   <p>Read docs</p>
                   <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />
@@ -251,7 +275,10 @@ const Home = () => {
                   href="https://developers.fuse.io"
                   target="_blank"
                   className="group flex gap-1 text-black font-semibold"
-                  onClick={() => amplitude.track("Go to Developers app")}
+                  onClick={() => amplitude.track("Go to Developers app", {
+                    walletType: connector ? walletType[connector.id] : undefined,
+                    walletAddress: address
+                  })}
                 >
                   <p>Get API key</p>
                   <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />

@@ -1,4 +1,5 @@
 import { TransactionType } from "@/store/transactionsSlice";
+import { WalletType } from "./types";
 
 export const eclipseAddress = (address: string): string => {
   return (
@@ -44,3 +45,15 @@ export const insertTransactionToLocalStorage = (
 export const hex = "0x";
 
 export const IS_SERVER = typeof window === "undefined";
+
+export const walletType: WalletType = {
+  "injected": "MetaMask",
+  "walletConnect": "WalletConnect",
+  "coinbaseWallet": "Coinbase", 
+  "google": "Google",
+  "facebook": "Facebook",
+  "twitter": "Twitter",
+  "discord": "Discord",
+  "twitch": "Twitch",
+  "github": "GitHub"
+}

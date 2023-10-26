@@ -14,6 +14,7 @@ import sFuse from "@/assets/sFuse.svg";
 import { estimateOriginalFee } from "@/store/feeSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { useAccount } from "wagmi";
+import { walletType } from "@/lib/helpers";
 
 type DepositProps = {
   selectedChainSection: number;
@@ -61,7 +62,7 @@ const Deposit = ({
   pendingPromise,
   setPendingPromise,
 }: DepositProps) => {
-  const { address, connector, isConnected } = useAccount();
+  const { address, connector } = useAccount();
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const chainSlice = useAppSelector(selectChainSlice);
@@ -212,7 +213,7 @@ const Deposit = ({
             <span className="mt-3 text-xs font-medium">
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
-              balanceSlice.isApprovalLoading ? (
+                balanceSlice.isApprovalLoading ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : (
                 balanceSlice.balance
@@ -252,6 +253,8 @@ const Deposit = ({
                   onClick={() => {
                     amplitude.track("External Provider", {
                       provider: bridge.name,
+                      walletType: connector ? walletType[connector.id] : undefined,
+                      walletAddress: address
                     });
                   }}
                 >
@@ -309,6 +312,8 @@ const Deposit = ({
                 provider:
                   appConfig.wrappedBridge.disabledChains[selectedChainItem]
                     .appName,
+                walletType: connector ? walletType[connector.id] : undefined,
+                walletAddress: address
               });
             }}
           >

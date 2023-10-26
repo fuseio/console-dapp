@@ -5,6 +5,8 @@ import { useAppSelector } from "@/store/store";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "usehooks-ts";
 import * as amplitude from "@amplitude/analytics-browser";
+import { walletType } from "@/lib/helpers";
+import { useAccount } from "wagmi";
 
 type NavMenuProps = {
   menuItems?: MenuItems;
@@ -38,6 +40,7 @@ const openMenuItemEvent: OpenMenuItemEvent = {
 const NavMenu = ({ menuItems = [], isOpen = false }: NavMenuProps) => {
   const matches = useMediaQuery("(min-width: 768px)");
   const navbarSlice = useAppSelector(selectNavbarSlice);
+  const { address, connector } = useAccount();
 
   return (
     <AnimatePresence>
@@ -69,7 +72,10 @@ const NavMenu = ({ menuItems = [], isOpen = false }: NavMenuProps) => {
                       ? "page"
                       : "false"
                   }
-                  onClick={() => amplitude.track(openMenuItemEvent[item.title])}
+                  onClick={() => amplitude.track(openMenuItemEvent[item.title], {
+                    walletType: connector ? walletType[connector.id] : undefined,
+                    walletAddress: address
+                  })}
                 >
                   {item.title}
                 </a>

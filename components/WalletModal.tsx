@@ -22,22 +22,7 @@ import ReactGA from "react-ga4";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
-
-type WalletType = {
-  [k: string]: string;
-}
-
-const walletType: WalletType = {
-  "injected": "MetaMask",
-  "walletConnect": "WalletConnect",
-  "coinbaseWallet": "Coinbase", 
-  "google": "Google",
-  "facebook": "Facebook",
-  "twitter": "Twitter",
-  "discord": "Discord",
-  "twitch": "Twitch",
-  "github": "GitHub"
-}
+import { walletType } from "@/lib/helpers";
 
 const WalletModal = (): JSX.Element => {
   const [selected, setSelected] = useState<"HOME" | "VOLT">("HOME");

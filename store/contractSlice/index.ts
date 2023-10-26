@@ -39,6 +39,7 @@ export const increaseERC20Allowance = createAsyncThunk(
       network,
       tokenId,
       selectedChainId,
+      walletType,
     }: {
       amount: string;
       contractAddress: Address;
@@ -50,6 +51,7 @@ export const increaseERC20Allowance = createAsyncThunk(
       network: string;
       tokenId: string;
       selectedChainId: number;
+      walletType?: string;
     },
     thunkAPI
   ) => {
@@ -71,6 +73,8 @@ export const increaseERC20Allowance = createAsyncThunk(
                 network: network,
                 token: token,
                 amountUSD: price * parseFloat(amount),
+                walletType: walletType ? walletType : undefined,
+                walletAddress: walletType ? address : undefined
               });
             });
           else if (type === 1)
@@ -80,6 +84,8 @@ export const increaseERC20Allowance = createAsyncThunk(
                 network: network,
                 token: token,
                 amountUSD: price * parseFloat(amount),
+                walletType: walletType ? walletType : undefined,
+                walletAddress: walletType ? address : undefined
               });
             });
           resolve(txHash);
@@ -106,6 +112,7 @@ export const bridgeOriginalTokens = createAsyncThunk(
       tokenId,
       network,
       selectedChainId,
+      walletType,
     }: {
       amount: string;
       contractAddress: Address;
@@ -118,6 +125,7 @@ export const bridgeOriginalTokens = createAsyncThunk(
       tokenId: string;
       network: string;
       selectedChainId: number;
+      walletType?: string;
     },
     thunkAPI
   ) => {
@@ -164,6 +172,8 @@ export const bridgeOriginalTokens = createAsyncThunk(
               network: network,
               token: symbol,
               amountUSD: price * parseFloat(amount),
+              walletType: walletType ? walletType : undefined,
+              walletAddress: walletType ? address : undefined
             });
           });
           resolve(txHash);
@@ -189,6 +199,7 @@ export const bridgeNativeTokens = createAsyncThunk(
       dstChainId,
       tokenId,
       network,
+      walletType,
     }: {
       amount: string;
       bridge: Address;
@@ -199,6 +210,7 @@ export const bridgeNativeTokens = createAsyncThunk(
       dstChainId: number;
       tokenId: string;
       network: string;
+      walletType?: string;
     },
     thunkAPI
   ) => {
@@ -229,6 +241,8 @@ export const bridgeNativeTokens = createAsyncThunk(
               network: network,
               token: symbol,
               amountUSD: price * parseFloat(amount),
+              walletType: walletType ? walletType : undefined,
+              walletAddress: walletType ? address : undefined
             });
           });
           resolve(txHash);
@@ -255,6 +269,7 @@ export const bridgeWrappedTokens = createAsyncThunk(
       srcChainId,
       tokenId,
       network,
+      walletType,
     }: {
       amount: string;
       contractAddress: Address;
@@ -266,6 +281,7 @@ export const bridgeWrappedTokens = createAsyncThunk(
       srcChainId: number;
       tokenId: string;
       network: string;
+      walletType?: string;
     },
     thunkAPI
   ) => {
@@ -304,6 +320,8 @@ export const bridgeWrappedTokens = createAsyncThunk(
               network: network,
               token: symbol,
               amountUSD: price * parseFloat(amount),
+              walletType: walletType ? walletType : undefined,
+              walletAddress: walletType ? address : undefined
             });
           });
           resolve(txHash);
@@ -330,6 +348,7 @@ export const bridgeAndUnwrap = createAsyncThunk(
       tokenId,
       network,
       selectedChainId,
+      walletType,
     }: {
       amount: string;
       contractAddress: Address;
@@ -342,6 +361,7 @@ export const bridgeAndUnwrap = createAsyncThunk(
       tokenId: string;
       network: string;
       selectedChainId: number;
+      walletType?: string;
     },
     thunkAPI
   ) => {
@@ -388,6 +408,8 @@ export const bridgeAndUnwrap = createAsyncThunk(
               network: network,
               token: symbol,
               amountUSD: price * parseFloat(amount),
+              walletType: walletType ? walletType : undefined,
+              walletAddress: walletType ? address : undefined
             });
           });
           resolve(txHash);
