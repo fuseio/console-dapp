@@ -51,7 +51,7 @@ const faqs = [
 ];
 
 const faqAnswers = [
-  <p>
+  <p key="one">
     The Fuse Bridge uses other tokens USDC V2 and WETH V2 on the bridge.
     Don't worry, their value is identical to standard USDC and WETH on the Fuse network.
     <br />
@@ -64,7 +64,7 @@ const faqAnswers = [
     </a>{" "}
     and then bridge tokens from Fuse to another network.
   </p>,
-  <p>
+  <p key="two">
     By depositing USDC or WETH into the Fuse network, you receive new tokens
     which exist specifically for the bridge. Therefore, to see them in your wallet,
     you need to add them. You can use the "Add Token" button or add them manually
@@ -95,7 +95,7 @@ const faqAnswers = [
       https://app.voltage.finance/#/swap
     </a>
   </p>,
-  <p>
+  <p key="three">
     Optimistic (OP): 0xe453d6649643F1F460C371dC3D1da98F7922fe51
     <br />
     <a
@@ -123,13 +123,13 @@ const faqAnswers = [
       https://polygonscan.com/token/0x6b021b3f68491974be6d4009fee61a4e3c708fd6
     </a>
   </p>,
-  <p>
+  <p key="four">
     The Fuse Token Bridge can send FUSE, USDC, and WETH tokens.
   </p>,
-  <p>
+  <p key="five">
     The tokens can be transferred between the Fuse Network and Polygon, Optimism, and Arbitrum.
   </p>,
-  <p>
+  <p key="six">
     Yes, a guide on how to use the Fuse Token Bridge is available on the provided link.{" "}
     <a
       href="https://youtu.be/LUsoAdsTWM4?si=LuOxRsTlMZ9RSsHh"
@@ -138,21 +138,21 @@ const faqAnswers = [
       https://youtu.be/LUsoAdsTWM4?si=LuOxRsTlMZ9RSsHh
     </a>
   </p>,
-  <p>
+  <p key="seven">
     The native token of the Fuse Network is the Fuse token (FUSE).
   </p>,
-  <p>
+  <p key="eight">
     The token bridge is powered by LayerZero technology,
     and its security is monitored by blockchain security experts Ironblocks.
   </p>,
-  <p>
+  <p key="nine">
     Currently, there are zero bridge fees on the Fuse Token Bridge.
   </p>,
-  <p>
+  <p key="ten">
     Users should be aware that liquidity at this stage is minimal,
     so they are advised to avoid trying to bridge substantial amounts.
   </p>,
-  <p>
+  <p key="eleven">
     Blockchain gas fees are calculated based on the complexity of the transaction
     or contract interaction on the network. Every operation, such as sending tokens,
     interacting with a contract, or transferring assets, requires a certain amount of
