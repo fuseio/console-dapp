@@ -114,7 +114,7 @@ const Stake = ({ params }: { params: { id: string } }) => {
     } else {
       dispatch(fetchValidators());
     }
-  }, [id, validators.validatorMetadata.length]);
+  }, [id, validators]);
 
   useEffect(() => {
     if (
