@@ -2,6 +2,7 @@ import { CoinConfigLike } from "./types";
 import usdc from "@/public/usdc.png";
 import sFuse from "@/assets/sFuse.svg";
 import weth from "@/assets/weth.svg";
+import usdt from "@/assets/usdt-logo.svg";
 
 export const coins: CoinConfigLike[] = [
   {
@@ -24,5 +25,12 @@ export const coins: CoinConfigLike[] = [
     decimals: 18,
     icon: weth.src,
     coinGeckoId: "weth",
+  },
+  {
+    name: "Tether USD",
+    symbol: "USDT",
+    decimals: 6,
+    icon: usdt.src,
+    coinGeckoId: "tether",
   },
 ];
