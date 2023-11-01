@@ -11,7 +11,7 @@ const monaSans = localFont({
 
 export const metadata: Metadata = {
   title: 'Fuse Console',
-  description: 'Combines Staking and Bridge',
+  description: 'One-stop-shop for all Fuse token holders',
 }
 
 export default function RootLayout({
