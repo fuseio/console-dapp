@@ -1,10 +1,13 @@
 // see https://stackoverflow.com/a/77090142/12656707
 
-import Validators from '@/validators/validators.json';
 import PageWrapper from "./wrapper";
+import { getJailedValidators, getValidators } from '@/lib/contractInteract';
 
 export async function generateStaticParams() {
-  const validators = Object.keys(Validators);
+  let validators = await getValidators()
+  const jailedValidators = await getJailedValidators()
+  validators = validators.concat(jailedValidators)
+  validators = [...new Set(validators)]
 
   return validators.map((validator) => ({
     id: validator,
