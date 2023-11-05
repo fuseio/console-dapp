@@ -25,6 +25,7 @@ import WarningModal from "@/components/staking/WarningModal";
 import { delegate, withdraw } from "@/lib/contractInteract";
 import { Address, useAccount } from "wagmi";
 import * as amplitude from "@amplitude/analytics-browser";
+import useDeepCompareEffect, { useDeepCompareEffectNoCheck } from "use-deep-compare-effect";
 
 const Stake = ({ params }: { params: { id: string } }) => {
   const { id } = params;
@@ -104,7 +105,7 @@ const Stake = ({ params }: { params: { id: string } }) => {
       });
   };
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (validators.validatorMetadata.length > 0) {
       setValidator(
         validators.validatorMetadata.filter(
@@ -116,7 +117,7 @@ const Stake = ({ params }: { params: { id: string } }) => {
     }
   }, [id, validators]);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (
       validators.validators.length > 0 &&
       validators.validatorMetadata.length === 0
@@ -125,7 +126,7 @@ const Stake = ({ params }: { params: { id: string } }) => {
     }
   }, [validators.validators]);
 
-  useEffect(() => {
+  useDeepCompareEffectNoCheck(() => {
     if (address && validator) {
       dispatch(
         fetchSelfStake({
