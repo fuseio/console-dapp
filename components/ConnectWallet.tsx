@@ -16,7 +16,7 @@ import {
   useSwitchNetwork,
 } from "wagmi";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
-import { IS_SERVER, eclipseAddress } from "@/lib/helpers";
+import { eclipseAddress } from "@/lib/helpers";
 import { arbitrum, polygon, fuse, optimism } from "wagmi/chains";
 import fuseIcon from "@/assets/fuse-icon.svg";
 import polygonIcon from "@/assets/polygon-icon.svg";
@@ -27,30 +27,6 @@ import { useMediaQuery } from "usehooks-ts";
 const screenMediumWidth = 768;
 const menu: Variants = {
   closed: {
-    opacity: 0,
-    transition: {
-      delay: 0.15,
-      duration: 0.3,
-    },
-    x: -50,
-    y: -50,
-    transitionEnd: {
-      display: "none",
-    },
-  },
-  closedChain: {
-    opacity: 0,
-    transition: {
-      delay: 0.15,
-      duration: 0.3,
-    },
-    x: `${!IS_SERVER && window.innerWidth > screenMediumWidth ? "-50%" : "0" }`,
-    y: -50,
-    transitionEnd: {
-      display: "none",
-    },
-  },
-  closedWrongChain: {
     opacity: 0,
     transition: {
       delay: 0.15,
@@ -168,6 +144,37 @@ const ConnectWallet = ({
             height={5.7}
           />
         </div>
+        <motion.div
+          animate={isChainOpen ? "open" : "closed"}
+          initial="closed"
+          exit="closed"
+          variants={menu}
+          className="absolute top-[120%] left-0 bg-white rounded-[20px] shadow-xl px-[22px] py-8 z-50 md:text-[8px] font-medium min-w-[268.22px]"
+        >
+          <div className="flex flex-col gap-5">
+            {chains.map((c) => (
+              <div
+                className={"flex items-center" + (chain?.id !== c.id ? " cursor-pointer hover:opacity-70" : "")}
+                onClick={() => {
+                  switchNetwork && switchNetwork(c.id);
+                }}
+                key={c.id}
+              >
+                <Image
+                  src={icons[c.id]}
+                  alt={c.name}
+                  className="h-8 me-2 md:h-7"
+                  width={32}
+                  height={32}
+                />
+                <p>{c.name}</p>
+                {chain?.id === c.id && (
+                  <div className="h-2.5 w-2.5 rounded-full bg-[#66E070] ml-auto" />
+                )}
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </div>
       <div
         className="flex bg-lightest-gray px-[20.3px] py-3 md:py-3.5 rounded-full cursor-pointer items-center relative text-base/4 md:text-[8px]/[25px] font-normal ml-2 md:ml-1"
@@ -191,7 +198,7 @@ const ConnectWallet = ({
           initial="closed"
           exit="closed"
           variants={menu}
-          className="absolute top-[120%] left-0 bg-white rounded shadow-xl p-[6px] z-50 w-60 text-xs md:text-[8px] font-medium"
+          className="absolute top-[120%] right-0 bg-white rounded shadow-xl p-[6px] z-50 w-[268.22px] text-xs md:text-[8px] font-medium"
         >
           <div className="flex items-center px-[6px] rounded">
             <Image
@@ -239,44 +246,6 @@ const ConnectWallet = ({
           </div>
         </motion.div>
       </div>
-      <motion.div
-        animate={isChainOpen ? "open" : "closedChain"}
-        initial="closedChain"
-        exit="closedChain"
-        variants={menu}
-        className="absolute top-[120%] bg-white rounded shadow-xl p-[6px] z-50 text-xs md:text-[8px] font-medium min-w-[230px]"
-      >
-        {chains.map((c) => (
-          <div
-            className={
-              chain?.id === c.id
-                ? "flex items-center px-[6px] bg-lightest-gray rounded cursor-pointer"
-                : "flex items-center px-[6px] cursor-pointer"
-            }
-            onClick={() => {
-              switchNetwork && switchNetwork(c.id);
-            }}
-            key={c.id}
-          >
-            <Image
-              src={icons[c.id]}
-              alt={c.name}
-              className="h-8 me-2 md:h-7"
-              width={15}
-              height={15}
-            />
-            <p className="text-xs/3 font-medium">{c.name}</p>
-            {chain?.id === c.id && (
-              <>
-                <div className="h-[6px] w-[6px] rounded-full bg-[#66E070] ml-auto" />
-                <p className="text-[10px] md:text-[8px] font-medium ml-1">
-                  Connected
-                </p>
-              </>
-            )}
-          </div>
-        ))}
-      </motion.div>
     </div>
   ) : !disableAccountCenter ? (
     <div className="flex relative w-[410px] justify-end md:me-2">
@@ -297,9 +266,9 @@ const ConnectWallet = ({
         </div>
       </div>
       <motion.div
-        animate={isWrongNetwoksOpen ? "open" : "closedWrongChain"}
-        initial="closedWrongChain"
-        exit="closedWrongChain"
+        animate={isWrongNetwoksOpen ? "open" : "closed"}
+        initial="closed"
+        exit="closed"
         variants={menu}
         className="absolute top-[120%] bg-white rounded shadow-xl z-50 text-xs/5 md:text-[8px] font-medium w-[192px]"
       >
