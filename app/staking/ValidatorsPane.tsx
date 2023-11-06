@@ -6,6 +6,7 @@ import { eclipseAddress } from "@/lib/helpers";
 import coins from "@/assets/coins.svg";
 import ChevronDown from "@/assets/ChevronDown";
 import ChevronUp from "@/assets/ChevronUp";
+import { useDeepCompareEffectNoCheck } from "use-deep-compare-effect";
 
 const ValidatorsPane = ({
   validators,
@@ -25,7 +26,7 @@ const ValidatorsPane = ({
   >([]);
 
   const [page, setPage] = useState(1);
-  useEffect(() => {
+  useDeepCompareEffectNoCheck(() => {
     setValidatorsToDisplay(
       validators.slice(
         0,

@@ -24,6 +24,7 @@ import ValidatorsPane from "./ValidatorsPane";
 import SortBar from "@/components/staking/SortBar";
 import { useAccount } from "wagmi";
 import { hex } from "@/lib/helpers";
+import useDeepCompareEffect, { useDeepCompareEffectNoCheck } from "use-deep-compare-effect";
 
 
 const Home = () => {
@@ -39,10 +40,10 @@ const Home = () => {
   const [validatorsToDisplay, setValidatorsToDisplay] = useState<
     Array<ValidatorType>
   >([]);
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     setValidatorsToDisplay(validatorSlice.validatorMetadata);
   }, [validatorSlice.validatorMetadata]);
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (
       validatorSlice.validators.length > 0 &&
       validatorSlice.validatorMetadata.length === 0
@@ -51,7 +52,7 @@ const Home = () => {
     }
   }, [validatorSlice.validators]);
 
-  useEffect(() => {
+  useDeepCompareEffectNoCheck(() => {
     if (address && validatorSlice.validatorMetadata.length > 0) {
       dispatch(
         fetchSelfStake({
@@ -154,7 +155,7 @@ const Home = () => {
     setValidatorsToDisplay(filteredValidators);
   };
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     filterValidators();
   }, [filter, validatorSlice.validatorMetadata]);
 
