@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "@/store/store";
+import React, { useEffect, useState } from "react";
+import { useAppDispatch } from "@/store/store";
 import { fetchValidators } from "@/store/validatorSlice";
 import copy from "@/assets/copy-black.svg";
 import exit from "@/assets/sign-out.svg";
@@ -23,9 +23,6 @@ import polygonIcon from "@/assets/polygon-icon.svg";
 import optimismIcon from "@/assets/optimism-icon.svg";
 import arbitrumIcon from "@/assets/arbitrum-icon.svg";
 import { useMediaQuery } from "usehooks-ts";
-import qr from "@/assets/qr.svg";
-import disconnectIcon from "@/assets/disconnect.svg";
-import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 
 const screenMediumWidth = 768;
 const menu: Variants = {
@@ -62,17 +59,6 @@ const icons: Icons = {
   [arbitrum.id]: arbitrumIcon,
 };
 
-type UsdTokens = {
-  [key: string]: string;
-};
-
-const usdTokens: UsdTokens = {
-  [fuse.id]: "fuse-network-token",
-  [polygon.id]: "matic-network",
-  [optimism.id]: "optimism",
-  [arbitrum.id]: "arbitrum",
-}
-
 const ConnectWallet = ({
   disableAccountCenter = false,
   className = "",
@@ -95,8 +81,6 @@ const ConnectWallet = ({
     watch: true,
   });
   const matches = useMediaQuery(`(min-width: ${screenMediumWidth}px)`);
-  const controller = new AbortController();
-  const balanceSlice = useAppSelector(selectBalanceSlice);
 
   const chainRef = useOutsideClick(() => {
     if (isChainOpen) {
@@ -123,17 +107,6 @@ const ConnectWallet = ({
   useEffect(() => {
     dispatch(fetchValidators());
   }, [connector, chain]);
-
-  useEffect(() => {
-    dispatch(fetchUsdPrice({
-      tokenId: usdTokens[chain?.id ?? fuse.id],
-      controller
-    }))
-
-    return () => {
-      controller.abort();
-    }
-  }, [isConnected, chain])
 
   return !isConnected ? (
     <div className={"flex justify-end " + containerClassName}>
@@ -181,7 +154,7 @@ const ConnectWallet = ({
           <div className="flex flex-col gap-5">
             {chains.map((c) => (
               <div
-                className={"flex items-center " + (chain?.id === c.id ? "cursor-auto" : "cursor-pointer hover:opacity-70")}
+                className={"flex items-center" + (chain?.id !== c.id ? " cursor-pointer hover:opacity-70" : "")}
                 onClick={() => {
                   switchNetwork && switchNetwork(c.id);
                 }}
@@ -225,80 +198,51 @@ const ConnectWallet = ({
           initial="closed"
           exit="closed"
           variants={menu}
-          className="absolute top-[120%] right-0 bg-white rounded-[20px] cursor-auto shadow-xl py-[25.5px] z-50 w-[268.22px]"
+          className="absolute top-[120%] right-0 bg-white rounded shadow-xl p-[6px] z-50 w-[268.22px] text-xs md:text-[8px] font-medium"
         >
-          <div className="flex flex-col gap-[8.35px] px-[22px]">
-            <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">
-              Connected account
+          <div className="flex items-center px-[6px] rounded">
+            <Image
+              src={icons[chain?.id ?? 0]}
+              alt={chain?.name ?? "Fuse"}
+              className="h-8 me-2"
+              width={15}
+              height={15}
+            />
+            <p>
+              {parseFloat(balance.data?.formatted || "0").toFixed(4)}{" "}
+              {balance.data?.symbol}
             </p>
-            <div className="flex justify-between">
-              <p className="font-bold">
-                {eclipseAddress(String(address))}
-              </p>
-              <div className="flex gap-[19.02px]">
-                <Image
-                  src={copy.src}
-                  alt="copy address"
-                  width={18.97}
-                  height={18.81}
-                  className="cursor-pointer"
-                  onClick={() => navigator.clipboard.writeText(String(address))}
-                />
-                {/* <Image
-                  src={qr.src}
-                  alt="copy address"
-                  width={16.22}
-                  height={16.65}
-                /> */}
-              </div>
-            </div>
-          </div>
-          <hr className="border-border-dark-gray mt-[25.62px] mb-[18.5px]" />
-          <div className="flex flex-col gap-[8.35px] px-[22px]">
-            <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">
-              Wallet
+            <p className="ml-auto text-[10px] md:text-[8px]">
+              {eclipseAddress(String(address))}
             </p>
-            <div className="flex justify-between">
-              <div className="flex gap-3">
-                <Image
-                  src={icons[chain?.id ?? 0]}
-                  alt={chain?.name ?? "Fuse"}
-                  width={32}
-                  height={32}
-                />
-                <div className="flex flex-col justify-between gap-[3.68px]">
-                  <p>{chain?.name} Token</p>
-                  <p className="text-xs text-text-dark-gray">{balance.data?.symbol}</p>
-                </div>
-              </div>
-              <div className="flex flex-col gap-[3.68px]">
-                <p>{parseFloat(balance.data?.formatted || "0").toFixed(4)}</p>
-                {balanceSlice.isUsdPriceLoading ?
-                  <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
-                  <p className="text-xl text-darker-gray">
-                    ${(chain && chain.id === fuse.id) ?
-                      new Intl.NumberFormat().format(
-                        parseFloat((parseFloat(balance.data?.formatted ?? "0") * balanceSlice.price).toString())
-                      ) :
-                      0
-                    }
-                  </p>
-                }
-              </div>
-            </div>
           </div>
-          <hr className="border-border-dark-gray mt-[25.62px] mb-[18.5px]" />
           <div
-            className="flex items-center gap-[17.7px] cursor-pointer px-[22px]"
+            className="bg-modal-bg w-full rounded px-[9px] py-[7px] flex"
+            onClick={() => {
+              navigator.clipboard.writeText(String(address));
+            }}
+          >
+            Copy address
+            <Image
+              src={copy.src}
+              alt="copy"
+              className="ml-auto"
+              width={15}
+              height={15}
+            />
+          </div>
+          <div
+            className="bg-[#FD0F0F] text-white w-full rounded px-[9px] py-[7px] flex mt-1"
             onClick={() => disconnect()}
           >
+            Disconnect
             <Image
-              src={disconnectIcon.src}
-              alt="disconnect wallet"
-              width={17.68}
-              height={20}
+              src={exit.src}
+              alt="exit"
+              className="ml-auto"
+              width={15}
+              height={15}
             />
-            <p>Disconnect</p>
           </div>
         </motion.div>
       </div>
