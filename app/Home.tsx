@@ -32,7 +32,10 @@ const Home = () => {
   });
 
   useEffect(() => {
-    dispatch(fetchUsdPrice(controller))
+    dispatch(fetchUsdPrice({
+      tokenId: "fuse-network-token",
+      controller
+    }))
 
     return () => {
       controller.abort();
