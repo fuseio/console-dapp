@@ -59,6 +59,7 @@ const config: Config = {
       "warning-yellow": "#FFD764",
       "warning-gray": "#3B4145",
       "border-gray": "#E6E6E6",
+      "border-dark-gray": "#E8E8E8",
       "lightest-gray": "#D9D9D9",
       "gray-alpha-40": "#00000066",
       "warning-border": "#D4A72C",
