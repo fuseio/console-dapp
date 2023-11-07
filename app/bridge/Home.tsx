@@ -370,10 +370,10 @@ const Home = () => {
   const withdraw = (res: any, selectedChainId: number) => {
     if (res) {
       if (
-        appConfig.wrappedBridge.chains[withdrawSelectedTokenItem].tokens[
+        appConfig.wrappedBridge.chains[withdrawSelectedChainItem].tokens[
           withdrawSelectedTokenItem
         ].isNative &&
-        appConfig.wrappedBridge.chains[withdrawSelectedTokenItem].tokens[
+        appConfig.wrappedBridge.chains[withdrawSelectedChainItem].tokens[
           withdrawSelectedTokenItem
         ].isBridged
       ) {
