@@ -302,7 +302,7 @@ export const bridgeConfig: BridgeConfigLike = {
       },
       {
         chainId: 102,
-        decimals: 6,
+        decimals: 18,
         symbol: "USDT",
         name: "Tether USD",
         isBridged: false,
