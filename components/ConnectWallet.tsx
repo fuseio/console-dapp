@@ -2,12 +2,10 @@ import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchValidators } from "@/store/validatorSlice";
 import copy from "@/assets/copy-black.svg";
-import exit from "@/assets/sign-out.svg";
 import Image, { StaticImageData } from "next/image";
 import { motion, Variants } from "framer-motion";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import down from "@/assets/down-arrow.svg";
-import downWhite from "@/assets/down-white.svg";
 import {
   useAccount,
   useBalance,
@@ -158,11 +156,13 @@ const ConnectWallet = ({
   ) : !disableAccountCenter && checkCorrectNetwork() ? (
     <div className="flex justify-end md:justify-center relative w-[410px] md:w-[90%] h-9 md:h-7">
       <div
-        className="flex bg-lightest-gray px-[14.8px] py-[7px] md:py-3.5 rounded-full cursor-pointer items-center relative text-base/4 md:text-[8px] font-bold whitespace-nowrap justify-center"
+        className="flex bg-lightest-gray px-[14.8px] py-[7px] md:py-3.5 rounded-full items-center relative text-base/4 md:text-[8px] justify-center"
         ref={chainRef}
-        onClick={() => setIsChainOpen(!isChainOpen)}
       >
-        <div className="flex w-full justify-center items-center">
+        <div
+          className="flex w-full justify-center items-center cursor-pointer font-bold whitespace-nowrap"
+          onClick={() => setIsChainOpen(!isChainOpen)}
+        >
           <Image
             src={icons[chain?.id ?? 0]}
             alt="Fuse"
@@ -174,7 +174,7 @@ const ConnectWallet = ({
           <Image
             src={down.src}
             alt="down"
-            className={`ms-2 md:ms-[2px] ${isChainOpen && "rotate-180"}`}
+            className={`ms-3 md:ms-[2px] ${isChainOpen && "rotate-180"}`}
             width={11.39}
             height={5.7}
           />
@@ -219,14 +219,18 @@ const ConnectWallet = ({
       <div
         className="flex bg-lightest-gray px-[20.3px] py-3 md:py-3.5 rounded-full cursor-pointer items-center relative text-base/4 md:text-[8px]/[25px] font-normal ml-2 md:ml-1"
         ref={accountsRef}
-        onClick={() => setIsAccountsOpen(!isAccountsOpen)}
       >
-        <div className="flex w-full justify-between">
-          <p>{eclipseAddress(String(address))}</p>
+        <div
+          className="flex w-full justify-between"
+          onClick={() => setIsAccountsOpen(!isAccountsOpen)}
+        >
+          <p>
+            {eclipseAddress(String(address))}
+          </p>
           <Image
             src={down.src}
             alt="down"
-            className={`ms-2 mr-2 ${isAccountsOpen && "rotate-180"} md:ms-1`}
+            className={`ms-[15px] ${isAccountsOpen && "rotate-180"} md:ms-1`}
             width={10}
             height={10}
           />
@@ -267,7 +271,7 @@ const ConnectWallet = ({
             <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">
               Wallet
             </p>
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <div className="flex gap-3">
                 <Image
                   src={icons[chain?.id ?? 0]}
@@ -321,66 +325,69 @@ const ConnectWallet = ({
       </div>
     </div>
   ) : !disableAccountCenter ? (
-    <div className="flex relative w-[410px] justify-end md:me-2">
+    <div
+      className="flex relative justify-end md:me-2 text-base/4 md:text-[8px]"
+      ref={wrongNetworkRef}
+    >
       <div
-        className="flex bg-[#FD0F0F] text-white px-[10px] py-[6px] md:py-1 md:px-2 rounded cursor-pointer items-center relative text-xs md:text-[8px] font-medium justify-center"
-        ref={wrongNetworkRef}
+        className="flex bg-[#FACBCB] px-[18.3px] py-3 md:py-1 md:px-2 rounded-full cursor-pointer items-center relative justify-center"
         onClick={() => setIsWrongNetwoksOpen(!isWrongNetwoksOpen)}
       >
-        <div className="flex w-full justify-center">
-          <p className="text-xs/5 md:text-[8px]">Wrong Network</p>
-          <Image
-            src={downWhite.src}
-            alt="down"
-            className={`ml-2 ${isWrongNetwoksOpen && "rotate-180"}`}
-            width={10}
-            height={10}
-          />
-        </div>
+        <p>Wrong Network</p>
+        <Image
+          src={down.src}
+          alt="down"
+          className={`ml-[15px] ${isWrongNetwoksOpen && "rotate-180"}`}
+          width={10}
+          height={10}
+        />
       </div>
       <motion.div
         animate={isWrongNetwoksOpen ? "open" : "closed"}
         initial="closed"
         exit="closed"
         variants={menu}
-        className="absolute top-[120%] bg-white rounded shadow-xl z-50 text-xs/5 md:text-[8px] font-medium w-[192px]"
+        className="absolute top-[120%] bg-white rounded-[20px] shadow-xl z-50 font-medium w-[268.22px] py-6"
       >
-        <div className="flex px-[12px] pt-[12px] pb-[6px] flex-col w-full border-b-[1px] border-lighter-blue mb-[6px]">
-          <p className="font-bold text-xs md:text-[8px]">Switch Network</p>
-          <p className="text-xs/[15px] md:text-[8px] font-normal text-text-heading-gray mt-1">
+        <div className="flex flex-col gap-3.5 px-[22px]">
+          <p className="font-bold">Switch Network</p>
+          <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray">
             Wrong network detected, switch or disconnect to continue
           </p>
         </div>
-        {chains.map((c) => (
-          <div
-            className="flex items-center px-[12px] cursor-pointer"
-            onClick={() => {
-              switchNetwork && switchNetwork(c.id);
-            }}
-            key={c.id}
-          >
-            <Image
-              src={icons[c.id]}
-              alt={c.name}
-              className="h-8 me-2 md:h-7"
-              width={15}
-              height={15}
-            />
-            <p>{c.name}</p>
-          </div>
-        ))}
+        <hr className="border-border-dark-gray mt-[13.57px] mb-[19.51px]" />
+        <div className="flex flex-col gap-5 px-[22px]">
+          {chains.map((c) => (
+            <div
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() => {
+                switchNetwork && switchNetwork(c.id);
+              }}
+              key={c.id}
+            >
+              <Image
+                src={icons[c.id]}
+                alt={c.name}
+                className="h-8 md:h-7"
+                width={32}
+                height={32}
+              />
+              <p>{c.name}</p>
+            </div>
+          ))}
+        </div>
+        <hr className="border-border-dark-gray mt-[19.99px] mb-[18.53px]" />
         <div
-          className="bg-[#FD0F0F] text-white rounded px-[9px] py-[7px] flex mt-1 mx-[6px] mb-2 cursor-pointer"
+          className="flex items-center gap-[17.7px] cursor-pointer px-[22px]"
           onClick={() => disconnect()}
         >
-          Disconnect
           <Image
-            src={exit.src}
-            alt="exit"
-            className="ml-auto"
-            width={15}
-            height={15}
+            src={disconnectIcon.src}
+            alt="disconnect wallet"
+            width={17.68}
+            height={20}
           />
+          <p>Disconnect</p>
         </div>
       </motion.div>
     </div>
