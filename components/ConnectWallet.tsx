@@ -261,8 +261,8 @@ const ConnectWallet = ({
             </div>
           </div>
           <hr className="border-border-dark-gray mt-[25.62px] mb-[18.5px]" />
-          <div className="flex flex-col gap-[8.35px] px-[22px]">
-            <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">
+          <div className="flex flex-col gap-[8.35px] px-[22px] font-medium">
+            <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray">
               Wallet
             </p>
             <div className="flex justify-between items-center">
@@ -282,7 +282,7 @@ const ConnectWallet = ({
                 <p>{parseFloat(balance.data?.formatted || "0").toFixed(4)}</p>
                 {balanceSlice.isUsdPriceLoading ?
                   <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
-                  <p className="text-xl text-darker-gray">
+                  <p className="text-xs text-text-dark-gray">
                     ${(chain && chain.id === fuse.id) ?
                       new Intl.NumberFormat().format(
                         parseFloat((parseFloat(balance.data?.formatted ?? "0") * balanceSlice.price).toString())
