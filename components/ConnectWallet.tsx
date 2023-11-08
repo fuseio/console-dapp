@@ -17,11 +17,13 @@ import {
 } from "wagmi";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import { eclipseAddress } from "@/lib/helpers";
-import { arbitrum, polygon, fuse, optimism } from "wagmi/chains";
+import { arbitrum, polygon, fuse, optimism, bsc, mainnet } from "wagmi/chains";
 import fuseIcon from "@/assets/fuse-icon.svg";
 import polygonIcon from "@/assets/polygon-icon.svg";
 import optimismIcon from "@/assets/optimism-icon.svg";
 import arbitrumIcon from "@/assets/arbitrum-icon.svg";
+import bscLogo from "@/public/bnb.png";
+import ethLogo from "@/public/eth.png";
 import { useMediaQuery } from "usehooks-ts";
 import qr from "@/assets/qr.svg";
 import disconnectIcon from "@/assets/disconnect.svg";
@@ -60,6 +62,8 @@ const icons: Icons = {
   [polygon.id]: polygonIcon,
   [optimism.id]: optimismIcon,
   [arbitrum.id]: arbitrumIcon,
+  [mainnet.id]: ethLogo,
+  [bsc.id]: bscLogo,
 };
 
 type UsdTokens = {
@@ -71,7 +75,9 @@ const usdTokens: UsdTokens = {
   [polygon.id]: "matic-network",
   [optimism.id]: "optimism",
   [arbitrum.id]: "arbitrum",
-}
+  [mainnet.id]: "ethereum",
+  [bsc.id]: "binancecoin",
+};
 
 const ConnectWallet = ({
   disableAccountCenter = false,
@@ -125,15 +131,17 @@ const ConnectWallet = ({
   }, [connector, chain]);
 
   useEffect(() => {
-    dispatch(fetchUsdPrice({
-      tokenId: usdTokens[chain?.id ?? fuse.id],
-      controller
-    }))
+    dispatch(
+      fetchUsdPrice({
+        tokenId: usdTokens[chain?.id ?? fuse.id],
+        controller,
+      })
+    );
 
     return () => {
       controller.abort();
-    }
-  }, [isConnected, chain])
+    };
+  }, [isConnected, chain]);
 
   return !isConnected ? (
     <div className={"flex justify-end " + containerClassName}>
@@ -181,7 +189,12 @@ const ConnectWallet = ({
           <div className="flex flex-col gap-5">
             {chains.map((c) => (
               <div
-                className={"flex items-center " + (chain?.id === c.id ? "cursor-auto" : "cursor-pointer hover:opacity-70")}
+                className={
+                  "flex items-center " +
+                  (chain?.id === c.id
+                    ? "cursor-auto"
+                    : "cursor-pointer hover:opacity-70")
+                }
                 onClick={() => {
                   switchNetwork && switchNetwork(c.id);
                 }}
@@ -209,9 +222,7 @@ const ConnectWallet = ({
         onClick={() => setIsAccountsOpen(!isAccountsOpen)}
       >
         <div className="flex w-full justify-between">
-          <p>
-            {eclipseAddress(String(address))}
-          </p>
+          <p>{eclipseAddress(String(address))}</p>
           <Image
             src={down.src}
             alt="down"
@@ -232,9 +243,7 @@ const ConnectWallet = ({
               Connected account
             </p>
             <div className="flex justify-between">
-              <p className="font-bold">
-                {eclipseAddress(String(address))}
-              </p>
+              <p className="font-bold">{eclipseAddress(String(address))}</p>
               <div className="flex gap-[19.02px]">
                 <Image
                   src={copy.src}
@@ -268,22 +277,30 @@ const ConnectWallet = ({
                 />
                 <div className="flex flex-col justify-between gap-[3.68px]">
                   <p>{chain?.name} Token</p>
-                  <p className="text-xs text-text-dark-gray">{balance.data?.symbol}</p>
+                  <p className="text-xs text-text-dark-gray">
+                    {balance.data?.symbol}
+                  </p>
                 </div>
               </div>
               <div className="flex flex-col gap-[3.68px]">
                 <p>{parseFloat(balance.data?.formatted || "0").toFixed(4)}</p>
-                {balanceSlice.isUsdPriceLoading ?
-                  <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
+                {balanceSlice.isUsdPriceLoading ? (
+                  <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span>
+                ) : (
                   <p className="text-xl text-darker-gray">
-                    ${(chain && chain.id === fuse.id) ?
-                      new Intl.NumberFormat().format(
-                        parseFloat((parseFloat(balance.data?.formatted ?? "0") * balanceSlice.price).toString())
-                      ) :
-                      0
-                    }
+                    $
+                    {chain && chain.id === fuse.id
+                      ? new Intl.NumberFormat().format(
+                          parseFloat(
+                            (
+                              parseFloat(balance.data?.formatted ?? "0") *
+                              balanceSlice.price
+                            ).toString()
+                          )
+                        )
+                      : 0}
                   </p>
-                }
+                )}
               </div>
             </div>
           </div>

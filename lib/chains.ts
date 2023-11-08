@@ -5,6 +5,8 @@ import optimism from "@/public/optimism.png";
 import maticLogo from "@/assets/matic";
 import arbiLogo from "@/assets/arbi";
 import optimismLogo from "@/assets/optimism";
+import eth from "@/public/eth.png";
+import bnb from "@/public/bnb.png";
 
 export const chains: ChainConfigLike[] = [
   {
@@ -15,14 +17,6 @@ export const chains: ChainConfigLike[] = [
     chainId: 137,
     logo: maticLogo,
   },
-  // {
-  //   chainName: "Gnosis",
-  //   lzChainId: 145,
-  //   icon: gnosis,
-  //   rpc: "https://rpc.gnosischain.com/",
-  //   chainId: 100,
-  //   logo: gnosisLogo,
-  // },
   {
     chainName: "Arbitrum",
     lzChainId: 110,
@@ -38,5 +32,21 @@ export const chains: ChainConfigLike[] = [
     rpc: "https://mainnet.optimism.io",
     chainId: 10,
     logo: optimismLogo,
+  },
+  {
+    chainName: "Ethereum",
+    lzChainId:101,
+    icon: eth.src,
+    chainId:1,
+    rpc:"https://rpc.eth.gateway.fm",
+    logo:""
+  },
+  {
+    chainName: "BNB",
+    lzChainId:102,
+    icon: bnb.src,
+    chainId:56,
+    rpc:"https://bsc-dataseed.bnbchain.org",
+    logo:""
   },
 ];
