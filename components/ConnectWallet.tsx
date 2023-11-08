@@ -272,8 +272,8 @@ const ConnectWallet = ({
             </div>
           </div>
           <hr className="border-border-dark-gray mt-[25.62px] mb-[18.5px]" />
-          <div className="flex flex-col gap-[8.35px] px-[22px]">
-            <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">
+          <div className="flex flex-col gap-[8.35px] px-[22px] font-medium">
+            <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray">
               Wallet
             </p>
             <div className="flex justify-between items-center">
