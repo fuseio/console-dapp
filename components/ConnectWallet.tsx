@@ -24,6 +24,8 @@ import { useMediaQuery } from "usehooks-ts";
 import qr from "@/assets/qr.svg";
 import disconnectIcon from "@/assets/disconnect.svg";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
+import leftArrow from "@/assets/left-arrow.svg";
+import QRCode from "react-qr-code";
 
 const screenMediumWidth = 768;
 const menu: Variants = {
@@ -84,6 +86,7 @@ const ConnectWallet = ({
   const [isChainOpen, setIsChainOpen] = React.useState(false);
   const [isAccountsOpen, setIsAccountsOpen] = React.useState(false);
   const [isWrongNetwoksOpen, setIsWrongNetwoksOpen] = React.useState(false);
+  const [isQrCodeOpen, setIsQrCodeOpen] = React.useState(false);
   const { address, connector, isConnected } = useAccount();
   const { chain, chains } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
@@ -223,7 +226,7 @@ const ConnectWallet = ({
           />
         </div>
         <motion.div
-          animate={isAccountsOpen ? "open" : "closed"}
+          animate={isQrCodeOpen ? "closed" : isAccountsOpen ? "open" : "closed"}
           initial="closed"
           exit="closed"
           variants={menu}
@@ -246,12 +249,14 @@ const ConnectWallet = ({
                   className="cursor-pointer"
                   onClick={() => navigator.clipboard.writeText(String(address))}
                 />
-                {/* <Image
+                <Image
                   src={qr.src}
                   alt="copy address"
                   width={16.22}
                   height={16.65}
-                /> */}
+                  className="cursor-pointer"
+                  onClick={() => setIsQrCodeOpen(!isQrCodeOpen)}
+                />
               </div>
             </div>
           </div>
@@ -301,6 +306,34 @@ const ConnectWallet = ({
               height={20}
             />
             <p>Disconnect</p>
+          </div>
+        </motion.div>
+        <motion.div
+          animate={isAccountsOpen && isQrCodeOpen ? "open" : "closed"}
+          initial="closed"
+          exit="closed"
+          variants={menu}
+          className="absolute top-[120%] right-0 bg-white rounded-[20px] cursor-auto shadow-xl py-[25.5px] z-50 w-[268.22px]"
+        >
+          <div className="flex flex-col gap-6 px-[22px]">
+            <button
+              className="flex items-center gap-3 w-fit"
+              onClick={() => setIsQrCodeOpen(!isQrCodeOpen)}
+            >
+              <Image
+                src={leftArrow.src}
+                alt="back arrow icon"
+                width={11.39}
+                height={5.7}
+              />
+              Back
+            </button>
+            <div className="flex justify-center">
+              <QRCode
+                size={150}
+                value={String(address)}
+              />
+            </div>
           </div>
         </motion.div>
       </div>
