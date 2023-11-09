@@ -134,7 +134,7 @@ export const bridgeConfig: BridgeConfigLike = {
       },
       {
         chainId: 102,
-        decimals: 6,
+        decimals: 18,
         symbol: "USDC",
         name: "USDC Coin",
         isBridged: false,
