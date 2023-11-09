@@ -57,3 +57,5 @@ export const walletType: WalletType = {
   "twitch": "Twitch",
   "github": "GitHub"
 }
+
+export const isIos = !IS_SERVER && /iPad|iPhone|iPod/.test(navigator.userAgent);
