@@ -8,7 +8,7 @@ type NavButtonProps = {
 
 const NavButton = ({ isOpen, setOpen }: NavButtonProps) => {
   return (
-    <div className="flex order-2 min-w-[150px] md:w-[93%] justify-between items-center">
+    <div className="flex order-2 min-w-[150px] md:w-[93%] justify-end items-center">
       <ConnectWallet containerClassName="ml-auto"/>
       <button
         type="button"
