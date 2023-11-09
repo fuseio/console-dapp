@@ -20,7 +20,7 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { publicProvider } from "wagmi/providers/public";
 import { LedgerConnector } from "wagmi/connectors/ledger";
-import { IS_SERVER, hex } from "./helpers";
+import { IS_SERVER, hex, isIos } from "./helpers";
 import { Web3AuthGoogleConnector } from "./connectors/google";
 import { Web3AuthEmailConnector } from "./connectors/email";
 import { Web3AuthFacebookConnector } from "./connectors/facebook";
@@ -126,6 +126,10 @@ export default function Web3AuthConnectorInstance<
   });
 
   const openloginAdapterInstance = new OpenloginAdapter({
+    adapterSettings: {
+      // see https://web3auth.io/community/t/iphone-safari-social-logins-dont-work/5662
+      uxMode: isIos ? UX_MODE.REDIRECT : UX_MODE.POPUP
+    },
     privateKeyProvider,
   });
   web3AuthInstance.configureAdapter(openloginAdapterInstance);
