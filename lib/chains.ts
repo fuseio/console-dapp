@@ -46,7 +46,7 @@ export const chains: ChainConfigLike[] = [
     lzChainId:102,
     icon: bnb.src,
     chainId:56,
-    rpc:"https://bsc-dataseed.bnbchain.org",
+    rpc:"https://weathered-side-brook.bsc.quiknode.pro/f11b337cb3411c96e514504308b95f17288330f4/",
     logo:""
   },
 ];
