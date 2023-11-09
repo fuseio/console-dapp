@@ -270,8 +270,8 @@ const ConnectWallet = ({
                 <Image
                   src={icons[chain?.id ?? 0]}
                   alt={chain?.name ?? "Fuse"}
-                  width={32}
-                  height={32}
+                  width={40}
+                  height={40}
                 />
                 <div className="flex flex-col justify-between gap-[3.68px]">
                   <p>{chain?.name} Token</p>
