@@ -278,7 +278,7 @@ const ConnectWallet = ({
                   <p className="text-xs text-text-dark-gray">{balance.data?.symbol}</p>
                 </div>
               </div>
-              <div className="flex flex-col gap-[3.68px]">
+              <div className="flex flex-col justify-between gap-[3.68px] h-10">
                 <p>{parseFloat(balance.data?.formatted || "0").toFixed(4)}</p>
                 {balanceSlice.isUsdPriceLoading ?
                   <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
