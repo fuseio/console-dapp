@@ -47,28 +47,26 @@ const faqs = [
   "What technology powers the Fuse bridge, and who monitors its security?",
   "Are there any fees associated with using the Fuse Token Bridge?",
   "Is there any liquidity concern users should know?",
-  "How are gas fees on Fuse Network calculated?"
+  "How are gas fees on Fuse Network calculated?",
 ];
 
 const faqAnswers = [
   <p key="one">
     The Fuse Bridge uses other tokens USDC V2 and WETH V2 on the bridge.
-    Don&apos;t worry, their value is identical to standard USDC and WETH on the Fuse network.
+    Don&apos;t worry, their value is identical to standard USDC and WETH on the
+    Fuse network.
     <br />
     So first you need to swap your USDC/WETH tokens for USDC V2/WETH V2 on the{" "}
-    <a
-      href="https://app.voltage.finance/#/swap"
-      className="underline"
-    >
+    <a href="https://app.voltage.finance/#/swap" className="underline">
       Voltage Finance dapp
     </a>{" "}
     and then bridge tokens from Fuse to another network.
   </p>,
   <p key="two">
     By depositing USDC or WETH into the Fuse network, you receive new tokens
-    which exist specifically for the bridge. Therefore, to see them in your wallet,
-    you need to add them. You can use the &quot;Add Token&quot; button or add them manually
-    using the contract address.
+    which exist specifically for the bridge. Therefore, to see them in your
+    wallet, you need to add them. You can use the &quot;Add Token&quot; button
+    or add them manually using the contract address.
     <br />
     USDC V2 contract address:{" "}
     <a
@@ -86,12 +84,9 @@ const faqAnswers = [
       0x5622f6dc93e08a8b717b149677930c38d5d50682
     </a>
     <br />
-    After that, you can swap these tokens for standard USDC and WETH on Fuse
-    on the Voltage Finance dapp:{" "}
-    <a
-      href="https://app.voltage.finance/#/swap"
-      className="underline"
-    >
+    After that, you can swap these tokens for standard USDC and WETH on Fuse on
+    the Voltage Finance dapp:{" "}
+    <a href="https://app.voltage.finance/#/swap" className="underline">
       https://app.voltage.finance/#/swap
     </a>
   </p>,
@@ -123,14 +118,14 @@ const faqAnswers = [
       https://polygonscan.com/token/0x6b021b3f68491974be6d4009fee61a4e3c708fd6
     </a>
   </p>,
-  <p key="four">
-    The Fuse Token Bridge can send FUSE, USDC, and WETH tokens.
-  </p>,
+  <p key="four">The Fuse Token Bridge can send FUSE, USDC, and WETH tokens.</p>,
   <p key="five">
-    The tokens can be transferred between the Fuse Network and Polygon, Optimism, and Arbitrum.
+    The tokens can be transferred between the Fuse Network and Polygon,
+    Optimism, and Arbitrum.
   </p>,
   <p key="six">
-    Yes, a guide on how to use the Fuse Token Bridge is available on the provided link.{" "}
+    Yes, a guide on how to use the Fuse Token Bridge is available on the
+    provided link.{" "}
     <a
       href="https://youtu.be/LUsoAdsTWM4?si=LuOxRsTlMZ9RSsHh"
       className="underline"
@@ -142,24 +137,25 @@ const faqAnswers = [
     The native token of the Fuse Network is the Fuse token (FUSE).
   </p>,
   <p key="eight">
-    The token bridge is powered by LayerZero technology,
-    and its security is monitored by blockchain security experts Ironblocks.
+    The token bridge is powered by LayerZero technology, and its security is
+    monitored by blockchain security experts Ironblocks.
   </p>,
   <p key="nine">
     Currently, there are zero bridge fees on the Fuse Token Bridge.
   </p>,
   <p key="ten">
-    Users should be aware that liquidity at this stage is minimal,
-    so they are advised to avoid trying to bridge substantial amounts.
+    Users should be aware that liquidity at this stage is minimal, so they are
+    advised to avoid trying to bridge substantial amounts.
   </p>,
   <p key="eleven">
-    Blockchain gas fees are calculated based on the complexity of the transaction
-    or contract interaction on the network. Every operation, such as sending tokens,
-    interacting with a contract, or transferring assets, requires a certain amount of
-    computational work measured in &quot;gas.&quot;
+    Blockchain gas fees are calculated based on the complexity of the
+    transaction or contract interaction on the network. Every operation, such as
+    sending tokens, interacting with a contract, or transferring assets,
+    requires a certain amount of computational work measured in &quot;gas.&quot;
     <br />
-    The total gas fee is determined by multiplying the gas used by the gas price,
-    which is set by the user and measured in units like gwei for Ethereum.
+    The total gas fee is determined by multiplying the gas used by the gas
+    price, which is set by the user and measured in units like gwei for
+    Ethereum.
   </p>,
 ];
 
@@ -397,6 +393,7 @@ const Home = () => {
               appConfig.wrappedBridge.chains[withdrawSelectedChainItem].name,
             tokenId: "fuse-network-token",
             walletType: connector ? walletType[connector.id] : undefined,
+            fee: (1 - feeSlice.withdrawFee / 10000) * parseFloat(amount),
           })
         );
       } else
@@ -424,6 +421,7 @@ const Home = () => {
               appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
                 .coinGeckoId,
             walletType: connector ? walletType[connector.id] : undefined,
+            fee: (1 - feeSlice.withdrawFee / 10000) * parseFloat(amount),
           })
         );
     }
@@ -443,7 +441,6 @@ const Home = () => {
     });
   };
 
-
   return (
     <>
       <Transactions isOpen={isOpen} onToggle={setIsOpen} />
@@ -451,7 +448,9 @@ const Home = () => {
         <div className="flex relative md:flex-col">
           <div className="flex flex-col pt-16 w-2/3 me-[100px] md:w-full">
             <span className="flex items-center">
-              <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-[32px]">Bridge</h1>
+              <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-[32px]">
+                Bridge
+              </h1>
               <Pill
                 text="Beta"
                 type="success"
@@ -526,7 +525,7 @@ const Home = () => {
                           dispatch(
                             setChain(
                               appConfig.wrappedBridge.chains[
-                              depositSelectedChainItem
+                                depositSelectedChainItem
                               ]
                             )
                           );
@@ -639,19 +638,20 @@ const Home = () => {
                   disabled
                   text={
                     parseFloat(amount) > parseFloat(balanceSlice.balance)
-                      ? `Insufficient ${appConfig.wrappedBridge.chains[
-                        selected
-                          ? withdrawSelectedChainItem
-                          : depositSelectedChainItem
-                      ].tokens[
-                        selected
-                          ? withdrawSelectedTokenItem
-                          : depositSelectedTokenItem
-                      ].symbol
-                      } Balance`
+                      ? `Insufficient ${
+                          appConfig.wrappedBridge.chains[
+                            selected
+                              ? withdrawSelectedChainItem
+                              : depositSelectedChainItem
+                          ].tokens[
+                            selected
+                              ? withdrawSelectedTokenItem
+                              : depositSelectedTokenItem
+                          ].symbol
+                        } Balance`
                       : parseFloat(amount) > 10000
-                        ? "Exceeds Daily Limit"
-                        : "Minimum 0.5"
+                      ? "Exceeds Daily Limit"
+                      : "Minimum 0.5"
                   }
                 />
               ) : (
@@ -686,30 +686,30 @@ const Home = () => {
                     }}
                     disabled={
                       (selected === 1 && chain?.id === fuse.id) ||
-                        selected === 0
+                      selected === 0
                         ? balanceSlice.isApprovalLoading ||
-                        contractSlice.isBridgeLoading ||
-                        contractSlice.isApprovalLoading ||
-                        balanceSlice.isBalanceLoading ||
-                        !amount ||
-                        parseFloat(amount) === 0 ||
-                        isNaN(parseFloat(amount))
+                          contractSlice.isBridgeLoading ||
+                          contractSlice.isApprovalLoading ||
+                          balanceSlice.isBalanceLoading ||
+                          !amount ||
+                          parseFloat(amount) === 0 ||
+                          isNaN(parseFloat(amount))
                         : false
                     }
                     text={
                       contractSlice.isBridgeLoading ||
-                        contractSlice.isApprovalLoading
+                      contractSlice.isApprovalLoading
                         ? "Loading..."
                         : selected === 1 && chain?.id !== fuse.id
-                          ? "Switch To Fuse"
-                          : selected === 1 &&
-                            appConfig.wrappedBridge.chains[
-                              withdrawSelectedChainItem
-                            ].tokens[withdrawSelectedTokenItem].isNative
-                            ? "Bridge"
-                            : parseFloat(balanceSlice.approval) < parseFloat(amount)
-                              ? "Approve"
-                              : "Bridge"
+                        ? "Switch To Fuse"
+                        : selected === 1 &&
+                          appConfig.wrappedBridge.chains[
+                            withdrawSelectedChainItem
+                          ].tokens[withdrawSelectedTokenItem].isNative
+                        ? "Bridge"
+                        : parseFloat(balanceSlice.approval) < parseFloat(amount)
+                        ? "Approve"
+                        : "Bridge"
                     }
                     disabledClassname="bg-fuse-black/20 text-black px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
                   />
@@ -719,7 +719,11 @@ const Home = () => {
             <motion.div className="flex bg-white w-[525px] mt-2 rounded-lg px-8 py-5 flex-col font-medium text-sm max-w-full md:text-xs">
               <div className="flex justify-between">
                 <span className="text-black/50">Bridge Fee</span>
-                <span>Free</span>
+                {feeSlice.isWithdrawFeeLoading ? (
+                  <span className="px-14 rounded-md animate-pulse bg-fuse-black/10"></span>
+                ) : (
+                  <span>{feeSlice.withdrawFee / 100} %</span>
+                )}
               </div>
               <div className="flex justify-between mt-2">
                 <span className="text-black/50">Gas Estimation</span>
@@ -733,8 +737,8 @@ const Home = () => {
                         getChainKey(
                           selected === 0
                             ? appConfig.wrappedBridge.chains[
-                              depositSelectedChainItem
-                            ].lzChainId
+                                depositSelectedChainItem
+                              ].lzChainId
                             : 138
                         )
                       ).symbol

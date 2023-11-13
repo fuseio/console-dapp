@@ -1,26 +1,50 @@
-import { narrow } from 'abitype'
+import { narrow } from "abitype";
 
 export const OriginalTokenBridgeAbi = narrow([
   {
+    anonymous: false,
     inputs: [
       {
+        indexed: false,
         internalType: "address",
-        name: "_endpoint",
+        name: "previousAdmin",
         type: "address",
       },
       {
-        internalType: "uint16",
-        name: "_remoteChainId",
-        type: "uint16",
-      },
-      {
+        indexed: false,
         internalType: "address",
-        name: "_weth",
+        name: "newAdmin",
         type: "address",
       },
     ],
-    stateMutability: "nonpayable",
-    type: "constructor",
+    name: "AdminChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "beacon",
+        type: "address",
+      },
+    ],
+    name: "BeaconUpgraded",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint8",
+        name: "version",
+        type: "uint8",
+      },
+    ],
+    name: "Initialized",
+    type: "event",
   },
   {
     anonymous: false,
@@ -284,6 +308,32 @@ export const OriginalTokenBridgeAbi = narrow([
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "uint16",
+        name: "withdrawalFeeBps",
+        type: "uint16",
+      },
+    ],
+    name: "SetWithdrawalFeeBps",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "implementation",
+        type: "address",
+      },
+    ],
+    name: "Upgraded",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "token",
@@ -304,6 +354,19 @@ export const OriginalTokenBridgeAbi = narrow([
     ],
     name: "WithdrawFee",
     type: "event",
+  },
+  {
+    inputs: [],
+    name: "DEFAULT_PAYLOAD_SIZE_LIMIT",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
   },
   {
     inputs: [
@@ -345,6 +408,19 @@ export const OriginalTokenBridgeAbi = narrow([
         internalType: "uint8",
         name: "",
         type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "TOTAL_BPS",
+    outputs: [
+      {
+        internalType: "uint16",
+        name: "",
+        type: "uint16",
       },
     ],
     stateMutability: "view",
@@ -586,6 +662,29 @@ export const OriginalTokenBridgeAbi = narrow([
   {
     inputs: [
       {
+        internalType: "address",
+        name: "_endpoint",
+        type: "address",
+      },
+      {
+        internalType: "uint16",
+        name: "_remoteChainId",
+        type: "uint16",
+      },
+      {
+        internalType: "address",
+        name: "_weth",
+        type: "address",
+      },
+    ],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint16",
         name: "_srcChainId",
         type: "uint16",
@@ -612,7 +711,7 @@ export const OriginalTokenBridgeAbi = narrow([
     name: "lzEndpoint",
     outputs: [
       {
-        internalType: "contract ILayerZeroEndpoint",
+        internalType: "contract ILayerZeroEndpointUpgradeable",
         name: "",
         type: "address",
       },
@@ -714,6 +813,25 @@ export const OriginalTokenBridgeAbi = narrow([
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "uint16",
+        name: "",
+        type: "uint16",
+      },
+    ],
+    name: "payloadSizeLimitLookup",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "precrime",
     outputs: [
@@ -721,6 +839,19 @@ export const OriginalTokenBridgeAbi = narrow([
         internalType: "address",
         name: "",
         type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
       },
     ],
     stateMutability: "view",
@@ -846,6 +977,24 @@ export const OriginalTokenBridgeAbi = narrow([
   {
     inputs: [
       {
+        internalType: "uint16",
+        name: "_dstChainId",
+        type: "uint16",
+      },
+      {
+        internalType: "uint256",
+        name: "_size",
+        type: "uint256",
+      },
+    ],
+    name: "setPayloadSizeLimit",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "_precrime",
         type: "address",
@@ -947,6 +1096,19 @@ export const OriginalTokenBridgeAbi = narrow([
   {
     inputs: [
       {
+        internalType: "uint16",
+        name: "_withdrawalFeeBps",
+        type: "uint16",
+      },
+    ],
+    name: "setWithdrawalFeeBps",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "",
         type: "address",
@@ -1015,6 +1177,37 @@ export const OriginalTokenBridgeAbi = narrow([
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newImplementation",
+        type: "address",
+      },
+    ],
+    name: "upgradeTo",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newImplementation",
+        type: "address",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "useCustomAdapterParams",
     outputs: [
@@ -1061,6 +1254,19 @@ export const OriginalTokenBridgeAbi = narrow([
     name: "withdrawFee",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "withdrawalFeeBps",
+    outputs: [
+      {
+        internalType: "uint16",
+        name: "",
+        type: "uint16",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {

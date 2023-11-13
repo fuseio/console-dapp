@@ -11,7 +11,7 @@ import { fetchBalance, selectBalanceSlice } from "@/store/balanceSlice";
 import alert from "@/assets/alert.svg";
 import visit from "@/assets/visit.svg";
 import sFuse from "@/assets/sFuse.svg";
-import { estimateOriginalFee } from "@/store/feeSlice";
+import { estimateOriginalFee, resetBridgeFee } from "@/store/feeSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { useAccount } from "wagmi";
 import { walletType } from "@/lib/helpers";
@@ -106,6 +106,9 @@ const Deposit = ({
       );
     }
   }, [chainSlice.chainId, selectedChainSection]);
+  useEffect(() => {
+    dispatch(resetBridgeFee());
+  }, []);
   return (
     <>
       <div className="flex bg-modal-bg rounded-md p-4 mt-3 w-full flex-col">
@@ -213,7 +216,7 @@ const Deposit = ({
             <span className="mt-3 text-xs font-medium">
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
-                balanceSlice.isApprovalLoading ? (
+              balanceSlice.isApprovalLoading ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : (
                 balanceSlice.balance
@@ -253,8 +256,10 @@ const Deposit = ({
                   onClick={() => {
                     amplitude.track("External Provider", {
                       provider: bridge.name,
-                      walletType: connector ? walletType[connector.id] : undefined,
-                      walletAddress: address
+                      walletType: connector
+                        ? walletType[connector.id]
+                        : undefined,
+                      walletAddress: address,
                     });
                   }}
                 >
@@ -313,7 +318,7 @@ const Deposit = ({
                   appConfig.wrappedBridge.disabledChains[selectedChainItem]
                     .appName,
                 walletType: connector ? walletType[connector.id] : undefined,
-                walletAddress: address
+                walletAddress: address,
               });
             }}
           >
