@@ -45,13 +45,13 @@ const Home = () => {
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TransfiModal />
-      <div className="w-8/9 flex flex-col gap-y-16 mt-16 mb-80 md:w-9/10 max-w-7xl">
+      <div className="w-8/9 flex flex-col gap-y-[32.98px] mt-16 mb-[187px] md:w-9/10 max-w-7xl">
         <div>
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
             Console
           </h1>
           <p className="text-xl font-normal mt-4 text-text-dark-gray md:text-base">
-            One-stop-shop for all Fuse token holders.
+            Access Fuse network services through one simple dashboard
           </p>
         </div>
         <div className="flex flex-col gap-y-[30px]">
@@ -103,7 +103,6 @@ const Home = () => {
                   </Button>
                   <Button
                     text={"Stake"}
-                    disabled={!isConnected}
                     onClick={() => {
                       amplitude.track("Go to Staking", {
                         walletType: connector ? walletType[connector.id] : undefined,
@@ -120,7 +119,6 @@ const Home = () => {
                   </Button>
                   <Button
                     text={"Bridge"}
-                    disabled={!isConnected}
                     onClick={() => {
                       amplitude.track("Go to Bridge", {
                         walletType: connector ? walletType[connector.id] : undefined,
@@ -154,14 +152,13 @@ const Home = () => {
                     >
                       <img src={dollarMobile.src} alt="dollar" />
                     </Button>
-                    <p className={(isConnected ? "text-success" : "text-button-inactive") + "font-semibold whitespace-nowrap"}>
+                    <p className="text-success font-semibold whitespace-nowrap">
                       Buy Fuse
                     </p>
                   </div>
                   <div className="flex flex-col justify-center items-center gap-4">
                     <Button
                       text={""}
-                      disabled={!isConnected}
                       onClick={() => {
                         amplitude.track("Go to Staking", {
                           walletType: connector ? walletType[connector.id] : undefined,
@@ -176,14 +173,13 @@ const Home = () => {
                     >
                       <img src={receiveMobile.src} alt="receive" />
                     </Button>
-                    <p className={(isConnected ? "text-white" : "text-button-inactive") + "font-semibold whitespace-nowrap"}>
+                    <p className="text-white font-semibold whitespace-nowrap">
                       Stake
                     </p>
                   </div>
                   <div className="flex flex-col justify-center items-center gap-4">
                     <Button
                       text={""}
-                      disabled={!isConnected}
                       onClick={() => {
                         amplitude.track("Go to Bridge", {
                           walletType: connector ? walletType[connector.id] : undefined,
@@ -198,7 +194,7 @@ const Home = () => {
                     >
                       <img src={sendMobile.src} alt="send" />
                     </Button>
-                    <p className={(isConnected ? "text-white" : "text-button-inactive") + "font-semibold whitespace-nowrap"}>
+                    <p className="text-white font-semibold whitespace-nowrap">
                       Bridge
                     </p>
                   </div>
@@ -294,9 +290,8 @@ const Home = () => {
                   Operator Account
                 </p>
                 <p className="text-xl font-normal text-text-dark-gray md:text-base">
-                  The Operator&apos;s account is a single
-                  information and control panel for
-                  Operators.
+                  Generate a operator account on Fuse which is a contract wallet that allows
+                  business operators to pay their network services and for their customers.
                 </p>
               </div>
               <div className="flex gap-8">
