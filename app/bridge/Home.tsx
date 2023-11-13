@@ -393,6 +393,7 @@ const Home = () => {
               appConfig.wrappedBridge.chains[withdrawSelectedChainItem].name,
             tokenId: "fuse-network-token",
             walletType: connector ? walletType[connector.id] : undefined,
+            fee: (1 - feeSlice.withdrawFee / 10000) * parseFloat(amount),
           })
         );
       } else
@@ -420,6 +421,7 @@ const Home = () => {
               appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
                 .coinGeckoId,
             walletType: connector ? walletType[connector.id] : undefined,
+            fee: (1 - feeSlice.withdrawFee / 10000) * parseFloat(amount),
           })
         );
     }
@@ -722,7 +724,7 @@ const Home = () => {
                 ) : (
                   <span>{feeSlice.withdrawFee / 100} %</span>
                 )}
-              </div>  
+              </div>
               <div className="flex justify-between mt-2">
                 <span className="text-black/50">Gas Estimation</span>
                 {feeSlice.isGasFeeLoading ? (

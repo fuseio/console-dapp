@@ -55,7 +55,7 @@ export const bridgeConfig: BridgeConfigLike = {
       chainId: 101,
     },
     {
-      address: "0x081dF5af5d022D4A4a4520D4D0D336B8432fDBBb",
+      address: "0xe453d6649643F1F460C371dC3D1da98F7922fe51",
       chainId: 102,
     },
   ],
@@ -81,7 +81,7 @@ export const bridgeConfig: BridgeConfigLike = {
       chainId: 101,
     },
     {
-      address: "0x081dF5af5d022D4A4a4520D4D0D336B8432fDBBb",
+      address: "0xaDd0428CAa7c0457ebDc21A6dB48456d04aC0B76",
       chainId: 102,
     },
   ],
@@ -195,7 +195,7 @@ export const bridgeConfig: BridgeConfigLike = {
         name: "FUSE",
         isBridged: true,
         isNative: true,
-        address: "0x",
+        address: "0x6b021b3f68491974bE6D4009fEe61a4e3C708fD6",
       },
     ],
     [

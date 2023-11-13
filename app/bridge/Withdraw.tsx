@@ -358,7 +358,7 @@ const Withdraw = ({
               {" "}
               {amount && !isNaN(parseFloat(amount))
                 ? (
-                    (1 - feeSlice.withdrawFee / 100) *
+                    (1 - feeSlice.withdrawFee / 10000) *
                     parseFloat(amount)
                   ).toFixed(2)
                 : 0}{" "}

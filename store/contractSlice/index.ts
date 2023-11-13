@@ -200,6 +200,7 @@ export const bridgeNativeTokens = createAsyncThunk(
       tokenId,
       network,
       walletType,
+      fee
     }: {
       amount: string;
       bridge: Address;
@@ -211,6 +212,7 @@ export const bridgeNativeTokens = createAsyncThunk(
       tokenId: string;
       network: string;
       walletType?: string;
+      fee: number;
     },
     thunkAPI
   ) => {
@@ -242,7 +244,9 @@ export const bridgeNativeTokens = createAsyncThunk(
               token: symbol,
               amountUSD: price * parseFloat(amount),
               walletType: walletType ? walletType : undefined,
-              walletAddress: walletType ? address : undefined
+              walletAddress: walletType ? address : undefined,
+              fee: fee,
+              feeUSD: fee * price
             });
           });
           resolve(txHash);
@@ -270,6 +274,7 @@ export const bridgeWrappedTokens = createAsyncThunk(
       tokenId,
       network,
       walletType,
+      fee
     }: {
       amount: string;
       contractAddress: Address;
@@ -282,6 +287,7 @@ export const bridgeWrappedTokens = createAsyncThunk(
       tokenId: string;
       network: string;
       walletType?: string;
+      fee: number;
     },
     thunkAPI
   ) => {
@@ -321,7 +327,9 @@ export const bridgeWrappedTokens = createAsyncThunk(
               token: symbol,
               amountUSD: price * parseFloat(amount),
               walletType: walletType ? walletType : undefined,
-              walletAddress: walletType ? address : undefined
+              walletAddress: walletType ? address : undefined,
+              fee: fee,
+              feeUSD: fee * price
             });
           });
           resolve(txHash);
