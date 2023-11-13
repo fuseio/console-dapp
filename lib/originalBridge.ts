@@ -151,3 +151,16 @@ export const estimateOriginalNativeFee = async (
   const increasedNativeFee = (Number(nativeFee) * 1.2).toFixed(0);
   return increasedNativeFee;
 };
+
+export const getDepositFeeBps = async (
+  bridgeAddress: Address,
+  rpcUrl: string
+) => {
+  const withdrawalFeeBps = 0;
+  // await publicClient(rpcUrl).readContract({
+  //   address: bridgeAddress,
+  //   abi: OriginalTokenBridgeAbi,
+  //   functionName: "withdrawalFeeBps",
+  // });
+  return withdrawalFeeBps;
+};

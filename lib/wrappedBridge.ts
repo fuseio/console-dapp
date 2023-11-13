@@ -166,3 +166,15 @@ export const estimateWrappedNativeFee = async (
   const increasedNativeFee = (Number(nativeFee) * 1.2).toFixed(0);
   return increasedNativeFee;
 };
+
+export const getWithdrawalFeeBps = async (
+  bridgeAddress: Address,
+  rpcUrl: string
+) => {
+  const withdrawalFeeBps = await publicClient(rpcUrl).readContract({
+    address: bridgeAddress,
+    abi: WrappedTokenBridgeAbi,
+    functionName: "withdrawalFeeBps",
+  });
+  return withdrawalFeeBps;
+}
