@@ -221,7 +221,7 @@ const Home = () => {
             </div>
           </div>
           <div className="flex md:flex-col gap-[30px]">
-            <div className="flex flex-col justify-between items-start gap-y-3 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[35px]">
+            <div className="flex flex-col justify-between items-start gap-y-3 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
               <div className="flex flex-col gap-4">
                 <p className="text-lg font-bold">
                   Build on Fuse
@@ -258,7 +258,7 @@ const Home = () => {
                 </a>
               </div>
             </div>
-            <div className="flex flex-col justify-between items-start gap-y-3 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[35px]">
+            <div className="flex flex-col justify-between items-start gap-y-3 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
               <div className="flex flex-col gap-4">
                 <p className="text-lg font-bold">
                   Get API Key
