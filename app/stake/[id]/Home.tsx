@@ -29,6 +29,7 @@ import useDeepCompareEffect, { useDeepCompareEffectNoCheck } from "use-deep-comp
 import Image from "next/image";
 import leftArrow from "@/assets/left-arrow.svg";
 import Link from "next/link";
+import { fetchTokenPrice } from "@/lib/api";
 
 const Stake = ({ params }: { params: { id: string } }) => {
   const { id } = params;
@@ -51,7 +52,7 @@ const Stake = ({ params }: { params: { id: string } }) => {
   const handleStake = () => {
     setIsLoading(true);
     delegate(getAmount().toString(), validator?.address ?? hex)
-      .then(() => {
+      .then(async () => {
         dispatch(
           fetchSelfStake({
             address: address ?? hex,
@@ -66,6 +67,7 @@ const Stake = ({ params }: { params: { id: string } }) => {
         ym("reachGoal", "stake");
         amplitude.track("Stake", {
           amount: getAmount(),
+          amountUSD: await fetchTokenPrice("fuse-network-token"),
           walletType: connector ? walletType[connector.id] : undefined,
           walletAddress: address
         });
@@ -81,7 +83,7 @@ const Stake = ({ params }: { params: { id: string } }) => {
   const handleUnstake = () => {
     setIsLoading(true);
     withdraw(getAmount().toString(), validator?.address ?? hex)
-      .then(() => {
+      .then(async () => {
         dispatch(
           fetchSelfStake({
             address: address ?? hex,
@@ -96,6 +98,7 @@ const Stake = ({ params }: { params: { id: string } }) => {
         ym("reachGoal", "unstake");
         amplitude.track("Unstake", {
           amount: getAmount(),
+          amountUSD: await fetchTokenPrice("fuse-network-token"),
           walletType: connector ? walletType[connector.id] : undefined,
           walletAddress: address
         });
