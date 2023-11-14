@@ -26,6 +26,9 @@ import { delegate, withdraw } from "@/lib/contractInteract";
 import { Address, useAccount } from "wagmi";
 import * as amplitude from "@amplitude/analytics-browser";
 import useDeepCompareEffect, { useDeepCompareEffectNoCheck } from "use-deep-compare-effect";
+import Image from "next/image";
+import leftArrow from "@/assets/left-arrow.svg";
+import Link from "next/link";
 
 const Stake = ({ params }: { params: { id: string } }) => {
   const { id } = params;
@@ -243,7 +246,16 @@ const Stake = ({ params }: { params: { id: string } }) => {
       <div className="flex w-8/9 flex-col md:w-9/10 max-w-7xl">
         <div className="flex w-full md:flex-col">
           <div className="w-[65%] flex flex-col md:w-full">
-            <div className="flex mt-16 items-start justify-start md:flex-col">
+            <Link href="/staking" className="flex gap-[13.41px] mt-16 mb-[33.5px] hover:opacity-70">
+              <Image
+                src={leftArrow}
+                alt="back"
+                width={11.39}
+                height={5.7}
+              />
+              Back
+            </Link>
+            <div className="flex items-start justify-start md:flex-col">
               <div className="w-2/3 flex justify-start h-20 md:w-full">
                 <div className="h-20">
                   {!validator ? (

@@ -26,6 +26,8 @@ import { useMediaQuery } from "usehooks-ts";
 import qr from "@/assets/qr.svg";
 import disconnectIcon from "@/assets/disconnect.svg";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
+import leftArrow from "@/assets/left-arrow.svg";
+import QRCode from "react-qr-code";
 
 const screenMediumWidth = 768;
 const menu: Variants = {
@@ -90,6 +92,7 @@ const ConnectWallet = ({
   const [isChainOpen, setIsChainOpen] = React.useState(false);
   const [isAccountsOpen, setIsAccountsOpen] = React.useState(false);
   const [isWrongNetwoksOpen, setIsWrongNetwoksOpen] = React.useState(false);
+  const [isQrCodeOpen, setIsQrCodeOpen] = React.useState(false);
   const { address, connector, isConnected } = useAccount();
   const { chain, chains } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
@@ -236,7 +239,7 @@ const ConnectWallet = ({
           />
         </div>
         <motion.div
-          animate={isAccountsOpen ? "open" : "closed"}
+          animate={isQrCodeOpen ? "closed" : isAccountsOpen ? "open" : "closed"}
           initial="closed"
           exit="closed"
           variants={menu}
@@ -257,18 +260,20 @@ const ConnectWallet = ({
                   className="cursor-pointer"
                   onClick={() => navigator.clipboard.writeText(String(address))}
                 />
-                {/* <Image
+                <Image
                   src={qr.src}
                   alt="copy address"
                   width={16.22}
                   height={16.65}
-                /> */}
+                  className="cursor-pointer"
+                  onClick={() => setIsQrCodeOpen(!isQrCodeOpen)}
+                />
               </div>
             </div>
           </div>
           <hr className="border-border-dark-gray mt-[25.62px] mb-[18.5px]" />
-          <div className="flex flex-col gap-[8.35px] px-[22px]">
-            <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">
+          <div className="flex flex-col gap-[8.35px] px-[22px] font-medium">
+            <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray">
               Wallet
             </p>
             <div className="flex justify-between items-center">
@@ -276,8 +281,8 @@ const ConnectWallet = ({
                 <Image
                   src={icons[chain?.id ?? 0]}
                   alt={chain?.name ?? "Fuse"}
-                  width={32}
-                  height={32}
+                  width={40}
+                  height={40}
                 />
                 <div className="flex flex-col justify-between gap-[3.68px]">
                   <p>{chain?.name} Token</p>
@@ -286,7 +291,7 @@ const ConnectWallet = ({
                   </p>
                 </div>
               </div>
-              <div className="flex flex-col gap-[3.68px]">
+              <div className="flex flex-col justify-between gap-[3.68px] h-10">
                 <p>{parseFloat(balance.data?.formatted || "0").toFixed(4)}</p>
                 {balanceSlice.isUsdPriceLoading ? (
                   <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span>
@@ -320,6 +325,34 @@ const ConnectWallet = ({
               height={20}
             />
             <p>Disconnect</p>
+          </div>
+        </motion.div>
+        <motion.div
+          animate={isAccountsOpen && isQrCodeOpen ? "open" : "closed"}
+          initial="closed"
+          exit="closed"
+          variants={menu}
+          className="absolute top-[120%] right-0 bg-white rounded-[20px] cursor-auto shadow-xl py-[25.5px] z-50 w-[268.22px]"
+        >
+          <div className="flex flex-col gap-6 px-[22px]">
+            <button
+              className="flex items-center gap-3 w-fit"
+              onClick={() => setIsQrCodeOpen(!isQrCodeOpen)}
+            >
+              <Image
+                src={leftArrow.src}
+                alt="back arrow icon"
+                width={11.39}
+                height={5.7}
+              />
+              Back
+            </button>
+            <div className="flex justify-center">
+              <QRCode
+                size={150}
+                value={String(address)}
+              />
+            </div>
           </div>
         </motion.div>
       </div>
