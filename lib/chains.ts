@@ -33,20 +33,20 @@ export const chains: ChainConfigLike[] = [
     chainId: 10,
     logo: optimismLogo,
   },
-  {
-    chainName: "Ethereum",
-    lzChainId:101,
-    icon: eth.src,
-    chainId:1,
-    rpc:"https://rpc.eth.gateway.fm",
-    logo:""
-  },
-  {
-    chainName: "BNB",
-    lzChainId:102,
-    icon: bnb.src,
-    chainId:56,
-    rpc:"https://weathered-side-brook.bsc.quiknode.pro/f11b337cb3411c96e514504308b95f17288330f4/",
-    logo:""
-  },
+  // {
+  //   chainName: "Ethereum",
+  //   lzChainId:101,
+  //   icon: eth.src,
+  //   chainId:1,
+  //   rpc:"https://rpc.eth.gateway.fm",
+  //   logo:""
+  // },
+  // {
+  //   chainName: "BNB",
+  //   lzChainId:102,
+  //   icon: bnb.src,
+  //   chainId:56,
+  //   rpc:"https://weathered-side-brook.bsc.quiknode.pro/f11b337cb3411c96e514504308b95f17288330f4/",
+  //   logo:""
+  // },
 ];
