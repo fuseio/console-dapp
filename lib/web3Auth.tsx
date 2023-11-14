@@ -6,6 +6,7 @@ import {
   OPENLOGIN_NETWORK,
   LOGIN_PROVIDER_TYPE,
   LOGIN_PROVIDER,
+  UX_MODE,
 } from "@web3auth/openlogin-adapter";
 import { TorusWalletConnectorPlugin } from "@web3auth/torus-wallet-connector-plugin";
 import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from "@web3auth/base";
