@@ -76,9 +76,9 @@ const Transaction = ({
           <span className="text-xs flex">
             Expected transaction completion time:{" "}
             <p className="font-semibold ml-1">
-              {(
+              {Math.ceil(
                 getEstimatedTransactionTime(transactionHashes.srcChainId) / 60
-              ).toFixed(1) + " min"}
+              ) + " min"}
             </p>
           </span>
         </div>

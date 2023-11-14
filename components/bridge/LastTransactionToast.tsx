@@ -6,7 +6,10 @@ import info from "@/assets/info.svg";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectTransactionsSlice } from "@/store/transactionsSlice";
 import { MessageStatus } from "@layerzerolabs/scan-client";
-import { getEstimatedTransactionTime, getNetworkByChainKey } from "@layerzerolabs/ui-core";
+import {
+  getEstimatedTransactionTime,
+  getNetworkByChainKey,
+} from "@layerzerolabs/ui-core";
 import { getChainKey } from "@layerzerolabs/lz-sdk";
 import Pill from "./Pill";
 import { toggleLastTransactionToast } from "@/store/toastSlice";
@@ -89,11 +92,11 @@ const LastTransactionToast = () => {
               <span className="text-xs flex md:text-[10px]">
                 Expected transaction completion time:{" "}
                 <p className="font-semibold ml-1">
-                  {(
+                  {Math.ceil(
                     getEstimatedTransactionTime(
                       transactionsSlice.transactionHashes[0].srcChainId
                     ) / 60
-                  ).toFixed(1) + " min"}
+                  ) + " min"}
                 </p>
               </span>
             </div>
