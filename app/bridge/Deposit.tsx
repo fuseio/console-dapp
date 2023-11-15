@@ -146,6 +146,7 @@ const Deposit = ({
           selectedItem={selectedChainItem}
           className="w-full"
           onClick={(section, item) => {
+            setSelectedTokenItem(0)
             setSelectedChainSection(section);
             setSelectedChainItem(item);
             if (section === 1) {

@@ -304,6 +304,7 @@ const Withdraw = ({
           selectedSection={selectedChainSection}
           selectedItem={selectedChainItem}
           onClick={(section, item) => {
+            setSelectedTokenItem(0)
             setSelectedChainSection(section);
             setSelectedChainItem(item);
             if (section === 1) {
