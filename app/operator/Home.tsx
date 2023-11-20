@@ -12,18 +12,23 @@ import copy from "@/assets/copy2.svg";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
-import TransfiModal from "@/components/console/TransfiModal";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { fuse } from "wagmi/chains";
-import { setIsTransfiModalOpen } from "@/store/navbarSlice";
+import { setIsTransfiModalOpen, setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import Link from "next/link";
-import { setIsCreateAccountModalOpen } from "@/store/operatorSlice";
+import { FuseSDK } from "fuse_wallet_sdk_ts";
+import { useEthersSigner } from "@/lib/ethersAdapters/signer";
+import { NEXT_PUBLIC_FUSE_API_PUBLIC_KEY } from "@/lib/config";
+import { selectOperatorSlice, setIsAccountCreationModalOpen, setIsCongratulationModalOpen, setIsCreateAccountModalOpen } from "@/store/operatorSlice";
+import AccountCreationModal from "@/components/operator/AccountCreationModal";
+import CongratulationModal from "@/components/operator/CongratulationModal";
 
 const Home = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
+  const operatorSlice = useAppSelector(selectOperatorSlice);
   const controller = new AbortController();
   const { address, connector, isConnected } = useAccount();
   const { chain } = useNetwork();
@@ -32,6 +37,17 @@ const Home = () => {
     watch: true,
     chainId: fuse.id
   });
+  const signer = useEthersSigner();
+
+  async function createOperatorAccount() {
+    const fuseSDK = await FuseSDK.init(NEXT_PUBLIC_FUSE_API_PUBLIC_KEY, signer!);
+    const senderAddress = fuseSDK.wallet.getSender();
+
+    dispatch(setIsAccountCreationModalOpen(false));
+    if (senderAddress) {
+      dispatch(setIsCongratulationModalOpen(true));
+    }
+  }
 
   useEffect(() => {
     dispatch(fetchUsdPrice({
@@ -44,17 +60,29 @@ const Home = () => {
     }
   }, [isConnected])
 
+  useEffect(() => {
+    if (operatorSlice.isCreateAccountModalOpen) {
+      dispatch(setIsWalletModalOpen(true));
+      dispatch(setIsCreateAccountModalOpen(false));
+    }
+  }, [operatorSlice.isCreateAccountModalOpen])
+
+  useEffect(() => {
+    if (isConnected && signer) {
+      dispatch(setIsAccountCreationModalOpen(true));
+      createOperatorAccount();
+    }
+  }, [isConnected, signer])
+
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
-      <TransfiModal />
+      {operatorSlice.isAccountCreationModalOpen && <AccountCreationModal />}
+      {operatorSlice.isCongratulationModalOpen && <CongratulationModal />}
       <div className="w-8/9 flex flex-col gap-y-[32.98px] mt-16 mb-[187px] md:w-9/10 max-w-7xl">
         <div>
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
-            Console
+            Operator dashboard
           </h1>
-          <p className="text-xl font-normal mt-4 text-text-dark-gray md:text-base">
-            Access Fuse network services through one simple dashboard
-          </p>
         </div>
         <div className="flex flex-col gap-y-[30px]">
           <div className="bg-fuse-black rounded-[20px] text-white px-12 md:px-8 py-14 md:py-10">
@@ -103,38 +131,6 @@ const Home = () => {
                   >
                     <img src={dollar.src} alt="dollar" />
                   </Button>
-                  <Button
-                    text={"Stake"}
-                    onClick={() => {
-                      amplitude.track("Go to Staking", {
-                        walletType: connector ? walletType[connector.id] : undefined,
-                        walletAddress: address
-                      });
-                      router.push("/staking");
-                    }}
-                    padding="py-[17.73px]"
-                    className="flex items-center justify-center gap-x-2.5 w-40 bg-white text-black font-semibold rounded-full transition ease-in-out delay-150 hover:opacity-80"
-                    disabledClassname="flex items-center justify-center gap-x-2.5 w-40 bg-button-inactive text-black font-semibold rounded-full"
-                    isLeft
-                  >
-                    <img src={receive.src} alt="receive" />
-                  </Button>
-                  <Button
-                    text={"Bridge"}
-                    onClick={() => {
-                      amplitude.track("Go to Bridge", {
-                        walletType: connector ? walletType[connector.id] : undefined,
-                        walletAddress: address
-                      });
-                      router.push("/bridge");
-                    }}
-                    padding="py-[17.73px]"
-                    className="flex items-center justify-center gap-x-2.5 w-40 bg-white text-black font-semibold rounded-full transition ease-in-out delay-150 hover:opacity-80"
-                    disabledClassname="flex items-center justify-center gap-x-2.5 w-40 bg-button-inactive text-black font-semibold rounded-full"
-                    isLeft
-                  >
-                    <img src={send.src} alt="send" />
-                  </Button>
                 </div>
                 {/* Buttons Mobile */}
                 <div className="hidden md:flex justify-between">
@@ -156,48 +152,6 @@ const Home = () => {
                     </Button>
                     <p className="text-success font-semibold whitespace-nowrap">
                       Buy Fuse
-                    </p>
-                  </div>
-                  <div className="flex flex-col justify-center items-center gap-4">
-                    <Button
-                      text={""}
-                      onClick={() => {
-                        amplitude.track("Go to Staking", {
-                          walletType: connector ? walletType[connector.id] : undefined,
-                          walletAddress: address
-                        });
-                        router.push("/staking");
-                      }}
-                      padding=""
-                      className="flex items-center justify-center w-16 h-16 bg-white text-black font-semibold rounded-full"
-                      disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
-                      isLeft
-                    >
-                      <img src={receiveMobile.src} alt="receive" />
-                    </Button>
-                    <p className="text-white font-semibold whitespace-nowrap">
-                      Stake
-                    </p>
-                  </div>
-                  <div className="flex flex-col justify-center items-center gap-4">
-                    <Button
-                      text={""}
-                      onClick={() => {
-                        amplitude.track("Go to Bridge", {
-                          walletType: connector ? walletType[connector.id] : undefined,
-                          walletAddress: address
-                        });
-                        router.push("/bridge");
-                      }}
-                      padding=""
-                      className="flex items-center justify-center w-16 h-16 bg-white text-black font-semibold rounded-full"
-                      disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
-                      isLeft
-                    >
-                      <img src={sendMobile.src} alt="send" />
-                    </Button>
-                    <p className="text-white font-semibold whitespace-nowrap">
-                      Bridge
                     </p>
                   </div>
                 </div>
@@ -289,24 +243,17 @@ const Home = () => {
             <div className="flex flex-col justify-between items-start gap-y-3 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[35px]">
               <div className="flex flex-col gap-4">
                 <p className="text-lg font-bold">
-                  Operator Account
+                  Learn what you can do
                 </p>
                 <p className="text-xl font-normal text-text-dark-gray md:text-base">
-                  Generate a operator account on Fuse which is a contract wallet that allows
-                  business operators to pay their network services and for their customers.
+                  The Operator's account is a single information and control panel for Operators.
                 </p>
               </div>
               <div className="flex gap-8">
-                <div
-                  className="group flex gap-1 text-black font-semibold cursor-pointer"
-                  onClick={() => {
-                    dispatch(setIsCreateAccountModalOpen(true));
-                    router.push("/operator");
-                  }}
-                >
-                  <p>Create account</p>
+                <Link href={"#"} className="group flex gap-1 text-black font-semibold">
+                  <p>Learn more</p>
                   <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />
-                </div>
+                </Link>
               </div>
             </div>
           </div>
