@@ -1,31 +1,21 @@
 import { useEffect } from "react";
 import Button from "@/components/ui/Button";
-import dollar from "@/assets/dollar.svg"
-import receive from "@/assets/receive.svg"
-import send from "@/assets/send.svg"
-import dollarMobile from "@/assets/dollar-mobile.svg"
-import receiveMobile from "@/assets/receive-mobile.svg"
-import sendMobile from "@/assets/send-mobile.svg"
 import rightArrow from "@/assets/right-arrow.svg"
 import { eclipseAddress, walletType } from "@/lib/helpers";
 import copy from "@/assets/copy2.svg";
-import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { fuse } from "wagmi/chains";
-import { setIsTransfiModalOpen, setIsWalletModalOpen } from "@/store/navbarSlice";
+import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import Link from "next/link";
-import { FuseSDK } from "fuse_wallet_sdk_ts";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
-import { NEXT_PUBLIC_FUSE_API_PUBLIC_KEY } from "@/lib/config";
-import { selectOperatorSlice, setIsAccountCreationModalOpen, setIsCongratulationModalOpen, setIsCreateAccountModalOpen } from "@/store/operatorSlice";
+import { createSmartContractAccount, selectOperatorSlice, setIsCreateAccountModalOpen } from "@/store/operatorSlice";
 import AccountCreationModal from "@/components/operator/AccountCreationModal";
 import CongratulationModal from "@/components/operator/CongratulationModal";
 
 const Home = () => {
-  const router = useRouter();
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const operatorSlice = useAppSelector(selectOperatorSlice);
@@ -33,21 +23,11 @@ const Home = () => {
   const { address, connector, isConnected } = useAccount();
   const { chain } = useNetwork();
   const balance = useBalance({
-    address,
+    address: operatorSlice.address,
     watch: true,
     chainId: fuse.id
   });
   const signer = useEthersSigner();
-
-  async function createOperatorAccount() {
-    const fuseSDK = await FuseSDK.init(NEXT_PUBLIC_FUSE_API_PUBLIC_KEY, signer!);
-    const senderAddress = fuseSDK.wallet.getSender();
-
-    dispatch(setIsAccountCreationModalOpen(false));
-    if (senderAddress) {
-      dispatch(setIsCongratulationModalOpen(true));
-    }
-  }
 
   useEffect(() => {
     dispatch(fetchUsdPrice({
@@ -69,8 +49,7 @@ const Home = () => {
 
   useEffect(() => {
     if (isConnected && signer) {
-      dispatch(setIsAccountCreationModalOpen(true));
-      createOperatorAccount();
+      dispatch(createSmartContractAccount({ signer }));
     }
   }, [isConnected, signer])
 
@@ -90,7 +69,7 @@ const Home = () => {
               <div className="flex flex-col gap-y-[62px]">
                 <div className="flex flex-col gap-y-[18px]">
                   <p className="text-lg text-darker-gray">
-                    Balance
+                    Account Balance
                   </p>
                   <div className="flex items-end gap-x-[30px] md:gap-x-4">
                     <h1 className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
@@ -114,61 +93,20 @@ const Home = () => {
                     }
                   </div>
                 </div>
-                {/* Buttons Desktop */}
-                <div className="flex md:hidden gap-[30px]">
-                  <Button
-                    text={"Buy Fuse"}
-                    onClick={() => {
-                      amplitude.track("On-Ramp opened", {
-                        walletType: connector ? walletType[connector.id] : undefined,
-                        walletAddress: address
-                      });
-                      dispatch(setIsTransfiModalOpen(true));
-                    }}
-                    padding="py-[17.73px]"
-                    className="flex items-center justify-center gap-x-2.5 w-40 bg-success text-black font-semibold rounded-full transition ease-in-out delay-150 hover:bg-fuse-green-bright"
-                    isLeft
-                  >
-                    <img src={dollar.src} alt="dollar" />
-                  </Button>
-                </div>
-                {/* Buttons Mobile */}
-                <div className="hidden md:flex justify-between">
-                  <div className="flex flex-col justify-center items-center gap-4">
-                    <Button
-                      text={""}
-                      onClick={() => {
-                        amplitude.track("On-Ramp opened", {
-                          walletType: connector ? walletType[connector.id] : undefined,
-                          walletAddress: address
-                        });
-                        dispatch(setIsTransfiModalOpen(true));
-                      }}
-                      padding=""
-                      className="flex items-center justify-center w-16 h-16 bg-success text-black font-semibold rounded-full"
-                      disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
-                    >
-                      <img src={dollarMobile.src} alt="dollar" />
-                    </Button>
-                    <p className="text-success font-semibold whitespace-nowrap">
-                      Buy Fuse
-                    </p>
-                  </div>
-                </div>
               </div>
               {isConnected &&
                 <div className="flex flex-col gap-4 md:hidden">
                   <p className="text-success">
-                    Wallet Address
+                    Smart Contract Account
                   </p>
                   <span className="text-darker-gray text-base flex">
-                    {eclipseAddress(String(address))}
+                    {eclipseAddress(String(operatorSlice.address))}
                     <img
                       src={copy.src}
                       alt="Copy"
                       className="ms-2 cursor-pointer"
                       onClick={() => {
-                        navigator.clipboard.writeText(String(address));
+                        navigator.clipboard.writeText(String(operatorSlice.address));
                       }}
                     />
                   </span>
@@ -240,7 +178,7 @@ const Home = () => {
                 </a>
               </div>
             </div>
-            <div className="flex flex-col justify-between items-start gap-y-3 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[35px]">
+            <div className="flex flex-col justify-between items-start gap-y-3 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
               <div className="flex flex-col gap-4">
                 <p className="text-lg font-bold">
                   Learn what you can do

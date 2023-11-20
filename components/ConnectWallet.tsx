@@ -296,7 +296,7 @@ const ConnectWallet = ({
                 {balanceSlice.isUsdPriceLoading ? (
                   <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span>
                 ) : (
-                  <p className="text-xl text-darker-gray">
+                  <p className="text-xs text-text-dark-gray">
                     $
                     {chain && chain.id === fuse.id
                       ? new Intl.NumberFormat().format(

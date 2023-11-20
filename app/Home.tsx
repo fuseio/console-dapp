@@ -300,7 +300,9 @@ const Home = () => {
                 <div
                   className="group flex gap-1 text-black font-semibold cursor-pointer"
                   onClick={() => {
-                    dispatch(setIsCreateAccountModalOpen(true));
+                    if(!isConnected) {
+                      dispatch(setIsCreateAccountModalOpen(true));
+                    }
                     router.push("/operator");
                   }}
                 >
