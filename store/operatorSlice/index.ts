@@ -2,7 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
 import { Signer } from "ethers";
 import { NEXT_PUBLIC_FUSE_API_PUBLIC_KEY } from "@/lib/config";
-import { FuseSDK } from "fuse_wallet_sdk_ts";
+import { FuseSDK } from "@fuseio/fusebox-web-sdk";
 import { Address } from "abitype";
 import { hex } from "@/lib/helpers";
 
