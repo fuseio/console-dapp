@@ -14,7 +14,7 @@ import {
   useSwitchNetwork,
 } from "wagmi";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
-import { eclipseAddress } from "@/lib/helpers";
+import { eclipseAddress, hex } from "@/lib/helpers";
 import { arbitrum, polygon, fuse, optimism, bsc, mainnet } from "wagmi/chains";
 import fuseIcon from "@/assets/fuse-icon.svg";
 import polygonIcon from "@/assets/polygon-icon.svg";
@@ -28,6 +28,7 @@ import disconnectIcon from "@/assets/disconnect.svg";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import leftArrow from "@/assets/left-arrow.svg";
 import QRCode from "react-qr-code";
+import { selectOperatorSlice } from "@/store/operatorSlice";
 
 const screenMediumWidth = 768;
 const menu: Variants = {
@@ -104,6 +105,7 @@ const ConnectWallet = ({
   const matches = useMediaQuery(`(min-width: ${screenMediumWidth}px)`);
   const controller = new AbortController();
   const balanceSlice = useAppSelector(selectBalanceSlice);
+  const operatorSlice = useAppSelector(selectOperatorSlice);
 
   const chainRef = useOutsideClick(() => {
     if (isChainOpen) {
@@ -272,6 +274,37 @@ const ConnectWallet = ({
             </div>
           </div>
           <hr className="border-border-dark-gray mt-[25.62px] mb-[18.5px]" />
+          {operatorSlice.address !== hex &&
+            <>
+              <div className="flex flex-col gap-[8.35px] px-[22px]">
+                <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">
+                  Smart contract account
+                </p>
+                <div className="flex justify-between">
+                  <p className="font-bold">{eclipseAddress(String(operatorSlice.address))}</p>
+                  <div className="flex gap-[19.02px]">
+                    <Image
+                      src={copy.src}
+                      alt="copy smart contract account address"
+                      width={18.97}
+                      height={18.81}
+                      className="cursor-pointer"
+                      onClick={() => navigator.clipboard.writeText(String(operatorSlice.address))}
+                    />
+                    <Image
+                      src={qr.src}
+                      alt="copy smart contract account address"
+                      width={16.22}
+                      height={16.65}
+                      className="cursor-pointer"
+                      onClick={() => setIsQrCodeOpen(!isQrCodeOpen)}
+                    />
+                  </div>
+                </div>
+              </div>
+              <hr className="border-border-dark-gray mt-[25.62px] mb-[18.5px]" />
+            </>
+          }
           <div className="flex flex-col gap-[8.35px] px-[22px] font-medium">
             <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray">
               Wallet
@@ -300,13 +333,13 @@ const ConnectWallet = ({
                     $
                     {chain && chain.id === fuse.id
                       ? new Intl.NumberFormat().format(
-                          parseFloat(
-                            (
-                              parseFloat(balance.data?.formatted ?? "0") *
-                              balanceSlice.price
-                            ).toString()
-                          )
+                        parseFloat(
+                          (
+                            parseFloat(balance.data?.formatted ?? "0") *
+                            balanceSlice.price
+                          ).toString()
                         )
+                      )
                       : 0}
                   </p>
                 )}
@@ -350,7 +383,7 @@ const ConnectWallet = ({
             <div className="flex justify-center">
               <QRCode
                 size={150}
-                value={String(address)}
+                value={String(operatorSlice.address !== hex ? operatorSlice.address : address)}
               />
             </div>
           </div>

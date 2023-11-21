@@ -7,14 +7,18 @@ import { Address } from "abitype";
 import { hex } from "@/lib/helpers";
 
 export interface OperatorStateType {
-  isCreateAccountModalOpen: boolean;
+  isSignUpModalOpen: boolean;
+  isLoginModalOpen: boolean;
+  isLoggedInModalOpen: boolean;
   isAccountCreationModalOpen: boolean;
   isCongratulationModalOpen: boolean;
   address: Address;
 }
 
 const INIT_STATE: OperatorStateType = {
-  isCreateAccountModalOpen: false,
+  isSignUpModalOpen: false,
+  isLoginModalOpen: false,
+  isLoggedInModalOpen: false,
   isAccountCreationModalOpen: false,
   isCongratulationModalOpen: false,
   address: hex,
@@ -47,8 +51,14 @@ const operatorSlice = createSlice({
   name: "OPERATOR_STATE",
   initialState: INIT_STATE,
   reducers: {
-    setIsCreateAccountModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isCreateAccountModalOpen = action.payload
+    setIsSignUpModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isSignUpModalOpen = action.payload
+    },
+    setIsLoginModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isLoginModalOpen = action.payload
+    },
+    setIsLoggedinModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isLoggedInModalOpen = action.payload
     },
     setIsAccountCreationModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isAccountCreationModalOpen = action.payload
@@ -59,21 +69,38 @@ const operatorSlice = createSlice({
   },
   extraReducers: {
     [createSmartContractAccount.pending.type]: (state, action) => {
-      state.isAccountCreationModalOpen = true;
+      if (!state.isLoginModalOpen) {
+        state.isAccountCreationModalOpen = true;
+      }
     },
     [createSmartContractAccount.fulfilled.type]: (state, action) => {
       state.address = action.payload;
-      state.isAccountCreationModalOpen = false;
-      state.isCongratulationModalOpen = true;
+      if (state.isLoginModalOpen) {
+        state.isLoginModalOpen = false;
+        state.isLoggedInModalOpen = true;
+      } else {
+        state.isAccountCreationModalOpen = false;
+        state.isCongratulationModalOpen = true;
+      }
     },
     [createSmartContractAccount.rejected.type]: (state, action) => {
-      state.isAccountCreationModalOpen = false;
+      if (state.isLoginModalOpen) {
+        state.isLoginModalOpen = false;
+      } else {
+        state.isAccountCreationModalOpen = false;
+      }
     },
   },
 });
 
 export const selectOperatorSlice = (state: AppState): OperatorStateType => state.operator;
 
-export const { setIsCreateAccountModalOpen, setIsAccountCreationModalOpen, setIsCongratulationModalOpen } = operatorSlice.actions;
+export const {
+  setIsSignUpModalOpen,
+  setIsLoginModalOpen,
+  setIsLoggedinModalOpen,
+  setIsAccountCreationModalOpen,
+  setIsCongratulationModalOpen
+} = operatorSlice.actions;
 
 export default operatorSlice.reducer;

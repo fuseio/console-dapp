@@ -7,13 +7,9 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { fuse } from "wagmi/chains";
-import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import Link from "next/link";
-import { useEthersSigner } from "@/lib/ethersAdapters/signer";
-import { createSmartContractAccount, selectOperatorSlice, setIsCreateAccountModalOpen } from "@/store/operatorSlice";
-import AccountCreationModal from "@/components/operator/AccountCreationModal";
-import CongratulationModal from "@/components/operator/CongratulationModal";
+import { selectOperatorSlice } from "@/store/operatorSlice";
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -27,7 +23,6 @@ const Home = () => {
     watch: true,
     chainId: fuse.id
   });
-  const signer = useEthersSigner();
 
   useEffect(() => {
     dispatch(fetchUsdPrice({
@@ -40,23 +35,8 @@ const Home = () => {
     }
   }, [isConnected])
 
-  useEffect(() => {
-    if (operatorSlice.isCreateAccountModalOpen) {
-      dispatch(setIsWalletModalOpen(true));
-      dispatch(setIsCreateAccountModalOpen(false));
-    }
-  }, [operatorSlice.isCreateAccountModalOpen])
-
-  useEffect(() => {
-    if (isConnected && signer) {
-      dispatch(createSmartContractAccount({ signer }));
-    }
-  }, [isConnected, signer])
-
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
-      {operatorSlice.isAccountCreationModalOpen && <AccountCreationModal />}
-      {operatorSlice.isCongratulationModalOpen && <CongratulationModal />}
       <div className="w-8/9 flex flex-col gap-y-[32.98px] mt-16 mb-[187px] md:w-9/10 max-w-7xl">
         <div>
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">

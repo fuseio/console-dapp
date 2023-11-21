@@ -5,17 +5,11 @@ import { setIsCongratulationModalOpen } from "@/store/operatorSlice";
 import { useAppDispatch } from "@/store/store";
 import Button from "../ui/Button";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const CongratulationModal = (): JSX.Element => {
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    window.addEventListener("click", (e) => {
-      if ((e.target as HTMLElement).id === "modal-bg") {
-        dispatch(setIsCongratulationModalOpen(false));
-      }
-    });
-  }, []);
+  const router = useRouter();
 
   return (
     <AnimatePresence>
@@ -24,7 +18,6 @@ const CongratulationModal = (): JSX.Element => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 z-50 flex"
-        id="modal-bg"
       >
         <motion.div
           initial={{ opacity: 0, top: "0" }}
@@ -60,6 +53,7 @@ const CongratulationModal = (): JSX.Element => {
             padding="px-10 py-3"
             onClick={() => {
               dispatch(setIsCongratulationModalOpen(false));
+              router.push("/operator");
             }}
           />
         </motion.div>
