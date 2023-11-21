@@ -249,7 +249,7 @@ const ConnectWallet = ({
         >
           <div className="flex flex-col gap-[8.35px] px-[22px]">
             <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">
-              Connected account
+              {operatorSlice.address !== hex ? "EOA" : "Connected"} account
             </p>
             <div className="flex justify-between">
               <p className="font-bold">{eclipseAddress(String(address))}</p>

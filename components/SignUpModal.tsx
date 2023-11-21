@@ -34,7 +34,6 @@ const SignUpModal = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    dispatch(setIsSignUpModalOpen(false));
     if (address && connector) {
       amplitude.track("Wallet connected", {
         walletType: walletType[connector.id],
@@ -45,6 +44,7 @@ const SignUpModal = (): JSX.Element => {
 
   useEffect(() => {
     if (isConnected && signer && isSignUpModalOpen) {
+      dispatch(setIsSignUpModalOpen(false));
       dispatch(createSmartContractAccount({ signer }));
     }
   }, [isConnected, signer, isSignUpModalOpen])
