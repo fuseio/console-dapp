@@ -184,7 +184,7 @@ const Home = () => {
                   Learn what you can do
                 </p>
                 <p className="text-xl font-normal text-text-dark-gray md:text-base">
-                  The Operator's account is a single information and control panel for Operators.
+                  The Operator&apos;s account is a single information and control panel for Operators.
                 </p>
               </div>
               <div className="flex gap-8">

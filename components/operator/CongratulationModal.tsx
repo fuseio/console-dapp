@@ -50,7 +50,7 @@ const CongratulationModal = (): JSX.Element => {
                 Your account has been successfully
               </p>
               <p className="text-text-heading-gray">
-                created. It's time to top it up.
+                created. It&apos;s time to top it up.
               </p>
             </div>
           </div>
