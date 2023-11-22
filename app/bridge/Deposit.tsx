@@ -178,7 +178,7 @@ const Deposit = ({
           <>
             <span className="font-medium mt-2 text-xs">Amount</span>
             <div className="flex w-full items-center mt-2">
-              <div className="bg-white p-4 md:p-2 rounded-s-md border-[1px] border-border-gray w-2/3 md:w-3/5">
+              <div className="bg-white px-4 py-3 md:p-2 rounded-s-md border-[1px] border-border-gray w-2/3 md:w-3/5 flex">
                 <input
                   type="text"
                   className="w-full bg-transparent focus:outline-none text-sm md:text-xs"
@@ -188,6 +188,14 @@ const Deposit = ({
                     setAmount(e.target.value);
                   }}
                 />
+                <div
+                  className="text-black font-medium px-3 py-1 bg-lightest-gray rounded-full cursor-pointer"
+                  onClick={() => {
+                    setAmount(balanceSlice.balance);
+                  }}
+                >
+                  Max
+                </div>
               </div>
               <Dropdown
                 items={[
