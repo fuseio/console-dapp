@@ -35,6 +35,7 @@ import { fuse } from "viem/chains";
 import { getNetwork, switchNetwork } from "wagmi/actions";
 import { hex, walletType } from "@/lib/helpers";
 import FAQ from "@/components/FAQ";
+import '@/styles/bridge.css';
 
 const faqs = [
   "I have USDC or WETH on the Fuse network and want to bridge it to another network. But the Bridge shows me a balance of 0.",
@@ -730,7 +731,7 @@ const Home = () => {
                   <div className="peer cursor-pointer h-4 w-4 bg-lightest-gray rounded-full flex justify-center ml-1 text-black">
                     ?
                   </div>
-                  <div className="hidden bottom-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg peer-hover:block text-black text-sm font-medium">
+                  <div className="tooltip-text hidden bottom-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg peer-hover:block text-black text-sm font-medium">
                     <p className="mb-5">
                       The Gas fee covers the source and destination blockchains
                       transaction fees paid by Layer Zero.
