@@ -102,6 +102,7 @@ const Deposit = ({
           contractAddress:
             appConfig.wrappedBridge.chains[selectedChainItem].original,
           rpcUrl: appConfig.wrappedBridge.chains[selectedChainItem].rpcUrl,
+          tokenId: appConfig.wrappedBridge.chains[selectedChainItem].tokenId,
         })
       );
     }
@@ -146,7 +147,7 @@ const Deposit = ({
           selectedItem={selectedChainItem}
           className="w-full"
           onClick={(section, item) => {
-            setSelectedTokenItem(0)
+            setSelectedTokenItem(0);
             setSelectedChainSection(section);
             setSelectedChainItem(item);
             if (section === 1) {
@@ -165,6 +166,7 @@ const Deposit = ({
                   contractAddress:
                     appConfig.wrappedBridge.chains[item].original,
                   rpcUrl: appConfig.wrappedBridge.chains[item].rpcUrl,
+                  tokenId: appConfig.wrappedBridge.chains[item].tokenId,
                 })
               );
               setDisplayButton(true);
@@ -176,7 +178,7 @@ const Deposit = ({
           <>
             <span className="font-medium mt-2 text-xs">Amount</span>
             <div className="flex w-full items-center mt-2">
-              <div className="bg-white p-4 md:p-2 rounded-s-md border-[1px] border-border-gray w-2/3 md:w-3/5">
+              <div className="bg-white px-4 py-3 md:p-2 rounded-s-md border-[1px] border-border-gray w-2/3 md:w-3/5 flex">
                 <input
                   type="text"
                   className="w-full bg-transparent focus:outline-none text-sm md:text-xs"
@@ -186,6 +188,14 @@ const Deposit = ({
                     setAmount(e.target.value);
                   }}
                 />
+                <div
+                  className="text-black font-medium px-3 py-1 bg-lightest-gray rounded-full cursor-pointer"
+                  onClick={() => {
+                    setAmount(balanceSlice.balance);
+                  }}
+                >
+                  Max
+                </div>
               </div>
               <Dropdown
                 items={[
@@ -214,7 +224,7 @@ const Deposit = ({
             <span className="mt-3 text-xs font-medium">
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
-                balanceSlice.isApprovalLoading ? (
+              balanceSlice.isApprovalLoading ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : (
                 balanceSlice.balance
@@ -254,8 +264,10 @@ const Deposit = ({
                   onClick={() => {
                     amplitude.track("External Provider", {
                       provider: bridge.name,
-                      walletType: connector ? walletType[connector.id] : undefined,
-                      walletAddress: address
+                      walletType: connector
+                        ? walletType[connector.id]
+                        : undefined,
+                      walletAddress: address,
                     });
                   }}
                 >
@@ -314,7 +326,7 @@ const Deposit = ({
                   appConfig.wrappedBridge.disabledChains[selectedChainItem]
                     .appName,
                 walletType: connector ? walletType[connector.id] : undefined,
-                walletAddress: address
+                walletAddress: address,
               });
             }}
           >

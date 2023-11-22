@@ -8,6 +8,7 @@ export interface ChainConfigLike {
   rpc: string;
   chainId: number;
   logo: string;
+  tokenId: string;
 }
 
 export interface DisabledChainConfigLike {
@@ -122,6 +123,7 @@ interface WrappedBridgeConfig {
     wrapped: Address;
     originalFuse: Address;
     rpcUrl: string;
+    tokenId: string;
     tokens: {
       decimals: number;
       symbol: string;
@@ -221,6 +223,7 @@ export const createAppConfig = (
           )?.address as Address,
           tokens: tokens,
           rpcUrl: chain.rpc,
+          tokenId: chain.tokenId,
         };
       }),
     },
