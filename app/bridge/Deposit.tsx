@@ -102,6 +102,7 @@ const Deposit = ({
           contractAddress:
             appConfig.wrappedBridge.chains[selectedChainItem].original,
           rpcUrl: appConfig.wrappedBridge.chains[selectedChainItem].rpcUrl,
+          tokenId: appConfig.wrappedBridge.chains[selectedChainItem].tokenId,
         })
       );
     }
@@ -146,7 +147,7 @@ const Deposit = ({
           selectedItem={selectedChainItem}
           className="w-full"
           onClick={(section, item) => {
-            setSelectedTokenItem(0)
+            setSelectedTokenItem(0);
             setSelectedChainSection(section);
             setSelectedChainItem(item);
             if (section === 1) {
@@ -165,6 +166,7 @@ const Deposit = ({
                   contractAddress:
                     appConfig.wrappedBridge.chains[item].original,
                   rpcUrl: appConfig.wrappedBridge.chains[item].rpcUrl,
+                  tokenId: appConfig.wrappedBridge.chains[item].tokenId,
                 })
               );
               setDisplayButton(true);
@@ -214,7 +216,7 @@ const Deposit = ({
             <span className="mt-3 text-xs font-medium">
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
-                balanceSlice.isApprovalLoading ? (
+              balanceSlice.isApprovalLoading ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : (
                 balanceSlice.balance
@@ -254,8 +256,10 @@ const Deposit = ({
                   onClick={() => {
                     amplitude.track("External Provider", {
                       provider: bridge.name,
-                      walletType: connector ? walletType[connector.id] : undefined,
-                      walletAddress: address
+                      walletType: connector
+                        ? walletType[connector.id]
+                        : undefined,
+                      walletAddress: address,
                     });
                   }}
                 >
@@ -314,7 +318,7 @@ const Deposit = ({
                   appConfig.wrappedBridge.disabledChains[selectedChainItem]
                     .appName,
                 walletType: connector ? walletType[connector.id] : undefined,
-                walletAddress: address
+                walletAddress: address,
               });
             }}
           >
