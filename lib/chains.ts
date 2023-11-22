@@ -16,6 +16,7 @@ export const chains: ChainConfigLike[] = [
     rpc: "https://rpc-mainnet.maticvigil.com",
     chainId: 137,
     logo: maticLogo,
+    tokenId: "matic-network"
   },
   {
     chainName: "Arbitrum",
@@ -24,6 +25,7 @@ export const chains: ChainConfigLike[] = [
     chainId: 42161,
     rpc: "https://arb1.arbitrum.io/rpc",
     logo: arbiLogo,
+    tokenId: "arbitrum"
   },
   {
     chainName: "Optimism",
@@ -32,6 +34,7 @@ export const chains: ChainConfigLike[] = [
     rpc: "https://mainnet.optimism.io",
     chainId: 10,
     logo: optimismLogo,
+    tokenId: "optimism"
   },
   {
     chainName: "Ethereum",
@@ -39,7 +42,8 @@ export const chains: ChainConfigLike[] = [
     icon: eth.src,
     chainId:1,
     rpc:"https://rpc.eth.gateway.fm",
-    logo:""
+    logo:"",
+    tokenId: "ethereum"
   },
   {
     chainName: "BNB",
@@ -47,6 +51,7 @@ export const chains: ChainConfigLike[] = [
     icon: bnb.src,
     chainId:56,
     rpc:"https://weathered-side-brook.bsc.quiknode.pro/f11b337cb3411c96e514504308b95f17288330f4/",
-    logo:""
+    logo:"",
+    tokenId: "binancecoin"
   },
 ];
