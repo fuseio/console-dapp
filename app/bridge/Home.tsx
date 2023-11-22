@@ -731,7 +731,7 @@ const Home = () => {
                   <div className="peer cursor-pointer h-4 w-4 bg-lightest-gray rounded-full flex justify-center ml-1 text-black">
                     ?
                   </div>
-                  <div className="tooltip-text hidden bottom-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg peer-hover:block text-black text-sm font-medium">
+                  <div className="tooltip-text hidden bottom-8 -left-[30px] absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg peer-hover:block text-black text-sm font-medium">
                     <p className="mb-5">
                       The Gas fee covers the source and destination blockchains
                       transaction fees paid by Layer Zero.
