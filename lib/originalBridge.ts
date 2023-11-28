@@ -69,10 +69,14 @@ export const bridgeOriginal = async (
       value: BigInt(increasedNativeFee),
     });
   }
-  const txWait = await waitForTransaction({
-    hash: tx,
-  });
-  return txWait.transactionHash;
+  try {
+    await waitForTransaction({
+      hash: tx,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+  return tx;
 };
 
 export const bridgeNative = async (
@@ -123,10 +127,14 @@ export const bridgeNative = async (
       value: amt + BigInt(increasedNativeFee),
     });
   }
-  const txWait = await waitForTransaction({
-    hash: tx,
-  });
-  return txWait.transactionHash;
+  try {
+    await waitForTransaction({
+      hash: tx,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+  return tx;
 };
 
 export const estimateOriginalNativeFee = async (

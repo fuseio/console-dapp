@@ -74,10 +74,14 @@ export const bridgeWrapped = async (
       value: increasedNativeFee,
     });
   }
-  const txWait = await waitForTransaction({
-    hash: tx,
-  });
-  return txWait.transactionHash;
+  try {
+    await waitForTransaction({
+      hash: tx,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+  return tx;
 };
 
 export const bridgeAndUnwrapNative = async (
@@ -133,10 +137,14 @@ export const bridgeAndUnwrapNative = async (
       value: BigInt(increasedNativeFee),
     });
   }
-  const txWait = await waitForTransaction({
-    hash: tx,
-  });
-  return txWait.transactionHash;
+  try {
+    await waitForTransaction({
+      hash: tx,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+  return tx;
 };
 
 export const estimateWrappedNativeFee = async (
