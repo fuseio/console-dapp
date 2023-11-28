@@ -7,6 +7,7 @@ import arbiLogo from "@/assets/arbi";
 import optimismLogo from "@/assets/optimism";
 import eth from "@/public/eth.png";
 import bnb from "@/public/bnb.png";
+import gnosis from "@/public/gnosis.png";
 
 export const chains: ChainConfigLike[] = [
   {
@@ -53,5 +54,14 @@ export const chains: ChainConfigLike[] = [
     rpc:"https://weathered-side-brook.bsc.quiknode.pro/f11b337cb3411c96e514504308b95f17288330f4/",
     logo:"",
     tokenId: "binancecoin"
+  },
+  {
+    chainName: "Gnosis",
+    lzChainId:145,
+    icon: gnosis.src,
+    chainId:100,
+    rpc:"https://gnosis.publicnode.com",
+    logo:"",
+    tokenId: "xDai"
   },
 ];
