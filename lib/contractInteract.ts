@@ -122,10 +122,14 @@ export const delegate = async (amount: string, validator: Address) => {
       args: [validator],
       value: parseEther(amount),
     });
-    const txWait = await waitForTransaction({
-      hash: tx,
-    });
-    return txWait.transactionHash;
+    try {
+      await waitForTransaction({
+        hash: tx,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+    return tx;
   }
 };
 
@@ -140,10 +144,14 @@ export const withdraw = async (amount: string, validator: Address) => {
       functionName: "withdraw",
       args: [validator, parseEther(amount)],
     });
-    const txWait = await waitForTransaction({
-      hash: tx,
-    });
-    return txWait.transactionHash;
+    try {
+      await waitForTransaction({
+        hash: tx,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+    return tx;
   }
 };
 
