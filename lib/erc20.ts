@@ -59,8 +59,12 @@ export const approveSpend = async (
       args: [spender, parseUnits(amount, decimals)],
     });
   }
-  const txWait = await waitForTransaction({
-    hash: tx,
-  });
-  return txWait.transactionHash;
+  try {
+    await waitForTransaction({
+      hash: tx,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+  return tx;
 };
