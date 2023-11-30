@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import partyPopper from "@/assets/party-popper.svg"
 import { setIsCongratulationModalOpen } from "@/store/operatorSlice";
@@ -53,7 +53,7 @@ const CongratulationModal = (): JSX.Element => {
             padding="px-10 py-3"
             onClick={() => {
               dispatch(setIsCongratulationModalOpen(false));
-              router.push("/operator");
+              router.push("/dashboard?contact-details=true");
             }}
           />
         </motion.div>

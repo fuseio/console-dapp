@@ -13,13 +13,10 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import TransfiModal from "@/components/console/TransfiModal";
-import { useAccount, useBalance, useDisconnect, useNetwork } from "wagmi";
+import { useAccount, useBalance, useNetwork } from "wagmi";
 import { fuse } from "wagmi/chains";
 import { setIsTransfiModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
-import { selectOperatorSlice, setIsSignUpModalOpen } from "@/store/operatorSlice";
-import AccountCreationModal from "@/components/operator/AccountCreationModal";
-import CongratulationModal from "@/components/operator/CongratulationModal";
 
 const Home = () => {
   const router = useRouter();
@@ -33,8 +30,6 @@ const Home = () => {
     watch: true,
     chainId: fuse.id
   });
-  const operatorSlice = useAppSelector(selectOperatorSlice);
-  const { disconnect } = useDisconnect();
 
   useEffect(() => {
     dispatch(fetchUsdPrice({
@@ -50,8 +45,6 @@ const Home = () => {
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TransfiModal />
-      {operatorSlice.isAccountCreationModalOpen && <AccountCreationModal />}
-      {operatorSlice.isCongratulationModalOpen && <CongratulationModal />}
       <div className="w-8/9 flex flex-col gap-y-[32.98px] mt-16 mb-[187px] md:w-9/10 max-w-7xl">
         <div>
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
@@ -302,16 +295,12 @@ const Home = () => {
                 </p>
               </div>
               <div className="flex gap-8">
-                <div
-                  className="group flex gap-1 text-black font-semibold cursor-pointer"
-                  onClick={() => {
-                    disconnect();
-                    dispatch(setIsSignUpModalOpen(true));
-                  }}
-                >
-                  <p>Sign Up</p>
-                  <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />
-                </div>
+                <Button
+                  text={"Create Account"}
+                  className="bg-fuse-black text-white rounded-full font-semibold"
+                  padding="px-[31px] py-[19.5px]"
+                  onClick={() => router.push("/operator")}
+                />
               </div>
             </div>
           </div>

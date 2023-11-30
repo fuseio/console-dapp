@@ -12,6 +12,7 @@ export interface OperatorStateType {
   isLoggedInModalOpen: boolean;
   isAccountCreationModalOpen: boolean;
   isCongratulationModalOpen: boolean;
+  isTopupAccountModalOpen: boolean;
   address: Address;
 }
 
@@ -21,6 +22,7 @@ const INIT_STATE: OperatorStateType = {
   isLoggedInModalOpen: false,
   isAccountCreationModalOpen: false,
   isCongratulationModalOpen: false,
+  isTopupAccountModalOpen: false,
   address: hex,
 };
 
@@ -66,6 +68,9 @@ const operatorSlice = createSlice({
     setIsCongratulationModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isCongratulationModalOpen = action.payload
     },
+    setIsTopupAccountModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isTopupAccountModalOpen = action.payload
+    },
   },
   extraReducers: {
     [createSmartContractAccount.pending.type]: (state, action) => {
@@ -100,7 +105,8 @@ export const {
   setIsLoginModalOpen,
   setIsLoggedinModalOpen,
   setIsAccountCreationModalOpen,
-  setIsCongratulationModalOpen
+  setIsCongratulationModalOpen,
+  setIsTopupAccountModalOpen
 } = operatorSlice.actions;
 
 export default operatorSlice.reducer;

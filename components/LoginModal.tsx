@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import close from "@/assets/close.svg";
+import metamask from "@/public/metamask.png";
+import wc from "@/assets/wc.svg";
+import coinbase from "@/assets/coinbase.svg";
 import fb from "@/assets/fb.svg";
 import twitter2 from "@/assets/twitter2.svg";
 import discord2 from "@/assets/discord2.svg";
@@ -14,13 +17,15 @@ import ReactGA from "react-ga4";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import * as amplitude from "@amplitude/analytics-browser";
 import { walletType } from "@/lib/helpers";
-import { createSmartContractAccount, selectOperatorSlice, setIsLoggedinModalOpen, setIsLoginModalOpen } from "@/store/operatorSlice";
+import { createSmartContractAccount, selectOperatorSlice, setIsLoggedinModalOpen, setIsLoginModalOpen, setIsSignUpModalOpen } from "@/store/operatorSlice";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import { useRouter } from "next/navigation";
+import WalletButton from "./WalletButton";
 
 const LoginModal = (): JSX.Element => {
   const [connectingWalletId, setConnectingWalletId] = useState<string>("");
   const { connect, connectors } = useConnect();
+  const emailRef = useRef<HTMLInputElement>(null);
   const { isLoginModalOpen, isLoggedInModalOpen } = useAppSelector(selectOperatorSlice);
   const dispatch = useAppDispatch();
   const { address, connector, isConnected } = useAccount();
@@ -53,7 +58,7 @@ const LoginModal = (): JSX.Element => {
   useEffect(() => {
     if(isLoggedInModalOpen) {
       dispatch(setIsLoggedinModalOpen(false));
-      router.push("/operator")
+      router.push("/dashboard")
     }
   }, [isLoggedInModalOpen])
 
@@ -99,6 +104,56 @@ const LoginModal = (): JSX.Element => {
                 onClick={() => dispatch(setIsLoginModalOpen(false))}
               />
             </span>
+            <div className="text-sm pt-2">
+              <p className="text-heading-gray">
+                Select the option you used when creating your operator account.
+              </p>
+              <span className="flex gap-1 ">
+                <p className="text-heading-gray">
+                  Don&apos;t have an account yet?
+                </p>
+                <div
+                  className="font-extrabold underline cursor-pointer"
+                  onClick={() => {
+                    dispatch(setIsLoginModalOpen(false));
+                    dispatch(setIsSignUpModalOpen(true));
+                  }}
+                >
+                  Create new account
+                </div>
+              </span>
+            </div>
+            <div className="grid grid-cols-3 w-full gap-2 pt-4">
+              <WalletButton
+                icon={metamask}
+                text="MetaMask"
+                className="w-[35px]"
+                id="injected"
+                connectingWalletId={connectingWalletId}
+                onClick={() => connectWallet("injected")}
+              />
+              <WalletButton
+                icon={wc}
+                text="WalletConnect"
+                className="w-[35px]"
+                id="walletConnect"
+                connectingWalletId={connectingWalletId}
+                onClick={() => connectWallet("walletConnect")}
+              />
+              <WalletButton
+                icon={coinbase}
+                text="Coinbase"
+                className="h-[30px]"
+                id="coinbaseWallet"
+                connectingWalletId={connectingWalletId}
+                onClick={() => connectWallet("coinbaseWallet")}
+              />
+            </div>
+            <div className="flex pt-4 w-full justify-between text-[#9F9F9F] items-center text-[10px]">
+              <hr className="w-[37%]" />
+              <p>or connect with</p>
+              <hr className="w-[37%]" />
+            </div>
             <div className="grid grid-cols-3 w-full gap-2 pt-4">
               <SocialButton
                 icon={google}
@@ -142,6 +197,33 @@ const LoginModal = (): JSX.Element => {
                 connectingWalletId={connectingWalletId}
                 onClick={() => connectWallet("github")}
               />
+            </div>
+            <div className="flex pt-4 w-full justify-between text-[#9F9F9F] items-center text-[10px]">
+              <hr className="w-[40%]" />
+              <p>or with email</p>
+              <hr className="w-[40%]" />
+            </div>
+            <div className="flex w-full pt-3">
+              <div className="flex bg-[#F2F2F2] p-2 rounded-md w-2/3">
+                <input
+                  type="text"
+                  placeholder="Enter your email"
+                  className="outline-none w-full bg-[#F2F2F2] text-xs p-1"
+                  ref={emailRef}
+                />
+              </div>
+              <button
+                className="bg-black rounded-md w-1/3 text-xs font-medium ml-2 text-white"
+                onClick={() => {
+                  if (!emailRef.current || !emailRef.current.value.length) {
+                    return
+                  }
+                  localStorage.setItem("Fuse-loginHint", emailRef.current.value);
+                  connectWallet("email");
+                }}
+              >
+                Connect
+              </button>
             </div>
           </motion.div>
         </motion.div>

@@ -264,7 +264,7 @@ const ConnectWallet = ({
                 />
                 <Image
                   src={qr.src}
-                  alt="copy address"
+                  alt="open qr code of address"
                   width={16.22}
                   height={16.65}
                   className="cursor-pointer"
@@ -293,7 +293,7 @@ const ConnectWallet = ({
                     />
                     <Image
                       src={qr.src}
-                      alt="copy smart contract account address"
+                      alt="open qr code of smart contract account address"
                       width={16.22}
                       height={16.65}
                       className="cursor-pointer"
