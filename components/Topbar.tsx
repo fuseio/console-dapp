@@ -1,29 +1,45 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import fuseConsoleLogo from "@/assets/fuse-console-logo.svg";
 import fuseLogoMobile from "@/assets/logo-mobile.svg";
 import NavMenu from "./NavMenu";
 import NavButton from "./NavButton";
 import { useAppSelector } from "@/store/store";
 import { selectNavbarSlice } from "@/store/navbarSlice";
-
-const menuItems = [
-  {
-    title: "Console",
-    link: "/",
-  },
-  {
-    title: "Bridge",
-    link: "/bridge",
-  },
-  {
-    title: "Staking",
-    link: "/staking",
-  },
-];
+import { selectOperatorSlice } from "@/store/operatorSlice";
+import { hex } from "@/lib/helpers";
 
 const Topbar = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const { isTransfiModalOpen } = useAppSelector(selectNavbarSlice);
+  const operatorSlice = useAppSelector(selectOperatorSlice);
+  const [menuItems, setMenuItems] = useState([
+    {
+      title: "Console",
+      link: "/",
+    },
+    {
+      title: "Operator",
+      link: "/operator",
+    },
+    {
+      title: "Bridge",
+      link: "/bridge",
+    },
+    {
+      title: "Staking",
+      link: "/staking",
+    },
+  ]);
+
+  useEffect(() => {
+    setMenuItems((oldMenuItems) =>
+      oldMenuItems.map((item) =>
+        item.title === "Operator" && operatorSlice.address !== hex ?
+        { ...item, link: "/dashboard" } :
+        item
+      )
+    );
+  }, [operatorSlice.address]);
 
   return (
     <nav className={"w-full h-20 sticky top-0 bg-light-gray/60 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-gray-alpha-40" + " " + (isTransfiModalOpen ? "z-0" : "z-40")}>

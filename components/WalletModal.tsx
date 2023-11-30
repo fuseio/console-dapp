@@ -17,12 +17,13 @@ import qr from "@/public/voltqrsample.png";
 import Image from "next/image";
 import WalletButton from "./WalletButton";
 import SocialButton from "./SocialButton";
-import { useAccount, useConnect } from "wagmi";
+import { Address, useAccount, useConnect } from "wagmi";
 import ReactGA from "react-ga4";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
-import { walletType } from "@/lib/helpers";
+import { hex, walletType } from "@/lib/helpers";
+import { setAddress } from "@/store/operatorSlice";
 
 const WalletModal = (): JSX.Element => {
   const [selected, setSelected] = useState<"HOME" | "VOLT">("HOME");
@@ -31,7 +32,7 @@ const WalletModal = (): JSX.Element => {
   const emailRef = useRef<HTMLInputElement>(null);
   const { isWalletModalOpen } = useAppSelector(selectNavbarSlice);
   const dispatch = useAppDispatch();
-  const { address, connector, isConnected } = useAccount();
+  const { address, connector, isConnected, isDisconnected } = useAccount();
 
   useEffect(() => {
     window.addEventListener("click", (e) => {
@@ -43,6 +44,12 @@ const WalletModal = (): JSX.Element => {
 
   useEffect(() => {
     dispatch(setIsWalletModalOpen(false));
+
+    const smartContractAccountAddress = localStorage.getItem("Fuse-smartContractAccountAddress") as Address;
+    if(smartContractAccountAddress && smartContractAccountAddress !== hex) {
+      dispatch(setAddress(smartContractAccountAddress));
+    }
+
     if(address && connector) {
       amplitude.track("Wallet connected", {
         walletType: walletType[connector.id],
@@ -50,6 +57,12 @@ const WalletModal = (): JSX.Element => {
       });
     }
   }, [isConnected])
+
+  useEffect(() => {
+    if(isDisconnected) {
+      localStorage.removeItem("Fuse-smartContractAccountAddress");
+    }
+  }, [isDisconnected])
 
   const connectionEvent = (id: string) => {
     ReactGA.event({

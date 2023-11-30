@@ -71,6 +71,9 @@ const operatorSlice = createSlice({
     setIsTopupAccountModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isTopupAccountModalOpen = action.payload
     },
+    setAddress: (state, action: PayloadAction<Address>) => {
+      state.address = action.payload
+    },
   },
   extraReducers: {
     [createSmartContractAccount.pending.type]: (state, action) => {
@@ -80,6 +83,8 @@ const operatorSlice = createSlice({
     },
     [createSmartContractAccount.fulfilled.type]: (state, action) => {
       state.address = action.payload;
+      localStorage.setItem("Fuse-smartContractAccountAddress", action.payload);
+      
       if (state.isLoginModalOpen) {
         state.isLoginModalOpen = false;
         state.isLoggedInModalOpen = true;
@@ -106,7 +111,8 @@ export const {
   setIsLoggedinModalOpen,
   setIsAccountCreationModalOpen,
   setIsCongratulationModalOpen,
-  setIsTopupAccountModalOpen
+  setIsTopupAccountModalOpen,
+  setAddress
 } = operatorSlice.actions;
 
 export default operatorSlice.reducer;

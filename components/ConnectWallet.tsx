@@ -84,10 +84,12 @@ const ConnectWallet = ({
   disableAccountCenter = false,
   className = "",
   containerClassName = "",
+  disableSwitchChain = false,
 }: {
   disableAccountCenter?: boolean;
   className?: string;
   containerClassName?: string;
+  disableSwitchChain?: boolean;
 }) => {
   const dispatch = useAppDispatch();
   const [isChainOpen, setIsChainOpen] = React.useState(false);
@@ -160,7 +162,7 @@ const ConnectWallet = ({
     </div>
   ) : !disableAccountCenter && checkCorrectNetwork() ? (
     <div className="flex justify-end md:justify-center relative w-[410px] md:w-[90%] h-9 md:h-7">
-      <div
+      {!disableSwitchChain && <div
         className="flex bg-lightest-gray px-[14.8px] py-[7px] md:py-3.5 rounded-full items-center relative text-base/4 md:text-[8px] justify-center"
         ref={chainRef}
       >
@@ -220,7 +222,7 @@ const ConnectWallet = ({
             ))}
           </div>
         </motion.div>
-      </div>
+      </div>}
       <div
         className="flex bg-lightest-gray px-[20.3px] py-3 md:py-3.5 rounded-full cursor-pointer items-center relative text-base/4 md:text-[8px]/[25px] font-normal ml-2 md:ml-1"
         ref={accountsRef}

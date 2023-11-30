@@ -8,6 +8,10 @@ import { useDisconnect } from "wagmi";
 
 const menuItems = [
   {
+    title: "Console",
+    link: "/",
+  },
+  {
     title: "Operator",
     link: "/operator",
   },
