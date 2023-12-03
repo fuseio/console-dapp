@@ -105,7 +105,7 @@ export default function Web3AuthConnectorInstance<
   chain: Chain = fuse
 ) {
   const iconUrl =
-    "https://news.fuse.io/wp-content/uploads/2023/10/fuse-white-icon.png";
+    "https://news.fuse.io/wp-content/uploads/2023/12/fuse.svg";
   const chainConfig = {
     chainNamespace: CHAIN_NAMESPACES.EIP155,
     chainId: hex + chain.id.toString(16),
@@ -141,7 +141,7 @@ export default function Web3AuthConnectorInstance<
     },
     walletInitOptions: {
       whiteLabel: {
-        theme: { isDark: false, colors: { primary: "#00a8ff" } },
+        theme: { isDark: false, colors: { torusBrand1: "#B4F9BA" } },
         logoDark: iconUrl,
         logoLight: iconUrl,
       },
