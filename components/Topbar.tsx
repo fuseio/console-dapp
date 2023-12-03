@@ -34,7 +34,7 @@ const Topbar = () => {
   useEffect(() => {
     setMenuItems((oldMenuItems) =>
       oldMenuItems.map((item) =>
-        item.title === "Operator" && operatorSlice.address !== hex ?
+        item.title === "Operator" && operatorSlice.address && operatorSlice.address !== hex ?
         { ...item, link: "/dashboard" } :
         item
       )

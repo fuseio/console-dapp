@@ -76,9 +76,9 @@ const Home = () => {
                       <p className="text-xl text-darker-gray">
                         ${(chain && chain.id === fuse.id) ?
                           new Intl.NumberFormat().format(
-                            parseFloat((parseFloat(balance.data?.formatted ?? "0") * balanceSlice.price).toString())
+                            parseFloat((parseFloat(balance.data?.formatted ?? "0.00") * balanceSlice.price).toString())
                           ) :
-                          0
+                          "0.00"
                         }
                       </p>
                     }

@@ -61,6 +61,7 @@ const WalletModal = (): JSX.Element => {
   useEffect(() => {
     if(isDisconnected) {
       localStorage.removeItem("Fuse-smartContractAccountAddress");
+      dispatch(setAddress(hex));
     }
   }, [isDisconnected])
 
