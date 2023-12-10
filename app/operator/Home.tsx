@@ -110,8 +110,8 @@ const Home = () => {
                   <Image
                     src={rightArrowBold}
                     alt="right arrow"
-                    width={8.38}
-                    height={8.38}
+                    width={14}
+                    height={14}
                     className="transition ease-in-out delay-150 group-hover:translate-x-1"
                   />
                 </button>
