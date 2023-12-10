@@ -42,6 +42,7 @@ const config: Config = {
       "fuse-green": "#20B92E",
       "fuse-green-bright": "#8EFF98",
       "pale-green": "#A3F5AA",
+      "pale-green-light": "#A2F5AA",
       white: "#FFFFFF",
       "fuse-black": "#1A1A1A",
       black: "#000000",
@@ -64,6 +65,7 @@ const config: Config = {
       "gray-alpha-40": "#00000066",
       "warning-border": "#D4A72C",
       "warning-bg": "#FFF8C5",
+      "night": "#0A0A0A",
     },
     fontFamily: {
       mona: ["var(--font-mona-sans)"],

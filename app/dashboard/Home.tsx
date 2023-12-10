@@ -99,11 +99,6 @@ const Home = () => {
                       Free
                     </p>
                   </div>
-                  <Button
-                    text="Upgrade"
-                    className="text-black font-semibold bg-white rounded-full"
-                    padding="py-[19.5px] px-[39px]"
-                  />
                 </div>
                 <div>
                   <div className="flex justify-between items-center">
