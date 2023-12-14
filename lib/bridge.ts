@@ -244,15 +244,15 @@ export const bridgeConfig: BridgeConfigLike = {
         isNative: false,
         address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
       },
-      {
-        chainId: 102,
-        decimals: 18,
-        symbol: "WETH",
-        name: "Wrapped Ether",
-        isBridged: false,
-        isNative: false,
-        address: "0x4DB5a66E937A9F4473fA95b1cAF1d1E1D62E29EA",
-      },
+      // {
+      //   chainId: 102,
+      //   decimals: 18,
+      //   symbol: "WETH",
+      //   name: "Wrapped Ether",
+      //   isBridged: false,
+      //   isNative: false,
+      //   address: "0x4DB5a66E937A9F4473fA95b1cAF1d1E1D62E29EA",
+      // },
     ],
     [
       {
