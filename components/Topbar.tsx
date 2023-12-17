@@ -34,12 +34,14 @@ const Topbar = () => {
   useEffect(() => {
     setMenuItems((oldMenuItems) =>
       oldMenuItems.map((item) =>
-        item.title === "Operator" && operatorSlice.address && operatorSlice.address !== hex ?
+        item.title === "Operator" &&
+        operatorSlice.operator.user.smartContractAccountAddress &&
+        operatorSlice.operator.user.smartContractAccountAddress !== hex ?
         { ...item, link: "/dashboard" } :
         item
       )
     );
-  }, [operatorSlice.address]);
+  }, [operatorSlice.operator.user.smartContractAccountAddress]);
 
   return (
     <nav className={"w-full h-20 sticky top-0 bg-light-gray/60 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-gray-alpha-40" + " " + (isTransfiModalOpen ? "z-0" : "z-40")}>

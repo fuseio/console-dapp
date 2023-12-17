@@ -38,7 +38,7 @@ const Topbar = () => {
           </a>
         </span>
         <NavMenu menuItems={menuItems} />
-        <ConnectWallet disableSwitchChain={operatorSlice.address !== hex} />
+        <ConnectWallet disableSwitchChain={operatorSlice.operator.user.smartContractAccountAddress !== hex} />
       </div>
     </nav>
   );

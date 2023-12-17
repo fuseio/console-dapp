@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import Button from "@/components/ui/Button";
 import rightArrow from "@/assets/right-arrow.svg"
-import copy from "@/assets/copy-black.svg"
 import { hex, walletType } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
@@ -10,7 +9,6 @@ import { fuse } from "wagmi/chains";
 import * as amplitude from "@amplitude/analytics-browser";
 import Link from "next/link";
 import { selectOperatorSlice, setIsTopupAccountModalOpen } from "@/store/operatorSlice";
-import Image from "next/image";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 
 const Home = () => {
@@ -21,8 +19,8 @@ const Home = () => {
   const { address, connector, isConnected } = useAccount();
   const { chain } = useNetwork();
   const balance = useBalance({
-    address: operatorSlice.address,
-    watch: operatorSlice.address !== hex,
+    address: operatorSlice.operator.user.smartContractAccountAddress,
+    watch: operatorSlice.operator.user.smartContractAccountAddress !== hex,
     chainId: fuse.id,
   });
   const transaction = 1000;

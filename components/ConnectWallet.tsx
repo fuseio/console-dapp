@@ -251,7 +251,7 @@ const ConnectWallet = ({
         >
           <div className="flex flex-col gap-[8.35px] px-[22px]">
             <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">
-              {operatorSlice.address !== hex ? "EOA" : "Connected"} account
+              {operatorSlice.operator.user.smartContractAccountAddress !== hex ? "EOA" : "Connected"} account
             </p>
             <div className="flex justify-between">
               <p className="font-bold">{eclipseAddress(String(address))}</p>
@@ -276,14 +276,16 @@ const ConnectWallet = ({
             </div>
           </div>
           <hr className="border-border-dark-gray mt-[25.62px] mb-[18.5px]" />
-          {operatorSlice.address !== hex &&
+          {operatorSlice.operator.user.smartContractAccountAddress !== hex &&
             <>
               <div className="flex flex-col gap-[8.35px] px-[22px]">
                 <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">
                   Smart contract account
                 </p>
                 <div className="flex justify-between">
-                  <p className="font-bold">{eclipseAddress(String(operatorSlice.address))}</p>
+                  <p className="font-bold">
+                    {eclipseAddress(String(operatorSlice.operator.user.smartContractAccountAddress))}
+                  </p>
                   <div className="flex gap-[19.02px]">
                     <Image
                       src={copy.src}
@@ -291,7 +293,9 @@ const ConnectWallet = ({
                       width={18.97}
                       height={18.81}
                       className="cursor-pointer"
-                      onClick={() => navigator.clipboard.writeText(String(operatorSlice.address))}
+                      onClick={() => navigator.clipboard
+                        .writeText(String(operatorSlice.operator.user.smartContractAccountAddress))
+                      }
                     />
                     <Image
                       src={qr.src}
@@ -385,7 +389,10 @@ const ConnectWallet = ({
             <div className="flex justify-center">
               <QRCode
                 size={150}
-                value={String(operatorSlice.address !== hex ? operatorSlice.address : address)}
+                value={String(
+                  operatorSlice.operator.user.smartContractAccountAddress !== hex ?
+                  operatorSlice.operator.user.smartContractAccountAddress :
+                  address)}
               />
             </div>
           </div>

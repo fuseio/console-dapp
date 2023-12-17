@@ -58,7 +58,7 @@ const TopupAccountModal = (): JSX.Element => {
                 <div className="flex justify-center">
                   <QRCode
                     size={220}
-                    value={String(operatorSlice.address)}
+                    value={String(operatorSlice.operator.user.smartContractAccountAddress)}
                   />
                 </div>
               </div> :
@@ -74,7 +74,7 @@ const TopupAccountModal = (): JSX.Element => {
                 </div>
                 <div className="flex justify-between items-center px-7 py[16.5px] border-[0.5px] border-gray-alpha-40 h-[55px] rounded-full mt-12">
                   <p className="text-2xl leading-none text-text-dark-gray font-medium">
-                    {eclipseAddress(operatorSlice.address)}
+                    {eclipseAddress(operatorSlice.operator.user.smartContractAccountAddress)}
                   </p>
                   <div className="flex justify-between w-full max-w-[55px]">
                     <Image
@@ -83,7 +83,7 @@ const TopupAccountModal = (): JSX.Element => {
                       width={18.97}
                       height={18.81}
                       className="cursor-pointer"
-                      onClick={() => navigator.clipboard.writeText(String(operatorSlice.address))}
+                      onClick={() => navigator.clipboard.writeText(String(operatorSlice.operator.user.smartContractAccountAddress))}
                     />
                     <Image
                       src={qr.src}
