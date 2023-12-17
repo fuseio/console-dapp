@@ -162,6 +162,15 @@ export const bridgeConfig: BridgeConfigLike = {
         address: "0x6b021b3f68491974bE6D4009fEe61a4e3C708fD6",
       },
       {
+        chainId: 145,
+        decimals: 18,
+        symbol: "FUSE",
+        name: "FUSE",
+        isBridged: true,
+        isNative: true,
+        address: "0xD589F00Fa2Eb83367f732AB3CDA92eE0940389cF",
+      },
+      {
         chainId: 111,
         decimals: 18,
         symbol: "FUSE",

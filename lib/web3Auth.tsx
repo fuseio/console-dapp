@@ -15,7 +15,7 @@ import {
   NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
   NEXT_PUBLIC_WEB3AUTH_CLIENT_ID,
 } from "./config";
-import { arbitrum, polygon, fuse, optimism, mainnet, bsc } from "wagmi/chains";
+import { arbitrum, polygon, fuse, optimism, mainnet, bsc, gnosis } from "wagmi/chains";
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { InjectedConnector } from "wagmi/connectors/injected";
@@ -38,6 +38,7 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
     arbitrum,
     mainnet,
     bsc,
+    gnosis
   ],
   [publicProvider()]
 );

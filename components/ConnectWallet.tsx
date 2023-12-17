@@ -15,13 +15,22 @@ import {
 } from "wagmi";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import { eclipseAddress } from "@/lib/helpers";
-import { arbitrum, polygon, fuse, optimism, bsc, mainnet } from "wagmi/chains";
+import {
+  arbitrum,
+  polygon,
+  fuse,
+  optimism,
+  bsc,
+  mainnet,
+  gnosis,
+} from "wagmi/chains";
 import fuseIcon from "@/assets/fuse-icon.svg";
 import polygonIcon from "@/assets/polygon-icon.svg";
 import optimismIcon from "@/assets/optimism-icon.svg";
 import arbitrumIcon from "@/assets/arbitrum-icon.svg";
 import bscLogo from "@/public/bnb.png";
 import ethLogo from "@/public/eth.png";
+import gnosisLogo from "@/public/gnosis.png";
 import { useMediaQuery } from "usehooks-ts";
 import qr from "@/assets/qr.svg";
 import disconnectIcon from "@/assets/disconnect.svg";
@@ -64,6 +73,7 @@ const icons: Icons = {
   [arbitrum.id]: arbitrumIcon,
   [mainnet.id]: ethLogo,
   [bsc.id]: bscLogo,
+  [gnosis.id]: gnosisLogo,
 };
 
 type UsdTokens = {
@@ -77,6 +87,7 @@ const usdTokens: UsdTokens = {
   [arbitrum.id]: "arbitrum",
   [mainnet.id]: "ethereum",
   [bsc.id]: "binancecoin",
+  [gnosis.id]: "xdai",
 };
 
 const ConnectWallet = ({
@@ -227,9 +238,7 @@ const ConnectWallet = ({
           className="flex w-full justify-between"
           onClick={() => setIsAccountsOpen(!isAccountsOpen)}
         >
-          <p>
-            {eclipseAddress(String(address))}
-          </p>
+          <p>{eclipseAddress(String(address))}</p>
           <Image
             src={down.src}
             alt="down"
@@ -348,10 +357,7 @@ const ConnectWallet = ({
               Back
             </button>
             <div className="flex justify-center">
-              <QRCode
-                size={150}
-                value={String(address)}
-              />
+              <QRCode size={150} value={String(address)} />
             </div>
           </div>
         </motion.div>
