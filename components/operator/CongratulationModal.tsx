@@ -53,7 +53,7 @@ const CongratulationModal = (): JSX.Element => {
             padding="px-10 py-3"
             onClick={() => {
               dispatch(setIsCongratulationModalOpen(false));
-              router.push("/dashboard?contact-details=true");
+              router.push("/dashboard");
             }}
           />
         </motion.div>

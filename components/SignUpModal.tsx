@@ -12,23 +12,26 @@ import twitch from "@/assets/twitch.svg";
 import gh from "@/assets/gh.svg";
 import Image from "next/image";
 import SocialButton from "./SocialButton";
-import { useAccount, useConnect } from "wagmi";
+import { useAccount, useConnect, useSignMessage } from "wagmi";
 import ReactGA from "react-ga4";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import * as amplitude from "@amplitude/analytics-browser";
-import { walletType } from "@/lib/helpers";
-import { createSmartContractAccount, selectOperatorSlice, setIsLoginModalOpen, setIsSignUpModalOpen } from "@/store/operatorSlice";
-import { useEthersSigner } from "@/lib/ethersAdapters/signer";
+import { signDataMessage as message, walletType } from "@/lib/helpers";
+import { selectOperatorSlice, setIsLoginModalOpen, setIsSignUpModalOpen, validateOperator } from "@/store/operatorSlice";
 import WalletButton from "./WalletButton";
+import { useRouter } from "next/navigation";
 
 const SignUpModal = (): JSX.Element => {
   const [connectingWalletId, setConnectingWalletId] = useState<string>("");
   const { connect, connectors } = useConnect();
   const emailRef = useRef<HTMLInputElement>(null);
-  const { isSignUpModalOpen } = useAppSelector(selectOperatorSlice);
+  const { isSignUpModalOpen, accessToken, validateRedirectRoute } = useAppSelector(selectOperatorSlice);
   const dispatch = useAppDispatch();
   const { address, connector, isConnected } = useAccount();
-  const signer = useEthersSigner();
+  const router = useRouter();
+  const { data: signature, isSuccess: isSignMessageSuccess, signMessage } = useSignMessage({
+    message,
+  })
 
   useEffect(() => {
     window.addEventListener("click", (e) => {
@@ -48,12 +51,26 @@ const SignUpModal = (): JSX.Element => {
   }, [isConnected])
 
   useEffect(() => {
-    if (isConnected && signer && isSignUpModalOpen) {
-      console.log("create account")
+    if (isConnected && isSignUpModalOpen) {
       dispatch(setIsSignUpModalOpen(false));
-      dispatch(createSmartContractAccount({ signer }));
+      signMessage();
     }
-  }, [isConnected, signer, isSignUpModalOpen])
+  }, [isConnected, isSignUpModalOpen])
+
+  useEffect(() => {
+    if (isSignMessageSuccess && address && signature) {
+      dispatch(validateOperator({
+        signData: { address, message, signature },
+        route: "/dashboard?contact-details=true",
+      }));
+    }
+  }, [isSignMessageSuccess])
+
+  useEffect(() => {
+    if(accessToken && validateRedirectRoute) {
+      router.push(validateRedirectRoute);
+    }
+  }, [accessToken, validateRedirectRoute])
 
   const connectionEvent = (id: string) => {
     ReactGA.event({

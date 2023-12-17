@@ -1,23 +1,18 @@
 import Button from "@/components/ui/Button";
 import Image from "next/image";
 import commerce from "@/assets/commerce.svg"
-import { useAppDispatch, useAppSelector } from "@/store/store";
+import { useAppDispatch } from "@/store/store";
 import { useDisconnect } from "wagmi";
-import { selectOperatorSlice, setIsSignUpModalOpen } from "@/store/operatorSlice";
-import AccountCreationModal from "@/components/operator/AccountCreationModal";
-import CongratulationModal from "@/components/operator/CongratulationModal";
+import { setIsSignUpModalOpen } from "@/store/operatorSlice";
 import rightArrowBold from "@/assets/right-arrow-bold.svg"
 import checkmark from "@/assets/checkmark.svg"
 
 const Home = () => {
   const dispatch = useAppDispatch();
   const { disconnect } = useDisconnect();
-  const operatorSlice = useAppSelector(selectOperatorSlice);
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
-      {operatorSlice.isAccountCreationModalOpen && <AccountCreationModal />}
-      {operatorSlice.isCongratulationModalOpen && <CongratulationModal />}
       <div className="w-8/9 flex flex-col mt-16 mb-[187px] md:w-9/10 max-w-7xl">
         <div className="flex flex-col justify-center items-center text-center">
           <p className="text-text-dark-gray leading-[23.68px]">

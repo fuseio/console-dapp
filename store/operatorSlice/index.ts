@@ -1,33 +1,84 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
 import { Signer } from "ethers";
-import { NEXT_PUBLIC_FUSE_API_PUBLIC_KEY } from "@/lib/config";
 import { FuseSDK } from "@fuseio/fusebox-web-sdk";
-import { Address } from "abitype";
 import { hex } from "@/lib/helpers";
+import { Operator, OperatorContactDetail, SignData } from "@/lib/types";
+import { fetchAuthenticatedOperator, postCreateOperator, postValidateOperator } from "@/lib/api";
+import { RootState } from "../store";
+import { Address } from "abitype";
+
+const initOperator: Operator = {
+  user: {
+    name: "",
+    email: "",
+    auth0Id: "",
+    smartContractAccountAddress: hex,
+    id: "",
+    created_at: "",
+  },
+  project: {
+    ownerId: "",
+    name: "",
+    description: "",
+    publicKey: "",
+    id: "",
+    created_at: "",
+  }
+}
 
 export interface OperatorStateType {
   isSignUpModalOpen: boolean;
   isLoginModalOpen: boolean;
-  isLoggedInModalOpen: boolean;
+  isLoggedIn: boolean;
   isAccountCreationModalOpen: boolean;
   isCongratulationModalOpen: boolean;
   isTopupAccountModalOpen: boolean;
-  address: Address;
+  accessToken: string;
+  validateRedirectRoute: string;
+  operator: Operator;
 }
 
 const INIT_STATE: OperatorStateType = {
   isSignUpModalOpen: false,
   isLoginModalOpen: false,
-  isLoggedInModalOpen: false,
+  isLoggedIn: false,
   isAccountCreationModalOpen: false,
   isCongratulationModalOpen: false,
   isTopupAccountModalOpen: false,
-  address: hex,
+  accessToken: "",
+  validateRedirectRoute: "",
+  operator: initOperator,
 };
 
-export const createSmartContractAccount = createAsyncThunk(
-  "OPERATOR/CREATE_SMART_CONTRACT_ACCOUNT",
+export const validateOperator = createAsyncThunk(
+  "OPERATOR/VALIDATE_OPERATOR",
+  async ({
+    signData,
+    route,
+  }: {
+    signData: SignData;
+    route: string
+  }) => {
+    return new Promise<any>(async (resolve, reject) => {
+      const accessToken = await postValidateOperator(signData);
+      if (accessToken) {
+        resolve({accessToken, route});
+      } else {
+        reject();
+      }
+    });
+  }
+);
+
+export const fetchOperator = createAsyncThunk<
+  any,
+  {
+    signer: Signer;
+  },
+  { state: RootState }
+>(
+  "OPERATOR/FETCH_OPERATOR",
   async (
     {
       signer,
@@ -37,11 +88,48 @@ export const createSmartContractAccount = createAsyncThunk(
     thunkAPI
   ) => {
     return new Promise<any>(async (resolve, reject) => {
-      const fuseSDK = await FuseSDK.init(NEXT_PUBLIC_FUSE_API_PUBLIC_KEY, signer);
-      const senderAddress = fuseSDK.wallet.getSender();
+      const state = thunkAPI.getState();
+      const operatorState: OperatorStateType = state.operator;
+      const operator = await fetchAuthenticatedOperator(operatorState.accessToken)
+      const fuseSDK = await FuseSDK.init(operator.project.publicKey, signer);
+      const smartContractAccountAddress = fuseSDK.wallet.getSender() as Address;
+      if (operator) {
+        resolve({operator, smartContractAccountAddress});
+      } else {
+        reject();
+      }
+    });
+  }
+);
 
-      if (senderAddress) {
-        resolve(senderAddress as Address);
+export const createOperator = createAsyncThunk<
+  any,
+  {
+    signer: Signer;
+    operatorContactDetail: OperatorContactDetail;
+  },
+  { state: RootState }
+>(
+  "OPERATOR/CREATE_OPERATOR",
+  async (
+    {
+      signer,
+      operatorContactDetail,
+    }: {
+      signer: Signer;
+      operatorContactDetail: OperatorContactDetail;
+    },
+    thunkAPI
+  ) => {
+    return new Promise<any>(async (resolve, reject) => {
+      const state = thunkAPI.getState();
+      const operatorState: OperatorStateType = state.operator;
+      const operator = await postCreateOperator(operatorContactDetail, operatorState.accessToken)
+      const fuseSDK = await FuseSDK.init(operator.project.publicKey, signer);
+      const smartContractAccountAddress = fuseSDK.wallet.getSender() as Address;
+
+      if (operator) {
+        resolve({operator, smartContractAccountAddress});
       } else {
         reject();
       }
@@ -59,8 +147,8 @@ const operatorSlice = createSlice({
     setIsLoginModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isLoginModalOpen = action.payload
     },
-    setIsLoggedinModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isLoggedInModalOpen = action.payload
+    setIsLoggedIn: (state, action: PayloadAction<boolean>) => {
+      state.isLoggedIn = action.payload
     },
     setIsAccountCreationModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isAccountCreationModalOpen = action.payload
@@ -71,34 +159,37 @@ const operatorSlice = createSlice({
     setIsTopupAccountModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isTopupAccountModalOpen = action.payload
     },
-    setAddress: (state, action: PayloadAction<Address>) => {
-      state.address = action.payload
-    },
+    setLogout: (state) => {
+      state.accessToken = "";
+      state.operator = initOperator;
+      localStorage.removeItem("Fuse-operatorAccessToken");
+      localStorage.removeItem("Fuse-operator");
+    }
   },
   extraReducers: {
-    [createSmartContractAccount.pending.type]: (state, action) => {
-      if (!state.isLoginModalOpen) {
-        state.isAccountCreationModalOpen = true;
-      }
+    [validateOperator.fulfilled.type]: (state, action) => {
+      state.accessToken = action.payload.accessToken;
+      state.validateRedirectRoute = action.payload.route;
+      localStorage.setItem("Fuse-operatorAccessToken", action.payload.accessToken);
     },
-    [createSmartContractAccount.fulfilled.type]: (state, action) => {
-      state.address = action.payload;
-      localStorage.setItem("Fuse-smartContractAccountAddress", action.payload);
-      
-      if (state.isLoginModalOpen) {
-        state.isLoginModalOpen = false;
-        state.isLoggedInModalOpen = true;
-      } else {
-        state.isAccountCreationModalOpen = false;
-        state.isCongratulationModalOpen = true;
-      }
+    [fetchOperator.fulfilled.type]: (state, action) => {
+      state.operator = action.payload.operator;
+      state.operator.user.smartContractAccountAddress = action.payload.smartContractAccountAddress;
+      localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
+      state.isLoggedIn = true;
     },
-    [createSmartContractAccount.rejected.type]: (state, action) => {
-      if (state.isLoginModalOpen) {
-        state.isLoginModalOpen = false;
-      } else {
-        state.isAccountCreationModalOpen = false;
-      }
+    [createOperator.pending.type]: (state) => {
+      state.isAccountCreationModalOpen = true;
+    },
+    [createOperator.fulfilled.type]: (state, action) => {
+      state.operator = action.payload.operator;
+      state.operator.user.smartContractAccountAddress = action.payload.smartContractAccountAddress;
+      localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
+      state.isAccountCreationModalOpen = false;
+      state.isCongratulationModalOpen = true;
+    },
+    [createOperator.rejected.type]: (state) => {
+      state.isAccountCreationModalOpen = false;
     },
   },
 });
@@ -108,11 +199,11 @@ export const selectOperatorSlice = (state: AppState): OperatorStateType => state
 export const {
   setIsSignUpModalOpen,
   setIsLoginModalOpen,
-  setIsLoggedinModalOpen,
+  setIsLoggedIn,
   setIsAccountCreationModalOpen,
   setIsCongratulationModalOpen,
   setIsTopupAccountModalOpen,
-  setAddress
+  setLogout
 } = operatorSlice.actions;
 
 export default operatorSlice.reducer;

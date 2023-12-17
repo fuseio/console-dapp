@@ -1,5 +1,6 @@
 import axios from "axios";
-import { CONFIG } from './config'
+import { CONFIG, NEXT_PUBLIC_FUSE_API_BASE_URL } from './config'
+import { Operator, OperatorContactDetail, SignData } from "./types";
 
 export const fetchAllNodes = () =>
     axios.get(`${CONFIG.bootApi}/nodes`).then(response => response.data)
@@ -28,5 +29,38 @@ export const fetchTokenPrice = async (tokenId: string) => {
 
 export const fetchTotalSupply = async () => {
     const response = await axios.get(`https://bot.fuse.io/api/v1/stats/total_supply_simple`)
+    return response.data
+}
+
+export const postValidateOperator = async (signData: SignData): Promise<string> => {
+    const response = await axios.post(
+        `${NEXT_PUBLIC_FUSE_API_BASE_URL}/accounts/v1/auth/validate`,
+        signData
+    )
+    return response.data
+}
+
+export const fetchAuthenticatedOperator = async (token: string): Promise<Operator> => {
+    const response = await axios.get(
+        `${NEXT_PUBLIC_FUSE_API_BASE_URL}/accounts/v1/operators/me`,
+        {
+            headers: {
+                "Authorization" : `Bearer ${token}`
+            }
+        }
+    )
+    return response.data
+}
+
+export const postCreateOperator = async (operatorContactDetail: OperatorContactDetail, token: string): Promise<Operator> => {
+    const response = await axios.post(
+        `${NEXT_PUBLIC_FUSE_API_BASE_URL}/accounts/v1/operators/create`,
+        operatorContactDetail,
+        {
+            headers: {
+                "Authorization" : `Bearer ${token}`
+            }
+        }
+    )
     return response.data
 }

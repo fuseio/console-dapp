@@ -237,3 +237,43 @@ export type MenuItems = MenuItem[];
 export type WalletType = {
   [k: string]: string;
 }
+
+export interface SignData {
+  address: Address;
+  message: string;
+  signature: string;
+}
+
+export interface OperatorContactDetail {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+export interface User {
+  name: string;
+  email: string;
+  auth0Id: string;
+  smartContractAccountAddress: Address;
+}
+
+export interface Project {
+  ownerId: string;
+  name: string;
+  description: string;
+  publicKey: string
+}
+
+export interface DB {
+  id: string;
+  created_at: string;
+}
+
+export interface UserDB extends User, DB {}
+
+export interface ProjectDB extends Project, DB {}
+
+export interface Operator {
+  user: UserDB;
+  project: ProjectDB;
+}

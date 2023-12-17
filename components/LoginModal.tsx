@@ -12,12 +12,19 @@ import twitch from "@/assets/twitch.svg";
 import gh from "@/assets/gh.svg";
 import Image from "next/image";
 import SocialButton from "./SocialButton";
-import { useAccount, useConnect } from "wagmi";
+import { useAccount, useConnect, useSignMessage } from "wagmi";
 import ReactGA from "react-ga4";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import * as amplitude from "@amplitude/analytics-browser";
-import { walletType } from "@/lib/helpers";
-import { createSmartContractAccount, selectOperatorSlice, setIsLoggedinModalOpen, setIsLoginModalOpen, setIsSignUpModalOpen } from "@/store/operatorSlice";
+import { walletType, signDataMessage as message } from "@/lib/helpers";
+import {
+  fetchOperator,
+  selectOperatorSlice,
+  setIsLoggedIn,
+  setIsLoginModalOpen,
+  setIsSignUpModalOpen,
+  validateOperator
+} from "@/store/operatorSlice";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import { useRouter } from "next/navigation";
 import WalletButton from "./WalletButton";
@@ -26,11 +33,14 @@ const LoginModal = (): JSX.Element => {
   const [connectingWalletId, setConnectingWalletId] = useState<string>("");
   const { connect, connectors } = useConnect();
   const emailRef = useRef<HTMLInputElement>(null);
-  const { isLoginModalOpen, isLoggedInModalOpen } = useAppSelector(selectOperatorSlice);
+  const { isLoginModalOpen, isLoggedIn, accessToken } = useAppSelector(selectOperatorSlice);
   const dispatch = useAppDispatch();
   const { address, connector, isConnected } = useAccount();
   const signer = useEthersSigner();
   const router = useRouter();
+  const { data: signature, isSuccess: isSignMessageSuccess, signMessage } = useSignMessage({
+    message,
+  })
 
   useEffect(() => {
     window.addEventListener("click", (e) => {
@@ -50,17 +60,33 @@ const LoginModal = (): JSX.Element => {
   }, [isConnected])
 
   useEffect(() => {
-    if (isConnected && signer && isLoginModalOpen) {
-      dispatch(createSmartContractAccount({ signer }));
+    if (isConnected && isLoginModalOpen) {
+      dispatch(setIsLoginModalOpen(false));
+      signMessage();
     }
-  }, [isConnected, signer, isLoginModalOpen])
+  }, [isConnected, isLoginModalOpen])
 
   useEffect(() => {
-    if(isLoggedInModalOpen) {
-      dispatch(setIsLoggedinModalOpen(false));
+    if (isSignMessageSuccess && address && signature) {
+      dispatch(validateOperator({
+        signData: { address, message, signature },
+        route: "",
+      }));
+    }
+  }, [isSignMessageSuccess])
+
+  useEffect(() => {
+    if(accessToken && signer) {
+      dispatch(fetchOperator({ signer }));
+    }
+  }, [accessToken, signer])
+
+  useEffect(() => {
+    if(isLoggedIn) {
+      dispatch(setIsLoggedIn(false));
       router.push("/dashboard")
     }
-  }, [isLoggedInModalOpen])
+  }, [isLoggedIn])
 
   const connectionEvent = (id: string) => {
     ReactGA.event({
