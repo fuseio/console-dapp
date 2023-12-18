@@ -264,16 +264,7 @@ export interface Project {
   publicKey: string
 }
 
-export interface DB {
-  id: string;
-  created_at: string;
-}
-
-export interface UserDB extends User, DB {}
-
-export interface ProjectDB extends Project, DB {}
-
 export interface Operator {
-  user: UserDB;
-  project: ProjectDB;
+  user: User;
+  project: Project;
 }

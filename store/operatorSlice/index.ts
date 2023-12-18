@@ -4,7 +4,7 @@ import { Signer } from "ethers";
 import { FuseSDK } from "@fuseio/fusebox-web-sdk";
 import { hex } from "@/lib/helpers";
 import { Operator, OperatorContactDetail, SignData } from "@/lib/types";
-import { fetchAuthenticatedOperator, postCreateOperator, postValidateOperator } from "@/lib/api";
+import { fetchCurrentOperator, postCreateOperator, postValidateOperator } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
 
@@ -14,16 +14,12 @@ const initOperator: Operator = {
     email: "",
     auth0Id: "",
     smartContractAccountAddress: hex,
-    id: "",
-    created_at: "",
   },
   project: {
     ownerId: "",
     name: "",
     description: "",
     publicKey: "",
-    id: "",
-    created_at: "",
   }
 }
 
@@ -90,7 +86,7 @@ export const fetchOperator = createAsyncThunk<
     return new Promise<any>(async (resolve, reject) => {
       const state = thunkAPI.getState();
       const operatorState: OperatorStateType = state.operator;
-      const operator = await fetchAuthenticatedOperator(operatorState.accessToken)
+      const operator = await fetchCurrentOperator(operatorState.accessToken)
       const fuseSDK = await FuseSDK.init(operator.project.publicKey, signer);
       const smartContractAccountAddress = fuseSDK.wallet.getSender() as Address;
       if (operator) {

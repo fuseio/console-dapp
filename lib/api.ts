@@ -40,7 +40,7 @@ export const postValidateOperator = async (signData: SignData): Promise<string> 
     return response.data
 }
 
-export const fetchAuthenticatedOperator = async (token: string): Promise<Operator> => {
+export const fetchCurrentOperator = async (token: string): Promise<Operator> => {
     const response = await axios.get(
         `${NEXT_PUBLIC_FUSE_API_BASE_URL}/accounts/v1/operators/me`,
         {
