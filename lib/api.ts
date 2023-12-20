@@ -34,7 +34,7 @@ export const fetchTotalSupply = async () => {
 
 export const postValidateOperator = async (signData: SignData): Promise<string> => {
     const response = await axios.post(
-        `${NEXT_PUBLIC_FUSE_API_BASE_URL}/accounts/v1/auth/validate`,
+        `${NEXT_PUBLIC_FUSE_API_BASE_URL}/accounts/v1/operators/validate`,
         signData
     )
     return response.data
@@ -42,7 +42,7 @@ export const postValidateOperator = async (signData: SignData): Promise<string> 
 
 export const fetchCurrentOperator = async (token: string): Promise<Operator> => {
     const response = await axios.get(
-        `${NEXT_PUBLIC_FUSE_API_BASE_URL}/accounts/v1/operators/me`,
+        `${NEXT_PUBLIC_FUSE_API_BASE_URL}/accounts/v1/operators/id_not_needed`,
         {
             headers: {
                 "Authorization" : `Bearer ${token}`
@@ -54,7 +54,7 @@ export const fetchCurrentOperator = async (token: string): Promise<Operator> => 
 
 export const postCreateOperator = async (operatorContactDetail: OperatorContactDetail, token: string): Promise<Operator> => {
     const response = await axios.post(
-        `${NEXT_PUBLIC_FUSE_API_BASE_URL}/accounts/v1/operators/create`,
+        `${NEXT_PUBLIC_FUSE_API_BASE_URL}/accounts/v1/operators`,
         operatorContactDetail,
         {
             headers: {

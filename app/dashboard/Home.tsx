@@ -10,6 +10,8 @@ import * as amplitude from "@amplitude/analytics-browser";
 import Link from "next/link";
 import { selectOperatorSlice, setIsTopupAccountModalOpen } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
+import Image from "next/image";
+import copy from "@/assets/copy-black.svg"
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -158,27 +160,26 @@ const Home = () => {
             <div className="flex flex-col justify-between items-start gap-y-3 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
               <div className="flex flex-col gap-4">
                 <p className="text-lg font-bold">
-                  Get API Key
+                  Your API Key
                 </p>
                 <p className="text-xl font-normal text-text-dark-gray md:text-base">
-                  Sign in to our developer dashboard to
-                  receive your API key and start using the
-                  Fuse SDK
+                  You will need this API key at the next stage for integration into the SDK
                 </p>
               </div>
-              <div className="flex gap-8">
-                <a
-                  href="https://developers.fuse.io"
-                  target="_blank"
-                  className="group flex gap-1 text-black font-semibold"
-                  onClick={() => amplitude.track("Go to Developers app", {
-                    walletType: connector ? walletType[connector.id] : undefined,
-                    walletAddress: address
-                  })}
-                >
-                  <p>Get API key</p>
-                  <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />
-                </a>
+              <div className="flex gap-1 text-black font-semibold">
+                <p>
+                  {operatorSlice.operator.project.publicKey}
+                </p>
+                <Image
+                  src={copy.src}
+                  alt="copy API key"
+                  width={13.41}
+                  height={13.3}
+                  className="cursor-pointer"
+                  onClick={() => {
+                    navigator.clipboard.writeText(operatorSlice.operator.project.publicKey);
+                  }}
+                />
               </div>
             </div>
             <div className="flex flex-col justify-between items-start gap-y-3 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
