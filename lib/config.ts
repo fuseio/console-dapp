@@ -9,6 +9,7 @@ import { chains } from "./chains";
 import { coins } from "./coins";
 import { exchanges } from "./exchanges";
 import { Address } from "wagmi";
+import { Variables } from "@fuseio/fusebox-web-sdk/dist/src/constants/variables";
 
 type CONFIG = {
   fuseRPC: string;
@@ -38,4 +39,7 @@ export const NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WAL
 export const NEXT_PUBLIC_AMPLITUDE_API_KEY = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY ?? ""
 export const NEXT_PUBLIC_TRANSFI_API_KEY = process.env.NEXT_PUBLIC_TRANSFI_API_KEY ?? ""
 export const NEXT_PUBLIC_WEB3AUTH_CLIENT_ID = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID ?? ""
+export const NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL = process.env.NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL ?? ""
 export const NEXT_PUBLIC_FUSE_API_BASE_URL = process.env.NEXT_PUBLIC_FUSE_API_BASE_URL ?? ""
+
+Variables.BASE_URL = NEXT_PUBLIC_FUSE_API_BASE_URL;

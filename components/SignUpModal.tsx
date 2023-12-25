@@ -17,7 +17,7 @@ import ReactGA from "react-ga4";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import * as amplitude from "@amplitude/analytics-browser";
 import { signDataMessage as message, walletType } from "@/lib/helpers";
-import { selectOperatorSlice, setIsLoginModalOpen, setIsSignUpModalOpen, validateOperator } from "@/store/operatorSlice";
+import { selectOperatorSlice, setIsLoginError, setIsLoginModalOpen, setIsSignUpModalOpen, validateOperator } from "@/store/operatorSlice";
 import WalletButton from "./WalletButton";
 import { useRouter } from "next/navigation";
 
@@ -25,7 +25,7 @@ const SignUpModal = (): JSX.Element => {
   const [connectingWalletId, setConnectingWalletId] = useState<string>("");
   const { connect, connectors } = useConnect();
   const emailRef = useRef<HTMLInputElement>(null);
-  const { isSignUpModalOpen, accessToken, validateRedirectRoute } = useAppSelector(selectOperatorSlice);
+  const { isSignUpModalOpen, isLoginError, validateRedirectRoute } = useAppSelector(selectOperatorSlice);
   const dispatch = useAppDispatch();
   const { address, connector, isConnected } = useAccount();
   const router = useRouter();
@@ -60,17 +60,18 @@ const SignUpModal = (): JSX.Element => {
   useEffect(() => {
     if (isSignMessageSuccess && address && signature) {
       dispatch(validateOperator({
-        signData: { address, message, signature },
+        signData: { externallyOwnedAccountAddress: address, message, signature },
         route: "/dashboard?contact-details=true",
       }));
     }
   }, [isSignMessageSuccess])
 
   useEffect(() => {
-    if(accessToken && validateRedirectRoute) {
+    if(isLoginError) {
+      dispatch(setIsLoginError(false));
       router.push(validateRedirectRoute);
     }
-  }, [accessToken, validateRedirectRoute])
+  }, [isLoginError])
 
   const connectionEvent = (id: string) => {
     ReactGA.event({

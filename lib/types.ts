@@ -239,7 +239,7 @@ export type WalletType = {
 }
 
 export interface SignData {
-  address: Address;
+  externallyOwnedAccountAddress: Address;
   message: string;
   signature: string;
 }

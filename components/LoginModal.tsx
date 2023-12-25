@@ -69,7 +69,7 @@ const LoginModal = (): JSX.Element => {
   useEffect(() => {
     if (isSignMessageSuccess && address && signature) {
       dispatch(validateOperator({
-        signData: { address, message, signature },
+        signData: { externallyOwnedAccountAddress: address, message, signature },
         route: "",
       }));
     }

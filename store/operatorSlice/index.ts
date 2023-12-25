@@ -27,6 +27,7 @@ export interface OperatorStateType {
   isSignUpModalOpen: boolean;
   isLoginModalOpen: boolean;
   isLoggedIn: boolean;
+  isLoginError: boolean;
   isAccountCreationModalOpen: boolean;
   isCongratulationModalOpen: boolean;
   isTopupAccountModalOpen: boolean;
@@ -39,6 +40,7 @@ const INIT_STATE: OperatorStateType = {
   isSignUpModalOpen: false,
   isLoginModalOpen: false,
   isLoggedIn: false,
+  isLoginError: false,
   isAccountCreationModalOpen: false,
   isCongratulationModalOpen: false,
   isTopupAccountModalOpen: false,
@@ -59,7 +61,7 @@ export const validateOperator = createAsyncThunk(
     return new Promise<any>(async (resolve, reject) => {
       const accessToken = await postValidateOperator(signData);
       if (accessToken) {
-        resolve({accessToken, route});
+        resolve({ accessToken, route });
       } else {
         reject();
       }
@@ -84,14 +86,19 @@ export const fetchOperator = createAsyncThunk<
     thunkAPI
   ) => {
     return new Promise<any>(async (resolve, reject) => {
-      const state = thunkAPI.getState();
-      const operatorState: OperatorStateType = state.operator;
-      const operator = await fetchCurrentOperator(operatorState.accessToken)
-      const fuseSDK = await FuseSDK.init(operator.project.publicKey, signer);
-      const smartContractAccountAddress = fuseSDK.wallet.getSender() as Address;
-      if (operator) {
-        resolve({operator, smartContractAccountAddress});
-      } else {
+      try {
+        const state = thunkAPI.getState();
+        const operatorState: OperatorStateType = state.operator;
+        const operator = await fetchCurrentOperator(operatorState.accessToken)
+        const fuseSDK = await FuseSDK.init(operator.project.publicKey, signer);
+        const smartContractAccountAddress = fuseSDK.wallet.getSender() as Address;
+        if (operator) {
+          resolve({ operator, smartContractAccountAddress });
+        } else {
+          reject();
+        }
+      } catch (error) {
+        console.log(error)
         reject();
       }
     });
@@ -125,7 +132,7 @@ export const createOperator = createAsyncThunk<
       const smartContractAccountAddress = fuseSDK.wallet.getSender() as Address;
 
       if (operator) {
-        resolve({operator, smartContractAccountAddress});
+        resolve({ operator, smartContractAccountAddress });
       } else {
         reject();
       }
@@ -145,6 +152,9 @@ const operatorSlice = createSlice({
     },
     setIsLoggedIn: (state, action: PayloadAction<boolean>) => {
       state.isLoggedIn = action.payload
+    },
+    setIsLoginError: (state, action: PayloadAction<boolean>) => {
+      state.isLoginError = action.payload
     },
     setIsAccountCreationModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isAccountCreationModalOpen = action.payload
@@ -174,6 +184,9 @@ const operatorSlice = createSlice({
       localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
       state.isLoggedIn = true;
     },
+    [fetchOperator.rejected.type]: (state) => {
+      state.isLoginError = true;
+    },
     [createOperator.pending.type]: (state) => {
       state.isAccountCreationModalOpen = true;
     },
@@ -196,6 +209,7 @@ export const {
   setIsSignUpModalOpen,
   setIsLoginModalOpen,
   setIsLoggedIn,
+  setIsLoginError,
   setIsAccountCreationModalOpen,
   setIsCongratulationModalOpen,
   setIsTopupAccountModalOpen,
