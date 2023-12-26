@@ -43,7 +43,7 @@ const ValidatorCard = ({
       }
       onClick={() => {
         if (isLoading) return;
-        router.push(`/stake/${address}`);
+        router.push(`/stake/${address.toLowerCase()}`);
       }}
     >
       <div className="flex items-center">
