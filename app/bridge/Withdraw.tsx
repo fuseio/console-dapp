@@ -239,7 +239,7 @@ const Withdraw = ({
                       return {
                         icon: coin.icon,
                         id: i,
-                        item: coin.symbol,
+                        item: coin.recieveToken?.symbol || coin.symbol,
                       };
                     }),
                   },
@@ -262,10 +262,6 @@ const Withdraw = ({
               ].isNative &&
                 chain?.id !== fuse.id) ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
-              ) : appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                  selectedTokenItem
-                ].isNative && chain?.id === fuse.id ? (
-                new Intl.NumberFormat().format(parseFloat(nativeBalance))
               ) : (
                 balanceSlice.balance
               )}

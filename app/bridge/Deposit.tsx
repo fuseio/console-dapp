@@ -7,7 +7,11 @@ import fuseToken from "@/assets/tokenLogo";
 import metamask from "@/assets/metamask.svg";
 import { selectChainSlice, setChain } from "@/store/chainSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { fetchBalance, selectBalanceSlice } from "@/store/balanceSlice";
+import {
+  fetchBalance,
+  selectBalanceSlice,
+  setNativeBalanceThunk,
+} from "@/store/balanceSlice";
 import alert from "@/assets/alert.svg";
 import visit from "@/assets/visit.svg";
 import sFuse from "@/assets/sFuse.svg";
@@ -15,6 +19,7 @@ import { estimateOriginalFee } from "@/store/feeSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { useAccount } from "wagmi";
 import { walletType } from "@/lib/helpers";
+import { fetchBalance as fetchWalletBalance } from "@wagmi/core";
 
 type DepositProps = {
   selectedChainSection: number;
@@ -66,26 +71,52 @@ const Deposit = ({
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const chainSlice = useAppSelector(selectChainSlice);
+  const [nativeBalance, setNativeBalance] = React.useState("0");
+
+  useEffect(() => {
+    async function updateBalance() {
+      if (address) {
+        const balance = await fetchWalletBalance({
+          address,
+          chainId: appConfig.wrappedBridge.chains[selectedChainItem].chainId,
+        });
+        setNativeBalance(balance.formatted);
+      }
+    }
+    updateBalance();
+  }, [address, selectedChainItem]);
+
   useEffect(() => {
     if (address && selectedChainSection === 0) {
       if (pendingPromise) {
         pendingPromise.abort();
       }
-      const promise = dispatch(
-        fetchBalance({
-          address: address,
-          contractAddress:
-            appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-              selectedTokenItem
-            ].address,
-          decimals:
-            appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-              selectedTokenItem
-            ].decimals,
-          bridge: appConfig.wrappedBridge.chains[selectedChainItem].original,
-        })
-      );
-      setPendingPromise(promise);
+      if (
+        appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+          selectedTokenItem
+        ].isNative &&
+        !appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+          selectedTokenItem
+        ].isBridged
+      ) {
+        dispatch(setNativeBalanceThunk(nativeBalance));
+      } else {
+        const promise = dispatch(
+          fetchBalance({
+            address: address,
+            contractAddress:
+              appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                selectedTokenItem
+              ].address,
+            decimals:
+              appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                selectedTokenItem
+              ].decimals,
+            bridge: appConfig.wrappedBridge.chains[selectedChainItem].original,
+          })
+        );
+        setPendingPromise(promise);
+      }
     }
   }, [
     selectedTokenItem,
@@ -93,6 +124,7 @@ const Deposit = ({
     address,
     chainSlice.chainId,
     selectedChainSection,
+    nativeBalance,
   ]);
   useEffect(() => {
     if (chainSlice.chainId === 0 && selectedChainSection === 0) {
@@ -398,11 +430,12 @@ const Deposit = ({
               <span className="font-medium mt-1 text-sm">
                 You will receive{" "}
                 {amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0}{" "}
-                {
+                {appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                  selectedTokenItem
+                ].recieveToken?.symbol ||
                   appConfig.wrappedBridge.chains[selectedChainItem].tokens[
                     selectedTokenItem
-                  ].symbol
-                }
+                  ].symbol}
               </span>
             </div>
             {appConfig.wrappedBridge.fuse.tokens[selectedTokenItem].address && (

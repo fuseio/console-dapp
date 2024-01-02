@@ -35,7 +35,8 @@ import { fuse } from "viem/chains";
 import { getNetwork, switchNetwork } from "wagmi/actions";
 import { hex, walletType } from "@/lib/helpers";
 import FAQ from "@/components/FAQ";
-import '@/styles/bridge.css';
+import "@/styles/bridge.css";
+import { bridgeAndUnwrapNative } from "@/lib/wrappedBridge";
 
 const faqs = [
   "I have USDC or WETH on the Fuse network and want to bridge it to another network. But the Bridge shows me a balance of 0.",
@@ -311,6 +312,39 @@ const Home = () => {
           })
         );
       } else if (
+        appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
+          depositSelectedTokenItem
+        ].isNative
+      ) {
+        dispatch(
+          bridgeNativeTokens({
+            address: address ?? hex,
+            amount: amount,
+            bridge:
+              appConfig.wrappedBridge.chains[depositSelectedChainItem].original,
+            decimals:
+              appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
+                depositSelectedTokenItem
+              ].decimals,
+            srcChainId:
+              appConfig.wrappedBridge.chains[depositSelectedChainItem]
+                .lzChainId,
+            symbol:
+              appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
+                depositSelectedTokenItem
+              ].symbol,
+            dstChainId: 138,
+            network:
+              appConfig.wrappedBridge.chains[depositSelectedChainItem].name,
+            tokenId:
+              appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
+                depositSelectedTokenItem
+              ].coinGeckoId,
+            selectedChainId,
+            walletType: connector ? walletType[connector.id] : undefined,
+          })
+        );
+      } else if (
         !appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
           depositSelectedTokenItem
         ].isBridged
@@ -394,9 +428,45 @@ const Home = () => {
               appConfig.wrappedBridge.chains[withdrawSelectedChainItem].name,
             tokenId: "fuse-network-token",
             walletType: connector ? walletType[connector.id] : undefined,
+            selectedChainId: fuse.id,
           })
         );
-      } else
+      } else if (
+        appConfig.wrappedBridge.chains[withdrawSelectedChainItem].tokens[
+          withdrawSelectedTokenItem
+        ].isNative &&
+        !appConfig.wrappedBridge.chains[withdrawSelectedChainItem].tokens[
+          withdrawSelectedTokenItem
+        ].isBridged
+      ) {
+        dispatch(
+          bridgeAndUnwrap({
+            address: address ?? hex,
+            amount: amount,
+            bridge: appConfig.wrappedBridge.fuse.wrapped,
+            contractAddress:
+              appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
+                .address,
+            decimals:
+              appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
+                .decimals,
+            chainId:
+              appConfig.wrappedBridge.chains[withdrawSelectedChainItem]
+                .lzChainId,
+            symbol:
+              appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
+                .symbol,
+            srcChainId: 138,
+            network:
+              appConfig.wrappedBridge.chains[withdrawSelectedChainItem].name,
+            tokenId:
+              appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
+                .coinGeckoId,
+            walletType: connector ? walletType[connector.id] : undefined,
+            selectedChainId: fuse.id,
+          })
+        );
+      } else {
         dispatch(
           bridgeWrappedTokens({
             address: address ?? hex,
@@ -423,6 +493,7 @@ const Home = () => {
             walletType: connector ? walletType[connector.id] : undefined,
           })
         );
+      }
     }
   };
 
@@ -678,6 +749,13 @@ const Home = () => {
                         ) {
                           handleWithdraw();
                         } else if (
+                          selected === 0 &&
+                          appConfig.wrappedBridge.chains[
+                            depositSelectedChainItem
+                          ].tokens[depositSelectedTokenItem].isNative
+                        ) {
+                          handleDeposit();
+                        } else if (
                           parseFloat(balanceSlice.approval) < parseFloat(amount)
                         ) {
                           handleIncreaseAllowance();
@@ -706,10 +784,17 @@ const Home = () => {
                         ? "Loading..."
                         : selected === 1 && chain?.id !== fuse.id
                         ? "Switch To Fuse"
-                        : selected === 1 &&
-                          appConfig.wrappedBridge.chains[
-                            withdrawSelectedChainItem
-                          ].tokens[withdrawSelectedTokenItem].isNative
+                        : (selected === 1 &&
+                            appConfig.wrappedBridge.chains[
+                              withdrawSelectedChainItem
+                            ].tokens[withdrawSelectedTokenItem].isNative) ||
+                          (selected === 0 &&
+                            appConfig.wrappedBridge.chains[
+                              depositSelectedChainItem
+                            ].tokens[depositSelectedTokenItem].isNative &&
+                            !appConfig.wrappedBridge.chains[
+                              depositSelectedChainItem
+                            ].tokens[depositSelectedTokenItem].isBridged)
                         ? "Bridge"
                         : parseFloat(balanceSlice.approval) < parseFloat(amount)
                         ? "Approve"
