@@ -98,6 +98,10 @@ interface TokenStateType {
   address: Address;
   isNative: boolean;
   isBridged: boolean;
+  recieveToken?: {
+    symbol: string;
+    name: string;
+  };
 }
 interface WrappedBridgeConfig {
   version: number;
@@ -111,6 +115,10 @@ interface WrappedBridgeConfig {
       address: Address;
       icon: string;
       coinGeckoId: string;
+      recieveToken?: {
+        symbol: string;
+        name: string;
+      };
     }[];
   };
   disabledChains: DisabledChainConfigLike[];
@@ -133,6 +141,10 @@ interface WrappedBridgeConfig {
       isNative: boolean;
       isBridged: boolean;
       coinGeckoId: string;
+      recieveToken?: {
+        symbol: string;
+        name: string;
+      };
     }[];
   }[];
 }
@@ -153,6 +165,10 @@ export const createAppConfig = (
     address: Address;
     icon: string;
     coinGeckoId: string;
+    recieveToken?: {
+      symbol: string;
+      name: string;
+    };
   }[] = [];
   if (bridgeConfig.tokens.length > 0) {
     tokenConfig.coins.forEach((coin) => {
@@ -187,6 +203,10 @@ export const createAppConfig = (
           isNative: boolean;
           isBridged: boolean;
           coinGeckoId: string;
+          recieveToken?: {
+            symbol: string;
+            name: string;
+          };
         }[] = [];
         if (bridgeConfig.tokens.length > 0) {
           tokenConfig.coins.forEach((coin) => {
@@ -203,6 +223,7 @@ export const createAppConfig = (
                 isNative: token.isNative,
                 isBridged: token.isBridged,
                 coinGeckoId: coin.coinGeckoId,
+                recieveToken: token.recieveToken,
               });
             }
           });

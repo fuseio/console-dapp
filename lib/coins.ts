@@ -3,6 +3,7 @@ import usdc from "@/public/usdc.png";
 import sFuse from "@/assets/sFuse.svg";
 import weth from "@/assets/weth.svg";
 import usdt from "@/assets/usdt-logo.svg";
+import eth from "@/public/eth.png";
 
 export const coins: CoinConfigLike[] = [
   {
@@ -13,6 +14,13 @@ export const coins: CoinConfigLike[] = [
     coinGeckoId: "usd-coin",
   },
   {
+    name: "Tether USD",
+    symbol: "USDT",
+    decimals: 6,
+    icon: usdt.src,
+    coinGeckoId: "tether",
+  },
+  {
     name: "Wrapped Ether",
     symbol: "WETH",
     decimals: 18,
@@ -20,11 +28,11 @@ export const coins: CoinConfigLike[] = [
     coinGeckoId: "weth",
   },
   {
-    name: "Tether USD",
-    symbol: "USDT",
-    decimals: 6,
-    icon: usdt.src,
-    coinGeckoId: "tether",
+    name: "Ethereum",
+    symbol: "ETH",
+    decimals: 18,
+    icon: eth.src,
+    coinGeckoId: "ethereum",
   },
   {
     name: "Fuse",

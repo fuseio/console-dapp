@@ -84,7 +84,8 @@ export const bridgeNative = async (
   address: Address,
   amount: string,
   decimals: number,
-  dstChainId: number
+  dstChainId: number,
+  selectedChainId: number
 ) => {
   const publicClient = getPublicClient();
   const dstGasLimit = await publicClient.readContract({
@@ -108,7 +109,7 @@ export const bridgeNative = async (
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const walletClient = await getWalletClient({ chainId: fuse.id });
+  const walletClient = await getWalletClient({ chainId: selectedChainId });
   let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
