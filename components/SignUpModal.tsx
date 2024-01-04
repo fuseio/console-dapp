@@ -15,8 +15,7 @@ import SocialButton from "./SocialButton";
 import { useAccount, useConnect, useSignMessage } from "wagmi";
 import ReactGA from "react-ga4";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import * as amplitude from "@amplitude/analytics-browser";
-import { signDataMessage as message, walletType } from "@/lib/helpers";
+import { signDataMessage } from "@/lib/helpers";
 import { selectOperatorSlice, setIsLoginError, setIsLoginModalOpen, setIsSignUpModalOpen, validateOperator } from "@/store/operatorSlice";
 import WalletButton from "./WalletButton";
 import { useRouter } from "next/navigation";
@@ -27,10 +26,23 @@ const SignUpModal = (): JSX.Element => {
   const emailRef = useRef<HTMLInputElement>(null);
   const { isSignUpModalOpen, isLoginError, validateRedirectRoute } = useAppSelector(selectOperatorSlice);
   const dispatch = useAppDispatch();
-  const { address, connector, isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
   const router = useRouter();
-  const { data: signature, isSuccess: isSignMessageSuccess, signMessage } = useSignMessage({
-    message,
+  const { signMessage } = useSignMessage({
+    message: signDataMessage,
+    onSuccess(data) {
+      if(!address) {
+        return;
+      }
+      dispatch(validateOperator({
+        signData: {
+          externallyOwnedAccountAddress: address,
+          message: signDataMessage,
+          signature: data
+        },
+        route: "/dashboard?contact-details=true",
+      }));
+    }
   })
 
   useEffect(() => {
@@ -42,29 +54,11 @@ const SignUpModal = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    if (address && connector) {
-      amplitude.track("Wallet connected", {
-        walletType: walletType[connector.id],
-        walletAddress: address
-      });
-    }
-  }, [isConnected])
-
-  useEffect(() => {
     if (isConnected && isSignUpModalOpen) {
       dispatch(setIsSignUpModalOpen(false));
       signMessage();
     }
   }, [isConnected, isSignUpModalOpen])
-
-  useEffect(() => {
-    if (isSignMessageSuccess && address && signature) {
-      dispatch(validateOperator({
-        signData: { externallyOwnedAccountAddress: address, message, signature },
-        route: "/dashboard?contact-details=true",
-      }));
-    }
-  }, [isSignMessageSuccess])
 
   useEffect(() => {
     if(isLoginError) {

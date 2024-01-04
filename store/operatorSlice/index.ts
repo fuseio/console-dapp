@@ -98,7 +98,7 @@ export const fetchOperator = createAsyncThunk<
           reject();
         }
       } catch (error) {
-        console.log(error)
+        console.log(error);
         reject();
       }
     });

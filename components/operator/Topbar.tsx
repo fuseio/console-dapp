@@ -3,8 +3,9 @@ import fuseLogoMobile from "@/assets/logo-mobile.svg";
 import { useAppDispatch } from "@/store/store";
 import NavMenu from "../NavMenu";
 import Button from "../ui/Button";
-import { setIsLoginModalOpen } from "@/store/operatorSlice";
-import { useDisconnect } from "wagmi";
+import { setIsLoginModalOpen, validateOperator } from "@/store/operatorSlice";
+import { useAccount, useSignMessage } from "wagmi";
+import { signDataMessage } from "@/lib/helpers";
 
 const menuItems = [
   {
@@ -27,8 +28,24 @@ const menuItems = [
 
 const Topbar = () => {
   const dispatch = useAppDispatch();
-  const { disconnect } = useDisconnect();
-
+  const { address, isConnected } = useAccount();
+  const { signMessage } = useSignMessage({
+    message: signDataMessage,
+    onSuccess(data) {
+      if(!address) {
+        return;
+      }
+      dispatch(validateOperator({
+        signData: {
+          externallyOwnedAccountAddress: address,
+          message: signDataMessage,
+          signature: data
+        },
+        route: "",
+      }));
+    }
+  });
+  
   return (
     <nav className="w-full h-20 sticky top-0 bg-light-gray/60 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-gray-alpha-40">
       <div className="flex justify-between h-full items-center w-8/9 md:w-9/10 max-w-7xl relative">
@@ -52,7 +69,9 @@ const Topbar = () => {
           className="bg-fuse-black text-white rounded-full font-bold"
           padding="py-3 px-[22px]"
           onClick={() => {
-            disconnect();
+            if(isConnected) {
+              return signMessage();
+            }
             dispatch(setIsLoginModalOpen(true));
           }}
         />

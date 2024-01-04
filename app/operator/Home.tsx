@@ -2,14 +2,31 @@ import Button from "@/components/ui/Button";
 import Image from "next/image";
 import commerce from "@/assets/commerce.svg"
 import { useAppDispatch } from "@/store/store";
-import { useDisconnect } from "wagmi";
-import { setIsSignUpModalOpen } from "@/store/operatorSlice";
+import { useAccount, useSignMessage } from "wagmi";
+import { setIsSignUpModalOpen, validateOperator } from "@/store/operatorSlice";
 import rightArrowBold from "@/assets/right-arrow-bold.svg"
 import checkmark from "@/assets/checkmark.svg"
+import { signDataMessage } from "@/lib/helpers";
 
 const Home = () => {
   const dispatch = useAppDispatch();
-  const { disconnect } = useDisconnect();
+  const { address, isConnected } = useAccount();
+  const { signMessage } = useSignMessage({
+    message: signDataMessage,
+    onSuccess(data) {
+      if(!address) {
+        return;
+      }
+      dispatch(validateOperator({
+        signData: {
+          externallyOwnedAccountAddress: address,
+          message: signDataMessage,
+          signature: data
+        },
+        route: "/dashboard?contact-details=true",
+      }));
+    }
+  });
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
@@ -30,7 +47,9 @@ const Home = () => {
             className="text-lg font-semibold bg-pale-green rounded-full"
             padding="py-4 px-[52px]"
             onClick={() => {
-              disconnect();
+              if (isConnected) {
+                return signMessage();
+              }
               dispatch(setIsSignUpModalOpen(true));
             }}
           />
@@ -300,7 +319,9 @@ const Home = () => {
               className="text-lg font-semibold bg-pale-green rounded-full"
               padding="py-4 px-[52px]"
               onClick={() => {
-                disconnect();
+                if (isConnected) {
+                  return signMessage();
+                }
                 dispatch(setIsSignUpModalOpen(true));
               }}
             />
