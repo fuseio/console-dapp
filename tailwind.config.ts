@@ -66,6 +66,8 @@ const config: Config = {
       "warning-border": "#D4A72C",
       "warning-bg": "#FFF8C5",
       "night": "#0A0A0A",
+      "ghost": "#CBCBCB",
+      "iron": "#D7D7D7",
     },
     fontFamily: {
       mona: ["var(--font-mona-sans)"],
