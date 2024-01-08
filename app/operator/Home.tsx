@@ -14,32 +14,38 @@ const apps = [
   {
     name: "Request Finance",
     description: "A decentralized protocol that allows for efficient crypto payments",
-    logo: requestFinance
+    logo: requestFinance,
+    link: "https://www.fuse.io/ecosystem-project/request-finance"
   },
   {
     name: "Transak",
     description: "Developer integration toolkit powering the best in Web3 payments",
-    logo: transak
+    logo: transak,
+    link: "https://www.fuse.io/ecosystem-project/transak"
   },
   {
     name: "ThirdWeb",
     description: "ThirdWeb provides a complete set of tools for building Web3 applications",
-    logo: thirdweb
+    logo: thirdweb,
+    link: "https://www.fuse.io/ecosystem-project/thirdweb"
   },
   {
     name: "Cointool",
     description: "Multichain digital currency toolbox facilitating Web3 development",
-    logo: requestFinance
+    logo: requestFinance,
+    link: "https://www.fuse.io/ecosystem-project/cointool"
   },
   {
     name: "The Graph",
     description: "Indexing protocol securing users' access to blockchain data via GraphQL",
-    logo: requestFinance
+    logo: requestFinance,
+    link: "https://www.fuse.io/ecosystem-project/the-graph"
   },
   {
     name: "TaskOn",
     description: "TaskOn is a Web3 Collaboration Platform that brings users a deep Web3 experience, including reward campaigns, first-hand information on Web3 projects, and more.",
-    logo: requestFinance
+    logo: requestFinance,
+    link: "https://www.fuse.io/ecosystem-project/taskon"
   },
 ]
 
@@ -293,9 +299,14 @@ const Home = () => {
                   on the Fuse Network. Explore and connect the services that your business requires.
                 </p>
               </div>
-              <div className="flex flex-wrap justify-between gap-[30px]">
+              <div className="grid grid-cols-3 md:grid-cols-1 justify-between gap-[30px]">
                 {apps.map((app, i) =>
-                  <div key={i} className="flex flex-col gap-2.5 justify-between w-[406px] md:w-auto h-[269px] md:h-auto px-[30px] py-7 md:px-4 md:py-6 bg-white/5 rounded-[20px]">
+                  <a
+                    key={i}
+                    href={app.link}
+                    target="_blank"
+                    className="flex flex-col gap-2.5 justify-between min-h-[269px] px-[30px] py-7 md:px-4 md:py-6 bg-white/5 hover:bg-white/10 rounded-[20px]"
+                  >
                     <div>
                       <p className="text-white font-semibold">
                         {app.name}
@@ -308,14 +319,14 @@ const Home = () => {
                       src={app.logo}
                       alt={app.name}
                     />
-                  </div>
+                  </a>
                 )}
               </div>
               <div className="flex justify-center">
                 <a
                   href="https://www.fuse.io/ecosystem"
                   target="_blank"
-                  className="bg-white rounded-full text-lg leading-none font-semibold px-[36.5px] py-4"
+                  className="bg-white rounded-full text-lg leading-none font-semibold text-center px-[36.5px] py-4"
                 >
                   Explore more ecosystem partners
                 </a>
@@ -337,7 +348,7 @@ const Home = () => {
             </div>
             <div className="flex flex-row md:flex-col justify-center gap-[30px]">
               <div className="flex flex-col gap-[30px] bg-white rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
-                <div className="h-[194px]">
+                <div className="h-[194px] md:h-auto">
                   <p className="text-3xl text-fuse-black font-semibold">
                     Free tier
                   </p>
@@ -402,7 +413,7 @@ const Home = () => {
                 />
               </div>
               <div className="flex flex-col gap-[30px] bg-light-gray rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
-                <div className="h-[194px]">
+                <div className="h-[194px] md:h-auto">
                   <div className="flex items-center gap-[13.46px]">
                     <p className="text-3xl text-fuse-black font-semibold">
                       App plan
@@ -474,7 +485,7 @@ const Home = () => {
                 />
               </div>
               <div className="flex flex-col gap-[30px] bg-white rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
-                <div className="h-[194px]">
+                <div className="h-[194px] md:h-auto">
                   <p className="text-3xl text-fuse-black font-semibold">
                     Advanced plan
                   </p>
