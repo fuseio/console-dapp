@@ -240,3 +240,34 @@ export type MenuItems = MenuItem[];
 export type WalletType = {
   [k: string]: string;
 }
+
+export interface SignData {
+  externallyOwnedAccountAddress: Address;
+  message: string;
+  signature: string;
+}
+
+export interface OperatorContactDetail {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+export interface User {
+  name: string;
+  email: string;
+  auth0Id: string;
+  smartContractAccountAddress: Address;
+}
+
+export interface Project {
+  ownerId: string;
+  name: string;
+  description: string;
+  publicKey: string
+}
+
+export interface Operator {
+  user: User;
+  project: Project;
+}

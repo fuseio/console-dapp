@@ -14,6 +14,8 @@ import {
 import { WagmiConfig } from "wagmi";
 import { config } from "@/lib/web3Auth";
 import WalletModal from "./WalletModal";
+import SignUpModal from "./SignUpModal";
+import LoginModal from "./LoginModal";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [isClient, setIsClient] = useState(false);
@@ -36,6 +38,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
           accounts={[parseInt(NEXT_PUBLIC_YANDEX_METRICA_ID)]}
         />
         <WalletModal />
+        <SignUpModal />
+        <LoginModal />
         {children}
       </WagmiConfig>
     </Provider>

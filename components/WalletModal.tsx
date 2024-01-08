@@ -23,6 +23,8 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { walletType } from "@/lib/helpers";
+import { fetchOperator, setLogout } from "@/store/operatorSlice";
+import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 
 const WalletModal = (): JSX.Element => {
   const [selected, setSelected] = useState<"HOME" | "VOLT">("HOME");
@@ -31,7 +33,8 @@ const WalletModal = (): JSX.Element => {
   const emailRef = useRef<HTMLInputElement>(null);
   const { isWalletModalOpen } = useAppSelector(selectNavbarSlice);
   const dispatch = useAppDispatch();
-  const { address, connector, isConnected } = useAccount();
+  const { address, connector, isConnected, isDisconnected } = useAccount();
+  const signer = useEthersSigner();
 
   useEffect(() => {
     window.addEventListener("click", (e) => {
@@ -43,6 +46,9 @@ const WalletModal = (): JSX.Element => {
 
   useEffect(() => {
     dispatch(setIsWalletModalOpen(false));
+    if(isConnected && signer) {
+      dispatch(fetchOperator({ signer }));
+    }
     if(address && connector) {
       const identifyEvent = new amplitude.Identify();
       identifyEvent.set('wallet_address', address);
@@ -54,6 +60,12 @@ const WalletModal = (): JSX.Element => {
       });
     }
   }, [isConnected])
+
+  useEffect(() => {
+    if(isDisconnected) {
+      dispatch(setLogout());
+    }
+  }, [isDisconnected])
 
   const connectionEvent = (id: string) => {
     ReactGA.event({

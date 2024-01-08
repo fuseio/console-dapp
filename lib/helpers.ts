@@ -59,3 +59,5 @@ export const walletType: WalletType = {
 }
 
 export const isIos = !IS_SERVER && /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+export const signDataMessage = 'Verify your wallet ownership to create an Operator account';

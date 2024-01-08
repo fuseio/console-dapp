@@ -76,9 +76,9 @@ const Home = () => {
                       <p className="text-xl text-darker-gray">
                         ${(chain && chain.id === fuse.id) ?
                           new Intl.NumberFormat().format(
-                            parseFloat((parseFloat(balance.data?.formatted ?? "0") * balanceSlice.price).toString())
+                            parseFloat((parseFloat(balance.data?.formatted ?? "0.00") * balanceSlice.price).toString())
                           ) :
-                          0
+                          "0.00"
                         }
                       </p>
                     }
@@ -295,9 +295,12 @@ const Home = () => {
                 </p>
               </div>
               <div className="flex gap-8">
-                <div className="py-3.5 px-4 rounded-xl bg-success/40 text-success-dark font-semibold">
-                  Coming Soon
-                </div>
+                <Button
+                  text={"Create Account"}
+                  className="bg-fuse-black text-white rounded-full font-semibold"
+                  padding="px-[31px] py-[19.5px]"
+                  onClick={() => router.push("/operator")}
+                />
               </div>
             </div>
           </div>
