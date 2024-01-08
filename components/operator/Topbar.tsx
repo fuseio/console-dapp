@@ -70,8 +70,7 @@ const Topbar = ({
         <NavMenu menuItems={menuItems} />
         <Button
           text={"Operator login"}
-          className="bg-fuse-black text-white rounded-full font-bold"
-          padding="py-3 px-[22px]"
+          className="bg-fuse-black text-white rounded-full font-medium md:text-sm"
           onClick={() => {
             if(isConnected) {
               return signMessage();
