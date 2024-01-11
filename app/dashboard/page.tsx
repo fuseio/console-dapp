@@ -3,39 +3,36 @@
 import { useEffect } from "react";
 import Home from "./Home";
 
-import { useAppDispatch } from "@/store/store";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 import { setSelectedNavbar } from "@/store/navbarSlice";
 import Footer from "@/components/Footer";
-import { useRouter, useSearchParams } from "next/navigation";
-import ContactDetails from "./ContactDetails";
+import { useRouter } from "next/navigation";
 import Topbar from "@/components/dashboard/Topbar";
+import { selectOperatorSlice, setHydrate } from "@/store/operatorSlice";
 import { useAccount } from "wagmi";
 
 const Operator = () => {
   const dispatch = useAppDispatch();
-  const searchParams = useSearchParams()
-  const contactDetails = searchParams.get('contact-details')
+  const { isHydrated, isAuthenticated } = useAppSelector(selectOperatorSlice);
   const { isDisconnected } = useAccount();
   const router = useRouter();
 
   useEffect(() => {
     dispatch(setSelectedNavbar("dashboard"));
+    dispatch(setHydrate());
   }, [])
 
   useEffect(() => {
-    if(isDisconnected) {
+    if (isDisconnected || (isHydrated && !isAuthenticated)) {
       router.push("/");
     }
-  }, [isDisconnected])
+  }, [isDisconnected, isHydrated, isAuthenticated])
 
   return (
     <div className="w-full font-mona justify-end min-h-screen">
       <div className="flex-col flex items-center bg-light-gray h-screen">
         <Topbar />
-        {contactDetails ?
-          <ContactDetails /> :
-          <Home />
-        }
+        <Home />
         <Footer />
       </div>
     </div>

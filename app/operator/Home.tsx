@@ -1,14 +1,19 @@
 import Button from "@/components/ui/Button";
 import Image from "next/image";
-import { useAppDispatch } from "@/store/store";
-import { useAccount, useSignMessage } from "wagmi";
-import { setIsSignUpModalOpen, validateOperator } from "@/store/operatorSlice";
+import { useAppDispatch, useAppSelector } from "@/store/store";
+import { selectOperatorSlice, setIsOperatorWalletModalOpen } from "@/store/operatorSlice";
 import checkmark from "@/assets/checkmark.svg"
 import checkmarkBg from "@/assets/checkmark-bg.svg"
 import requestFinance from "@/public/request-finance.png"
 import transak from "@/public/transak.png"
 import thirdweb from "@/public/thirdweb.png"
-import { signDataMessage } from "@/lib/helpers";
+import cointool from "@/public/cointool.png"
+import theGraph from "@/public/the-graph.png"
+import taskOn from "@/public/taskon.png"
+import ContactDetailsModal from "@/components/operator/ContactDetailsModal";
+import AccountCreationModal from "@/components/operator/AccountCreationModal";
+import CongratulationModal from "@/components/operator/CongratulationModal";
+import { setIsWalletModalOpen } from "@/store/navbarSlice";
 
 const apps = [
   {
@@ -32,45 +37,32 @@ const apps = [
   {
     name: "Cointool",
     description: "Multichain digital currency toolbox facilitating Web3 development",
-    logo: requestFinance,
+    logo: cointool,
     link: "https://www.fuse.io/ecosystem-project/cointool"
   },
   {
     name: "The Graph",
     description: "Indexing protocol securing users' access to blockchain data via GraphQL",
-    logo: requestFinance,
+    logo: theGraph,
     link: "https://www.fuse.io/ecosystem-project/the-graph"
   },
   {
     name: "TaskOn",
     description: "TaskOn is a Web3 Collaboration Platform that brings users a deep Web3 experience, including reward campaigns, first-hand information on Web3 projects, and more.",
-    logo: requestFinance,
+    logo: taskOn,
     link: "https://www.fuse.io/ecosystem-project/taskon"
   },
 ]
 
 const Home = () => {
   const dispatch = useAppDispatch();
-  const { address, isConnected } = useAccount();
-  const { signMessage } = useSignMessage({
-    message: signDataMessage,
-    onSuccess(data) {
-      if (!address) {
-        return;
-      }
-      dispatch(validateOperator({
-        signData: {
-          externallyOwnedAccountAddress: address,
-          message: signDataMessage,
-          signature: data
-        },
-        route: "/dashboard?contact-details=true",
-      }));
-    }
-  });
+  const { isContactDetailsModalOpen, isAccountCreationModalOpen, isCongratulationModalOpen } = useAppSelector(selectOperatorSlice);
 
   return (
     <>
+      {isContactDetailsModalOpen && <ContactDetailsModal />}
+      {isAccountCreationModalOpen && <AccountCreationModal />}
+      {isCongratulationModalOpen && <CongratulationModal />}
       <div className="w-full flex flex-col items-center">
         <div className="w-8/9 flex flex-col mt-16 md:w-9/10 max-w-7xl">
           <div className="flex flex-col justify-center items-center text-center">
@@ -89,10 +81,8 @@ const Home = () => {
               className="text-lg font-semibold bg-pale-green rounded-full"
               padding="py-4 px-[52px]"
               onClick={() => {
-                if (isConnected) {
-                  return signMessage();
-                }
-                dispatch(setIsSignUpModalOpen(true));
+                dispatch(setIsOperatorWalletModalOpen(true));
+                dispatch(setIsWalletModalOpen(true));
               }}
             />
           </div>
@@ -405,10 +395,8 @@ const Home = () => {
                   className="text-lg text-white font-semibold bg-black rounded-full"
                   padding="py-4 px-[52px] mt-[25.88px]"
                   onClick={() => {
-                    if (isConnected) {
-                      return signMessage();
-                    }
-                    dispatch(setIsSignUpModalOpen(true));
+                    dispatch(setIsOperatorWalletModalOpen(true));
+                    dispatch(setIsWalletModalOpen(true));
                   }}
                 />
               </div>
@@ -477,10 +465,8 @@ const Home = () => {
                   className="text-lg text-white font-semibold bg-black rounded-full"
                   padding="py-4 px-[52px] mt-[25.88px]"
                   onClick={() => {
-                    if (isConnected) {
-                      return signMessage();
-                    }
-                    dispatch(setIsSignUpModalOpen(true));
+                    dispatch(setIsOperatorWalletModalOpen(true));
+                    dispatch(setIsWalletModalOpen(true));
                   }}
                 />
               </div>
@@ -538,12 +524,6 @@ const Home = () => {
                   text="Coming soon"
                   className="text-lg text-white font-semibold bg-iron rounded-full"
                   padding="py-4 px-[52px] mt-[25.88px]"
-                  onClick={() => {
-                    if (isConnected) {
-                      return signMessage();
-                    }
-                    dispatch(setIsSignUpModalOpen(true));
-                  }}
                 />
               </div>
             </div>

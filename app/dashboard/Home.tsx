@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Button from "@/components/ui/Button";
 import rightArrow from "@/assets/right-arrow.svg"
-import { hex, walletType } from "@/lib/helpers";
+import { eclipseAddress, hex, walletType } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useNetwork } from "wagmi";
@@ -45,7 +45,7 @@ const Home = () => {
       <div className="w-8/9 flex flex-col gap-y-[32.98px] mt-16 mb-[187px] md:w-9/10 max-w-7xl">
         <div>
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
-            Operator dashboard
+            Dashboard
           </h1>
         </div>
         <div className="flex flex-col gap-y-[30px]">
@@ -53,9 +53,14 @@ const Home = () => {
             <div className="flex flex-row justify-between md:flex-col gap-12">
               <div className="flex flex-col gap-y-[62px]">
                 <div className="flex flex-col gap-y-[18px]">
-                  <p className="text-lg text-darker-gray">
-                    Account Balance
-                  </p>
+                  <div className="flex gap-4">
+                    <p className="text-lg text-darker-gray">
+                      Operator account balance
+                    </p>
+                    <p className="text-white font-bold">
+                      ({eclipseAddress(String(operatorSlice.operator.user.smartContractAccountAddress))})
+                    </p>
+                  </div>
                   <div className="flex items-end gap-x-[30px] md:gap-x-4">
                     <h1 className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
                       {(chain && chain.id === fuse.id) ?
@@ -166,15 +171,15 @@ const Home = () => {
                   You will need this API key at the next stage for integration into the SDK
                 </p>
               </div>
-              <div className="flex gap-1 text-black font-semibold">
+              <div className="w-full flex justify-between bg-modal-bg rounded-[31px] border border-black/40 text-sm text-black font-semibold px-5 py-[15px]">
                 <p>
                   {operatorSlice.operator.project.publicKey}
                 </p>
                 <Image
                   src={copy.src}
                   alt="copy API key"
-                  width={13.41}
-                  height={13.3}
+                  width={15}
+                  height={15}
                   className="cursor-pointer"
                   onClick={() => {
                     navigator.clipboard.writeText(operatorSlice.operator.project.publicKey);

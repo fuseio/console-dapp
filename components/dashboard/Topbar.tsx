@@ -8,13 +8,21 @@ import { hex } from "@/lib/helpers";
 
 const menuItems = [
   {
+    title: "Operator",
+    link: "/operator",
+  },
+  {
     title: "Dashboard",
     link: "/dashboard",
   },
   {
-    title: "Billing & Plan",
-    link: "#",
-  }
+    title: "Bridge",
+    link: "/bridge",
+  },
+  {
+    title: "Staking",
+    link: "/staking",
+  },
 ];
 
 const Topbar = () => {

@@ -1,11 +1,11 @@
 import fuseConsoleLogo from "@/assets/fuse-console-logo.svg";
 import fuseLogoMobile from "@/assets/logo-mobile.svg";
-import { useAppDispatch } from "@/store/store";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 import NavMenu from "../NavMenu";
 import Button from "../ui/Button";
-import { setIsLoginModalOpen, validateOperator } from "@/store/operatorSlice";
-import { useAccount, useSignMessage } from "wagmi";
-import { signDataMessage } from "@/lib/helpers";
+import { selectOperatorSlice, setIsLogin, setIsOperatorWalletModalOpen } from "@/store/operatorSlice";
+import { useRouter } from "next/navigation";
+import { setIsWalletModalOpen } from "@/store/navbarSlice";
 
 const menuItems = [
   {
@@ -26,32 +26,13 @@ const menuItems = [
   },
 ];
 
-const Topbar = ({
-  backgroundColor = "bg-light-gray/60"
-}: {
-  backgroundColor?: string;
-}) => {
+const Topbar = () => {
+  const router = useRouter();
   const dispatch = useAppDispatch();
-  const { address, isConnected } = useAccount();
-  const { signMessage } = useSignMessage({
-    message: signDataMessage,
-    onSuccess(data) {
-      if(!address) {
-        return;
-      }
-      dispatch(validateOperator({
-        signData: {
-          externallyOwnedAccountAddress: address,
-          message: signDataMessage,
-          signature: data
-        },
-        route: "",
-      }));
-    }
-  });
-  
+  const { isAuthenticated } = useAppSelector(selectOperatorSlice);
+
   return (
-    <nav className={`w-full h-20 sticky top-0 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-gray-alpha-40 ${backgroundColor}`}>
+    <nav className="bg-white w-full h-20 sticky top-0 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-gray-alpha-40">
       <div className="flex justify-between h-full items-center w-8/9 md:w-9/10 max-w-7xl relative">
         <span>
           <a href="/">
@@ -69,13 +50,15 @@ const Topbar = ({
         </span>
         <NavMenu menuItems={menuItems} />
         <Button
-          text={"Operator login"}
-          className="bg-fuse-black text-white rounded-full font-medium md:text-sm"
+          text={isAuthenticated ? "Open Dashboard" : "Account login"}
+          className={`${isAuthenticated ? "bg-white text-fuse-black border border-fuse-black" : "bg-fuse-black text-white"} rounded-full font-medium md:text-sm`}
           onClick={() => {
-            if(isConnected) {
-              return signMessage();
+            if (isAuthenticated) {
+              return router.push("/dashboard");
             }
-            dispatch(setIsLoginModalOpen(true));
+            dispatch(setIsOperatorWalletModalOpen(true));
+            dispatch(setIsWalletModalOpen(true));
+            dispatch(setIsLogin(true));
           }}
         />
       </div>

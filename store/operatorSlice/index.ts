@@ -24,28 +24,32 @@ const initOperator: Operator = {
 }
 
 export interface OperatorStateType {
-  isSignUpModalOpen: boolean;
-  isLoginModalOpen: boolean;
+  isLogin: boolean;
   isLoggedIn: boolean;
-  isLoginError: boolean;
+  isAuthenticated: boolean;
+  isHydrated: boolean;
+  isValidated: boolean;
+  isOperatorWalletModalOpen: boolean;
+  isContactDetailsModalOpen: boolean;
   isAccountCreationModalOpen: boolean;
   isCongratulationModalOpen: boolean;
   isTopupAccountModalOpen: boolean;
   accessToken: string;
-  validateRedirectRoute: string;
   operator: Operator;
 }
 
 const INIT_STATE: OperatorStateType = {
-  isSignUpModalOpen: false,
-  isLoginModalOpen: false,
+  isLogin: false,
   isLoggedIn: false,
-  isLoginError: false,
+  isAuthenticated: false,
+  isHydrated: false,
+  isValidated: false,
+  isOperatorWalletModalOpen: false,
+  isContactDetailsModalOpen: false,
   isAccountCreationModalOpen: false,
   isCongratulationModalOpen: false,
   isTopupAccountModalOpen: false,
   accessToken: "",
-  validateRedirectRoute: "",
   operator: initOperator,
 };
 
@@ -53,15 +57,13 @@ export const validateOperator = createAsyncThunk(
   "OPERATOR/VALIDATE_OPERATOR",
   async ({
     signData,
-    route,
   }: {
     signData: SignData;
-    route: string
   }) => {
     return new Promise<any>(async (resolve, reject) => {
       const accessToken = await postValidateOperator(signData);
       if (accessToken) {
-        resolve({ accessToken, route });
+        resolve({ accessToken });
       } else {
         reject();
       }
@@ -144,17 +146,14 @@ const operatorSlice = createSlice({
   name: "OPERATOR_STATE",
   initialState: INIT_STATE,
   reducers: {
-    setIsSignUpModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isSignUpModalOpen = action.payload
-    },
-    setIsLoginModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isLoginModalOpen = action.payload
+    setIsLogin: (state, action: PayloadAction<boolean>) => {
+      state.isLogin = action.payload
     },
     setIsLoggedIn: (state, action: PayloadAction<boolean>) => {
       state.isLoggedIn = action.payload
     },
-    setIsLoginError: (state, action: PayloadAction<boolean>) => {
-      state.isLoginError = action.payload
+    setIsContactDetailsModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isContactDetailsModalOpen = action.payload
     },
     setIsAccountCreationModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isAccountCreationModalOpen = action.payload
@@ -165,37 +164,56 @@ const operatorSlice = createSlice({
     setIsTopupAccountModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isTopupAccountModalOpen = action.payload
     },
+    setIsOperatorWalletModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isOperatorWalletModalOpen = action.payload
+    },
     setLogout: (state) => {
       state.accessToken = "";
       state.operator = initOperator;
+      state.isAuthenticated = false;
       localStorage.removeItem("Fuse-operatorAccessToken");
       localStorage.removeItem("Fuse-operator");
+      localStorage.removeItem("Fuse-isOperatorAuthenticated");
+    },
+    setHydrate: (state) => {
+      const accessToken = localStorage.getItem("Fuse-operatorAccessToken");
+      const operator = localStorage.getItem("Fuse-operator");
+      const isAuthenticated = localStorage.getItem("Fuse-isOperatorAuthenticated");
+      state.accessToken = accessToken ?? "";
+      state.operator = operator ? JSON.parse(operator) : initOperator;
+      state.isAuthenticated = isAuthenticated ? JSON.parse(isAuthenticated) : false;
+      state.isHydrated = true;
     }
   },
   extraReducers: {
     [validateOperator.fulfilled.type]: (state, action) => {
       state.accessToken = action.payload.accessToken;
-      state.validateRedirectRoute = action.payload.route;
+      state.isValidated = true;
       localStorage.setItem("Fuse-operatorAccessToken", action.payload.accessToken);
     },
     [fetchOperator.fulfilled.type]: (state, action) => {
       state.operator = action.payload.operator;
       state.operator.user.smartContractAccountAddress = action.payload.smartContractAccountAddress;
-      localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
       state.isLoggedIn = true;
+      state.isAuthenticated = true;
+      localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
+      localStorage.setItem("Fuse-isOperatorAuthenticated", "true");
     },
     [fetchOperator.rejected.type]: (state) => {
-      state.isLoginError = true;
+      state.isContactDetailsModalOpen = true;
     },
     [createOperator.pending.type]: (state) => {
+      state.isContactDetailsModalOpen = false;
       state.isAccountCreationModalOpen = true;
     },
     [createOperator.fulfilled.type]: (state, action) => {
       state.operator = action.payload.operator;
       state.operator.user.smartContractAccountAddress = action.payload.smartContractAccountAddress;
-      localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
+      state.isAuthenticated = true;
       state.isAccountCreationModalOpen = false;
       state.isCongratulationModalOpen = true;
+      localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
+      localStorage.setItem("Fuse-isOperatorAuthenticated", "true");
     },
     [createOperator.rejected.type]: (state) => {
       state.isAccountCreationModalOpen = false;
@@ -206,14 +224,15 @@ const operatorSlice = createSlice({
 export const selectOperatorSlice = (state: AppState): OperatorStateType => state.operator;
 
 export const {
-  setIsSignUpModalOpen,
-  setIsLoginModalOpen,
+  setIsLogin,
   setIsLoggedIn,
-  setIsLoginError,
+  setIsOperatorWalletModalOpen,
+  setIsContactDetailsModalOpen,
   setIsAccountCreationModalOpen,
   setIsCongratulationModalOpen,
   setIsTopupAccountModalOpen,
-  setLogout
+  setLogout,
+  setHydrate
 } = operatorSlice.actions;
 
 export default operatorSlice.reducer;
