@@ -14,6 +14,7 @@ import ContactDetailsModal from "@/components/operator/ContactDetailsModal";
 import AccountCreationModal from "@/components/operator/AccountCreationModal";
 import CongratulationModal from "@/components/operator/CongratulationModal";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
+import { useRouter } from "next/navigation";
 
 const apps = [
   {
@@ -55,8 +56,9 @@ const apps = [
 ]
 
 const Home = () => {
+  const router = useRouter();
   const dispatch = useAppDispatch();
-  const { isContactDetailsModalOpen, isAccountCreationModalOpen, isCongratulationModalOpen } = useAppSelector(selectOperatorSlice);
+  const { isAuthenticated, isContactDetailsModalOpen, isAccountCreationModalOpen, isCongratulationModalOpen } = useAppSelector(selectOperatorSlice);
 
   return (
     <>
@@ -81,6 +83,9 @@ const Home = () => {
               className="text-lg font-semibold bg-pale-green rounded-full"
               padding="py-4 px-[52px]"
               onClick={() => {
+                if (isAuthenticated) {
+                  return router.push("/dashboard");
+                }
                 dispatch(setIsOperatorWalletModalOpen(true));
                 dispatch(setIsWalletModalOpen(true));
               }}
