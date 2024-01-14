@@ -90,19 +90,19 @@ const NavMenu = ({
                   href={item.link}
                   className={
                     "block p-0 bg-transparent md:py-2 md:pl-3 md:pr-4 " +
-                    (item.title.toLowerCase() === navbarSlice.selected
+                    ((item.title.toLowerCase() === navbarSlice.selected || (item.title.toLowerCase() === "operator" && pathname === "/dashboard"))
                       ? "bg-lightest-gray py-2.5 px-4 rounded-full md:text-white pointer-events-none"
                       : "md:text-gray pointer-events-auto hover:text-text-darker-gray")
                   }
                   aria-current={
-                    item.title.toLowerCase() === navbarSlice.selected
+                    (item.title.toLowerCase() === navbarSlice.selected || (item.title.toLowerCase() === "operator" && pathname === "/dashboard"))
                       ? "page"
                       : "false"
                   }
                   onClick={(e) => {
                     if (item.link === "/operator") {
                       e.preventDefault();
-                      if(pathname === "/dashboard") {
+                      if (pathname === "/dashboard") {
                         router.push("/operator");
                         return false;
                       }
