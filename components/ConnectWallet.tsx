@@ -33,18 +33,19 @@ import { usePathname } from "next/navigation";
 
 const screenMediumWidth = 768;
 const menu: Variants = {
-  closed: {
+  closed: (isCenter) => ({
     opacity: 0,
     transition: {
       delay: 0.15,
       duration: 0.3,
     },
     y: -50,
+    x: isCenter ? "-50%" : 0,
     transitionEnd: {
       display: "none",
     },
-  },
-  open: {
+  }),
+  open: (isCenter) => ({
     opacity: 1,
     display: "block",
     transition: {
@@ -52,7 +53,8 @@ const menu: Variants = {
       duration: 0.5,
     },
     y: 0,
-  },
+    x: isCenter ? "-50%" : 0,
+  }),
 };
 
 type Icons = {
@@ -252,10 +254,11 @@ const ConnectWallet = ({
         </div>
         <motion.div
           animate={isQrCodeOpen ? "closed" : isAccountsOpen ? "open" : "closed"}
+          custom={!matches && pathname === "/dashboard"}
           initial="closed"
           exit="closed"
           variants={menu}
-          className="absolute top-[120%] right-0 bg-white rounded-[20px] cursor-auto shadow-xl py-[25.5px] z-50 w-[268.22px]"
+          className={`absolute top-[120%] right-0 bg-white rounded-[20px] cursor-auto shadow-xl py-[25.5px] z-50 w-[268.22px] ${pathname === "/dashboard" ? "md:left-1/2" : ""}`}
         >
           <div className="flex flex-col gap-[8.35px] px-[22px]">
             <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">

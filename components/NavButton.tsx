@@ -4,12 +4,13 @@ import Hamburger from "@/components/ui/Hamburger";
 type NavButtonProps = {
   isOpen: boolean;
   setOpen: (open: boolean) => void;
+  isAuthenticated?: boolean;
 }
 
-const NavButton = ({ isOpen, setOpen }: NavButtonProps) => {
+const NavButton = ({ isOpen, setOpen, isAuthenticated = false }: NavButtonProps) => {
   return (
     <div className="flex order-2 min-w-[150px] md:w-[93%] justify-end items-center">
-      <ConnectWallet containerClassName="ml-auto"/>
+      <ConnectWallet containerClassName="ml-auto" disableSwitchChain={isAuthenticated} />
       <button
         type="button"
         className="p-2 w-10 h-8 hidden md:inline-flex focus:outline-none"

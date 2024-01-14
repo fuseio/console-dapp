@@ -1,9 +1,10 @@
 import fuseOperatorLogo from "@/assets/fuse-operator-logo.svg";
 import fuseLogoMobile from "@/assets/logo-mobile.svg";
 import NavMenu from "../NavMenu";
-import ConnectWallet from "../ConnectWallet";
 import { useAppSelector } from "@/store/store";
 import { selectOperatorSlice } from "@/store/operatorSlice";
+import { useState } from "react";
+import NavButton from "../NavButton";
 
 const menuItems = [
   {
@@ -26,6 +27,7 @@ const menuItems = [
 
 const Topbar = () => {
   const { isAuthenticated } = useAppSelector(selectOperatorSlice);
+  const [isOpen, setOpen] = useState<boolean>(false);
 
   return (
     <nav className="w-full h-20 sticky top-0 bg-light-gray/60 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-gray-alpha-40">
@@ -44,8 +46,8 @@ const Topbar = () => {
             />
           </a>
         </span>
-        <NavMenu menuItems={menuItems} />
-        <ConnectWallet disableSwitchChain={isAuthenticated} />
+        <NavMenu menuItems={menuItems} isOpen={isOpen} />
+        <NavButton isOpen={isOpen} setOpen={setOpen} isAuthenticated={isAuthenticated} />
       </div>
     </nav>
   );
