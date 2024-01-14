@@ -60,6 +60,14 @@ const Home = () => {
   const dispatch = useAppDispatch();
   const { isAuthenticated, isContactDetailsModalOpen, isAccountCreationModalOpen, isCongratulationModalOpen } = useAppSelector(selectOperatorSlice);
 
+  function createAccount() {
+    if (isAuthenticated) {
+      return router.push("/dashboard");
+    }
+    dispatch(setIsOperatorWalletModalOpen(true));
+    dispatch(setIsWalletModalOpen(true));
+  }
+
   return (
     <>
       {isContactDetailsModalOpen && <ContactDetailsModal />}
@@ -82,13 +90,7 @@ const Home = () => {
               text="Create Operator Account"
               className="text-lg font-semibold bg-pale-green rounded-full"
               padding="py-4 px-[52px]"
-              onClick={() => {
-                if (isAuthenticated) {
-                  return router.push("/dashboard");
-                }
-                dispatch(setIsOperatorWalletModalOpen(true));
-                dispatch(setIsWalletModalOpen(true));
-              }}
+              onClick={createAccount}
             />
           </div>
         </div>
@@ -399,10 +401,7 @@ const Home = () => {
                   text="Get Started"
                   className="text-lg text-white font-semibold bg-black rounded-full"
                   padding="py-4 px-[52px] mt-[25.88px]"
-                  onClick={() => {
-                    dispatch(setIsOperatorWalletModalOpen(true));
-                    dispatch(setIsWalletModalOpen(true));
-                  }}
+                  onClick={createAccount}
                 />
               </div>
               <div className="flex flex-col gap-[30px] bg-light-gray rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
@@ -469,10 +468,7 @@ const Home = () => {
                   text="Get Started"
                   className="text-lg text-white font-semibold bg-black rounded-full"
                   padding="py-4 px-[52px] mt-[25.88px]"
-                  onClick={() => {
-                    dispatch(setIsOperatorWalletModalOpen(true));
-                    dispatch(setIsWalletModalOpen(true));
-                  }}
+                  onClick={createAccount}
                 />
               </div>
               <div className="flex flex-col gap-[30px] bg-white rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">

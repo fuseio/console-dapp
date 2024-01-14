@@ -6,12 +6,11 @@ import NavButton from "./NavButton";
 import { useAppSelector } from "@/store/store";
 import { selectNavbarSlice } from "@/store/navbarSlice";
 import { selectOperatorSlice } from "@/store/operatorSlice";
-import { hex } from "@/lib/helpers";
 
 const Topbar = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const { isTransfiModalOpen } = useAppSelector(selectNavbarSlice);
-  const operatorSlice = useAppSelector(selectOperatorSlice);
+  const { isAuthenticated } = useAppSelector(selectOperatorSlice);
   const [menuItems, setMenuItems] = useState([
     {
       title: "Console",
@@ -34,14 +33,12 @@ const Topbar = () => {
   useEffect(() => {
     setMenuItems((oldMenuItems) =>
       oldMenuItems.map((item) =>
-        item.title === "Operator" &&
-          operatorSlice.operator.user.smartContractAccountAddress &&
-          operatorSlice.operator.user.smartContractAccountAddress !== hex ?
+        item.title === "Operator" && isAuthenticated ?
           { ...item, link: "/dashboard" } :
           item
       )
     );
-  }, [operatorSlice.operator.user.smartContractAccountAddress]);
+  }, [isAuthenticated]);
 
   return (
     <nav className={"w-full h-20 sticky top-0 bg-light-gray/60 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-gray-alpha-40" + " " + (isTransfiModalOpen ? "z-0" : "z-40")}>

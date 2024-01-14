@@ -14,7 +14,7 @@ import {
   useSwitchNetwork,
 } from "wagmi";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
-import { eclipseAddress, hex } from "@/lib/helpers";
+import { eclipseAddress } from "@/lib/helpers";
 import { arbitrum, polygon, fuse, optimism, bsc, mainnet } from "wagmi/chains";
 import fuseIcon from "@/assets/fuse-icon.svg";
 import polygonIcon from "@/assets/polygon-icon.svg";
@@ -158,7 +158,7 @@ const ConnectWallet = ({
           className
         }
         onClick={() => {
-          if(pathname === "/operator") {
+          if (pathname === "/operator") {
             dispatch(setIsOperatorWalletModalOpen(true));
             dispatch(setIsLogin(true));
           }
@@ -259,7 +259,7 @@ const ConnectWallet = ({
         >
           <div className="flex flex-col gap-[8.35px] px-[22px]">
             <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">
-              {operatorSlice.operator.user.smartContractAccountAddress !== hex ? "EOA" : "Connected"} account
+              {operatorSlice.isAuthenticated ? "EOA" : "Connected"} account
             </p>
             <div className="flex justify-between">
               <p className="font-bold">{eclipseAddress(String(address))}</p>
@@ -284,7 +284,7 @@ const ConnectWallet = ({
             </div>
           </div>
           <hr className="border-border-dark-gray mt-[25.62px] mb-[18.5px]" />
-          {operatorSlice.operator.user.smartContractAccountAddress !== hex &&
+          {operatorSlice.isAuthenticated &&
             <>
               <div className="flex flex-col gap-[8.35px] px-[22px]">
                 <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">
@@ -398,9 +398,10 @@ const ConnectWallet = ({
               <QRCode
                 size={150}
                 value={String(
-                  operatorSlice.operator.user.smartContractAccountAddress !== hex ?
-                  operatorSlice.operator.user.smartContractAccountAddress :
-                  address)}
+                  operatorSlice.isAuthenticated ?
+                    operatorSlice.operator.user.smartContractAccountAddress :
+                    address
+                )}
               />
             </div>
           </div>

@@ -30,7 +30,7 @@ const Home = () => {
   const { chain } = useNetwork();
   const balance = useBalance({
     address: operatorSlice.operator.user.smartContractAccountAddress,
-    watch: operatorSlice.operator.user.smartContractAccountAddress !== hex,
+    watch: operatorSlice.isAuthenticated,
     chainId: fuse.id,
   });
   const transaction = 1000;
