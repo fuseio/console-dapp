@@ -26,6 +26,7 @@ const initOperator: Operator = {
 export interface OperatorStateType {
   isLogin: boolean;
   isLoggedIn: boolean;
+  isLoginError: boolean;
   isAuthenticated: boolean;
   isHydrated: boolean;
   isValidated: boolean;
@@ -34,6 +35,7 @@ export interface OperatorStateType {
   isAccountCreationModalOpen: boolean;
   isCongratulationModalOpen: boolean;
   isTopupAccountModalOpen: boolean;
+  redirect: string;
   accessToken: string;
   operator: Operator;
 }
@@ -41,6 +43,7 @@ export interface OperatorStateType {
 const INIT_STATE: OperatorStateType = {
   isLogin: false,
   isLoggedIn: false,
+  isLoginError: false,
   isAuthenticated: false,
   isHydrated: false,
   isValidated: false,
@@ -49,6 +52,7 @@ const INIT_STATE: OperatorStateType = {
   isAccountCreationModalOpen: false,
   isCongratulationModalOpen: false,
   isTopupAccountModalOpen: false,
+  redirect: "",
   accessToken: "",
   operator: initOperator,
 };
@@ -152,6 +156,9 @@ const operatorSlice = createSlice({
     setIsLoggedIn: (state, action: PayloadAction<boolean>) => {
       state.isLoggedIn = action.payload
     },
+    setIsLoginError: (state, action: PayloadAction<boolean>) => {
+      state.isLoginError = action.payload
+    },
     setIsContactDetailsModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isContactDetailsModalOpen = action.payload
     },
@@ -166,6 +173,9 @@ const operatorSlice = createSlice({
     },
     setIsOperatorWalletModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isOperatorWalletModalOpen = action.payload
+    },
+    setRedirect: (state, action: PayloadAction<string>) => {
+      state.redirect = action.payload
     },
     setLogout: (state) => {
       state.accessToken = "";
@@ -200,7 +210,7 @@ const operatorSlice = createSlice({
       localStorage.setItem("Fuse-isOperatorAuthenticated", "true");
     },
     [fetchOperator.rejected.type]: (state) => {
-      state.isContactDetailsModalOpen = true;
+      state.isLoginError = true;
     },
     [createOperator.pending.type]: (state) => {
       state.isContactDetailsModalOpen = false;
@@ -226,11 +236,13 @@ export const selectOperatorSlice = (state: AppState): OperatorStateType => state
 export const {
   setIsLogin,
   setIsLoggedIn,
+  setIsLoginError,
   setIsOperatorWalletModalOpen,
   setIsContactDetailsModalOpen,
   setIsAccountCreationModalOpen,
   setIsCongratulationModalOpen,
   setIsTopupAccountModalOpen,
+  setRedirect,
   setLogout,
   setHydrate
 } = operatorSlice.actions;

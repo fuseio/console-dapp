@@ -28,7 +28,8 @@ import disconnectIcon from "@/assets/disconnect.svg";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import leftArrow from "@/assets/left-arrow.svg";
 import QRCode from "react-qr-code";
-import { selectOperatorSlice } from "@/store/operatorSlice";
+import { selectOperatorSlice, setIsLogin, setIsOperatorWalletModalOpen } from "@/store/operatorSlice";
+import { usePathname } from "next/navigation";
 
 const screenMediumWidth = 768;
 const menu: Variants = {
@@ -108,6 +109,7 @@ const ConnectWallet = ({
   const controller = new AbortController();
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const operatorSlice = useAppSelector(selectOperatorSlice);
+  const pathname = usePathname();
 
   const chainRef = useOutsideClick(() => {
     if (isChainOpen) {
@@ -155,7 +157,15 @@ const ConnectWallet = ({
           "bg-fuse-black text-white px-4 py-2 rounded-full font-medium md:text-sm " +
           className
         }
-        onClick={() => dispatch(setIsWalletModalOpen(true))}
+        onClick={() => {
+          if(pathname === "/operator") {
+            dispatch(setIsOperatorWalletModalOpen(true));
+            dispatch(setIsWalletModalOpen(true));
+            dispatch(setIsLogin(true));
+          } else {
+            dispatch(setIsWalletModalOpen(true))
+          }
+        }}
       >
         Connect Wallet
       </button>

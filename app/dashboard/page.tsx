@@ -8,7 +8,7 @@ import { setSelectedNavbar } from "@/store/navbarSlice";
 import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
 import Topbar from "@/components/dashboard/Topbar";
-import { selectOperatorSlice, setHydrate } from "@/store/operatorSlice";
+import { selectOperatorSlice } from "@/store/operatorSlice";
 import { useAccount } from "wagmi";
 
 const Operator = () => {
@@ -19,7 +19,6 @@ const Operator = () => {
 
   useEffect(() => {
     dispatch(setSelectedNavbar("dashboard"));
-    dispatch(setHydrate());
   }, [])
 
   useEffect(() => {

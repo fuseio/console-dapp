@@ -11,7 +11,15 @@ import Link from "next/link";
 import { selectOperatorSlice, setIsTopupAccountModalOpen } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
-import copy from "@/assets/copy-black.svg"
+import copy from "@/assets/copy-black.svg";
+import NavMenu from "@/components/NavMenu";
+
+const menuItems = [
+  {
+    title: "Dashboard",
+    link: "/dashboard",
+  },
+];
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -42,8 +50,9 @@ const Home = () => {
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TopupAccountModal />
-      <div className="w-8/9 flex flex-col gap-y-[32.98px] mt-16 mb-[187px] md:w-9/10 max-w-7xl">
-        <div>
+      <div className="w-8/9 flex flex-col mt-[30.84px] mb-[187px] md:w-9/10 max-w-7xl">
+        <NavMenu menuItems={menuItems} isOpen={true} className="" />
+        <div className="mt-[76.29px] mb-[70px]">
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
             Dashboard
           </h1>
@@ -171,7 +180,7 @@ const Home = () => {
                   You will need this API key at the next stage for integration into the SDK
                 </p>
               </div>
-              <div className="w-full flex justify-between bg-modal-bg rounded-[31px] border border-black/40 text-sm text-black font-semibold px-5 py-[15px]">
+              <div className="w-full md:min-w-max flex justify-between bg-modal-bg rounded-[31px] border border-black/40 text-sm text-black font-semibold px-5 py-[15px]">
                 <p>
                   {operatorSlice.operator.project.publicKey}
                 </p>

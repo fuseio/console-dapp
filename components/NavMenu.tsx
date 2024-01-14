@@ -11,6 +11,7 @@ import { useAccount } from "wagmi";
 type NavMenuProps = {
   menuItems?: MenuItems;
   isOpen?: boolean;
+  className?: string;
 };
 
 const animateUL = {
@@ -37,7 +38,11 @@ const openMenuItemEvent: OpenMenuItemEvent = {
   "Bridge": "Go to Bridge"
 }
 
-const NavMenu = ({ menuItems = [], isOpen = false }: NavMenuProps) => {
+const NavMenu = ({
+  menuItems = [],
+  isOpen = false,
+  className = "items-center justify-between w-auto order-1 md:w-full absolute md:translate-y-8 md:top-1/2 md:bg-black left-[50%] -translate-x-[50%] rounded-md"
+}: NavMenuProps) => {
   const matches = useMediaQuery("(min-width: 768px)");
   const navbarSlice = useAppSelector(selectNavbarSlice);
   const { address, connector } = useAccount();
@@ -46,7 +51,7 @@ const NavMenu = ({ menuItems = [], isOpen = false }: NavMenuProps) => {
     <AnimatePresence>
       {(isOpen || matches) && (
         <motion.div
-          className="items-center justify-between w-auto order-1 md:w-full absolute md:translate-y-8 md:top-1/2 md:bg-black left-[50%] -translate-x-[50%] rounded-md"
+          className={className}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -72,10 +77,13 @@ const NavMenu = ({ menuItems = [], isOpen = false }: NavMenuProps) => {
                       ? "page"
                       : "false"
                   }
-                  onClick={() => amplitude.track(openMenuItemEvent[item.title], {
-                    walletType: connector ? walletType[connector.id] : undefined,
-                    walletAddress: address
-                  })}
+                  onClick={(e) => {
+                    amplitude.track(openMenuItemEvent[item.title], {
+                      walletType: connector ? walletType[connector.id] : undefined,
+                      walletAddress: address
+                    });
+                    item.callback?.(e);
+                  }}
                 >
                   {item.title}
                 </a>

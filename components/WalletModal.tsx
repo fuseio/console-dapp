@@ -23,7 +23,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { signDataMessage, walletType } from "@/lib/helpers";
-import { fetchOperator, selectOperatorSlice, setIsLoggedIn, setIsLogin, setIsOperatorWalletModalOpen, setLogout, validateOperator } from "@/store/operatorSlice";
+import { fetchOperator, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setLogout, setRedirect, validateOperator } from "@/store/operatorSlice";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import { useRouter } from "next/navigation";
 
@@ -37,7 +37,7 @@ const WalletModal = (): JSX.Element => {
   const { address, connector, isConnected, isDisconnected } = useAccount();
   const signer = useEthersSigner();
   const router = useRouter();
-  const { isLogin, isValidated, isLoggedIn, isOperatorWalletModalOpen } = useAppSelector(selectOperatorSlice);
+  const { isLogin, isValidated, isLoggedIn, isLoginError, isOperatorWalletModalOpen, redirect } = useAppSelector(selectOperatorSlice);
 
   const { signMessage } = useSignMessage({
     message: signDataMessage,
@@ -64,6 +64,7 @@ const WalletModal = (): JSX.Element => {
         toggleModal(false);
       }
     });
+    dispatch(setHydrate());
   }, []);
 
   useEffect(() => {
@@ -99,6 +100,18 @@ const WalletModal = (): JSX.Element => {
       router.push("/dashboard")
     }
   }, [isLoggedIn])
+
+  useEffect(() => {
+    if (isLoginError) {
+      if (redirect) {
+        dispatch(setRedirect(""));
+        router.push(redirect);
+      } else {
+        dispatch(setIsContactDetailsModalOpen(true));
+      }
+      dispatch(setIsLoginError(false));
+    }
+  }, [isLoginError, redirect])
 
   useEffect(() => {
     if (isDisconnected) {

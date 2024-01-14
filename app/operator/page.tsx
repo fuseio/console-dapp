@@ -1,20 +1,18 @@
 "use client";
 
 import { useEffect } from "react";
-import Topbar from "@/components/operator/Topbar";
+import Topbar from "@/components/Topbar";
 import Home from "./Home";
 
 import { useAppDispatch } from "@/store/store";
 import { setSelectedNavbar } from "@/store/navbarSlice";
 import Footer from "@/components/operator/Footer";
-import { setHydrate } from "@/store/operatorSlice";
 
 const Operator = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(setSelectedNavbar("operator"));
-    dispatch(setHydrate());
   }, [])
 
   return (
