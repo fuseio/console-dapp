@@ -3,36 +3,15 @@ import fuseConsoleLogo from "@/assets/fuse-console-logo.svg";
 import fuseLogoMobile from "@/assets/logo-mobile.svg";
 import NavMenu from "./NavMenu";
 import NavButton from "./NavButton";
-import { useAppDispatch, useAppSelector } from "@/store/store";
+import { useAppSelector } from "@/store/store";
 import { selectNavbarSlice } from "@/store/navbarSlice";
-import { selectOperatorSlice, setRedirect, validateOperator } from "@/store/operatorSlice";
-import { hex, signDataMessage } from "@/lib/helpers";
-import { useAccount, useSignMessage } from "wagmi";
-import { useRouter } from "next/navigation";
+import { selectOperatorSlice } from "@/store/operatorSlice";
+import { hex } from "@/lib/helpers";
 
 const Topbar = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const { isTransfiModalOpen } = useAppSelector(selectNavbarSlice);
   const operatorSlice = useAppSelector(selectOperatorSlice);
-  const router = useRouter();
-  const dispatch = useAppDispatch();
-  const { address, isConnected } = useAccount();
-  const { signMessage } = useSignMessage({
-    message: signDataMessage,
-    onSuccess(data) {
-      if (!address) {
-        return;
-      }
-      dispatch(setRedirect("/operator"));
-      dispatch(validateOperator({
-        signData: {
-          externallyOwnedAccountAddress: address,
-          message: signDataMessage,
-          signature: data
-        },
-      }));
-    }
-  })
   const [menuItems, setMenuItems] = useState([
     {
       title: "Console",
@@ -41,16 +20,6 @@ const Topbar = () => {
     {
       title: "Operator",
       link: "/operator",
-      callback: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-        e.preventDefault();
-        if(operatorSlice.isAuthenticated) {
-          router.push("/dashboard");
-        } else if(isConnected) {
-          signMessage();
-        } else {
-          router.push("/operator");
-        }
-      }
     },
     {
       title: "Bridge",

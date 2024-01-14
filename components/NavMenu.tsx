@@ -1,12 +1,14 @@
 import { MenuItems } from "@/lib/types";
 import { selectNavbarSlice } from "@/store/navbarSlice";
-import { useAppSelector } from "@/store/store";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "usehooks-ts";
 import * as amplitude from "@amplitude/analytics-browser";
-import { walletType } from "@/lib/helpers";
-import { useAccount } from "wagmi";
+import { signDataMessage, walletType } from "@/lib/helpers";
+import { useAccount, useSignMessage } from "wagmi";
+import { selectOperatorSlice, setRedirect, validateOperator } from "@/store/operatorSlice";
+import { usePathname, useRouter } from "next/navigation";
 
 type NavMenuProps = {
   menuItems?: MenuItems;
@@ -45,7 +47,27 @@ const NavMenu = ({
 }: NavMenuProps) => {
   const matches = useMediaQuery("(min-width: 768px)");
   const navbarSlice = useAppSelector(selectNavbarSlice);
-  const { address, connector } = useAccount();
+  const { address, connector, isConnected } = useAccount();
+  const { isAuthenticated } = useAppSelector(selectOperatorSlice);
+  const router = useRouter();
+  const pathname = usePathname();
+  const dispatch = useAppDispatch();
+  const { signMessage } = useSignMessage({
+    message: signDataMessage,
+    onSuccess(data) {
+      if (!address) {
+        return;
+      }
+      dispatch(setRedirect("/operator"));
+      dispatch(validateOperator({
+        signData: {
+          externallyOwnedAccountAddress: address,
+          message: signDataMessage,
+          signature: data
+        },
+      }));
+    }
+  });
 
   return (
     <AnimatePresence>
@@ -78,11 +100,25 @@ const NavMenu = ({
                       : "false"
                   }
                   onClick={(e) => {
-                    amplitude.track(openMenuItemEvent[item.title], {
-                      walletType: connector ? walletType[connector.id] : undefined,
-                      walletAddress: address
-                    });
-                    item.callback?.(e);
+                    if (item.link === "/operator") {
+                      e.preventDefault();
+                      if(pathname === "/dashboard") {
+                        router.push("/operator");
+                        return false;
+                      }
+                      if (isAuthenticated) {
+                        router.push("/dashboard");
+                      } else if (isConnected) {
+                        signMessage();
+                      } else {
+                        router.push("/operator");
+                      }
+                    } else {
+                      amplitude.track(openMenuItemEvent[item.title], {
+                        walletType: connector ? walletType[connector.id] : undefined,
+                        walletAddress: address
+                      });
+                    }
                   }}
                 >
                   {item.title}

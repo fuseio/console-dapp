@@ -160,11 +160,9 @@ const ConnectWallet = ({
         onClick={() => {
           if(pathname === "/operator") {
             dispatch(setIsOperatorWalletModalOpen(true));
-            dispatch(setIsWalletModalOpen(true));
             dispatch(setIsLogin(true));
-          } else {
-            dispatch(setIsWalletModalOpen(true))
           }
+          dispatch(setIsWalletModalOpen(true))
         }}
       >
         Connect Wallet

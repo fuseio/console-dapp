@@ -230,7 +230,6 @@ export const createAppConfig = (
 export type MenuItem = {
   title: string;
   link: string;
-  callback?: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
 }
 
 export type MenuItems = MenuItem[];
