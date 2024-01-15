@@ -17,7 +17,7 @@ import qr from "@/public/voltqrsample.png";
 import Image from "next/image";
 import WalletButton from "./WalletButton";
 import SocialButton from "./SocialButton";
-import { useAccount, useConnect, useSignMessage } from "wagmi";
+import { useAccount, useConnect, useNetwork, useSignMessage, useSwitchNetwork } from "wagmi";
 import ReactGA from "react-ga4";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
@@ -26,6 +26,7 @@ import { signDataMessage, walletType } from "@/lib/helpers";
 import { fetchOperator, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setLogout, setRedirect, validateOperator } from "@/store/operatorSlice";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import { useRouter } from "next/navigation";
+import { fuse } from "viem/chains";
 
 const WalletModal = (): JSX.Element => {
   const [selected, setSelected] = useState<"HOME" | "VOLT">("HOME");
@@ -37,6 +38,8 @@ const WalletModal = (): JSX.Element => {
   const { address, connector, isConnected, isDisconnected } = useAccount();
   const signer = useEthersSigner();
   const router = useRouter();
+  const { chain } = useNetwork();
+  const { switchNetwork } = useSwitchNetwork();
   const { isLogin, isValidated, isLoggedIn, isLoginError, isOperatorWalletModalOpen, redirect } = useAppSelector(selectOperatorSlice);
 
   const { signMessage } = useSignMessage({
@@ -83,10 +86,13 @@ const WalletModal = (): JSX.Element => {
   }, [address, connector])
 
   useEffect(() => {
-    if (isConnected && isOperatorWalletModalOpen) {
+    if (isConnected && isOperatorWalletModalOpen && chain) {
+      if(chain.id !== fuse.id) {
+        switchNetwork && switchNetwork(fuse.id)
+      }
       signMessage();
     }
-  }, [isConnected, isOperatorWalletModalOpen])
+  }, [isConnected, isOperatorWalletModalOpen, chain])
 
   useEffect(() => {
     if (isValidated && signer) {

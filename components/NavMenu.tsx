@@ -6,9 +6,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "usehooks-ts";
 import * as amplitude from "@amplitude/analytics-browser";
 import { signDataMessage, walletType } from "@/lib/helpers";
-import { useAccount, useSignMessage } from "wagmi";
+import { useAccount, useNetwork, useSignMessage, useSwitchNetwork } from "wagmi";
 import { selectOperatorSlice, setRedirect, validateOperator } from "@/store/operatorSlice";
 import { usePathname, useRouter } from "next/navigation";
+import { fuse } from "viem/chains";
 
 type NavMenuProps = {
   menuItems?: MenuItems;
@@ -52,6 +53,8 @@ const NavMenu = ({
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
+  const { chain } = useNetwork();
+  const { switchNetwork } = useSwitchNetwork();
   const { signMessage } = useSignMessage({
     message: signDataMessage,
     onSuccess(data) {
@@ -80,12 +83,12 @@ const NavMenu = ({
         >
           <motion.ul
             className="flex flex-row items-center md:items-start p-0 md:p-4 mt-0 font-medium text-base/4 md:flex-col space-x-8 md:space-x-0 rounded"
-            variants={animateUL}
+            variants={!matches ? animateUL : undefined}
             initial="hidden"
             animate="show"
           >
             {menuItems.map((item, index) => (
-              <motion.li key={index} variants={animateLI} className="md:w-full">
+              <motion.li key={index} variants={!matches ? animateLI : undefined} className="md:w-full">
                 <a
                   href={item.link}
                   className={
@@ -109,6 +112,9 @@ const NavMenu = ({
                       if (isAuthenticated) {
                         router.push("/dashboard");
                       } else if (isConnected) {
+                        if(chain?.id !== fuse.id) {
+                          switchNetwork && switchNetwork(fuse.id)
+                        }
                         signMessage();
                       } else {
                         router.push("/operator");
