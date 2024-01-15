@@ -30,6 +30,8 @@ export interface OperatorStateType {
   isAuthenticated: boolean;
   isHydrated: boolean;
   isValidated: boolean;
+  isValidatingOperator: boolean;
+  isFetchingOperator: boolean;
   isOperatorWalletModalOpen: boolean;
   isContactDetailsModalOpen: boolean;
   isAccountCreationModalOpen: boolean;
@@ -48,6 +50,8 @@ const INIT_STATE: OperatorStateType = {
   isAuthenticated: false,
   isHydrated: false,
   isValidated: false,
+  isValidatingOperator: false,
+  isFetchingOperator: false,
   isOperatorWalletModalOpen: false,
   isContactDetailsModalOpen: false,
   isAccountCreationModalOpen: false,
@@ -216,14 +220,25 @@ const operatorSlice = createSlice({
     }
   },
   extraReducers: {
+    [validateOperator.pending.type]: (state) => {
+      state.isValidatingOperator = true;
+    },
     [validateOperator.fulfilled.type]: (state, action) => {
+      state.isValidatingOperator = false;
       state.accessToken = action.payload.accessToken;
       state.signature = action.payload.signature;
       state.isValidated = true;
       localStorage.setItem("Fuse-operatorAccessToken", action.payload.accessToken);
       localStorage.setItem("Fuse-operatorEoaSignature", action.payload.signature);
     },
+    [validateOperator.rejected.type]: (state) => {
+      state.isValidatingOperator = false;
+    },
+    [fetchOperator.pending.type]: (state) => {
+      state.isFetchingOperator = true;
+    },
     [fetchOperator.fulfilled.type]: (state, action) => {
+      state.isFetchingOperator = false;
       state.operator = action.payload.operator;
       state.operator.user.smartContractAccountAddress = action.payload.smartContractAccountAddress;
       state.isLoggedIn = true;
@@ -232,6 +247,7 @@ const operatorSlice = createSlice({
       localStorage.setItem("Fuse-isOperatorAuthenticated", "true");
     },
     [fetchOperator.rejected.type]: (state) => {
+      state.isFetchingOperator = false;
       state.isLoginError = true;
     },
     [createOperator.pending.type]: (state) => {

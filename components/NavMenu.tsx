@@ -1,4 +1,4 @@
-import { MenuItems } from "@/lib/types";
+import { MenuItem, MenuItems } from "@/lib/types";
 import { selectNavbarSlice } from "@/store/navbarSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
@@ -10,6 +10,8 @@ import { useAccount, useNetwork, useSignMessage, useSwitchNetwork } from "wagmi"
 import { selectOperatorSlice, setRedirect, validateOperator } from "@/store/operatorSlice";
 import { usePathname, useRouter } from "next/navigation";
 import { fuse } from "viem/chains";
+import Image from "next/image";
+import lock from "@/assets/lock.svg";
 
 type NavMenuProps = {
   menuItems?: MenuItems;
@@ -49,13 +51,13 @@ const NavMenu = ({
   const matches = useMediaQuery("(min-width: 768px)");
   const navbarSlice = useAppSelector(selectNavbarSlice);
   const { address, connector, isConnected } = useAccount();
-  const { isAuthenticated } = useAppSelector(selectOperatorSlice);
+  const { isAuthenticated, isValidatingOperator, isFetchingOperator } = useAppSelector(selectOperatorSlice);
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
-  const { signMessage } = useSignMessage({
+  const { isLoading, signMessage } = useSignMessage({
     message: signDataMessage,
     onSuccess(data) {
       if (!address) {
@@ -71,6 +73,30 @@ const NavMenu = ({
       }));
     }
   });
+
+  const isOperatorMenuAndConnected = (item: MenuItem) => {
+    if (
+      matches &&
+      item.title.toLowerCase() === "operator" &&
+      pathname !== "/operator" &&
+      isConnected &&
+      !isAuthenticated
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  const loading = () => {
+    if (
+      isLoading ||
+      isValidatingOperator ||
+      isFetchingOperator
+    ) {
+      return true;
+    }
+    return false;
+  }
 
   return (
     <AnimatePresence>
@@ -92,16 +118,17 @@ const NavMenu = ({
                 <a
                   href={item.link}
                   className={
-                    "block p-0 bg-transparent md:py-2 md:pl-3 md:pr-4 " +
+                    "block relative p-0 bg-transparent md:py-2 md:pl-3 md:pr-4 " +
                     ((item.title.toLowerCase() === navbarSlice.selected || (item.title.toLowerCase() === "operator" && pathname === "/dashboard"))
                       ? "bg-lightest-gray py-2.5 px-4 rounded-full md:text-white pointer-events-none"
-                      : "md:text-gray pointer-events-auto hover:text-text-darker-gray")
+                      : "md:text-gray pointer-events-auto group hover:text-text-darker-gray")
                   }
                   aria-current={
                     (item.title.toLowerCase() === navbarSlice.selected || (item.title.toLowerCase() === "operator" && pathname === "/dashboard"))
                       ? "page"
                       : "false"
                   }
+                  title="Verify your wallet to proceed"
                   onClick={(e) => {
                     if (item.link === "/operator") {
                       e.preventDefault();
@@ -112,7 +139,7 @@ const NavMenu = ({
                       if (isAuthenticated) {
                         router.push("/dashboard");
                       } else if (isConnected) {
-                        if(chain?.id !== fuse.id) {
+                        if (chain?.id !== fuse.id) {
                           switchNetwork && switchNetwork(fuse.id)
                         }
                         signMessage();
@@ -128,6 +155,18 @@ const NavMenu = ({
                   }}
                 >
                   {item.title}
+                  {(isOperatorMenuAndConnected(item) && !loading()) &&
+                    <Image
+                      src={lock}
+                      alt="verify your wallet to proceed"
+                      width={12}
+                      height={12}
+                      className="absolute -right-2 -top-3 group-hover:opacity-50"
+                    />
+                  }
+                  {(isOperatorMenuAndConnected(item) && loading()) &&
+                    <span className="absolute -right-2 -top-3 animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-3 h-3"></span>
+                  }
                 </a>
               </motion.li>
             ))}
