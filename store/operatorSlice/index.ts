@@ -36,6 +36,7 @@ export interface OperatorStateType {
   isCongratulationModalOpen: boolean;
   isTopupAccountModalOpen: boolean;
   redirect: string;
+  signature: string;
   accessToken: string;
   operator: Operator;
 }
@@ -53,6 +54,7 @@ const INIT_STATE: OperatorStateType = {
   isCongratulationModalOpen: false,
   isTopupAccountModalOpen: false,
   redirect: "",
+  signature: "",
   accessToken: "",
   operator: initOperator,
 };
@@ -67,7 +69,7 @@ export const validateOperator = createAsyncThunk(
     return new Promise<any>(async (resolve, reject) => {
       const accessToken = await postValidateOperator(signData);
       if (accessToken) {
-        resolve({ accessToken });
+        resolve({ accessToken, signature: signData.signature });
       } else {
         reject();
       }
@@ -96,7 +98,14 @@ export const fetchOperator = createAsyncThunk<
         const state = thunkAPI.getState();
         const operatorState: OperatorStateType = state.operator;
         const operator = await fetchCurrentOperator(operatorState.accessToken)
-        const fuseSDK = await FuseSDK.init(operator.project.publicKey, signer);
+        const fuseSDK = await FuseSDK.init(
+          operator.project.publicKey,
+          signer,
+          {
+            jwtToken: operatorState.accessToken,
+            signature: operatorState.signature
+          }
+        );
         const smartContractAccountAddress = fuseSDK.wallet.getSender() as Address;
         if (operator) {
           resolve({ operator, smartContractAccountAddress });
@@ -134,7 +143,14 @@ export const createOperator = createAsyncThunk<
       const state = thunkAPI.getState();
       const operatorState: OperatorStateType = state.operator;
       const operator = await postCreateOperator(operatorContactDetail, operatorState.accessToken)
-      const fuseSDK = await FuseSDK.init(operator.project.publicKey, signer);
+      const fuseSDK = await FuseSDK.init(
+        operator.project.publicKey,
+        signer,
+        {
+          jwtToken: operatorState.accessToken,
+          signature: operatorState.signature
+        }
+      );
       const smartContractAccountAddress = fuseSDK.wallet.getSender() as Address;
 
       if (operator) {
@@ -180,17 +196,21 @@ const operatorSlice = createSlice({
     setLogout: (state) => {
       state.accessToken = "";
       state.operator = initOperator;
+      state.signature = "";
       state.isAuthenticated = false;
       localStorage.removeItem("Fuse-operatorAccessToken");
       localStorage.removeItem("Fuse-operator");
+      localStorage.removeItem("Fuse-operatorEoaSignature");
       localStorage.removeItem("Fuse-isOperatorAuthenticated");
     },
     setHydrate: (state) => {
       const accessToken = localStorage.getItem("Fuse-operatorAccessToken");
       const operator = localStorage.getItem("Fuse-operator");
+      const signature = localStorage.getItem("Fuse-operatorEoaSignature");
       const isAuthenticated = localStorage.getItem("Fuse-isOperatorAuthenticated");
       state.accessToken = accessToken ?? "";
       state.operator = operator ? JSON.parse(operator) : initOperator;
+      state.signature = signature ?? "";
       state.isAuthenticated = isAuthenticated ? JSON.parse(isAuthenticated) : false;
       state.isHydrated = true;
     }
@@ -198,8 +218,10 @@ const operatorSlice = createSlice({
   extraReducers: {
     [validateOperator.fulfilled.type]: (state, action) => {
       state.accessToken = action.payload.accessToken;
+      state.signature = action.payload.signature;
       state.isValidated = true;
       localStorage.setItem("Fuse-operatorAccessToken", action.payload.accessToken);
+      localStorage.setItem("Fuse-operatorEoaSignature", action.payload.signature);
     },
     [fetchOperator.fulfilled.type]: (state, action) => {
       state.operator = action.payload.operator;
