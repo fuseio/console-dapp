@@ -128,7 +128,7 @@ const NavMenu = ({
                       ? "page"
                       : "false"
                   }
-                  title="Verify your wallet to proceed"
+                  title={isOperatorMenuAndConnected(item) && !loading() ? "Verify your wallet to proceed" : ""}
                   onClick={(e) => {
                     if (item.link === "/operator") {
                       e.preventDefault();
