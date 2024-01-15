@@ -14,7 +14,9 @@ const NoLiquidityToast = () => {
         <img src={stop.src} alt="history" className="h-6 w-[5%]" />
         <div className="flex flex-col w-[95%] ml-3">
           <div className="flex items-center justify-between">
-            <p className="font-bold md:text-sm">No Liquidity</p>
+            <p className="font-bold md:text-sm">
+              Not enough liquidity to withdraw to the chosen network
+            </p>
             <img
               src={dismiss.src}
               alt="dismiss"
@@ -26,8 +28,8 @@ const NoLiquidityToast = () => {
           </div>
           <p className="mt-1 md:text-sm">
             Unfortunately, at the moment there is not enough liquidity to
-            complete the transaction. Choose a different token or a smaller
-            amount.
+            withdraw the entered amount to the chosen network. Please choose a
+            different destination network.
           </p>
         </div>
       </div>
