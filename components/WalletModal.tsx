@@ -40,7 +40,7 @@ const WalletModal = (): JSX.Element => {
   const router = useRouter();
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
-  const { isLogin, isValidated, isLoggedIn, isLoginError, isOperatorWalletModalOpen, redirect } = useAppSelector(selectOperatorSlice);
+  const { isLogin, isValidated, isLoggedIn, isLoginError, isOperatorWalletModalOpen, redirect, signature } = useAppSelector(selectOperatorSlice);
 
   const { signMessage } = useSignMessage({
     message: signDataMessage,
@@ -86,13 +86,13 @@ const WalletModal = (): JSX.Element => {
   }, [address, connector])
 
   useEffect(() => {
-    if (isConnected && isOperatorWalletModalOpen && chain) {
+    if (isConnected && isOperatorWalletModalOpen && chain && !signature) {
       if(chain.id !== fuse.id) {
         switchNetwork && switchNetwork(fuse.id)
       }
       signMessage();
     }
-  }, [isConnected, isOperatorWalletModalOpen, chain])
+  }, [isConnected, isOperatorWalletModalOpen, chain, signature])
 
   useEffect(() => {
     if (isValidated && signer) {

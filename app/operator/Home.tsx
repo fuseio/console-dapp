@@ -1,7 +1,7 @@
 import Button from "@/components/ui/Button";
 import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { selectOperatorSlice, setIsOperatorWalletModalOpen } from "@/store/operatorSlice";
+import { selectOperatorSlice, setIsContactDetailsModalOpen, setIsOperatorWalletModalOpen } from "@/store/operatorSlice";
 import checkmark from "@/assets/checkmark.svg"
 import checkmarkBg from "@/assets/checkmark-bg.svg"
 import requestFinance from "@/public/request-finance.png"
@@ -58,12 +58,17 @@ const apps = [
 const Home = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { isAuthenticated, isContactDetailsModalOpen, isAccountCreationModalOpen, isCongratulationModalOpen } = useAppSelector(selectOperatorSlice);
+  const { accessToken, isAuthenticated, isContactDetailsModalOpen, isAccountCreationModalOpen, isCongratulationModalOpen } = useAppSelector(selectOperatorSlice);
 
   function createAccount() {
     if (isAuthenticated) {
       return router.push("/dashboard");
     }
+
+    if(accessToken && !isAuthenticated) {
+      return dispatch(setIsContactDetailsModalOpen(true));
+    }
+
     dispatch(setIsOperatorWalletModalOpen(true));
     dispatch(setIsWalletModalOpen(true));
   }
