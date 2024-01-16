@@ -51,7 +51,7 @@ const NavMenu = ({
   const matches = useMediaQuery("(min-width: 768px)");
   const navbarSlice = useAppSelector(selectNavbarSlice);
   const { address, connector, isConnected } = useAccount();
-  const { isAuthenticated, isValidatingOperator, isFetchingOperator } = useAppSelector(selectOperatorSlice);
+  const { signature, isAuthenticated, isValidatingOperator, isFetchingOperator } = useAppSelector(selectOperatorSlice);
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
@@ -80,6 +80,7 @@ const NavMenu = ({
       item.title.toLowerCase() === "operator" &&
       pathname !== "/operator" &&
       isConnected &&
+      !signature &&
       !isAuthenticated
     ) {
       return true;
@@ -138,6 +139,8 @@ const NavMenu = ({
                       }
                       if (isAuthenticated) {
                         router.push("/dashboard");
+                      } else if (signature) {
+                        router.push("/operator");
                       } else if (isConnected) {
                         if (chain?.id !== fuse.id) {
                           switchNetwork && switchNetwork(fuse.id)
