@@ -10,7 +10,7 @@ export async function generateStaticParams() {
   validators = [...new Set(validators)]
 
   return validators.map((validator) => ({
-    id: validator,
+    id: validator.toLowerCase(),
   }))
 }
 

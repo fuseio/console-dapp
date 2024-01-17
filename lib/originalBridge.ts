@@ -69,10 +69,14 @@ export const bridgeOriginal = async (
       value: BigInt(increasedNativeFee),
     });
   }
-  const txWait = await waitForTransaction({
-    hash: tx,
-  });
-  return txWait.transactionHash;
+  try {
+    await waitForTransaction({
+      hash: tx,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+  return tx;
 };
 
 export const bridgeNative = async (
@@ -80,7 +84,8 @@ export const bridgeNative = async (
   address: Address,
   amount: string,
   decimals: number,
-  dstChainId: number
+  dstChainId: number,
+  selectedChainId: number
 ) => {
   const publicClient = getPublicClient();
   const dstGasLimit = await publicClient.readContract({
@@ -104,7 +109,7 @@ export const bridgeNative = async (
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const walletClient = await getWalletClient({ chainId: fuse.id });
+  const walletClient = await getWalletClient({ chainId: selectedChainId });
   let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
@@ -123,10 +128,14 @@ export const bridgeNative = async (
       value: amt + BigInt(increasedNativeFee),
     });
   }
-  const txWait = await waitForTransaction({
-    hash: tx,
-  });
-  return txWait.transactionHash;
+  try {
+    await waitForTransaction({
+      hash: tx,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+  return tx;
 };
 
 export const estimateOriginalNativeFee = async (

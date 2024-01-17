@@ -200,6 +200,7 @@ export const bridgeNativeTokens = createAsyncThunk(
       tokenId,
       network,
       walletType,
+      selectedChainId
     }: {
       amount: string;
       bridge: Address;
@@ -211,11 +212,12 @@ export const bridgeNativeTokens = createAsyncThunk(
       tokenId: string;
       network: string;
       walletType?: string;
+      selectedChainId: number;
     },
     thunkAPI
   ) => {
     return new Promise<any>(async (resolve, reject) => {
-      bridgeNative(bridge, address, amount, decimals, dstChainId)
+      bridgeNative(bridge, address, amount, decimals, dstChainId, selectedChainId)
         .then((txHash) => {
           insertTransactionToLocalStorage({
             hash: txHash,

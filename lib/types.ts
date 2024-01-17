@@ -8,6 +8,7 @@ export interface ChainConfigLike {
   rpc: string;
   chainId: number;
   logo: string;
+  tokenId: string;
 }
 
 export interface DisabledChainConfigLike {
@@ -97,6 +98,10 @@ interface TokenStateType {
   address: Address;
   isNative: boolean;
   isBridged: boolean;
+  recieveToken?: {
+    symbol: string;
+    name: string;
+  };
 }
 interface WrappedBridgeConfig {
   version: number;
@@ -110,6 +115,10 @@ interface WrappedBridgeConfig {
       address: Address;
       icon: string;
       coinGeckoId: string;
+      recieveToken?: {
+        symbol: string;
+        name: string;
+      };
     }[];
   };
   disabledChains: DisabledChainConfigLike[];
@@ -122,6 +131,7 @@ interface WrappedBridgeConfig {
     wrapped: Address;
     originalFuse: Address;
     rpcUrl: string;
+    tokenId: string;
     tokens: {
       decimals: number;
       symbol: string;
@@ -131,6 +141,10 @@ interface WrappedBridgeConfig {
       isNative: boolean;
       isBridged: boolean;
       coinGeckoId: string;
+      recieveToken?: {
+        symbol: string;
+        name: string;
+      };
     }[];
   }[];
 }
@@ -151,6 +165,10 @@ export const createAppConfig = (
     address: Address;
     icon: string;
     coinGeckoId: string;
+    recieveToken?: {
+      symbol: string;
+      name: string;
+    };
   }[] = [];
   if (bridgeConfig.tokens.length > 0) {
     tokenConfig.coins.forEach((coin) => {
@@ -185,6 +203,10 @@ export const createAppConfig = (
           isNative: boolean;
           isBridged: boolean;
           coinGeckoId: string;
+          recieveToken?: {
+            symbol: string;
+            name: string;
+          };
         }[] = [];
         if (bridgeConfig.tokens.length > 0) {
           tokenConfig.coins.forEach((coin) => {
@@ -201,6 +223,7 @@ export const createAppConfig = (
                 isNative: token.isNative,
                 isBridged: token.isBridged,
                 coinGeckoId: coin.coinGeckoId,
+                recieveToken: token.recieveToken,
               });
             }
           });
@@ -221,6 +244,7 @@ export const createAppConfig = (
           )?.address as Address,
           tokens: tokens,
           rpcUrl: chain.rpc,
+          tokenId: chain.tokenId,
         };
       }),
     },

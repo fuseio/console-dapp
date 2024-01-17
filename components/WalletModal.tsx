@@ -74,16 +74,18 @@ const WalletModal = (): JSX.Element => {
     if (isConnected) {
       toggleModal(false);
     }
-  }, [isConnected])
+    
+    if(address && connector) {
+      const identifyEvent = new amplitude.Identify();
+      identifyEvent.set('wallet_address', address);
+      amplitude.identify(identifyEvent);
 
-  useEffect(() => {
-    if (address && connector) {
       amplitude.track("Wallet connected", {
         walletType: walletType[connector.id],
         walletAddress: address
       });
     }
-  }, [address, connector])
+  }, [isConnected])
 
   useEffect(() => {
     if (isConnected && isOperatorWalletModalOpen && chain && !signature) {

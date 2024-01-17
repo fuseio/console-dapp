@@ -120,18 +120,18 @@ const Withdraw = ({
         (!tokenAddress || tokenAddress === hex) && chain?.id === fuse.id
           ? dispatch(setNativeBalanceThunk(nativeBalance.toString()))
           : dispatch(
-            fetchBalance({
-              address: address,
-              contractAddress:
-                appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
-                  .address,
-              decimals:
-                appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
-                  .decimals,
-              bridge: appConfig.wrappedBridge.fuse.wrapped,
-              rpc: "https://rpc.fuse.io",
-            })
-          );
+              fetchBalance({
+                address: address,
+                contractAddress:
+                  appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
+                    .address,
+                decimals:
+                  appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
+                    .decimals,
+                bridge: appConfig.wrappedBridge.fuse.wrapped,
+                rpc: "https://rpc.fuse.io",
+              })
+            );
       setPendingPromise(promise);
     }
   }, [
@@ -160,7 +160,7 @@ const Withdraw = ({
           ].symbol,
         available_liquidity: parseFloat(balanceSlice.liquidity),
         walletType: connector ? walletType[connector.id] : undefined,
-        walletAddress: address
+        walletAddress: address,
       });
     } else if (
       parseFloat(amount) === 0 ||
@@ -204,7 +204,7 @@ const Withdraw = ({
               Fuse Network
             </span>
             <div className="flex w-full items-center mt-2">
-              <div className="bg-white w-2/3 md:w-3/5 p-4 md:p-2 rounded-s-md border-[1px] border-border-gray">
+              <div className="bg-white w-2/3 md:w-3/5 px-4 py-3 md:p-2 rounded-s-md border-[1px] border-border-gray flex">
                 <input
                   type="text"
                   className="w-full bg-transparent focus:outline-none text-sm md:text-xs"
@@ -214,6 +214,20 @@ const Withdraw = ({
                     setAmount(e.target.value);
                   }}
                 />
+                <div
+                  className="text-black font-medium px-3 py-1 bg-lightest-gray rounded-full cursor-pointer"
+                  onClick={() => {
+                    setAmount(
+                      appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                        selectedTokenItem
+                      ].isNative && chain?.id === fuse.id
+                        ? parseFloat(nativeBalance).toString()
+                        : balanceSlice.balance
+                    );
+                  }}
+                >
+                  Max
+                </div>
               </div>
               <Dropdown
                 items={[
@@ -225,7 +239,7 @@ const Withdraw = ({
                       return {
                         icon: coin.icon,
                         id: i,
-                        item: coin.symbol,
+                        item: coin.recieveToken?.symbol || coin.symbol,
                       };
                     }),
                   },
@@ -242,16 +256,12 @@ const Withdraw = ({
             <span className="mt-3 text-xs font-medium">
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
-                balanceSlice.isApprovalLoading ||
-                (appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                  selectedTokenItem
-                ].isNative &&
-                  chain?.id !== fuse.id) ? (
-                <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
-              ) : appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+              balanceSlice.isApprovalLoading ||
+              (appConfig.wrappedBridge.chains[selectedChainItem].tokens[
                 selectedTokenItem
-              ].isNative && chain?.id === fuse.id ? (
-                new Intl.NumberFormat().format(parseFloat(nativeBalance))
+              ].isNative &&
+                chain?.id !== fuse.id) ? (
+                <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : (
                 balanceSlice.balance
               )}
@@ -304,7 +314,7 @@ const Withdraw = ({
           selectedSection={selectedChainSection}
           selectedItem={selectedChainItem}
           onClick={(section, item) => {
-            setSelectedTokenItem(0)
+            setSelectedTokenItem(0);
             setSelectedChainSection(section);
             setSelectedChainItem(item);
             if (section === 1) {
@@ -317,6 +327,7 @@ const Withdraw = ({
                   contractAddress: appConfig.wrappedBridge.fuse.wrapped,
                   lzChainId: appConfig.wrappedBridge.chains[item].lzChainId,
                   rpcUrl: "https://rpc.fuse.io",
+                  tokenId: "fuse-network-token",
                 })
               );
               setDisplayButton(true);
@@ -409,7 +420,7 @@ const Withdraw = ({
                   appConfig.wrappedBridge.disabledChains[selectedChainItem]
                     .appName,
                 walletType: connector ? walletType[connector.id] : undefined,
-                walletAddress: address
+                walletAddress: address,
               });
             }}
           >
