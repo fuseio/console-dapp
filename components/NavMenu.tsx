@@ -135,9 +135,7 @@ const NavMenu = ({
                       e.preventDefault();
                       if (pathname === "/dashboard") {
                         router.push("/operator");
-                        return false;
-                      }
-                      if (isAuthenticated) {
+                      } else if (isAuthenticated) {
                         router.push("/dashboard");
                       } else if (signature) {
                         router.push("/operator");

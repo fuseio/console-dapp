@@ -65,7 +65,7 @@ const Home = () => {
       return router.push("/dashboard");
     }
 
-    if(accessToken && !isAuthenticated) {
+    if(accessToken) {
       return dispatch(setIsContactDetailsModalOpen(true));
     }
 

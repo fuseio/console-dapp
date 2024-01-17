@@ -179,6 +179,9 @@ const operatorSlice = createSlice({
     setIsLoginError: (state, action: PayloadAction<boolean>) => {
       state.isLoginError = action.payload
     },
+    setIsValidated: (state, action: PayloadAction<boolean>) => {
+      state.isValidated = action.payload
+    },
     setIsContactDetailsModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isContactDetailsModalOpen = action.payload
     },
@@ -275,6 +278,7 @@ export const {
   setIsLogin,
   setIsLoggedIn,
   setIsLoginError,
+  setIsValidated,
   setIsOperatorWalletModalOpen,
   setIsContactDetailsModalOpen,
   setIsAccountCreationModalOpen,

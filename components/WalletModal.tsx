@@ -23,7 +23,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { signDataMessage, walletType } from "@/lib/helpers";
-import { fetchOperator, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setLogout, setRedirect, validateOperator } from "@/store/operatorSlice";
+import { fetchOperator, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setIsValidated, setLogout, setRedirect, validateOperator } from "@/store/operatorSlice";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import { useRouter } from "next/navigation";
 import { fuse } from "viem/chains";
@@ -96,6 +96,7 @@ const WalletModal = (): JSX.Element => {
 
   useEffect(() => {
     if (isValidated && signer) {
+      dispatch(setIsValidated(false));
       dispatch(fetchOperator({ signer }));
     }
   }, [isValidated, signer])
