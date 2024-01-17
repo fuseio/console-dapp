@@ -8,8 +8,8 @@ import NavButton from "../NavButton";
 
 const menuItems = [
   {
-    title: "Console",
-    link: "/",
+    title: "Wallet",
+    link: "/wallet",
   },
   {
     title: "Operator",

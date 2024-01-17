@@ -13,8 +13,8 @@ const Topbar = () => {
   const { isAuthenticated } = useAppSelector(selectOperatorSlice);
   const [menuItems, setMenuItems] = useState([
     {
-      title: "Console",
-      link: "/",
+      title: "Wallet",
+      link: "/wallet",
     },
     {
       title: "Operator",

@@ -9,8 +9,8 @@ import { setIsWalletModalOpen } from "@/store/navbarSlice";
 
 const menuItems = [
   {
-    title: "Console",
-    link: "/",
+    title: "Wallet",
+    link: "/wallet",
   },
   {
     title: "Operator",
