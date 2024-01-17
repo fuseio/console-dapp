@@ -104,9 +104,9 @@ const NavMenu = ({
       {(isOpen || matches) && (
         <motion.div
           className={className}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          initial={{ opacity: !matches ? 0 : 1 }}
+          animate={{ opacity: !matches ? 1 : 1 }}
+          exit={{ opacity: !matches ? 0 : 1 }}
         >
           <motion.ul
             className="flex flex-row items-center md:items-start p-0 md:p-4 mt-0 font-medium text-base/4 md:flex-col space-x-8 md:space-x-0 rounded"
