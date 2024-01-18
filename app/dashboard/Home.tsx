@@ -47,74 +47,56 @@ const Home = () => {
         <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="" />
         <div className="mt-[76.29px] mb-[70px]">
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
-            Dashboard
+            Operator Dashboard
           </h1>
         </div>
         <div className="flex flex-col gap-y-[30px]">
-          <div className="bg-fuse-black rounded-[20px] text-white px-12 md:px-8 py-14 md:py-10">
+          <div className="flex flex-col gap-[70px] bg-lightest-gray rounded-[20px] px-12 md:px-8 py-14 md:py-10">
             <div className="flex flex-row justify-between md:flex-col gap-12">
-              <div className="flex flex-col gap-y-[62px]">
-                <div className="flex flex-col gap-y-[18px]">
-                  <div className="flex gap-4">
-                    <p className="text-lg text-darker-gray">
-                      Operator account balance
-                    </p>
-                    <p className="text-white font-bold">
-                      ({eclipseAddress(String(operatorSlice.operator.user.smartContractAccountAddress))})
-                    </p>
-                  </div>
-                  <div className="flex items-end gap-x-[30px] md:gap-x-4">
-                    <h1 className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
-                      {(chain && chain.id === fuse.id) ?
+              <div className="flex flex-col gap-[18px]">
+                <p className="text-lg text-text-dark-gray">
+                  Operator account balance
+                </p>
+                <div className="flex items-end gap-x-[30px] md:gap-x-4">
+                  <h1 className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
+                    {(chain && chain.id === fuse.id) ?
+                      new Intl.NumberFormat().format(
+                        parseFloat(balance.data?.formatted ?? "0")
+                      ) :
+                      0
+                    } FUSE
+                  </h1>
+                  {balanceSlice.isUsdPriceLoading ?
+                    <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
+                    <p className="text-[20px]/7 font-medium">
+                      ${(chain && chain.id === fuse.id) ?
                         new Intl.NumberFormat().format(
-                          parseFloat(balance.data?.formatted ?? "0")
+                          parseFloat((parseFloat(balance.data?.formatted ?? "0.00") * balanceSlice.price).toString())
                         ) :
-                        0
-                      } FUSE
-                    </h1>
-                    {balanceSlice.isUsdPriceLoading ?
-                      <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
-                      <p className="text-xl text-darker-gray">
-                        ${(chain && chain.id === fuse.id) ?
-                          new Intl.NumberFormat().format(
-                            parseFloat((parseFloat(balance.data?.formatted ?? "0.00") * balanceSlice.price).toString())
-                          ) :
-                          "0.00"
-                        }
-                      </p>
-                    }
-                  </div>
-                </div>
-                <div>
-                  <Button
-                    text="Topup account"
-                    className="text-black font-semibold bg-success rounded-full"
-                    padding="py-[19.5px] px-[46px]"
-                    onClick={() => {
-                      dispatch(setIsTopupAccountModalOpen(true));
-                    }}
-                  />
+                        "0.00"
+                      }
+                    </p>
+                  }
                 </div>
               </div>
-              <div className="flex flex-col justify-between w-full max-w-[535px]">
-                <div className="flex justify-between items-center">
-                  <div className="flex flex-col gap-[18px]">
-                    <p className="text-lg text-darker-gray">
-                      Active plan
-                    </p>
-                    <p className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
-                      Free
-                    </p>
-                  </div>
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-[18px]">
+                  <p className="text-lg text-text-dark-gray">
+                    Active plan
+                  </p>
+                  <p className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
+                    Free plan
+                  </p>
                 </div>
-                <div>
-                  <div className="flex justify-between items-center">
-                    <p className="text-lg text-darker-gray">
-                      Transactions
-                    </p>
-                    <p className="text-lg text-darker-gray">
-                      {transaction}/{totalTransaction}
-                    </p>
+              </div>
+              <div className="flex flex-col gap-[18px] w-[361px] md:w-full">
+                <p className="text-lg text-text-dark-gray">
+                  Transactions
+                </p>
+                <div className="flex flex-col gap-[10.5px]">
+                  <div className="flex justify-between">
+                    <p className="text-lg font-bold">{new Intl.NumberFormat().format(transaction)}</p>
+                    <p className="text-lg font-bold">{new Intl.NumberFormat().format(totalTransaction)}</p>
                   </div>
                   <div className="bg-[#474747] h-2.5 rounded-full">
                     <div
@@ -125,14 +107,24 @@ const Home = () => {
                 </div>
               </div>
             </div>
+            <div>
+              <Button
+                text="Deposit funds"
+                className="text-black text-white font-semibold bg-black rounded-full"
+                padding="py-4 px-[52px]"
+                onClick={() => {
+                  dispatch(setIsTopupAccountModalOpen(true));
+                }}
+              />
+            </div>
           </div>
           <div className="flex md:flex-col gap-[30px]">
-            <div className="flex flex-col justify-between items-start gap-y-3 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
+            <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
               <div className="flex flex-col gap-4">
-                <p className="text-lg font-bold">
+                <p className="text-[20px] leading-none font-semibold">
                   Build on Fuse
                 </p>
-                <p className="text-xl font-normal text-text-dark-gray md:text-base">
+                <p className="text-text-dark-gray md:text-base">
                   Join the Fuse console list to be the first
                   to receive latest news, access to new features
                   and special offers.
@@ -164,12 +156,12 @@ const Home = () => {
                 </a>
               </div>
             </div>
-            <div className="flex flex-col justify-between items-start gap-y-3 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
+            <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
               <div className="flex flex-col gap-4">
-                <p className="text-lg font-bold">
+                <p className="text-[20px] leading-none font-semibold">
                   Your API Key
                 </p>
-                <p className="text-xl font-normal text-text-dark-gray md:text-base">
+                <p className="text-text-dark-gray md:text-base">
                   You will need this API key at the next stage for integration into the SDK
                 </p>
               </div>
@@ -189,12 +181,12 @@ const Home = () => {
                 />
               </div>
             </div>
-            <div className="flex flex-col justify-between items-start gap-y-3 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
+            <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
               <div className="flex flex-col gap-4">
-                <p className="text-lg font-bold">
+                <p className="text-[20px] leading-none font-semibold">
                   Learn what you can do
                 </p>
-                <p className="text-xl font-normal text-text-dark-gray md:text-base">
+                <p className="text-text-dark-gray md:text-base">
                   The Operator&apos;s account is a single information and control panel for Operators.
                 </p>
               </div>

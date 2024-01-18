@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { setSelectedNavbar } from "@/store/navbarSlice";
 import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
-import Topbar from "@/components/dashboard/Topbar";
+import Topbar from "@/components/Topbar";
 import { selectOperatorSlice } from "@/store/operatorSlice";
 import { useAccount } from "wagmi";
 
