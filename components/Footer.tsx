@@ -34,9 +34,16 @@ const socials = [
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-light-gray flex flex-col items-center">
-      <div className="w-8/9 flex justify-between flex-row gap-y-4 md:items-center md:flex-col mb-12 md:w-9/10 max-w-7xl">
-        <div className="flex gap-8 text-text-dark-gray text-base/4 font-medium">
+    <footer className="w-full bg-light-gray flex flex-col items-center pt-[50px] border-t-[0.3px] border-black/40">
+      <div className="w-8/9 flex justify-between flex-row gap-y-4 items-center md:flex-col mb-12 md:w-9/10 max-w-7xl">
+        <div className="flex gap-8 md:gap-4 md:text-center text-text-dark-gray text-base/4 font-medium">
+          <a
+            href="https://docs.fuse.io"
+            target="_blank"
+            className="transition ease-in-out hover:text-darker-gray"
+          >
+            Read the Docs
+          </a>
           <a
             href="https://north-crocus-61d.notion.site/Terms-of-Service-f9995aaf4f2a48e19a0beafbcc41116e?pvs=4"
             target="_blank"

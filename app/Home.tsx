@@ -23,18 +23,16 @@ const Home = () => {
           <p className="text-[20px]/7 text-text-dark-gray md:text-base mt-[22px] mb-[36.52px]">
             A one-stop-shop for everything you need
           </p>
-          <div className="h-16">
-            {!isConnected &&
-              <Button
-                text="Connect Wallet"
-                className="text-lg font-semibold bg-pale-green rounded-full"
-                padding="py-4 px-[52px]"
-                onClick={() => {
-                  dispatch(setIsWalletModalOpen(true));
-                }}
-              />
-            }
-          </div>
+          {!isConnected &&
+            <Button
+              text="Connect Wallet"
+              className="text-lg font-semibold bg-pale-green rounded-full"
+              padding="py-4 px-[52px]"
+              onClick={() => {
+                dispatch(setIsWalletModalOpen(true));
+              }}
+            />
+          }
         </div>
         <div className="bg-lightest-gray rounded-[20px] px-[83.31px] pt-[60.36px] pb-[67px] md:px-4 md:py-6 mt-[99.5px] mb-10 bg-[url('/vectors/build-mobiles.svg')] bg-no-repeat bg-bottom">
           <p className="text-[40px] leading-tight text-fuse-black font-semibold max-w-[414.86px]">

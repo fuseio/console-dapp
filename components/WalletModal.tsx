@@ -22,10 +22,10 @@ import ReactGA from "react-ga4";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
-import { signDataMessage, walletType } from "@/lib/helpers";
+import { path, signDataMessage, walletType } from "@/lib/helpers";
 import { fetchOperator, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setIsValidated, setLogout, setRedirect, validateOperator } from "@/store/operatorSlice";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { fuse } from "viem/chains";
 
 const WalletModal = (): JSX.Element => {
@@ -41,6 +41,7 @@ const WalletModal = (): JSX.Element => {
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
   const { isLogin, isValidated, isLoggedIn, isLoginError, isOperatorWalletModalOpen, redirect, signature } = useAppSelector(selectOperatorSlice);
+  const pathname = usePathname();
 
   const { signMessage } = useSignMessage({
     message: signDataMessage,
@@ -140,6 +141,9 @@ const WalletModal = (): JSX.Element => {
     connectionEvent(id);
     setConnectingWalletId(id);
     connect({ connector: connectors.find((connector) => connector.id === id) });
+    if(pathname === path.HOME) {
+      router.push("/wallet");
+    }
   }
 
   const toggleModal = (isModal: boolean) => {

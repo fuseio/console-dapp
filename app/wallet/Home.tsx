@@ -1,22 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
-import dollar from "@/assets/dollar.svg"
-import receive from "@/assets/receive.svg"
-import send from "@/assets/send.svg"
-import dollarMobile from "@/assets/dollar-mobile.svg"
-import receiveMobile from "@/assets/receive-mobile.svg"
-import sendMobile from "@/assets/send-mobile.svg"
-import rightArrow from "@/assets/right-arrow.svg"
+import dollar from "@/assets/dollar.svg";
+import receive from "@/assets/receive.svg";
+import send from "@/assets/send.svg";
+import rightArrow from "@/assets/right-arrow.svg";
 import { eclipseAddress, walletType } from "@/lib/helpers";
-import copy from "@/assets/copy2.svg";
+import copy from "@/assets/copy-white.svg";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
-import TransfiModal from "@/components/console/TransfiModal";
+import TransfiModal from "@/components/wallet/TransfiModal";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { fuse } from "wagmi/chains";
 import { setIsTransfiModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
+import Image from "next/image";
+import fuseIcon from "@/assets/fuse-icon.svg";
+import qr from "@/assets/qr-white.svg";
+import Link from "next/link";
+import QrModal from "@/components/wallet/QrModal";
 
 const Home = () => {
   const router = useRouter();
@@ -25,6 +27,7 @@ const Home = () => {
   const controller = new AbortController();
   const { address, connector, isConnected } = useAccount();
   const { chain } = useNetwork();
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false)
   const balance = useBalance({
     address,
     watch: true,
@@ -45,13 +48,14 @@ const Home = () => {
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TransfiModal />
+      {isQrModalOpen && <QrModal value={String(address)} size={200} setIsQrModalOpen={setIsQrModalOpen} />}
       <div className="w-8/9 flex flex-col gap-y-[32.98px] mt-16 mb-[187px] md:w-9/10 max-w-7xl">
         <div>
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
-            Console
+            Hello{isConnected ? `, ${eclipseAddress(String(address))}` : ""}
           </h1>
-          <p className="text-xl font-normal mt-4 text-text-dark-gray md:text-base">
-            Access Fuse network services through one simple dashboard
+          <p className="text-[20px]/7 font-normal mt-4 text-text-dark-gray md:text-base">
+            One-stop-shop for all Fuse token holders.
           </p>
         </div>
         <div className="flex flex-col gap-y-[30px]">
@@ -84,58 +88,7 @@ const Home = () => {
                     }
                   </div>
                 </div>
-                {/* Buttons Desktop */}
-                <div className="flex md:hidden gap-[30px]">
-                  <Button
-                    text={"Buy Fuse"}
-                    onClick={() => {
-                      amplitude.track("On-Ramp opened", {
-                        walletType: connector ? walletType[connector.id] : undefined,
-                        walletAddress: address
-                      });
-                      dispatch(setIsTransfiModalOpen(true));
-                    }}
-                    padding="py-[17.73px]"
-                    className="flex items-center justify-center gap-x-2.5 w-40 bg-success text-black font-semibold rounded-full transition ease-in-out delay-150 hover:bg-fuse-green-bright"
-                    isLeft
-                  >
-                    <img src={dollar.src} alt="dollar" />
-                  </Button>
-                  <Button
-                    text={"Stake"}
-                    onClick={() => {
-                      amplitude.track("Go to Staking", {
-                        walletType: connector ? walletType[connector.id] : undefined,
-                        walletAddress: address
-                      });
-                      router.push("/staking");
-                    }}
-                    padding="py-[17.73px]"
-                    className="flex items-center justify-center gap-x-2.5 w-40 bg-white text-black font-semibold rounded-full transition ease-in-out delay-150 hover:opacity-80"
-                    disabledClassname="flex items-center justify-center gap-x-2.5 w-40 bg-button-inactive text-black font-semibold rounded-full"
-                    isLeft
-                  >
-                    <img src={receive.src} alt="receive" />
-                  </Button>
-                  <Button
-                    text={"Bridge"}
-                    onClick={() => {
-                      amplitude.track("Go to Bridge", {
-                        walletType: connector ? walletType[connector.id] : undefined,
-                        walletAddress: address
-                      });
-                      router.push("/bridge");
-                    }}
-                    padding="py-[17.73px]"
-                    className="flex items-center justify-center gap-x-2.5 w-40 bg-white text-black font-semibold rounded-full transition ease-in-out delay-150 hover:opacity-80"
-                    disabledClassname="flex items-center justify-center gap-x-2.5 w-40 bg-button-inactive text-black font-semibold rounded-full"
-                    isLeft
-                  >
-                    <img src={send.src} alt="send" />
-                  </Button>
-                </div>
-                {/* Buttons Mobile */}
-                <div className="hidden md:flex justify-between">
+                <div className="flex gap-[52.73px] md:gap-4 justify-between">
                   <div className="flex flex-col justify-center items-center gap-4">
                     <Button
                       text={""}
@@ -150,9 +103,9 @@ const Home = () => {
                       className="flex items-center justify-center w-16 h-16 bg-success text-black font-semibold rounded-full"
                       disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
                     >
-                      <img src={dollarMobile.src} alt="dollar" />
+                      <Image src={dollar} alt="dollar" />
                     </Button>
-                    <p className="text-success font-semibold whitespace-nowrap">
+                    <p className="font-semibold whitespace-nowrap">
                       Buy Fuse
                     </p>
                   </div>
@@ -171,7 +124,7 @@ const Home = () => {
                       disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
                       isLeft
                     >
-                      <img src={receiveMobile.src} alt="receive" />
+                      <Image src={receive} alt="receive" />
                     </Button>
                     <p className="text-white font-semibold whitespace-nowrap">
                       Stake
@@ -192,7 +145,7 @@ const Home = () => {
                       disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
                       isLeft
                     >
-                      <img src={sendMobile.src} alt="send" />
+                      <Image src={send} alt="send" />
                     </Button>
                     <p className="text-white font-semibold whitespace-nowrap">
                       Bridge
@@ -201,108 +154,55 @@ const Home = () => {
                 </div>
               </div>
               {isConnected &&
-                <div className="flex flex-col gap-4 md:hidden">
-                  <p className="text-success">
-                    Wallet Address
-                  </p>
-                  <span className="text-darker-gray text-base flex">
+                <div className="flex items-center h-[45px] md:hidden">
+                  <Image
+                    src={fuseIcon}
+                    alt="Fuse"
+                    width={45}
+                    height={45}
+                  />
+                  <p className="text-[40px] leading-none text-white font-bold ml-[19.02px] mr-[24.12px]">
                     {eclipseAddress(String(address))}
-                    <img
-                      src={copy.src}
-                      alt="Copy"
-                      className="ms-2 cursor-pointer"
-                      onClick={() => {
-                        navigator.clipboard.writeText(String(address));
-                      }}
-                    />
-                  </span>
+                  </p>
+                  <Image
+                    src={copy}
+                    alt="Copy"
+                    width={19}
+                    height={19}
+                    className="cursor-pointer"
+                    onClick={() => {
+                      navigator.clipboard.writeText(String(address));
+                    }}
+                  />
+                  <Image
+                    src={qr}
+                    alt="QR"
+                    width={16}
+                    height={16}
+                    className="ml-[19.02px] cursor-pointer"
+                    onClick={() => {
+                      setIsQrModalOpen(true);
+                    }}
+                  />
                 </div>
               }
             </div>
           </div>
-          <div className="flex md:flex-col gap-[30px]">
-            <div className="flex flex-col justify-between items-start gap-y-3 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
-              <div className="flex flex-col gap-4">
-                <p className="text-lg font-bold">
-                  Build on Fuse
-                </p>
-                <p className="text-xl font-normal text-text-dark-gray md:text-base">
-                  Join the Fuse console list to be the first
-                  to receive latest news, access to new features
-                  and special offers.
-                </p>
-              </div>
-              <div className="flex gap-8">
-                <a
-                  href="mailto:console@fuse.io"
-                  className="group flex gap-1 text-black font-semibold"
-                  onClick={() => amplitude.track("Contact us", {
-                    walletType: connector ? walletType[connector.id] : undefined,
-                    walletAddress: address
-                  })}
-                >
-                  <p>Contact us</p>
-                  <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />
-                </a>
-                <a
-                  href="https://docs.fuse.io"
-                  target="_blank"
-                  className="group flex gap-1 text-black font-semibold"
-                  onClick={() => amplitude.track("Go to Docs", {
-                    walletType: connector ? walletType[connector.id] : undefined,
-                    walletAddress: address
-                  })}
-                >
-                  <p>Read docs</p>
-                  <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />
-                </a>
-              </div>
+          <div className="flex flex-row md:flex-col justify-between items-center gap-4 bg-lightest-gray rounded-[20px] px-[50px] pt-11 pb-9 md:px-4 md:py-6">
+            <div className="flex flex-col gap-3">
+              <p className="text-3xl text-black font-bold md:text-center">
+                Want to run your project on Fuse?
+              </p>
+              <p className="text-[20px] text-text-dark-gray md:text-center">
+                Become an operator to run you project
+              </p>
             </div>
-            <div className="flex flex-col justify-between items-start gap-y-3 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
-              <div className="flex flex-col gap-4">
-                <p className="text-lg font-bold">
-                  Get API Key
-                </p>
-                <p className="text-xl font-normal text-text-dark-gray md:text-base">
-                  Sign in to our developer dashboard to
-                  receive your API key and start using the
-                  Fuse SDK
-                </p>
-              </div>
-              <div className="flex gap-8">
-                <a
-                  href="https://developers.fuse.io"
-                  target="_blank"
-                  className="group flex gap-1 text-black font-semibold"
-                  onClick={() => amplitude.track("Go to Developers app", {
-                    walletType: connector ? walletType[connector.id] : undefined,
-                    walletAddress: address
-                  })}
-                >
-                  <p>Get API key</p>
-                  <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />
-                </a>
-              </div>
-            </div>
-            <div className="flex flex-col justify-between items-start gap-y-3 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[35px]">
-              <div className="flex flex-col gap-4">
-                <p className="text-lg font-bold">
-                  Operator Account
-                </p>
-                <p className="text-xl font-normal text-text-dark-gray md:text-base">
-                  Generate a operator account on Fuse which is a contract wallet that allows
-                  business operators to pay their network services and for their customers.
-                </p>
-              </div>
-              <div className="flex gap-8">
-                <Button
-                  text={"Create Account"}
-                  className="bg-fuse-black text-white rounded-full font-semibold"
-                  padding="px-[31px] py-[19.5px]"
-                  onClick={() => router.push("/operator")}
-                />
-              </div>
-            </div>
+            <Link
+              href="/build"
+              className="text-lg text-white font-semibold bg-black rounded-full py-4 px-[52px] md:px-6"
+            >
+              Become an operator
+            </Link>
           </div>
         </div>
       </div>
