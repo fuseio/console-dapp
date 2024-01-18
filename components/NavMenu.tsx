@@ -1,11 +1,10 @@
 import { MenuItem, MenuItems } from "@/lib/types";
-import { selectNavbarSlice } from "@/store/navbarSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "usehooks-ts";
 import * as amplitude from "@amplitude/analytics-browser";
-import { signDataMessage, walletType } from "@/lib/helpers";
+import { path, signDataMessage, walletType } from "@/lib/helpers";
 import { useAccount, useNetwork, useSignMessage, useSwitchNetwork } from "wagmi";
 import { selectOperatorSlice, setRedirect, validateOperator } from "@/store/operatorSlice";
 import { usePathname, useRouter } from "next/navigation";
@@ -16,6 +15,7 @@ import lock from "@/assets/lock.svg";
 type NavMenuProps = {
   menuItems?: MenuItems;
   isOpen?: boolean;
+  selected?: string;
   className?: string;
 };
 
@@ -46,10 +46,10 @@ const openMenuItemEvent: OpenMenuItemEvent = {
 const NavMenu = ({
   menuItems = [],
   isOpen = false,
+  selected = "",
   className = "items-center justify-between w-auto order-1 md:w-full absolute md:translate-y-8 md:top-1/2 md:bg-black left-[50%] -translate-x-[50%] rounded-md"
 }: NavMenuProps) => {
   const matches = useMediaQuery("(min-width: 768px)");
-  const navbarSlice = useAppSelector(selectNavbarSlice);
   const { address, connector, isConnected } = useAccount();
   const { signature, isAuthenticated, isValidatingOperator, isFetchingOperator } = useAppSelector(selectOperatorSlice);
   const router = useRouter();
@@ -63,7 +63,7 @@ const NavMenu = ({
       if (!address) {
         return;
       }
-      dispatch(setRedirect("/operator"));
+      dispatch(setRedirect(path.BUILD));
       dispatch(validateOperator({
         signData: {
           externallyOwnedAccountAddress: address,
@@ -77,8 +77,8 @@ const NavMenu = ({
   const isOperatorMenuAndConnected = (item: MenuItem) => {
     if (
       matches &&
-      item.title.toLowerCase() === "operator" &&
-      pathname !== "/operator" &&
+      item.link === path.BUILD &&
+      pathname !== path.BUILD &&
       isConnected &&
       !signature &&
       !isAuthenticated
@@ -120,32 +120,32 @@ const NavMenu = ({
                   href={item.link}
                   className={
                     "block relative p-0 bg-transparent md:py-2 md:pl-3 md:pr-4 " +
-                    ((item.title.toLowerCase() === navbarSlice.selected || (item.title.toLowerCase() === "operator" && pathname === "/dashboard"))
+                    (item.title.toLowerCase() === selected
                       ? "bg-lightest-gray py-2.5 px-4 rounded-full md:text-white pointer-events-none"
                       : "md:text-gray pointer-events-auto group hover:text-text-darker-gray")
                   }
                   aria-current={
-                    (item.title.toLowerCase() === navbarSlice.selected || (item.title.toLowerCase() === "operator" && pathname === "/dashboard"))
+                    item.title.toLowerCase() === selected
                       ? "page"
                       : "false"
                   }
                   title={isOperatorMenuAndConnected(item) && !loading() ? "Verify your wallet to proceed" : ""}
                   onClick={(e) => {
-                    if (item.link === "/operator") {
+                    if (item.link === path.BUILD) {
                       e.preventDefault();
                       if (pathname === "/dashboard") {
-                        router.push("/operator");
+                        router.push(path.BUILD);
                       } else if (isAuthenticated) {
                         router.push("/dashboard");
                       } else if (signature) {
-                        router.push("/operator");
+                        router.push(path.BUILD);
                       } else if (isConnected) {
                         if (chain?.id !== fuse.id) {
                           switchNetwork && switchNetwork(fuse.id)
                         }
                         signMessage();
                       } else {
-                        router.push("/operator");
+                        router.push(path.BUILD);
                       }
                     } else {
                       amplitude.track(openMenuItemEvent[item.title], {

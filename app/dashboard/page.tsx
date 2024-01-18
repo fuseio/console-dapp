@@ -18,7 +18,7 @@ const Operator = () => {
   const router = useRouter();
 
   useEffect(() => {
-    dispatch(setSelectedNavbar("dashboard"));
+    dispatch(setSelectedNavbar("build"));
   }, [])
 
   useEffect(() => {

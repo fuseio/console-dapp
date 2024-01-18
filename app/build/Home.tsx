@@ -10,11 +10,13 @@ import thirdweb from "@/public/thirdweb.png"
 import cointool from "@/public/cointool.png"
 import theGraph from "@/public/the-graph.png"
 import taskOn from "@/public/taskon.png"
-import ContactDetailsModal from "@/components/operator/ContactDetailsModal";
-import AccountCreationModal from "@/components/operator/AccountCreationModal";
-import CongratulationModal from "@/components/operator/CongratulationModal";
+import ContactDetailsModal from "@/components/build/ContactDetailsModal";
+import AccountCreationModal from "@/components/build/AccountCreationModal";
+import CongratulationModal from "@/components/build/CongratulationModal";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import { useRouter } from "next/navigation";
+import NavMenu from "@/components/NavMenu";
+import { buildSubMenuItems } from "@/lib/helpers";
 
 const apps = [
   {
@@ -65,7 +67,7 @@ const Home = () => {
       return router.push("/dashboard");
     }
 
-    if(accessToken) {
+    if (accessToken) {
       return dispatch(setIsContactDetailsModalOpen(true));
     }
 
@@ -79,7 +81,12 @@ const Home = () => {
       {isAccountCreationModalOpen && <AccountCreationModal />}
       {isCongratulationModalOpen && <CongratulationModal />}
       <div className="w-full flex flex-col items-center">
-        <div className="w-8/9 flex flex-col mt-16 md:w-9/10 max-w-7xl">
+        <div className="w-8/9 flex flex-col mt-[30.84px] md:w-9/10 max-w-7xl">
+          <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="welcome" className="" />
+        </div>
+      </div>
+      <div className="w-full flex flex-col items-center">
+        <div className="w-8/9 flex flex-col mt-[76.29px] md:w-9/10 max-w-7xl">
           <div className="flex flex-col justify-center items-center text-center">
             <p className="text-text-dark-gray text-lg">
               Build your business on Fuse Network

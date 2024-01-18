@@ -70,3 +70,14 @@ export const path = {
   STAKING: "/staking",
   DASHBOARD: "/dashboard",
 };
+
+export const buildSubMenuItems = [
+  {
+    title: "Welcome",
+    link: "/build",
+  },
+  {
+    title: "Dashboard",
+    link: "/dashboard",
+  },
+];

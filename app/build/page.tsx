@@ -6,13 +6,13 @@ import Home from "./Home";
 
 import { useAppDispatch } from "@/store/store";
 import { setSelectedNavbar } from "@/store/navbarSlice";
-import Footer from "@/components/operator/Footer";
+import Footer from "@/components/Footer";
 
-const Operator = () => {
+const Build = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(setSelectedNavbar("operator"));
+    dispatch(setSelectedNavbar("build"));
   }, [])
 
   return (
@@ -26,4 +26,4 @@ const Operator = () => {
   );
 };
 
-export default Operator;
+export default Build;

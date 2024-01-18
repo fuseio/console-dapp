@@ -6,10 +6,11 @@ import NavButton from "./NavButton";
 import { useAppSelector } from "@/store/store";
 import { selectNavbarSlice } from "@/store/navbarSlice";
 import { selectOperatorSlice } from "@/store/operatorSlice";
+import { path } from "@/lib/helpers";
 
 const Topbar = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
-  const { isTransfiModalOpen } = useAppSelector(selectNavbarSlice);
+  const { isTransfiModalOpen, selected } = useAppSelector(selectNavbarSlice);
   const { isAuthenticated } = useAppSelector(selectOperatorSlice);
   const [menuItems, setMenuItems] = useState([
     {
@@ -17,8 +18,8 @@ const Topbar = () => {
       link: "/wallet",
     },
     {
-      title: "Operator",
-      link: "/operator",
+      title: "Build",
+      link: "/build",
     },
     {
       title: "Bridge",
@@ -33,7 +34,7 @@ const Topbar = () => {
   useEffect(() => {
     setMenuItems((oldMenuItems) =>
       oldMenuItems.map((item) =>
-        item.title === "Operator" && isAuthenticated ?
+        item.link === path.BUILD && isAuthenticated ?
           { ...item, link: "/dashboard" } :
           item
       )
@@ -57,7 +58,7 @@ const Topbar = () => {
             />
           </a>
         </span>
-        <NavMenu menuItems={menuItems} isOpen={isOpen} />
+        <NavMenu menuItems={menuItems} isOpen={isOpen} selected={selected} />
         <NavButton isOpen={isOpen} setOpen={setOpen} />
       </div>
     </nav>

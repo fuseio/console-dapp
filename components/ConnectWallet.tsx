@@ -14,7 +14,7 @@ import {
   useSwitchNetwork,
 } from "wagmi";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
-import { eclipseAddress } from "@/lib/helpers";
+import { eclipseAddress, path } from "@/lib/helpers";
 import { arbitrum, polygon, fuse, optimism, bsc, mainnet } from "wagmi/chains";
 import fuseIcon from "@/assets/fuse-icon.svg";
 import polygonIcon from "@/assets/polygon-icon.svg";
@@ -160,7 +160,7 @@ const ConnectWallet = ({
           className
         }
         onClick={() => {
-          if (pathname === "/operator") {
+          if (pathname === path.BUILD) {
             dispatch(setIsOperatorWalletModalOpen(true));
             dispatch(setIsLogin(true));
           }

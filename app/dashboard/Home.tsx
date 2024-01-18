@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Button from "@/components/ui/Button";
 import rightArrow from "@/assets/right-arrow.svg"
-import { eclipseAddress, hex, walletType } from "@/lib/helpers";
+import { buildSubMenuItems, eclipseAddress, hex, walletType } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useNetwork } from "wagmi";
@@ -13,13 +13,6 @@ import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
 import NavMenu from "@/components/NavMenu";
-
-const menuItems = [
-  {
-    title: "Dashboard",
-    link: "/dashboard",
-  },
-];
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -51,7 +44,7 @@ const Home = () => {
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TopupAccountModal />
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[187px] md:w-9/10 max-w-7xl">
-        <NavMenu menuItems={menuItems} isOpen={true} className="" />
+        <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="" />
         <div className="mt-[76.29px] mb-[70px]">
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
             Dashboard
