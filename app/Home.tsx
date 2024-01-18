@@ -20,7 +20,7 @@ const Home = () => {
           <h1 className="text-[70px]/[84.35px] text-fuse-black font-semibold max-w-[680.37px]">
             Welcome to the Fuse console
           </h1>
-          <p className="text-xl font-normal text-text-dark-gray md:text-base mt-[22px] mb-[36.52px]">
+          <p className="text-[20px]/7 text-text-dark-gray md:text-base mt-[22px] mb-[36.52px]">
             A one-stop-shop for everything you need
           </p>
           <div className="h-16">
@@ -40,8 +40,8 @@ const Home = () => {
           <p className="text-[40px] leading-tight text-fuse-black font-semibold max-w-[414.86px]">
             Build your Web3 project with Fuse
           </p>
-          <p className="text-xl font-normal text-text-dark-gray md:text-base max-w-[395.25px] mt-[15.42px] mb-[35.58px]">
-            A one-stop-shop for everything you need
+          <p className="text-[20px]/7 text-text-dark-gray md:text-base max-w-[395.25px] mt-[15.42px] mb-[35.58px]">
+            A low cost Web3 payments without the development headaches or vendor lock-in
           </p>
           <Link
             href="/build"
