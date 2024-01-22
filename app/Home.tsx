@@ -44,7 +44,7 @@ const Home = () => {
             />
           }
         </div>
-        <div className="transition ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] px-[83.31px] pt-[60.36px] pb-[67px] md:px-4 md:py-6 mt-[99.5px] mb-10 bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-bottom">
+        <div className="transition-all ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] border-black/10 hover:border-[3px] px-[83.31px] pt-[60.36px] pb-[67px] hover:px-[80.31px] hover:pt-[57.36px] hover:pb-[64px] md:px-4 md:py-6 mt-[99.5px] mb-10 bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-bottom">
           <p className="text-[40px] leading-tight text-fuse-black font-semibold max-w-[414.86px]">
             Build your Web3 project with Fuse
           </p>
@@ -53,14 +53,14 @@ const Home = () => {
           </p>
           <Link
             href="/build"
-            className="text-lg text-white font-semibold bg-black rounded-full py-4 px-[52px] md:px-6"
+            className="transition ease-in-out text-lg text-white hover:text-black font-semibold bg-black hover:bg-white rounded-full py-4 px-[52px] md:px-6"
           >
             Create your project
           </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-1 gap-[30.5px]">
           <div
-            className="transition ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] px-[57px] pt-11 md:px-4 md:pt-6"
+            className="transition-all ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] border-black/10 hover:border-[3px] px-[57px] pt-11 hover:px-[54px] hover:pt-[41px] md:px-4 md:pt-6"
             onMouseEnter={() => {
               setHover("check balance");
             }}
@@ -80,7 +80,7 @@ const Home = () => {
             />
           </div>
           <div
-            className="transition ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] px-[57px] pt-11 md:px-4 md:pt-6"
+            className="transition ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] border-black/10 hover:border-[3px] px-[57px] pt-11 hover:px-[54px] hover:pt-[41px] md:px-4 md:pt-6"
             onMouseEnter={() => {
               setHover("bridge");
             }}
@@ -100,7 +100,7 @@ const Home = () => {
             />
           </div>
           <div
-            className="transition ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] px-[57px] pt-11 md:px-4 md:pt-6"
+            className="transition ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] border-black/10 hover:border-[3px] px-[57px] pt-11 hover:px-[54px] hover:pt-[41px] md:px-4 md:pt-6"
             onMouseEnter={() => {
               setHover("stake");
             }}
@@ -120,7 +120,7 @@ const Home = () => {
             />
           </div>
           <div
-            className="transition ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] px-[57px] pt-11 md:px-4 md:pt-6"
+            className="transition ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] border-black/10 hover:border-[3px] px-[57px] pt-11 hover:px-[54px] hover:pt-[41px] md:px-4 md:pt-6"
             onMouseEnter={() => {
               setHover("explore apps");
             }}
@@ -145,7 +145,11 @@ const Home = () => {
             Developer tools
           </p>
           <div className="grid grid-cols-2 md:grid-cols-1 gap-[30px]">
-            <div className="flex justify-between bg-white rounded-[20px] p-12 md:px-4 md:py-6 min-h-[250px]">
+            <a
+              href="https://docs.fuse.io/docs/category/intro-to-fuse"
+              target="_blank"
+              className="transition ease-in-out flex justify-between bg-white hover:bg-lightest-gray rounded-[20px] p-12 md:px-4 md:py-6 min-h-[250px]"
+            >
               <div className="flex flex-col justify-between">
                 <p className="text-2xl text-fuse-black font-bold max-w-[204.2px]">
                   Fuse Basics
@@ -161,8 +165,12 @@ const Home = () => {
                 width={229}
                 height={148}
               />
-            </div>
-            <div className="flex justify-between bg-white rounded-[20px] p-12 md:px-4 md:py-6 min-h-[250px]">
+            </a>
+            <a
+              href="https://docs.fuse.io/docs/basics/intro-to-fuse/what-is-fuse#fuse-token"
+              target="_blank"
+              className="transition ease-in-out flex justify-between bg-white hover:bg-lightest-gray rounded-[20px] p-12 md:px-4 md:py-6 min-h-[250px]"
+            >
               <div className="flex flex-col justify-between">
                 <p className="text-2xl text-fuse-black font-bold max-w-[204.2px]">
                   Fuse Token
@@ -177,8 +185,12 @@ const Home = () => {
                 width={172}
                 height={156}
               />
-            </div>
-            <div className="flex justify-between bg-white rounded-[20px] p-12 md:px-4 md:py-6 min-h-[250px]">
+            </a>
+            <a
+              href="https://docs.fuse.io/docs/category/fusebox"
+              target="_blank"
+              className="transition ease-in-out flex justify-between bg-white hover:bg-lightest-gray rounded-[20px] p-12 md:px-4 md:py-6 min-h-[250px]"
+            >
               <div className="flex flex-col justify-between">
                 <p className="text-2xl text-fuse-black font-bold max-w-[204.2px]">
                   Fuse SDK
@@ -194,8 +206,12 @@ const Home = () => {
                 width={96}
                 height={160}
               />
-            </div>
-            <div className="flex justify-between bg-white rounded-[20px] p-12 md:px-4 md:py-6 min-h-[250px]">
+            </a>
+            <a
+              href="https://docs.fuse.io/docs/category/tutorials"
+              target="_blank"
+              className="transition ease-in-out flex justify-between bg-white hover:bg-lightest-gray rounded-[20px] p-12 md:px-4 md:py-6 min-h-[250px]"
+            >
               <div className="flex flex-col justify-between">
                 <p className="text-2xl text-fuse-black font-bold max-w-[204.2px]">
                   Fuse Guides
@@ -211,7 +227,7 @@ const Home = () => {
                 width={117}
                 height={151}
               />
-            </div>
+            </a>
           </div>
         </div>
       </div>
