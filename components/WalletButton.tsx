@@ -2,8 +2,6 @@ import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
 import checkCircle from "@/assets/check-circle.svg"
 import { useAccount, useConnect } from "wagmi";
-import { useAppSelector } from "@/store/store";
-import { selectOperatorSlice } from "@/store/operatorSlice";
 
 interface WalletButtonProps {
   onClick?: () => void;
@@ -24,11 +22,10 @@ const WalletButton = ({
 }: WalletButtonProps) => {
   const { connector, isConnected, isConnecting } = useAccount();
   const { isLoading, pendingConnector } = useConnect();
-  const { isOperatorWalletModalOpen } = useAppSelector(selectOperatorSlice);
 
   return (
     <button
-      className={`flex flex-col justify-between items-center relative p-2 border-[#CDD9E5] border rounded-md cursor-pointer hover:bg-[#F2F2F2] disabled:opacity-75 disabled:cursor-default transition-all duration-500 ${isOperatorWalletModalOpen ? "h-[75px]" : "h-16"}`}
+      className="flex flex-col justify-between items-center relative p-2 border-[#CDD9E5] border rounded-md cursor-pointer hover:bg-[#F2F2F2] disabled:opacity-75 disabled:cursor-default transition-all duration-500 h-[75px]"
       onClick={onClick}
       disabled={isConnected && connector?.id === id}
     >

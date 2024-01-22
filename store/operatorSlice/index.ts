@@ -209,6 +209,7 @@ const operatorSlice = createSlice({
       localStorage.removeItem("Fuse-operator");
       localStorage.removeItem("Fuse-operatorEoaSignature");
       localStorage.removeItem("Fuse-isOperatorAuthenticated");
+      localStorage.removeItem("Fuse-isLoginError");
     },
     setHydrate: (state) => {
       const accessToken = localStorage.getItem("Fuse-operatorAccessToken");
@@ -252,6 +253,7 @@ const operatorSlice = createSlice({
     [fetchOperator.rejected.type]: (state) => {
       state.isFetchingOperator = false;
       state.isLoginError = true;
+      localStorage.setItem("Fuse-isLoginError", "true");
     },
     [createOperator.pending.type]: (state) => {
       state.isContactDetailsModalOpen = false;

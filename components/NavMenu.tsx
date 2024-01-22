@@ -6,7 +6,7 @@ import { useMediaQuery } from "usehooks-ts";
 import * as amplitude from "@amplitude/analytics-browser";
 import { path, signDataMessage, walletType } from "@/lib/helpers";
 import { useAccount, useNetwork, useSignMessage, useSwitchNetwork } from "wagmi";
-import { selectOperatorSlice, setIsLogin, setIsOperatorWalletModalOpen, setRedirect, validateOperator } from "@/store/operatorSlice";
+import { selectOperatorSlice, setIsContactDetailsModalOpen, setIsLogin, setIsOperatorWalletModalOpen, setRedirect, validateOperator } from "@/store/operatorSlice";
 import { usePathname, useRouter } from "next/navigation";
 import { fuse } from "viem/chains";
 import Image from "next/image";
@@ -138,6 +138,9 @@ const NavMenu = ({
                         router.push(path.BUILD);
                       } else if (isAuthenticated) {
                         router.push("/dashboard");
+                      } else if (localStorage.getItem("Fuse-isLoginError")) {
+                        localStorage.removeItem("Fuse-isLoginError");
+                        dispatch(setIsContactDetailsModalOpen(true));
                       } else if (signature) {
                         router.push(path.BUILD);
                       } else if (isConnected) {
@@ -148,7 +151,7 @@ const NavMenu = ({
                       } else if (!isConnected && item.link === path.DASHBOARD) {
                         dispatch(setIsOperatorWalletModalOpen(true));
                         dispatch(setIsLogin(true));
-                        dispatch(setIsWalletModalOpen(true))
+                        dispatch(setIsWalletModalOpen(true));
                       } else {
                         router.push(path.BUILD);
                       }
