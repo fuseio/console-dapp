@@ -1,6 +1,6 @@
 import axios from "axios";
 import { CONFIG, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL } from './config'
-import { Operator, OperatorContactDetail, SignData } from "./types";
+import { Operator, OperatorContactDetail, Paymaster, SignData } from "./types";
 
 export const fetchAllNodes = () =>
     axios.get(`${CONFIG.bootApi}/nodes`).then(response => response.data)
@@ -82,6 +82,19 @@ export const postCreateApiSecretKey = async (projectId: string, token: string): 
 export const updateApiSecretKey = async (projectId: string, token: string): Promise<{ secretKey: string }> => {
     const response = await axios.put(
         `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/projects/secret/${projectId}`,
+        {},
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    )
+    return response.data
+}
+
+export const postCreatePaymaster = async (projectId: string, token: string): Promise<Paymaster[]> => {
+    const response = await axios.post(
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/paymaster/${projectId}`,
         {},
         {
             headers: {

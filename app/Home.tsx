@@ -44,7 +44,7 @@ const Home = () => {
             />
           }
         </div>
-        <div className="transition-all ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] border-black/10 hover:border-[3px] px-[83.31px] pt-[60.36px] pb-[67px] hover:px-[80.31px] hover:pt-[57.36px] hover:pb-[64px] md:px-4 md:py-6 mt-[99.5px] mb-10 bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-bottom">
+        <div className="transition-all ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[83.31px] pt-[60.36px] pb-[67px] md:px-4 md:py-6 mt-[99.5px] mb-10 bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-bottom">
           <p className="text-[40px] leading-tight text-fuse-black font-semibold max-w-[414.86px]">
             Build your Web3 project with Fuse
           </p>
@@ -60,7 +60,7 @@ const Home = () => {
         </div>
         <div className="grid grid-cols-2 md:grid-cols-1 gap-[30.5px]">
           <div
-            className="transition-all ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] border-black/10 hover:border-[3px] px-[57px] pt-11 hover:px-[54px] hover:pt-[41px] md:px-4 md:pt-6"
+            className="transition-all ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[57px] pt-11 md:px-4 md:pt-6"
             onMouseEnter={() => {
               setHover("check balance");
             }}
@@ -80,7 +80,7 @@ const Home = () => {
             />
           </div>
           <div
-            className="transition ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] border-black/10 hover:border-[3px] px-[57px] pt-11 hover:px-[54px] hover:pt-[41px] md:px-4 md:pt-6"
+            className="transition ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[57px] pt-11 md:px-4 md:pt-6"
             onMouseEnter={() => {
               setHover("bridge");
             }}
@@ -100,7 +100,7 @@ const Home = () => {
             />
           </div>
           <div
-            className="transition ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] border-black/10 hover:border-[3px] px-[57px] pt-11 hover:px-[54px] hover:pt-[41px] md:px-4 md:pt-6"
+            className="transition ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[57px] pt-11 md:px-4 md:pt-6"
             onMouseEnter={() => {
               setHover("stake");
             }}
@@ -120,7 +120,7 @@ const Home = () => {
             />
           </div>
           <div
-            className="transition ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] border-black/10 hover:border-[3px] px-[57px] pt-11 hover:px-[54px] hover:pt-[41px] md:px-4 md:pt-6"
+            className="transition ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[57px] pt-11 md:px-4 md:pt-6"
             onMouseEnter={() => {
               setHover("explore apps");
             }}

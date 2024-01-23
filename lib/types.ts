@@ -290,9 +290,20 @@ export interface Project {
   secretKey: string;
   secretPrefix: string;
   secretLastFourChars: string;
+  sponsorId: string;
 }
 
 export interface Operator {
   user: User;
   project: Project;
+}
+
+export interface Paymaster {
+  paymasterAddress: string;
+  paymasterVersion: string;
+  entrypointAddress: string;
+  projectId: string;
+  sponsorId: string;
+  isActive: boolean;
+  environment: string;
 }

@@ -7,7 +7,7 @@ import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { fuse } from "wagmi/chains";
 import Link from "next/link";
-import { generateSecretApiKey, selectOperatorSlice, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen } from "@/store/operatorSlice";
+import { createPaymaster, fetchSponsorIdBalance, generateSecretApiKey, selectOperatorSlice, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsTopupPaymasterModalOpen } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
@@ -15,6 +15,7 @@ import NavMenu from "@/components/NavMenu";
 import roll from "@/assets/roll.svg";
 import RollSecretKeyModal from "@/components/dashboard/RollSecretKeyModal";
 import YourSecretKeyModal from "@/components/dashboard/YourSecretKeyModal";
+import TopupPaymasterModal from "@/components/dashboard/TopupPaymasterModal";
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -42,9 +43,14 @@ const Home = () => {
     }
   }, [isConnected])
 
+  useEffect(() => {
+    dispatch(fetchSponsorIdBalance());
+  }, [operatorSlice.isHydrated, operatorSlice.isFundingPaymaster, operatorSlice.isCreatingPaymaster])
+
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TopupAccountModal />
+      <TopupPaymasterModal balance={balance.data?.formatted ?? "0"} />
       <YourSecretKeyModal />
       <RollSecretKeyModal />
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[187px] md:w-9/10 max-w-7xl">
@@ -55,8 +61,8 @@ const Home = () => {
           </h1>
         </div>
         <div className="flex flex-col gap-y-[30px]">
-          <div className="flex flex-col gap-[70px] bg-lightest-gray rounded-[20px] px-12 md:px-8 py-14 md:py-10">
-            <div className="flex flex-row justify-between md:flex-col gap-12">
+          <div className="flex flex-row gap-4 bg-lightest-gray justify-between md:flex-col rounded-[20px] p-12 md:p-8 min-h-[297px]">
+            <div className="flex flex-col justify-between">
               <div className="flex flex-col gap-[18px]">
                 <p className="text-lg text-text-dark-gray">
                   Operator account balance
@@ -83,15 +89,58 @@ const Home = () => {
                   }
                 </div>
               </div>
-              <div className="flex justify-between items-center">
-                <div className="flex flex-col gap-[18px]">
-                  <p className="text-lg text-text-dark-gray">
-                    Active plan
-                  </p>
-                  <p className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
-                    Free plan
-                  </p>
+              <Button
+                text="Deposit funds"
+                className="text-black text-white font-semibold bg-black rounded-full"
+                padding="py-4 px-[52px]"
+                onClick={() => {
+                  dispatch(setIsTopupAccountModalOpen(true));
+                }}
+              />
+            </div>
+            <div className="flex flex-col justify-between">
+              <div className="flex flex-col gap-[18px]">
+                <p className="text-lg text-text-dark-gray">
+                  Paymaster balance
+                </p>
+                <div className="flex items-end gap-x-[30px] md:gap-x-4">
+                  {operatorSlice.isFetchingSponsorIdBalance ?
+                    <span className="px-14 py-4 ml-2 rounded-md animate-pulse bg-white/80"></span> :
+                    <h1 className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
+                      {new Intl.NumberFormat().format(Number(operatorSlice.sponsorIdBalance))} FUSE
+                    </h1>
+                  }
                 </div>
+              </div>
+              {operatorSlice.operator.project.sponsorId ?
+                <Button
+                  text="Top-up Paymaster"
+                  className="text-black text-white font-semibold bg-black rounded-full"
+                  padding="py-4 px-[52px]"
+                  onClick={() => {
+                    dispatch(setIsTopupPaymasterModalOpen(true));
+                  }}
+                /> :
+                <Button
+                  text="Create a paymaster"
+                  className="flex justify-between items-center gap-2 font-semibold bg-pale-green rounded-full"
+                  padding="py-4 px-6"
+                  onClick={() => {
+                    dispatch(createPaymaster());
+                  }}
+                >
+                  {operatorSlice.isCreatingPaymaster && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
+                </Button>
+              }
+            </div>
+            <div className="flex flex-col justify-between">
+              <div className="flex flex-col gap-[18px]">
+                <p className="text-lg text-text-dark-gray">
+                  Active plan
+                </p>
+                <p className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
+                  Free plan
+                </p>
               </div>
               <div className="flex flex-col gap-[18px] w-[361px] md:w-full">
                 <p className="text-lg text-text-dark-gray">
@@ -110,16 +159,6 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-            </div>
-            <div>
-              <Button
-                text="Deposit funds"
-                className="text-black text-white font-semibold bg-black rounded-full"
-                padding="py-4 px-[52px]"
-                onClick={() => {
-                  dispatch(setIsTopupAccountModalOpen(true));
-                }}
-              />
             </div>
           </div>
           <div className="flex md:flex-col gap-[30px]">
@@ -154,7 +193,7 @@ const Home = () => {
                   Your API secret key
                 </p>
                 <p className="text-text-dark-gray md:text-base">
-                  You will need this API key at the next stage for integration into the SDK
+                  You will need this API secret key for some FuseBox APIs.
                 </p>
               </div>
               {operatorSlice.operator.project.secretKey ?

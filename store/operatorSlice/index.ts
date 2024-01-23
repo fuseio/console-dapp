@@ -1,12 +1,16 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
-import { Signer } from "ethers";
+import { Signer, ethers } from "ethers";
 import { FuseSDK } from "@fuseio/fusebox-web-sdk";
 import { hex } from "@/lib/helpers";
 import { Operator, OperatorContactDetail, SignData } from "@/lib/types";
-import { fetchCurrentOperator, postCreateApiSecretKey, postCreateOperator, postValidateOperator, updateApiSecretKey } from "@/lib/api";
+import { fetchCurrentOperator, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
+import { parseEther } from "ethers/lib/utils";
+import { CONFIG } from "@/lib/config";
+import { PaymasterAbi } from "@/lib/abi/Paymaster";
+import { getSponsorIdBalance } from "@/lib/contractInteract";
 
 const initOperator: Operator = {
   user: {
@@ -24,6 +28,7 @@ const initOperator: Operator = {
     secretKey: "",
     secretPrefix: "",
     secretLastFourChars: "",
+    sponsorId: "",
   }
 }
 
@@ -41,9 +46,14 @@ export interface OperatorStateType {
   isAccountCreationModalOpen: boolean;
   isCongratulationModalOpen: boolean;
   isTopupAccountModalOpen: boolean;
+  isTopupPaymasterModalOpen: boolean;
   isGeneratingSecretApiKey: boolean;
   isYourSecretKeyModalOpen: boolean;
   isRollSecretKeyModalOpen: boolean;
+  isFetchingSponsorIdBalance: boolean;
+  isCreatingPaymaster: boolean;
+  isFundingPaymaster: boolean;
+  sponsorIdBalance: string;
   redirect: string;
   signature: string;
   accessToken: string;
@@ -64,9 +74,14 @@ const INIT_STATE: OperatorStateType = {
   isAccountCreationModalOpen: false,
   isCongratulationModalOpen: false,
   isTopupAccountModalOpen: false,
+  isTopupPaymasterModalOpen: false,
   isGeneratingSecretApiKey: false,
   isYourSecretKeyModalOpen: false,
   isRollSecretKeyModalOpen: false,
+  isFetchingSponsorIdBalance: false,
+  isCreatingPaymaster: false,
+  isFundingPaymaster: false,
+  sponsorIdBalance: "",
   redirect: "",
   signature: "",
   accessToken: "",
@@ -222,6 +237,108 @@ export const regenerateSecretApiKey = createAsyncThunk<
   }
 );
 
+export const fetchSponsorIdBalance = createAsyncThunk<
+  any,
+  undefined,
+  { state: RootState }
+>(
+  "OPERATOR/FETCH_SPONSOR_ID_BALANCE",
+  async (
+    _,
+    thunkAPI
+  ) => {
+    return new Promise<any>(async (resolve, reject) => {
+      try {
+        const state = thunkAPI.getState();
+        const operatorState: OperatorStateType = state.operator;
+        const balance = await getSponsorIdBalance(operatorState.operator.project.sponsorId)
+        resolve(balance);
+      } catch (error) {
+        console.log(error);
+        reject(error);
+      }
+    });
+  }
+);
+
+export const createPaymaster = createAsyncThunk<
+  any,
+  undefined,
+  { state: RootState }
+>(
+  "OPERATOR/CREATE_PAYMASTER",
+  async (
+    _,
+    thunkAPI
+  ) => {
+    return new Promise<any>(async (resolve, reject) => {
+      const state = thunkAPI.getState();
+      const operatorState: OperatorStateType = state.operator;
+      const paymasters = await postCreatePaymaster(operatorState.operator.project.id, operatorState.accessToken)
+      if (paymasters?.[0]?.sponsorId) {
+        resolve(paymasters[0].sponsorId);
+      } else {
+        reject();
+      }
+    });
+  }
+);
+
+export const fundPaymaster = createAsyncThunk<
+  any,
+  {
+    signer: Signer;
+    amount: string;
+  },
+  { state: RootState }
+>(
+  "OPERATOR/FUND_PAYMASTER",
+  async (
+    {
+      signer,
+      amount,
+    }: {
+      signer: Signer;
+      amount: string;
+    },
+    thunkAPI
+  ) => {
+    return new Promise<any>(async (resolve, reject) => {
+      try {
+        const state = thunkAPI.getState();
+        const operatorState: OperatorStateType = state.operator;
+        const paymasterContract = new ethers.Contract(CONFIG.paymasterAddress, PaymasterAbi);
+        const value = parseEther(amount);
+        const data = ethers.utils.arrayify(paymasterContract.interface.encodeFunctionData(
+          "depositFor",
+          [operatorState.operator.project.sponsorId]
+        ));
+
+        const fuseSDK = await FuseSDK.init(
+          operatorState.operator.project.publicKey,
+          signer,
+          {
+            jwtToken: operatorState.accessToken,
+            signature: operatorState.signature
+          }
+        );
+        const userOp = await fuseSDK.callContract(CONFIG.paymasterAddress, value, data);
+        const result = await userOp?.wait();
+        const transactionHash = result?.transactionHash;
+
+        if (transactionHash) {
+          resolve(transactionHash);
+        } else {
+          reject();
+        }
+      } catch (error) {
+        console.log(error);
+        reject(error);
+      }
+    });
+  }
+);
+
 const operatorSlice = createSlice({
   name: "OPERATOR_STATE",
   initialState: INIT_STATE,
@@ -249,6 +366,9 @@ const operatorSlice = createSlice({
     },
     setIsTopupAccountModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isTopupAccountModalOpen = action.payload
+    },
+    setIsTopupPaymasterModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isTopupPaymasterModalOpen = action.payload
     },
     setIsYourSecretKeyModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isYourSecretKeyModalOpen = action.payload
@@ -359,6 +479,38 @@ const operatorSlice = createSlice({
     [regenerateSecretApiKey.rejected.type]: (state) => {
       state.isGeneratingSecretApiKey = false;
     },
+    [fetchSponsorIdBalance.pending.type]: (state) => {
+      state.isFetchingSponsorIdBalance = true;
+    },
+    [fetchSponsorIdBalance.fulfilled.type]: (state, action) => {
+      state.isFetchingSponsorIdBalance = false;
+      state.sponsorIdBalance = action.payload;
+    },
+    [fetchSponsorIdBalance.rejected.type]: (state) => {
+      state.isFetchingSponsorIdBalance = false;
+    },
+    [createPaymaster.pending.type]: (state) => {
+      state.isCreatingPaymaster = true;
+    },
+    [createPaymaster.fulfilled.type]: (state, action) => {
+      state.isCreatingPaymaster = false;
+      state.operator.project.sponsorId = action.payload;
+      localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
+    },
+    [createPaymaster.rejected.type]: (state) => {
+      state.isCreatingPaymaster = false;
+    },
+    [fundPaymaster.pending.type]: (state) => {
+      state.isFundingPaymaster = true;
+    },
+    [fundPaymaster.fulfilled.type]: (state) => {
+      state.isFundingPaymaster = false;
+      state.isTopupPaymasterModalOpen = false;
+    },
+    [fundPaymaster.rejected.type]: (state) => {
+      state.isFundingPaymaster = false;
+      state.isTopupPaymasterModalOpen = false;
+    },
   },
 });
 
@@ -374,6 +526,7 @@ export const {
   setIsAccountCreationModalOpen,
   setIsCongratulationModalOpen,
   setIsTopupAccountModalOpen,
+  setIsTopupPaymasterModalOpen,
   setIsYourSecretKeyModalOpen,
   setIsRollSecretKeyModalOpen,
   setRedirect,

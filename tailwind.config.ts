@@ -99,6 +99,9 @@ const config: Config = {
       },
       colors: {
         "light-blue": "#CDD9E5",
+      },
+      boxShadow: {
+        'inner-black': 'inset 0px 0px 0px 3px rgba(0,0,0,0.3)',
       }
     },
   },

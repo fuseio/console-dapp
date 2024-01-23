@@ -38,10 +38,10 @@ const RollSecretKeyModal = (): JSX.Element => {
             <div className="px-4 py-8 flex flex-col">
               <div className="flex flex-col gap-2 items-center text-center">
                 <p className="text-3xl leading-none font-bold">
-                  Roll API Secret key
+                  Roll API secret key
                 </p>
                 <p className="text-text-heading-gray max-w-[300px]">
-                  Rolling will block your current API key and generate a new one
+                  Rolling will block your current API secret key and generate a new one
                 </p>
               </div>
               <div className="flex justify-between items-center gap-4 mt-6 mx-auto">
