@@ -68,6 +68,7 @@ const config: Config = {
       "night": "#0A0A0A",
       "ghost": "#CBCBCB",
       "iron": "#D7D7D7",
+      "red-600": "#dc2626",
     },
     fontFamily: {
       mona: ["var(--font-mona-sans)"],

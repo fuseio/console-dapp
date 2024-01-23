@@ -21,10 +21,10 @@ export const fetchFuseTokenData = () =>
     axios.get(`${CONFIG.bootApi}/stats/circulating`).then(response => response.data)
 
 export const fetchTokenPrice = async (tokenId: string) => {
-  const response = await axios.get(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`
-  );
-  return response.data[`${tokenId}`].usd as number;
+    const response = await axios.get(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`
+    );
+    return response.data[`${tokenId}`].usd as number;
 };
 
 export const fetchTotalSupply = async () => {
@@ -45,7 +45,7 @@ export const fetchCurrentOperator = async (token: string): Promise<Operator> => 
         `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/id_not_needed`,
         {
             headers: {
-                "Authorization" : `Bearer ${token}`
+                "Authorization": `Bearer ${token}`
             }
         }
     )
@@ -58,7 +58,34 @@ export const postCreateOperator = async (operatorContactDetail: OperatorContactD
         operatorContactDetail,
         {
             headers: {
-                "Authorization" : `Bearer ${token}`
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    )
+    return response.data
+}
+
+
+export const postCreateApiSecretKey = async (projectId: string, token: string): Promise<{ secretKey: string }> => {
+    const response = await axios.post(
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/projects/secret/${projectId}`,
+        {},
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    )
+    return response.data
+}
+
+export const updateApiSecretKey = async (projectId: string, token: string): Promise<{ secretKey: string }> => {
+    const response = await axios.put(
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/projects/secret/${projectId}`,
+        {},
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
             }
         }
     )

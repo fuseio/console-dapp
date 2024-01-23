@@ -282,10 +282,14 @@ export interface User {
 }
 
 export interface Project {
+  id: string;
   ownerId: string;
   name: string;
   description: string;
-  publicKey: string
+  publicKey: string;
+  secretKey: string;
+  secretPrefix: string;
+  secretLastFourChars: string;
 }
 
 export interface Operator {

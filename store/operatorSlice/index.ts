@@ -4,7 +4,7 @@ import { Signer } from "ethers";
 import { FuseSDK } from "@fuseio/fusebox-web-sdk";
 import { hex } from "@/lib/helpers";
 import { Operator, OperatorContactDetail, SignData } from "@/lib/types";
-import { fetchCurrentOperator, postCreateOperator, postValidateOperator } from "@/lib/api";
+import { fetchCurrentOperator, postCreateApiSecretKey, postCreateOperator, postValidateOperator, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
 
@@ -16,10 +16,14 @@ const initOperator: Operator = {
     smartContractAccountAddress: hex,
   },
   project: {
+    id: "",
     ownerId: "",
     name: "",
     description: "",
     publicKey: "",
+    secretKey: "",
+    secretPrefix: "",
+    secretLastFourChars: "",
   }
 }
 
@@ -37,6 +41,9 @@ export interface OperatorStateType {
   isAccountCreationModalOpen: boolean;
   isCongratulationModalOpen: boolean;
   isTopupAccountModalOpen: boolean;
+  isGeneratingSecretApiKey: boolean;
+  isYourSecretKeyModalOpen: boolean;
+  isRollSecretKeyModalOpen: boolean;
   redirect: string;
   signature: string;
   accessToken: string;
@@ -57,6 +64,9 @@ const INIT_STATE: OperatorStateType = {
   isAccountCreationModalOpen: false,
   isCongratulationModalOpen: false,
   isTopupAccountModalOpen: false,
+  isGeneratingSecretApiKey: false,
+  isYourSecretKeyModalOpen: false,
+  isRollSecretKeyModalOpen: false,
   redirect: "",
   signature: "",
   accessToken: "",
@@ -166,6 +176,52 @@ export const createOperator = createAsyncThunk<
   }
 );
 
+export const generateSecretApiKey = createAsyncThunk<
+  any,
+  undefined,
+  { state: RootState }
+>(
+  "OPERATOR/GENERATE_SECRET_API_KEY",
+  async (
+    _,
+    thunkAPI
+  ) => {
+    return new Promise<any>(async (resolve, reject) => {
+      const state = thunkAPI.getState();
+      const operatorState: OperatorStateType = state.operator;
+      const { secretKey } = await postCreateApiSecretKey(operatorState.operator.project.id, operatorState.accessToken);
+      if (secretKey) {
+        resolve(secretKey);
+      } else {
+        reject();
+      }
+    });
+  }
+);
+
+export const regenerateSecretApiKey = createAsyncThunk<
+  any,
+  undefined,
+  { state: RootState }
+>(
+  "OPERATOR/REGENERATE_SECRET_API_KEY",
+  async (
+    _,
+    thunkAPI
+  ) => {
+    return new Promise<any>(async (resolve, reject) => {
+      const state = thunkAPI.getState();
+      const operatorState: OperatorStateType = state.operator;
+      const { secretKey } = await updateApiSecretKey(operatorState.operator.project.id, operatorState.accessToken);
+      if (secretKey) {
+        resolve(secretKey);
+      } else {
+        reject();
+      }
+    });
+  }
+);
+
 const operatorSlice = createSlice({
   name: "OPERATOR_STATE",
   initialState: INIT_STATE,
@@ -194,11 +250,20 @@ const operatorSlice = createSlice({
     setIsTopupAccountModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isTopupAccountModalOpen = action.payload
     },
+    setIsYourSecretKeyModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isYourSecretKeyModalOpen = action.payload
+    },
+    setIsRollSecretKeyModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isRollSecretKeyModalOpen = action.payload
+    },
     setIsOperatorWalletModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isOperatorWalletModalOpen = action.payload
     },
     setRedirect: (state, action: PayloadAction<string>) => {
       state.redirect = action.payload
+    },
+    setOperator: (state, action: PayloadAction<Operator>) => {
+      state.operator = action.payload
     },
     setLogout: (state) => {
       state.accessToken = "";
@@ -271,6 +336,29 @@ const operatorSlice = createSlice({
     [createOperator.rejected.type]: (state) => {
       state.isAccountCreationModalOpen = false;
     },
+    [generateSecretApiKey.pending.type]: (state) => {
+      state.isGeneratingSecretApiKey = true;
+    },
+    [generateSecretApiKey.fulfilled.type]: (state, action) => {
+      state.isGeneratingSecretApiKey = false;
+      state.operator.project.secretKey = action.payload;
+      state.isYourSecretKeyModalOpen = true;
+    },
+    [generateSecretApiKey.rejected.type]: (state) => {
+      state.isGeneratingSecretApiKey = false;
+    },
+    [regenerateSecretApiKey.pending.type]: (state) => {
+      state.isGeneratingSecretApiKey = true;
+    },
+    [regenerateSecretApiKey.fulfilled.type]: (state, action) => {
+      state.isGeneratingSecretApiKey = false;
+      state.operator.project.secretKey = action.payload;
+      state.isRollSecretKeyModalOpen = false;
+      state.isYourSecretKeyModalOpen = true;
+    },
+    [regenerateSecretApiKey.rejected.type]: (state) => {
+      state.isGeneratingSecretApiKey = false;
+    },
   },
 });
 
@@ -286,7 +374,10 @@ export const {
   setIsAccountCreationModalOpen,
   setIsCongratulationModalOpen,
   setIsTopupAccountModalOpen,
+  setIsYourSecretKeyModalOpen,
+  setIsRollSecretKeyModalOpen,
   setRedirect,
+  setOperator,
   setLogout,
   setHydrate
 } = operatorSlice.actions;

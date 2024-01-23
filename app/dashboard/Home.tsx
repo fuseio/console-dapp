@@ -1,25 +1,27 @@
 import { useEffect } from "react";
 import Button from "@/components/ui/Button";
 import rightArrow from "@/assets/right-arrow.svg"
-import { buildSubMenuItems, eclipseAddress, hex, walletType } from "@/lib/helpers";
+import { buildSubMenuItems } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { fuse } from "wagmi/chains";
-import * as amplitude from "@amplitude/analytics-browser";
 import Link from "next/link";
-import { selectOperatorSlice, setIsTopupAccountModalOpen } from "@/store/operatorSlice";
+import { generateSecretApiKey, selectOperatorSlice, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
 import NavMenu from "@/components/NavMenu";
+import roll from "@/assets/roll.svg";
+import RollSecretKeyModal from "@/components/dashboard/RollSecretKeyModal";
+import YourSecretKeyModal from "@/components/dashboard/YourSecretKeyModal";
 
 const Home = () => {
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const controller = new AbortController();
-  const { address, connector, isConnected } = useAccount();
+  const { isConnected } = useAccount();
   const { chain } = useNetwork();
   const balance = useBalance({
     address: operatorSlice.operator.user.smartContractAccountAddress,
@@ -43,6 +45,8 @@ const Home = () => {
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TopupAccountModal />
+      <YourSecretKeyModal />
+      <RollSecretKeyModal />
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[187px] md:w-9/10 max-w-7xl">
         <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="" />
         <div className="mt-[76.29px] mb-[70px]">
@@ -122,43 +126,6 @@ const Home = () => {
             <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
               <div className="flex flex-col gap-4">
                 <p className="text-[20px] leading-none font-semibold">
-                  Build on Fuse
-                </p>
-                <p className="text-text-dark-gray md:text-base">
-                  Join the Fuse console list to be the first
-                  to receive latest news, access to new features
-                  and special offers.
-                </p>
-              </div>
-              <div className="flex gap-8">
-                <a
-                  href="mailto:console@fuse.io"
-                  className="group flex gap-1 text-black font-semibold"
-                  onClick={() => amplitude.track("Contact us", {
-                    walletType: connector ? walletType[connector.id] : undefined,
-                    walletAddress: address
-                  })}
-                >
-                  <p>Contact us</p>
-                  <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />
-                </a>
-                <a
-                  href="https://docs.fuse.io"
-                  target="_blank"
-                  className="group flex gap-1 text-black font-semibold"
-                  onClick={() => amplitude.track("Go to Docs", {
-                    walletType: connector ? walletType[connector.id] : undefined,
-                    walletAddress: address
-                  })}
-                >
-                  <p>Read docs</p>
-                  <img src={rightArrow.src} alt="right arrow" className="transition ease-in-out delay-150 group-hover:translate-x-1" />
-                </a>
-              </div>
-            </div>
-            <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
-              <div className="flex flex-col gap-4">
-                <p className="text-[20px] leading-none font-semibold">
                   Your API Key
                 </p>
                 <p className="text-text-dark-gray md:text-base">
@@ -170,7 +137,7 @@ const Home = () => {
                   {operatorSlice.operator.project.publicKey}
                 </p>
                 <Image
-                  src={copy.src}
+                  src={copy}
                   alt="copy API key"
                   width={15}
                   height={15}
@@ -180,6 +147,60 @@ const Home = () => {
                   }}
                 />
               </div>
+            </div>
+            <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
+              <div className="flex flex-col gap-4">
+                <p className="text-[20px] leading-none font-semibold">
+                  Your API secret key
+                </p>
+                <p className="text-text-dark-gray md:text-base">
+                  You will need this API key at the next stage for integration into the SDK
+                </p>
+              </div>
+              {operatorSlice.operator.project.secretKey ?
+                <div className="w-full md:min-w-max flex justify-between bg-modal-bg rounded-[31px] border border-black/40 text-sm text-black font-semibold px-5 py-[15px]">
+                  <p>
+                    {operatorSlice.operator.project.secretKey}
+                  </p>
+                  <Image
+                    src={roll}
+                    alt="roll secret key"
+                    width={15}
+                    height={15}
+                    title="Roll Secret Key"
+                    className="cursor-pointer"
+                    onClick={() => {
+                      dispatch(setIsRollSecretKeyModalOpen(true));
+                    }}
+                  />
+                </div> : operatorSlice.operator.project.secretLastFourChars ?
+                  <div className="w-full md:min-w-max flex justify-between bg-modal-bg rounded-[31px] border border-black/40 text-sm text-black font-semibold px-5 py-[15px]">
+                    <p>
+                      {operatorSlice.operator.project.secretPrefix}{new Array(20).fill("*")}{operatorSlice.operator.project.secretLastFourChars}
+                    </p>
+                    <Image
+                      src={roll}
+                      alt="roll secret key"
+                      width={15}
+                      height={15}
+                      title="Roll Secret Key"
+                      className="cursor-pointer"
+                      onClick={() => {
+                        dispatch(setIsRollSecretKeyModalOpen(true));
+                      }}
+                    />
+                  </div> :
+                  <Button
+                    text="Generate a new API secret"
+                    className="flex justify-between items-center gap-2 font-semibold bg-pale-green rounded-full"
+                    padding="py-4 px-6"
+                    onClick={() => {
+                      dispatch(generateSecretApiKey());
+                    }}
+                  >
+                    {operatorSlice.isGeneratingSecretApiKey && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
+                  </Button>
+              }
             </div>
             <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
               <div className="flex flex-col gap-4">
