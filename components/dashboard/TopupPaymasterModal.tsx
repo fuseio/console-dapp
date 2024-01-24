@@ -75,12 +75,12 @@ const TopupPaymasterModal = ({ balance }: TopupPaymasterModalProps): JSX.Element
               </div>
               <div className="m-auto">
                 <Button
-                  text={Number(balance) ? "Top up" : "Insufficient balance"}
-                  disabled={Number(balance) ? false : true}
-                  className={`flex justify-between items-center gap-4 text-sm leading-none font-semibold rounded-full ${Number(balance) ? "bg-black text-white" : "bg-[#FFEBE9] text-[#FD0F0F]"}`}
+                  text={Number(amount) > Number(balance) ? "Insufficient balance" : Number(amount) < 0 ? "Incorrect amount" : "Top up"}
+                  disabled={Number(amount) > Number(balance) || Number(amount) <= 0 ? true : false}
+                  className={`flex justify-between items-center gap-4 text-sm leading-none font-semibold rounded-full ${Number(amount) > Number(balance) ? "bg-[#FFEBE9] text-[#FD0F0F]" : Number(amount) < 0 ? "bg-gray text-white" : "bg-black text-white"}`}
                   padding="px-12 py-4"
                   onClick={() => {
-                    if (signer && Number(amount)) {
+                    if (signer && Number(amount) <= Number(balance) && Number(amount) > 0) {
                       dispatch(fundPaymaster({ signer, amount }));
                     }
                   }}

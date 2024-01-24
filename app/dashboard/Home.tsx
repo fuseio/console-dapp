@@ -62,7 +62,7 @@ const Home = () => {
         </div>
         <div className="flex flex-col gap-y-[30px]">
           <div className="flex flex-row gap-4 bg-lightest-gray justify-between md:flex-col rounded-[20px] p-12 md:p-8 min-h-[297px]">
-            <div className="flex flex-col justify-between">
+            <div className="flex flex-col justify-between items-start">
               <div className="flex flex-col gap-[18px]">
                 <p className="text-lg text-text-dark-gray">
                   Operator account balance
@@ -98,7 +98,7 @@ const Home = () => {
                 }}
               />
             </div>
-            <div className="flex flex-col justify-between">
+            <div className="flex flex-col justify-between items-start">
               <div className="flex flex-col gap-[18px]">
                 <p className="text-lg text-text-dark-gray">
                   Paymaster balance
