@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import partyPopper from "@/assets/party-popper.svg"
 import { setIsCongratulationModalOpen } from "@/store/operatorSlice";
@@ -6,10 +6,22 @@ import { useAppDispatch } from "@/store/store";
 import Button from "../ui/Button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import * as amplitude from "@amplitude/analytics-browser";
+import { walletType } from "@/lib/helpers";
+import { useAccount } from "wagmi";
 
 const CongratulationModal = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const { connector } = useAccount();
+
+  useEffect(() => {
+    amplitude.track("New Operator Created", {
+      walletType: connector ?
+        walletType[connector.id] :
+        localStorage.getItem("Fuse-connectedWalletType") ?? undefined,
+    });
+  }, [])
 
   return (
     <AnimatePresence>

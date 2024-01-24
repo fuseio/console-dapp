@@ -75,8 +75,8 @@ const WalletModal = (): JSX.Element => {
     if (isConnected) {
       toggleModal(false);
     }
-    
-    if(address && connector) {
+
+    if (address && connector) {
       const identifyEvent = new amplitude.Identify();
       identifyEvent.set('wallet_address', address);
       amplitude.identify(identifyEvent);
@@ -85,12 +85,14 @@ const WalletModal = (): JSX.Element => {
         walletType: walletType[connector.id],
         walletAddress: address
       });
+
+      localStorage.setItem("Fuse-connectedWalletType", walletType[connector.id]);
     }
   }, [isConnected])
 
   useEffect(() => {
     if (isConnected && isOperatorWalletModalOpen && chain && !signature) {
-      if(chain.id !== fuse.id) {
+      if (chain.id !== fuse.id) {
         switchNetwork && switchNetwork(fuse.id)
       }
       signMessage();
@@ -141,7 +143,7 @@ const WalletModal = (): JSX.Element => {
     connectionEvent(id);
     setConnectingWalletId(id);
     connect({ connector: connectors.find((connector) => connector.id === id) });
-    if(pathname === path.HOME) {
+    if (pathname === path.HOME) {
       router.push("/wallet");
     }
   }

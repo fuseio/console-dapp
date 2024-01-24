@@ -11,6 +11,7 @@ import { parseEther } from "ethers/lib/utils";
 import { CONFIG } from "@/lib/config";
 import { PaymasterAbi } from "@/lib/abi/Paymaster";
 import { getSponsorIdBalance } from "@/lib/contractInteract";
+import * as amplitude from "@amplitude/analytics-browser";
 
 const initOperator: Operator = {
   user: {
@@ -327,6 +328,7 @@ export const fundPaymaster = createAsyncThunk<
         const transactionHash = result?.transactionHash;
 
         if (transactionHash) {
+          amplitude.track("Paymaster Balance Funded", { amount: parseFloat(amount) });
           resolve(transactionHash);
         } else {
           reject();
@@ -395,6 +397,7 @@ const operatorSlice = createSlice({
       localStorage.removeItem("Fuse-operatorEoaSignature");
       localStorage.removeItem("Fuse-isOperatorAuthenticated");
       localStorage.removeItem("Fuse-isLoginError");
+      localStorage.removeItem("Fuse-connectedWalletType");
     },
     setHydrate: (state) => {
       const accessToken = localStorage.getItem("Fuse-operatorAccessToken");
