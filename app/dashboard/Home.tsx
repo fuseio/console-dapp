@@ -29,7 +29,7 @@ const Home = () => {
     watch: operatorSlice.isAuthenticated,
     chainId: fuse.id,
   });
-  const transaction = 1000;
+  const transaction = 0;
   const totalTransaction = 1000;
 
   useEffect(() => {
@@ -151,7 +151,7 @@ const Home = () => {
                     <p className="text-lg font-bold">{new Intl.NumberFormat().format(transaction)}</p>
                     <p className="text-lg font-bold">{new Intl.NumberFormat().format(totalTransaction)}</p>
                   </div>
-                  <div className="bg-[#474747] h-2.5 rounded-full">
+                  <div className="bg-[#BBBBBB] h-2.5 rounded-full">
                     <div
                       className="bg-success h-2.5 rounded-full"
                       style={{ width: (transaction / totalTransaction) * 100 + "%" }}
