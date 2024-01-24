@@ -1,18 +1,9 @@
 import Image from "next/image";
 import Button from "@/components/ui/Button";
-import checkBalance from "@/assets/check-balance.svg";
-import checkBalanceGreen from "@/assets/check-balance-green.svg";
-import bridge from "@/assets/bridge.svg";
-import bridgeGreen from "@/assets/bridge-green.svg";
-import stake from "@/assets/stake.svg";
-import stakeGreen from "@/assets/stake-green.svg";
-import exploreApps from "@/assets/explore-apps.svg";
-import exploreAppsGreen from "@/assets/explore-apps-green.svg";
 import { useAppDispatch } from "@/store/store";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import Link from "next/link";
 import { useAccount } from "wagmi";
-import { useState } from "react";
 import fuseBasics from "@/assets/fuse-basics.svg";
 import fuseToken from "@/assets/fuse-token.svg";
 import fuseSdk from "@/assets/fuse-sdk.svg";
@@ -21,7 +12,6 @@ import fuseGuides from "@/assets/fuse-guides.svg";
 const Home = () => {
   const dispatch = useAppDispatch();
   const { isConnected } = useAccount();
-  const [hover, setHover] = useState("");
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
@@ -59,85 +49,25 @@ const Home = () => {
           </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-1 gap-[30.5px]">
-          <div
-            className="transition-all ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[57px] pt-11 md:px-4 md:pt-6"
-            onMouseEnter={() => {
-              setHover("check balance");
-            }}
-            onMouseLeave={() => {
-              setHover("");
-            }}
-          >
+          <div className="transition-all ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[57px] pt-11 md:px-4 md:pt-6 min-h-[305px] md:min-h-[350px] bg-[url('/vectors/check-balance.svg')] hover:bg-[url('/vectors/check-balance-green.svg')] bg-no-repeat bg-[right_57px_bottom] md:bg-bottom">
             <p className="text-2xl leading-tight text-fuse-black font-bold max-w-[204.2px]">
               Check your wallet balance
             </p>
-            <Image
-              src={hover === "check balance" ? checkBalanceGreen : checkBalance}
-              alt="check balance"
-              width={277}
-              height={292}
-              className="md:m-auto"
-            />
           </div>
-          <div
-            className="transition ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[57px] pt-11 md:px-4 md:pt-6"
-            onMouseEnter={() => {
-              setHover("bridge");
-            }}
-            onMouseLeave={() => {
-              setHover("");
-            }}
-          >
+          <div className="transition-all ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[57px] pt-11 md:px-4 md:pt-6 min-h-[305px] md:min-h-[350px] bg-[url('/vectors/bridge.svg')] hover:bg-[url('/vectors/bridge-green.svg')] bg-no-repeat bg-[right_57px_bottom] md:bg-bottom">
             <p className="text-2xl leading-tight text-fuse-black font-bold max-w-[204.2px]">
               Bridge
             </p>
-            <Image
-              src={hover === "bridge" ? bridgeGreen : bridge}
-              alt="bridge"
-              width={277}
-              height={252}
-              className="md:m-auto"
-            />
           </div>
-          <div
-            className="transition ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[57px] pt-11 md:px-4 md:pt-6"
-            onMouseEnter={() => {
-              setHover("stake");
-            }}
-            onMouseLeave={() => {
-              setHover("");
-            }}
-          >
+          <div className="transition-all ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[57px] pt-11 md:px-4 md:pt-6 min-h-[305px] md:min-h-[350px] bg-[url('/vectors/stake.svg')] hover:bg-[url('/vectors/stake-green.svg')] bg-no-repeat bg-[right_57px_bottom] md:bg-bottom">
             <p className="text-2xl leading-tight text-fuse-black font-bold max-w-[204.2px]">
               Stake
             </p>
-            <Image
-              src={hover === "stake" ? stakeGreen : stake}
-              alt="stake"
-              width={277}
-              height={252}
-              className="md:m-auto"
-            />
           </div>
-          <div
-            className="transition ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[57px] pt-11 md:px-4 md:pt-6"
-            onMouseEnter={() => {
-              setHover("explore apps");
-            }}
-            onMouseLeave={() => {
-              setHover("");
-            }}
-          >
+          <div className="transition-all ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[57px] pt-11 md:px-4 md:pt-6 min-h-[305px] md:min-h-[350px] bg-[url('/vectors/explore-apps.svg')] hover:bg-[url('/vectors/explore-apps-green.svg')] bg-no-repeat bg-[right_57px_bottom] md:bg-bottom">
             <p className="text-2xl leading-tight text-fuse-black font-bold max-w-[204.2px]">
               Explore our Apps & Services
             </p>
-            <Image
-              src={hover === "explore apps" ? exploreAppsGreen : exploreApps}
-              alt="explore apps"
-              width={277}
-              height={252}
-              className="md:m-auto"
-            />
           </div>
         </div>
         <div className="flex flex-col gap-[44.26px] mt-[140.5px]">
