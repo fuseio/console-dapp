@@ -173,10 +173,16 @@ const ConnectWallet = ({
       ref={chainRef}
     >
       <div
-        className="flex bg-lightest-gray px-[20.3px] py-3 md:py-3.5 rounded-full cursor-pointer items-center relative text-base/4 md:text-[8px]/[25px] font-normal ml-2 md:ml-1"
+        className="flex bg-lightest-gray px-4 py-3 md:py-3.5 rounded-full cursor-pointer items-center relative text-base/4 md:text-[8px]/[25px] font-normal ml-2 md:ml-1"
         onClick={() => setIsChainOpen(!isChainOpen)}
       >
-        <p>
+        <Image
+          src={icons[chain?.id ?? 0]}
+          alt={chain?.name ?? "Fuse"}
+          width={25}
+          height={25}
+        />
+        <p className="ms-[8.52px]">
           {eclipseAddress(String(address))}
         </p>
         <Image
@@ -244,14 +250,20 @@ const ConnectWallet = ({
   ) : checkCorrectNetwork() ? (
     <div className="flex justify-end md:justify-center relative w-[410px] md:w-[90%] h-9 md:h-7">
       <div
-        className="flex bg-lightest-gray px-[20.3px] py-3 md:py-3.5 rounded-full cursor-pointer items-center relative text-base/4 md:text-[8px]/[25px] font-normal ml-2 md:ml-1"
+        className="flex bg-lightest-gray px-4 py-3 md:py-3.5 rounded-full cursor-pointer items-center relative text-base/4 md:text-[8px]/[25px] font-normal ml-2 md:ml-1"
         ref={accountsRef}
       >
         <div
-          className="flex w-full justify-between"
+          className="flex w-full justify-between items-center"
           onClick={() => setIsAccountsOpen(!isAccountsOpen)}
         >
-          <p>
+          <Image
+            src={icons[chain?.id ?? 0]}
+            alt={chain?.name ?? "Fuse"}
+            width={25}
+            height={25}
+          />
+          <p className="ms-[8.52px]">
             {eclipseAddress(String(address))}
           </p>
           <Image
