@@ -691,7 +691,6 @@ const Home = () => {
               {!isConnected && displayButton ? (
                 <ConnectWallet
                   className="mt-6 py-4 w-full"
-                  disableAccountCenter
                 />
               ) : displayButton &&
                 selected === 1 &&

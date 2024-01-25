@@ -1,9 +1,5 @@
 import ConnectWallet from "@/components/ConnectWallet";
 import Hamburger from "@/components/ui/Hamburger";
-import { useAppSelector } from "@/store/store";
-import { selectOperatorSlice } from "@/store/operatorSlice";
-import { usePathname } from "next/navigation";
-import { path } from "@/lib/helpers";
 
 type NavButtonProps = {
   isOpen: boolean;
@@ -11,12 +7,9 @@ type NavButtonProps = {
 }
 
 const NavButton = ({ isOpen, setOpen }: NavButtonProps) => {
-  const { isAuthenticated } = useAppSelector(selectOperatorSlice);
-  const pathname = usePathname();
-
   return (
     <div className="flex order-2 min-w-[150px] md:w-[93%] justify-end items-center">
-      <ConnectWallet containerClassName="ml-auto" disableSwitchChain={isAuthenticated && pathname === path.DASHBOARD} />
+      <ConnectWallet containerClassName="ml-auto" />
       <button
         type="button"
         className="p-2 w-10 h-8 hidden md:inline-flex focus:outline-none"
