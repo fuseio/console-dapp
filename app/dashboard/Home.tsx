@@ -7,7 +7,7 @@ import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { fuse } from "wagmi/chains";
 import Link from "next/link";
-import { createPaymaster, fetchSponsorIdBalance, generateSecretApiKey, selectOperatorSlice, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsTopupPaymasterModalOpen } from "@/store/operatorSlice";
+import { createPaymaster, fetchSponsorIdBalance, generateSecretApiKey, selectOperatorSlice, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsTopupPaymasterModalOpen, setIsWithdrawModalOpen } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
@@ -16,6 +16,7 @@ import roll from "@/assets/roll.svg";
 import RollSecretKeyModal from "@/components/dashboard/RollSecretKeyModal";
 import YourSecretKeyModal from "@/components/dashboard/YourSecretKeyModal";
 import TopupPaymasterModal from "@/components/dashboard/TopupPaymasterModal";
+import WithdrawModal from "@/components/dashboard/WithdrawModal";
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -50,6 +51,7 @@ const Home = () => {
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TopupAccountModal />
+      <WithdrawModal balance={balance.data?.formatted ?? "0"} />
       <TopupPaymasterModal balance={balance.data?.formatted ?? "0"} />
       <YourSecretKeyModal />
       <RollSecretKeyModal />
@@ -61,9 +63,9 @@ const Home = () => {
           </h1>
         </div>
         <div className="flex flex-col gap-y-[30px]">
-          <div className="flex flex-row gap-4 bg-lightest-gray justify-between md:flex-col rounded-[20px] p-12 md:p-8 min-h-[297px]">
-            <div className="flex flex-col justify-between items-start">
-              <div className="flex flex-col gap-[18px]">
+          <div className="grid grid-cols-3 md:grid-cols-1 gap-4 bg-lightest-gray justify-between rounded-[20px] py-12 md:py-0 min-h-[297px] divide-x md:divide-x-0 md:divide-y divide-pink-swan">
+            <div className="flex flex-col justify-between items-start px-12 md:px-8 md:py-8">
+              <div className="flex flex-col gap-[18px] md:mb-4">
                 <p className="text-lg text-text-dark-gray">
                   Operator account balance
                 </p>
@@ -89,17 +91,27 @@ const Home = () => {
                   }
                 </div>
               </div>
-              <Button
-                text="Deposit funds"
-                className="text-black text-white font-semibold bg-black rounded-full"
-                padding="py-4 px-[52px]"
-                onClick={() => {
-                  dispatch(setIsTopupAccountModalOpen(true));
-                }}
-              />
+              <div className="flex flex-row md:flex-col gap-2.5">
+                <Button
+                  text="Deposit"
+                  className="text-black text-white font-semibold bg-black rounded-full"
+                  padding="py-4 px-[52px]"
+                  onClick={() => {
+                    dispatch(setIsTopupAccountModalOpen(true));
+                  }}
+                />
+                <Button
+                  text="Withdraw"
+                  className="text-black text-white font-semibold bg-black rounded-full"
+                  padding="py-4 px-[52px]"
+                  onClick={() => {
+                    dispatch(setIsWithdrawModalOpen(true));
+                  }}
+                />
+              </div>
             </div>
-            <div className="flex flex-col justify-between items-start">
-              <div className="flex flex-col gap-[18px]">
+            <div className="flex flex-col justify-between items-start px-12 md:px-8 md:py-8">
+              <div className="flex flex-col gap-[18px] md:mb-4">
                 <p className="text-lg text-text-dark-gray">
                   Paymaster balance
                 </p>
@@ -133,7 +145,7 @@ const Home = () => {
                 </Button>
               }
             </div>
-            <div className="flex flex-col justify-between">
+            <div className="flex flex-col justify-between px-12 md:px-8 md:py-8">
               <div className="flex flex-col gap-[18px]">
                 <p className="text-lg text-text-dark-gray">
                   Active plan
@@ -142,7 +154,7 @@ const Home = () => {
                   Free plan
                 </p>
               </div>
-              <div className="flex flex-col gap-[18px] w-[361px] md:w-full">
+              <div className="flex flex-col gap-[18px] w-full">
                 <p className="text-lg text-text-dark-gray">
                   Transactions
                 </p>

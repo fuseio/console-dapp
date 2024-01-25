@@ -7,11 +7,13 @@ import { Operator, OperatorContactDetail, SignData } from "@/lib/types";
 import { fetchCurrentOperator, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
-import { parseEther } from "ethers/lib/utils";
+import { parseEther, parseUnits } from "ethers/lib/utils";
 import { CONFIG } from "@/lib/config";
 import { PaymasterAbi } from "@/lib/abi/Paymaster";
 import { getSponsorIdBalance } from "@/lib/contractInteract";
 import * as amplitude from "@amplitude/analytics-browser";
+import { getERC20Balance } from "@/lib/erc20";
+import { ERC20ABI } from "@/lib/abi/ERC20";
 
 const initOperator: Operator = {
   user: {
@@ -47,14 +49,18 @@ export interface OperatorStateType {
   isAccountCreationModalOpen: boolean;
   isCongratulationModalOpen: boolean;
   isTopupAccountModalOpen: boolean;
+  isWithdrawModalOpen: boolean;
   isTopupPaymasterModalOpen: boolean;
   isGeneratingSecretApiKey: boolean;
   isYourSecretKeyModalOpen: boolean;
   isRollSecretKeyModalOpen: boolean;
   isFetchingSponsorIdBalance: boolean;
+  isFetchingErc20Balance: boolean;
   isCreatingPaymaster: boolean;
   isFundingPaymaster: boolean;
+  isWithdrawing: boolean;
   sponsorIdBalance: string;
+  erc20Balance: string;
   redirect: string;
   signature: string;
   accessToken: string;
@@ -75,14 +81,18 @@ const INIT_STATE: OperatorStateType = {
   isAccountCreationModalOpen: false,
   isCongratulationModalOpen: false,
   isTopupAccountModalOpen: false,
+  isWithdrawModalOpen: false,
   isTopupPaymasterModalOpen: false,
   isGeneratingSecretApiKey: false,
   isYourSecretKeyModalOpen: false,
   isRollSecretKeyModalOpen: false,
   isFetchingSponsorIdBalance: false,
+  isFetchingErc20Balance: false,
   isCreatingPaymaster: false,
   isFundingPaymaster: false,
+  isWithdrawing: false,
   sponsorIdBalance: "",
+  erc20Balance: "",
   redirect: "",
   signature: "",
   accessToken: "",
@@ -341,6 +351,103 @@ export const fundPaymaster = createAsyncThunk<
   }
 );
 
+export const fetchErc20Balance = createAsyncThunk(
+  "OPERATOR/FETCH_ERC20_BALANCE",
+  async ({
+    contractAddress,
+    address,
+    decimals
+  }: {
+    contractAddress: Address,
+    address: Address,
+    decimals: number,
+  }) => {
+    return new Promise<any>(async (resolve, reject) => {
+      try {
+        const balance = await getERC20Balance(contractAddress, address, CONFIG.fuseRPC)
+        const formattedBalance = ethers.utils.formatUnits(balance, decimals);
+        resolve(formattedBalance);
+      } catch (error) {
+        console.log(error);
+        reject(error);
+      }
+    });
+  }
+);
+
+export const withdraw = createAsyncThunk<
+  any,
+  {
+    signer: Signer;
+    amount: string;
+    to: Address;
+    decimals: number;
+    isNative?: boolean;
+    contractAddress?: Address;
+  },
+  { state: RootState }
+>(
+  "OPERATOR/WITHDRAW",
+  async (
+    {
+      signer,
+      amount,
+      to,
+      decimals,
+      isNative,
+      contractAddress,
+    }: {
+      signer: Signer;
+      amount: string;
+      to: Address;
+      decimals: number;
+      isNative?: boolean;
+      contractAddress?: Address;
+    },
+    thunkAPI
+  ) => {
+    return new Promise<any>(async (resolve, reject) => {
+      try {
+        const state = thunkAPI.getState();
+        const operatorState: OperatorStateType = state.operator;
+        const erc20Contract = contractAddress ? new ethers.Contract(contractAddress as string, ERC20ABI) : undefined;
+        const value = parseEther(isNative ? amount : "0");
+        const data = isNative ?
+          Uint8Array.from([]) :
+          ethers.utils.arrayify(erc20Contract!.interface.encodeFunctionData(
+            "transfer",
+            [to, parseUnits(amount, decimals)]
+          ));
+
+        const fuseSDK = await FuseSDK.init(
+          operatorState.operator.project.publicKey,
+          signer,
+          {
+            jwtToken: operatorState.accessToken,
+            signature: operatorState.signature
+          }
+        );
+        const userOp = await fuseSDK.callContract(
+          isNative ? to as string : contractAddress as string,
+          value,
+          data
+        );
+        const result = await userOp?.wait();
+        const transactionHash = result?.transactionHash;
+
+        if (transactionHash) {
+          resolve(transactionHash);
+        } else {
+          reject();
+        }
+      } catch (error) {
+        console.log(error);
+        reject(error);
+      }
+    });
+  }
+);
+
 const operatorSlice = createSlice({
   name: "OPERATOR_STATE",
   initialState: INIT_STATE,
@@ -368,6 +475,9 @@ const operatorSlice = createSlice({
     },
     setIsTopupAccountModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isTopupAccountModalOpen = action.payload
+    },
+    setIsWithdrawModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isWithdrawModalOpen = action.payload
     },
     setIsTopupPaymasterModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isTopupPaymasterModalOpen = action.payload
@@ -514,6 +624,27 @@ const operatorSlice = createSlice({
       state.isFundingPaymaster = false;
       state.isTopupPaymasterModalOpen = false;
     },
+    [fetchErc20Balance.pending.type]: (state) => {
+      state.isFetchingErc20Balance = true;
+    },
+    [fetchErc20Balance.fulfilled.type]: (state, action) => {
+      state.isFetchingErc20Balance = false;
+      state.erc20Balance = action.payload;
+    },
+    [fetchErc20Balance.rejected.type]: (state) => {
+      state.isFetchingErc20Balance = false;
+    },
+    [withdraw.pending.type]: (state) => {
+      state.isWithdrawing = true;
+    },
+    [withdraw.fulfilled.type]: (state) => {
+      state.isWithdrawing = false;
+      state.isWithdrawModalOpen = false;
+    },
+    [withdraw.rejected.type]: (state) => {
+      state.isWithdrawing = false;
+      state.isWithdrawModalOpen = false;
+    },
   },
 });
 
@@ -529,6 +660,7 @@ export const {
   setIsAccountCreationModalOpen,
   setIsCongratulationModalOpen,
   setIsTopupAccountModalOpen,
+  setIsWithdrawModalOpen,
   setIsTopupPaymasterModalOpen,
   setIsYourSecretKeyModalOpen,
   setIsRollSecretKeyModalOpen,
