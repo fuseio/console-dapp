@@ -91,7 +91,10 @@ const Withdraw = ({
     if (
       !appConfig.wrappedBridge.chains[selectedChainItem].tokens[
         selectedTokenItem
-      ].isNative
+      ].isNative ||
+      !appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+        selectedTokenItem
+      ].isBridged
     ) {
       dispatch(
         fetchLiquidity({
