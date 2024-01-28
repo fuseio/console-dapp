@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { fetchErc20Balance, fundPaymaster, selectOperatorSlice, setIsWithdrawModalOpen, withdraw } from "@/store/operatorSlice";
+import { fetchErc20Balance, selectOperatorSlice, setIsWithdrawModalOpen, withdraw } from "@/store/operatorSlice";
 import Button from "../ui/Button";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import Image, { StaticImageData } from "next/image";
 import down from "@/assets/down-arrow.svg";
-import usdc from "@/public/usdc.png";
+import usdc from "@/assets/usdc.svg";
 import sFuse from "@/assets/sFuse.svg";
 import weth from "@/assets/weth.svg";
 import usdt from "@/assets/usdt-logo.svg";
