@@ -37,6 +37,7 @@ import { hex, walletType } from "@/lib/helpers";
 import FAQ from "@/components/FAQ";
 import "@/styles/bridge.css";
 import { bridgeAndUnwrapNative } from "@/lib/wrappedBridge";
+import Airdrop from "@/components/bridge/Airdrop";
 
 const faqs = [
   "I have USDC or WETH on the Fuse network and want to bridge it to another network. But the Bridge shows me a balance of 0.",
@@ -805,7 +806,7 @@ const Home = () => {
                 )
               )}
             </motion.div>
-            <motion.div className="flex bg-white w-[525px] mt-2 rounded-lg px-8 py-5 flex-col font-medium text-sm max-w-full md:text-xs">
+            <motion.div className="flex bg-white w-[525px] mt-2 rounded-lg px-8 py-5 flex-col font-medium text-sm max-w-full md:text-xs mb-2">
               <div className="flex justify-between">
                 <span className="text-black/50">Bridge Fee</span>
                 <span>Free</span>
@@ -871,6 +872,7 @@ const Home = () => {
               <span>0.5 Min - 10,000 max</span>
             </div> */}
             </motion.div>
+            <Airdrop />
             <ToastPane className="hidden md:flex" />
             <Footer />
           </div>
