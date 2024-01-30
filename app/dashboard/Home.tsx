@@ -154,7 +154,9 @@ const ConnectEoaWallet = () => {
           Please click the “Connect Wallet” button to proceed further
         </p>
       </div>
-      <ConnectWallet />
+      <ConnectWallet
+        className="flex justify-between items-center gap-2 bg-black text-lg leading-none text-white font-semibold rounded-full py-[18.5px] px-[38px]"
+      />
     </div>
   )
 }
@@ -163,7 +165,7 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, dispatch }: Oper
   return (
     <div className="flex flex-col justify-between items-start">
       <div className="flex flex-col gap-[18px] md:mb-4">
-        <p className="flex items-center gap-3.5 text-lg text-text-dark-gray">
+        <div className="flex items-center gap-3.5 text-lg text-text-dark-gray">
           Operator account balance
           <div className="group relative cursor-pointer w-4 h-4 bg-black rounded-full flex justify-center items-center text-xs leading-none text-white">
             ?
@@ -173,7 +175,7 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, dispatch }: Oper
               </p>
             </div>
           </div>
-        </p>
+        </div>
         <div className="flex items-end gap-x-[30px] md:gap-x-4">
           <h1 className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
             {(chain && chain.id === fuse.id) ?
@@ -324,7 +326,7 @@ const Home = () => {
                 balance={balance}
                 dispatch={dispatch}
               /> :
-              !isConnected || !signer ?
+              (!isConnected || !signer) ?
                 <ConnectEoaWallet /> :
                 operatorSlice.isOperatorExist ?
                   <ConnectOperatorWallet
@@ -352,7 +354,7 @@ const Home = () => {
                 </p>
               </div>
               <div className="flex flex-col gap-[18px] w-full">
-                <p className="flex items-center gap-2.5 text-lg text-text-dark-gray">
+                <div className="flex items-center gap-2.5 text-lg text-text-dark-gray">
                   Sponsored Transactions
                   <div className="group relative cursor-pointer w-4 h-4 bg-black rounded-full flex justify-center items-center text-xs leading-none text-white">
                     ?
@@ -362,7 +364,7 @@ const Home = () => {
                       </p>
                     </div>
                   </div>
-                </p>
+                </div>
                 <div className="flex flex-col gap-[10.5px]">
                   <div className="flex justify-between">
                     <p className="text-lg font-bold">{new Intl.NumberFormat().format(transaction)}</p>

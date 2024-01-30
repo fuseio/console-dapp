@@ -1,7 +1,7 @@
 import Button from "@/components/ui/Button";
 import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { selectOperatorSlice, setIsContactDetailsModalOpen, setIsOperatorWalletModalOpen } from "@/store/operatorSlice";
+import { selectOperatorSlice, setIsContactDetailsModalOpen } from "@/store/operatorSlice";
 import checkmark from "@/assets/checkmark.svg"
 import checkmarkBg from "@/assets/checkmark-bg.svg"
 import requestFinance from "@/public/request-finance.png"
@@ -11,7 +11,6 @@ import cointool from "@/public/cointool.png"
 import theGraph from "@/public/the-graph.png"
 import taskOn from "@/public/taskon.png"
 import ContactDetailsModal from "@/components/build/ContactDetailsModal";
-import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import { useRouter } from "next/navigation";
 import NavMenu from "@/components/NavMenu";
 import { buildSubMenuItems } from "@/lib/helpers";
@@ -58,7 +57,7 @@ const apps = [
 const Home = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { isOperatorExist, accessToken, isAuthenticated, isContactDetailsModalOpen } = useAppSelector(selectOperatorSlice);
+  const { isOperatorExist, isAuthenticated, isContactDetailsModalOpen } = useAppSelector(selectOperatorSlice);
 
   function createAccount() {
     if (isAuthenticated) {
@@ -69,12 +68,7 @@ const Home = () => {
       return router.push("/dashboard");
     }
 
-    if (accessToken) {
-      return dispatch(setIsContactDetailsModalOpen(true));
-    }
-
-    dispatch(setIsOperatorWalletModalOpen(true));
-    dispatch(setIsWalletModalOpen(true));
+    dispatch(setIsContactDetailsModalOpen(true));
   }
 
   return (

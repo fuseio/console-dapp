@@ -30,6 +30,7 @@ import { fuse } from "viem/chains";
 
 const WalletModal = (): JSX.Element => {
   const [selected, setSelected] = useState<"HOME" | "VOLT">("HOME");
+  const [isConnectedWallet, setIsConnectedWallet] = useState(false);
   const [connectingWalletId, setConnectingWalletId] = useState<string>("");
   const { connect, connectors } = useConnect();
   const emailRef = useRef<HTMLInputElement>(null);
@@ -91,6 +92,12 @@ const WalletModal = (): JSX.Element => {
   }, [isConnected])
 
   useEffect(() => {
+    if (isConnectedWallet && address) {
+      dispatch(checkOperator({ address }));
+    }
+  }, [isConnectedWallet, address])
+
+  useEffect(() => {
     if (isConnected && isOperatorWalletModalOpen && chain && !signature) {
       if (chain.id !== fuse.id) {
         switchNetwork && switchNetwork(fuse.id)
@@ -146,9 +153,7 @@ const WalletModal = (): JSX.Element => {
     if (pathname === path.HOME) {
       router.push("/wallet");
     }
-    if (address) {
-      dispatch(checkOperator({ address }));
-    }
+    setIsConnectedWallet(true);
   }
 
   const toggleModal = (isModal: boolean) => {

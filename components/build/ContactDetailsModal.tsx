@@ -1,11 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppDispatch } from "@/store/store";
-import { createOperator, setIsContactDetailsModalOpen } from "@/store/operatorSlice";
+import { setIsContactDetailsModalOpen } from "@/store/operatorSlice";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import Button from "../ui/Button";
 import Image from "next/image";
 import close from "@/assets/close.svg";
+import { useRouter } from "next/navigation";
+import { path } from "@/lib/helpers";
 
 const ContactDetailsModal = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -13,6 +15,7 @@ const ContactDetailsModal = (): JSX.Element => {
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     window.addEventListener("click", (e) => {
@@ -36,7 +39,9 @@ const ContactDetailsModal = (): JSX.Element => {
       firstName: firstNameRef.current.value,
       lastName: lastNameRef.current.value,
       email: emailRef.current.value,
-    }))
+    }));
+
+    router.push(path.DASHBOARD);
   }
 
   return (
