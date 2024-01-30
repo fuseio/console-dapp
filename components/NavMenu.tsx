@@ -6,12 +6,11 @@ import { useMediaQuery } from "usehooks-ts";
 import * as amplitude from "@amplitude/analytics-browser";
 import { path, signDataMessage, walletType } from "@/lib/helpers";
 import { useAccount, useNetwork, useSignMessage, useSwitchNetwork } from "wagmi";
-import { selectOperatorSlice, setIsContactDetailsModalOpen, setIsLogin, setIsOperatorWalletModalOpen, setRedirect, validateOperator } from "@/store/operatorSlice";
+import { selectOperatorSlice, setIsContactDetailsModalOpen, setRedirect, validateOperator } from "@/store/operatorSlice";
 import { usePathname, useRouter } from "next/navigation";
 import { fuse } from "viem/chains";
 import Image from "next/image";
 import lock from "@/assets/lock.svg";
-import { setIsWalletModalOpen } from "@/store/navbarSlice";
 
 type NavMenuProps = {
   menuItems?: MenuItems;
@@ -78,7 +77,7 @@ const NavMenu = ({
   const isOperatorMenuAndConnected = (item: MenuItem) => {
     if (
       matches &&
-      (item.link === path.BUILD || item.link === path.DASHBOARD) &&
+      item.title.toLowerCase() === "build" &&
       item.title.toLowerCase() !== selected &&
       isConnected &&
       !signature &&
@@ -132,7 +131,7 @@ const NavMenu = ({
                   }
                   title={isOperatorMenuAndConnected(item) && !loading() ? "Verify your wallet to proceed" : ""}
                   onClick={(e) => {
-                    if (item.link === path.BUILD || item.link === path.DASHBOARD) {
+                    if (item.link === path.BUILD) {
                       e.preventDefault();
                       if (pathname === "/dashboard") {
                         router.push(path.BUILD);
@@ -148,10 +147,6 @@ const NavMenu = ({
                           switchNetwork && switchNetwork(fuse.id)
                         }
                         signMessage();
-                      } else if (!isConnected && item.link === path.DASHBOARD) {
-                        dispatch(setIsOperatorWalletModalOpen(true));
-                        dispatch(setIsLogin(true));
-                        dispatch(setIsWalletModalOpen(true));
                       } else {
                         router.push(path.BUILD);
                       }

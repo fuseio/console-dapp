@@ -1,6 +1,7 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { CONFIG, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL } from './config'
 import { Operator, OperatorContactDetail, Paymaster, SignData } from "./types";
+import { Address } from "viem";
 
 export const fetchAllNodes = () =>
     axios.get(`${CONFIG.bootApi}/nodes`).then(response => response.data)
@@ -30,6 +31,13 @@ export const fetchTokenPrice = async (tokenId: string) => {
 export const fetchTotalSupply = async () => {
     const response = await axios.get(`https://bot.fuse.io/api/v1/stats/total_supply_simple`)
     return response.data
+}
+
+export const checkOperatorExist = async (address: Address): Promise<AxiosResponse<any, any>> => {
+    const response = await axios.head(
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/${address}`
+    )
+    return response
 }
 
 export const postValidateOperator = async (signData: SignData): Promise<string> => {

@@ -32,14 +32,11 @@ const ContactDetailsModal = (): JSX.Element => {
       return;
     }
 
-    dispatch(createOperator({
-      signer,
-      operatorContactDetail: {
-        firstName: firstNameRef.current.value,
-        lastName: lastNameRef.current.value,
-        email: emailRef.current.value,
-      }
-    }));
+    localStorage.setItem("Fuse-operatorContactDetail", JSON.stringify({
+      firstName: firstNameRef.current.value,
+      lastName: lastNameRef.current.value,
+      email: emailRef.current.value,
+    }))
   }
 
   return (

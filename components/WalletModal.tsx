@@ -23,7 +23,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { path, signDataMessage, walletType } from "@/lib/helpers";
-import { fetchOperator, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setIsValidated, setLogout, setRedirect, validateOperator } from "@/store/operatorSlice";
+import { checkOperator, fetchOperator, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setIsValidated, setLogout, setRedirect, validateOperator } from "@/store/operatorSlice";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import { usePathname, useRouter } from "next/navigation";
 import { fuse } from "viem/chains";
@@ -145,6 +145,9 @@ const WalletModal = (): JSX.Element => {
     connect({ connector: connectors.find((connector) => connector.id === id) });
     if (pathname === path.HOME) {
       router.push("/wallet");
+    }
+    if (address) {
+      dispatch(checkOperator({ address }));
     }
   }
 

@@ -4,7 +4,7 @@ import { Signer, ethers } from "ethers";
 import { FuseSDK } from "@fuseio/fusebox-web-sdk";
 import { hex } from "@/lib/helpers";
 import { Operator, OperatorContactDetail, SignData } from "@/lib/types";
-import { fetchCurrentOperator, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, updateApiSecretKey } from "@/lib/api";
+import { checkOperatorExist, fetchCurrentOperator, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
 import { parseEther, parseUnits } from "ethers/lib/utils";
@@ -39,9 +39,12 @@ export interface OperatorStateType {
   isLogin: boolean;
   isLoggedIn: boolean;
   isLoginError: boolean;
+  isOperatorExist: boolean;
   isAuthenticated: boolean;
   isHydrated: boolean;
   isValidated: boolean;
+  isActivated: boolean;
+  isCheckingOperator: boolean;
   isValidatingOperator: boolean;
   isFetchingOperator: boolean;
   isOperatorWalletModalOpen: boolean;
@@ -72,8 +75,11 @@ const INIT_STATE: OperatorStateType = {
   isLoggedIn: false,
   isLoginError: false,
   isAuthenticated: false,
+  isOperatorExist: false,
   isHydrated: false,
   isValidated: false,
+  isActivated: false,
+  isCheckingOperator: false,
   isValidatingOperator: false,
   isFetchingOperator: false,
   isOperatorWalletModalOpen: false,
@@ -98,6 +104,29 @@ const INIT_STATE: OperatorStateType = {
   accessToken: "",
   operator: initOperator,
 };
+
+export const checkOperator = createAsyncThunk(
+  "OPERATOR/CHECK_OPERATOR",
+  async ({
+    address,
+  }: {
+    address: Address;
+  }) => {
+    return new Promise<any>(async (resolve, reject) => {
+      try {
+        const operator = await checkOperatorExist(address);
+        if (operator.status === 200) {
+          resolve("exists");
+        } else {
+          reject();
+        }
+      } catch (error) {
+        console.error(error);
+        reject();
+      }
+    });
+  }
+);
 
 export const validateOperator = createAsyncThunk(
   "OPERATOR/VALIDATE_OPERATOR",
@@ -498,22 +527,27 @@ const operatorSlice = createSlice({
       state.operator = action.payload
     },
     setLogout: (state) => {
+      state.isOperatorExist = false;
       state.accessToken = "";
       state.operator = initOperator;
       state.signature = "";
       state.isAuthenticated = false;
+      localStorage.removeItem("Fuse-isOperatorExist");
       localStorage.removeItem("Fuse-operatorAccessToken");
       localStorage.removeItem("Fuse-operator");
       localStorage.removeItem("Fuse-operatorEoaSignature");
       localStorage.removeItem("Fuse-isOperatorAuthenticated");
       localStorage.removeItem("Fuse-isLoginError");
       localStorage.removeItem("Fuse-connectedWalletType");
+      localStorage.removeItem("Fuse-operatorContactDetail");
     },
     setHydrate: (state) => {
+      const isOperatorExist = localStorage.getItem("Fuse-isOperatorExist");
       const accessToken = localStorage.getItem("Fuse-operatorAccessToken");
       const operator = localStorage.getItem("Fuse-operator");
       const signature = localStorage.getItem("Fuse-operatorEoaSignature");
       const isAuthenticated = localStorage.getItem("Fuse-isOperatorAuthenticated");
+      state.isOperatorExist = isOperatorExist ? JSON.parse(isOperatorExist) : false;
       state.accessToken = accessToken ?? "";
       state.operator = operator ? JSON.parse(operator) : initOperator;
       state.signature = signature ?? "";
@@ -522,6 +556,17 @@ const operatorSlice = createSlice({
     }
   },
   extraReducers: {
+    [checkOperator.pending.type]: (state) => {
+      state.isCheckingOperator = true;
+    },
+    [checkOperator.fulfilled.type]: (state) => {
+      state.isCheckingOperator = false;
+      state.isOperatorExist = true;
+      localStorage.setItem("Fuse-isOperatorExist", "true");
+    },
+    [checkOperator.rejected.type]: (state) => {
+      state.isCheckingOperator = false;
+    },
     [validateOperator.pending.type]: (state) => {
       state.isValidatingOperator = true;
     },

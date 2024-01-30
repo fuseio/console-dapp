@@ -70,7 +70,8 @@ const config: Config = {
       "iron": "#D7D7D7",
       "red-600": "#dc2626",
       "pink-swan": "#B8B8B8",
-      "soft-peach": "#EDEDED"
+      "soft-peach": "#EDEDED",
+      "lemon-chiffon": "#FFF9C3",
     },
     fontFamily: {
       mona: ["var(--font-mona-sans)"],

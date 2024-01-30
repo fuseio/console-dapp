@@ -11,8 +11,6 @@ import cointool from "@/public/cointool.png"
 import theGraph from "@/public/the-graph.png"
 import taskOn from "@/public/taskon.png"
 import ContactDetailsModal from "@/components/build/ContactDetailsModal";
-import AccountCreationModal from "@/components/build/AccountCreationModal";
-import CongratulationModal from "@/components/build/CongratulationModal";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import { useRouter } from "next/navigation";
 import NavMenu from "@/components/NavMenu";
@@ -60,10 +58,14 @@ const apps = [
 const Home = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { accessToken, isAuthenticated, isContactDetailsModalOpen, isAccountCreationModalOpen, isCongratulationModalOpen } = useAppSelector(selectOperatorSlice);
+  const { isOperatorExist, accessToken, isAuthenticated, isContactDetailsModalOpen } = useAppSelector(selectOperatorSlice);
 
   function createAccount() {
     if (isAuthenticated) {
+      return router.push("/dashboard");
+    }
+
+    if(isOperatorExist) {
       return router.push("/dashboard");
     }
 
@@ -78,8 +80,6 @@ const Home = () => {
   return (
     <div className="w-full bg-light-gray">
       {isContactDetailsModalOpen && <ContactDetailsModal />}
-      {isAccountCreationModalOpen && <AccountCreationModal />}
-      {isCongratulationModalOpen && <CongratulationModal />}
       <div className="w-full flex flex-col items-center">
         <div className="w-8/9 flex flex-col mt-[30.84px] md:w-9/10 max-w-7xl">
           <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="welcome" className="" />
