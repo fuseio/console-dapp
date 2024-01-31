@@ -768,7 +768,8 @@ const Home = () => {
                       }
                     }}
                     disabled={
-                      (selected === 1 && chain?.id === fuse.id) ||
+                      true ||
+                      ((selected === 1 && chain?.id === fuse.id) ||
                       selected === 0
                         ? balanceSlice.isApprovalLoading ||
                           contractSlice.isBridgeLoading ||
@@ -777,7 +778,7 @@ const Home = () => {
                           !amount ||
                           parseFloat(amount) === 0 ||
                           isNaN(parseFloat(amount))
-                        : false
+                        : false)
                     }
                     text={
                       contractSlice.isBridgeLoading ||
