@@ -60,11 +60,9 @@ const Home = () => {
   const { isOperatorExist, isAuthenticated, isContactDetailsModalOpen } = useAppSelector(selectOperatorSlice);
 
   function createAccount() {
-    if (isAuthenticated) {
-      return router.push("/dashboard");
-    }
+    const operatorContactDetail = localStorage.getItem("Fuse-operatorContactDetail");
 
-    if(isOperatorExist) {
+    if (isAuthenticated || isOperatorExist || operatorContactDetail) {
       return router.push("/dashboard");
     }
 

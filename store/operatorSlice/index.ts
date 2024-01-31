@@ -610,6 +610,7 @@ const operatorSlice = createSlice({
       state.isCongratulationModalOpen = true;
       localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
       localStorage.setItem("Fuse-isOperatorAuthenticated", "true");
+      localStorage.removeItem("Fuse-operatorContactDetail");
     },
     [createOperator.rejected.type]: (state) => {
       state.isAccountCreationModalOpen = false;
