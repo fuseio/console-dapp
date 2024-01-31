@@ -8,7 +8,7 @@ import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/bal
 import { useAccount, useBalance, useNetwork, useSignMessage } from "wagmi";
 import { fuse } from "wagmi/chains";
 import Link from "next/link";
-import { createOperator, fetchSponsorIdBalance, generateSecretApiKey, selectOperatorSlice, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsTopupPaymasterModalOpen, setIsWithdrawModalOpen, validateOperator } from "@/store/operatorSlice";
+import { createOperator, fetchOperator, fetchSponsorIdBalance, generateSecretApiKey, selectOperatorSlice, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsTopupPaymasterModalOpen, setIsWithdrawModalOpen, validateOperator } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
@@ -49,6 +49,8 @@ type OperatorAccountBalanceProps = {
   chain: any;
   balanceSlice: BalanceStateType;
   balance: any;
+  isActivated: boolean;
+  signer: Signer;
   dispatch: ThunkDispatch<any, undefined, AnyAction> & Dispatch<AnyAction>;
 }
 
@@ -161,7 +163,19 @@ const ConnectEoaWallet = () => {
   )
 }
 
-const OperatorAccountBalance = ({ chain, balanceSlice, balance, dispatch }: OperatorAccountBalanceProps) => {
+const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, signer, dispatch }: OperatorAccountBalanceProps) => {
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    if(!isActivated) {
+      const fiveSecondInMillisecond = 5000
+      intervalId = setInterval(() => {
+        dispatch(fetchOperator({ signer }));
+      }, fiveSecondInMillisecond);
+    }
+
+    return () => clearInterval(intervalId);
+  }, [isActivated, signer])
+
   return (
     <div className="flex flex-col justify-between items-start">
       <div className="flex flex-col gap-[18px] md:mb-4">
@@ -319,15 +333,17 @@ const Home = () => {
         }
         <div className="flex flex-col gap-y-[30px]">
           <div className="flex flex-row md:flex-col gap-x-4 gap-y-12 bg-lightest-gray justify-between rounded-[20px] p-12 md:p-8 min-h-[297px]">
-            {operatorSlice.isAuthenticated ?
-              <OperatorAccountBalance
-                chain={chain}
-                balanceSlice={balanceSlice}
-                balance={balance}
-                dispatch={dispatch}
-              /> :
-              (!isConnected || !signer) ?
-                <ConnectEoaWallet /> :
+            {(!isConnected || !signer) ?
+              <ConnectEoaWallet /> :
+              operatorSlice.isAuthenticated ?
+                <OperatorAccountBalance
+                  chain={chain}
+                  balanceSlice={balanceSlice}
+                  balance={balance}
+                  isActivated={operatorSlice.isActivated}
+                  signer={signer}
+                  dispatch={dispatch}
+                /> :
                 operatorSlice.isOperatorExist ?
                   <ConnectOperatorWallet
                     signMessage={signMessage}

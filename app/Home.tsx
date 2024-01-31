@@ -34,7 +34,7 @@ const Home = () => {
             />
           }
         </div>
-        <div className="transition-all ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[83.31px] pt-[60.36px] pb-[67px] md:px-4 md:py-6 mt-[99.5px] mb-10 bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-bottom">
+        <div className="transition-all ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] px-[83.31px] pt-[60.36px] pb-[67px] md:px-4 md:py-6 mt-[99.5px] mb-10 bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-bottom">
           <p className="text-[40px] leading-tight text-fuse-black font-semibold max-w-[414.86px]">
             Build your Web3 project with Fuse
           </p>
@@ -49,22 +49,22 @@ const Home = () => {
           </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-1 gap-[30.5px]">
-          <div className="transition-all ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[57px] pt-11 md:px-4 md:pt-6 min-h-[305px] md:min-h-[350px] bg-[url('/vectors/check-balance.svg')] hover:bg-[url('/vectors/check-balance-green.svg')] bg-no-repeat bg-[right_57px_bottom] md:bg-bottom">
+          <div className="transition-all ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] px-[57px] pt-11 md:px-4 md:pt-6 min-h-[305px] md:min-h-[350px] bg-[url('/vectors/check-balance.svg')] hover:bg-[url('/vectors/check-balance-green.svg')] bg-no-repeat bg-[right_57px_bottom] md:bg-bottom">
             <p className="text-2xl leading-tight text-fuse-black font-bold max-w-[204.2px]">
               Check your wallet balance
             </p>
           </div>
-          <div className="transition-all ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[57px] pt-11 md:px-4 md:pt-6 min-h-[305px] md:min-h-[350px] bg-[url('/vectors/bridge.svg')] hover:bg-[url('/vectors/bridge-green.svg')] bg-no-repeat bg-[right_57px_bottom] md:bg-bottom">
+          <div className="transition-all ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] px-[57px] pt-11 md:px-4 md:pt-6 min-h-[305px] md:min-h-[350px] bg-[url('/vectors/bridge.svg')] hover:bg-[url('/vectors/bridge-green.svg')] bg-no-repeat bg-[right_57px_bottom] md:bg-bottom">
             <p className="text-2xl leading-tight text-fuse-black font-bold max-w-[204.2px]">
               Bridge
             </p>
           </div>
-          <div className="transition-all ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[57px] pt-11 md:px-4 md:pt-6 min-h-[305px] md:min-h-[350px] bg-[url('/vectors/stake.svg')] hover:bg-[url('/vectors/stake-green.svg')] bg-no-repeat bg-[right_57px_bottom] md:bg-bottom">
+          <div className="transition-all ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] px-[57px] pt-11 md:px-4 md:pt-6 min-h-[305px] md:min-h-[350px] bg-[url('/vectors/stake.svg')] hover:bg-[url('/vectors/stake-green.svg')] bg-no-repeat bg-[right_57px_bottom] md:bg-bottom">
             <p className="text-2xl leading-tight text-fuse-black font-bold max-w-[204.2px]">
               Stake
             </p>
           </div>
-          <div className="transition-all ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] hover:shadow-inner-black px-[57px] pt-11 md:px-4 md:pt-6 min-h-[305px] md:min-h-[350px] bg-[url('/vectors/explore-apps.svg')] hover:bg-[url('/vectors/explore-apps-green.svg')] bg-no-repeat bg-[right_57px_bottom] md:bg-bottom">
+          <div className="transition-all ease-in-out flex flex-row md:flex-col gap-4 justify-between bg-lightest-gray hover:bg-success rounded-[20px] px-[57px] pt-11 md:px-4 md:pt-6 min-h-[305px] md:min-h-[350px] bg-[url('/vectors/explore-apps.svg')] hover:bg-[url('/vectors/explore-apps-green.svg')] bg-no-repeat bg-[right_57px_bottom] md:bg-bottom">
             <p className="text-2xl leading-tight text-fuse-black font-bold max-w-[204.2px]">
               Explore our Apps & Services
             </p>
