@@ -165,13 +165,10 @@ const ConnectEoaWallet = () => {
 
 const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, signer, dispatch }: OperatorAccountBalanceProps) => {
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-    if(!isActivated) {
-      const fiveSecondInMillisecond = 5000
-      intervalId = setInterval(() => {
-        dispatch(fetchOperator({ signer }));
-      }, fiveSecondInMillisecond);
-    }
+    const fiveSecondInMillisecond = 5000
+    const intervalId = setInterval(() => {
+      dispatch(fetchOperator({ signer }));
+    }, fiveSecondInMillisecond);
 
     return () => clearInterval(intervalId);
   }, [isActivated, signer])
