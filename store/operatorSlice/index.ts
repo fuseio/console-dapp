@@ -32,6 +32,8 @@ const initOperator: Operator = {
     secretPrefix: "",
     secretLastFourChars: "",
     sponsorId: "",
+    isActivated: false,
+    sponsoredTransactions: 0,
   }
 }
 
@@ -43,7 +45,6 @@ export interface OperatorStateType {
   isAuthenticated: boolean;
   isHydrated: boolean;
   isValidated: boolean;
-  isActivated: boolean;
   isCheckingOperator: boolean;
   isValidatingOperator: boolean;
   isFetchingOperator: boolean;
@@ -78,7 +79,6 @@ const INIT_STATE: OperatorStateType = {
   isOperatorExist: false,
   isHydrated: false,
   isValidated: false,
-  isActivated: false,
   isCheckingOperator: false,
   isValidatingOperator: false,
   isFetchingOperator: false,

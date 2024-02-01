@@ -245,7 +245,6 @@ const Home = () => {
     chainId: fuse.id,
   });
   const router = useRouter();
-  const transaction = 0;
   const totalTransaction = 1000;
   const { isLoading, signMessage } = useSignMessage({
     message: signDataMessage,
@@ -300,12 +299,12 @@ const Home = () => {
       {operatorSlice.isCongratulationModalOpen && <CongratulationModal />}
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[187px] md:w-9/10 max-w-7xl">
         <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="" />
-        <div className={`mt-[76.29px] ${operatorSlice.isActivated ? "mb-[70px]" : "mb-[42px]"}`}>
+        <div className={`mt-[76.29px] ${operatorSlice.operator.project.isActivated ? "mb-[70px]" : "mb-[42px]"}`}>
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
             Operator Dashboard
           </h1>
         </div>
-        {(operatorSlice.isAuthenticated && !operatorSlice.isActivated) &&
+        {(operatorSlice.isAuthenticated && !operatorSlice.operator.project.isActivated) &&
           <div className="flex flex-row md:flex-col gap-4 justify-between items-center bg-lemon-chiffon rounded-[20px] px-[30px] py-[18px] mb-[30px]">
             <div className="flex flex-row md:flex-col items-center md:text-center gap-7 md:gap-2">
               <Image
@@ -337,7 +336,7 @@ const Home = () => {
                   chain={chain}
                   balanceSlice={balanceSlice}
                   balance={balance}
-                  isActivated={operatorSlice.isActivated}
+                  isActivated={operatorSlice.operator.project.isActivated}
                   signer={signer}
                   dispatch={dispatch}
                 /> :
@@ -380,20 +379,20 @@ const Home = () => {
                 </div>
                 <div className="flex flex-col gap-[10.5px]">
                   <div className="flex justify-between">
-                    <p className="text-lg font-bold">{new Intl.NumberFormat().format(transaction)}</p>
+                    <p className="text-lg font-bold">{new Intl.NumberFormat().format(operatorSlice.operator.project.sponsoredTransactions ?? 0)}</p>
                     <p className="text-lg font-bold">{new Intl.NumberFormat().format(totalTransaction)}</p>
                   </div>
                   <div className="bg-[#BBBBBB] h-2.5 rounded-full">
                     <div
                       className="bg-success h-2.5 rounded-full"
-                      style={{ width: (transaction / totalTransaction) * 100 + "%" }}
+                      style={{ width: ((operatorSlice.operator.project.sponsoredTransactions ?? 0) / totalTransaction) * 100 + "%" }}
                     ></div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className={`flex md:flex-col gap-[30px] ${operatorSlice.isActivated ? "opacity-100" : "opacity-50"}`}>
+          <div className={`flex md:flex-col gap-[30px] ${operatorSlice.operator.project.isActivated ? "opacity-100" : "opacity-50"}`}>
             <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
               <div className="flex flex-col gap-4">
                 <p className="text-[20px] leading-none font-semibold">
@@ -404,7 +403,7 @@ const Home = () => {
                 </p>
               </div>
               <div className="w-full md:min-w-max flex justify-between bg-modal-bg rounded-[31px] border border-black/40 text-sm text-black font-semibold px-5 py-[15px]">
-                {operatorSlice.isActivated ?
+                {operatorSlice.operator.project.isActivated ?
                   <>
                     <p>
                       {operatorSlice.operator.project.publicKey}
@@ -435,7 +434,7 @@ const Home = () => {
                   You will need this API secret key for some FuseBox APIs.
                 </p>
               </div>
-              {!operatorSlice.isActivated ?
+              {!operatorSlice.operator.project.isActivated ?
                 <div className="w-full md:min-w-max flex justify-between bg-modal-bg rounded-[31px] border border-black/40 text-sm text-black font-semibold px-5 py-[15px]">
                   <p>
                     Account not activated
@@ -496,9 +495,9 @@ const Home = () => {
                 </p>
               </div>
               <div className="flex gap-8">
-                <Link href={"#"} className={`${operatorSlice.isActivated ? "group" : ""} flex gap-1 text-black font-semibold`}>
+                <Link href={"#"} className={`${operatorSlice.operator.project.isActivated ? "group" : ""} flex gap-1 text-black font-semibold`}>
                   <p>Learn more</p>
-                  <img src={rightArrow.src} alt="right arrow" className={operatorSlice.isActivated ? "transition ease-in-out delay-150 group-hover:translate-x-1" : ""} />
+                  <img src={rightArrow.src} alt="right arrow" className={operatorSlice.operator.project.isActivated ? "transition ease-in-out delay-150 group-hover:translate-x-1" : ""} />
                 </Link>
               </div>
             </div>
