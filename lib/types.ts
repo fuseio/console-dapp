@@ -291,8 +291,6 @@ export interface Project {
   secretPrefix: string;
   secretLastFourChars: string;
   sponsorId: string;
-  isActivated: boolean;
-  sponsoredTransactions: number;
 }
 
 export interface Operator {

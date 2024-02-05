@@ -8,6 +8,8 @@ import leftArrow from "@/assets/left-arrow.svg";
 import Image from "next/image";
 import { eclipseAddress } from "@/lib/helpers";
 import QRCode from "react-qr-code";
+import Copy from "../ui/Copy";
+import close from "@/assets/close.svg";
 
 const TopupAccountModal = (): JSX.Element => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
@@ -62,7 +64,15 @@ const TopupAccountModal = (): JSX.Element => {
                   />
                 </div>
               </div> :
-              <div className="pt-[60px] px-8 pb-[66px] flex flex-col">
+              <div className="relative pt-[60px] px-8 pb-[66px] flex flex-col">
+                <Image
+                  src={close}
+                  alt="close"
+                  className="cursor-pointer w-6 absolute top-[15px] right-5"
+                  onClick={() => {
+                    dispatch(setIsTopupAccountModalOpen(false));
+                  }}
+                />
                 <div className="flex flex-col gap-2 items-center text-center">
                   <p className="text-3xl leading-none font-bold">
                     Top up account balance
@@ -77,13 +87,12 @@ const TopupAccountModal = (): JSX.Element => {
                     {eclipseAddress(operatorSlice.operator.user.smartContractAccountAddress)}
                   </p>
                   <div className="flex justify-between w-full max-w-[55px]">
-                    <Image
+                    <Copy
                       src={copy.src}
+                      text={String(operatorSlice.operator.user.smartContractAccountAddress)}
                       alt="copy smart contract account address"
                       width={18.97}
                       height={18.81}
-                      className="cursor-pointer"
-                      onClick={() => navigator.clipboard.writeText(String(operatorSlice.operator.user.smartContractAccountAddress))}
                     />
                     <Image
                       src={qr.src}

@@ -7,6 +7,7 @@ import { eclipseAddress } from "@/lib/helpers";
 import copy from "@/assets/copy.svg";
 import { Address } from "abitype";
 import useDeepCompareEffect from "use-deep-compare-effect";
+import Copy from "../ui/Copy";
 
 interface ModalProps {
   delegators?: [Address, string][] | undefined;
@@ -111,13 +112,11 @@ const Modal = ({
                         ) : (
                           <span className="text-xs text-text-gray hidden md:flex items-center">
                             {eclipseAddress(delegator[0])}
-                            <img
+                            <Copy
                               src={copy.src}
                               alt="copy"
                               className="ms-2 h-4 cursor-pointer"
-                              onClick={() => {
-                                navigator.clipboard.writeText(delegator[0]);
-                              }}
+                              text={delegator[0]}
                             />
                           </span>
                         )}

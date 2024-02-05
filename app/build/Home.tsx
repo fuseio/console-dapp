@@ -1,7 +1,5 @@
 import Button from "@/components/ui/Button";
 import Image from "next/image";
-import { useAppDispatch, useAppSelector } from "@/store/store";
-import { selectOperatorSlice, setIsContactDetailsModalOpen } from "@/store/operatorSlice";
 import checkmark from "@/assets/checkmark.svg"
 import checkmarkBg from "@/assets/checkmark-bg.svg"
 import requestFinance from "@/public/request-finance.png"
@@ -10,7 +8,6 @@ import thirdweb from "@/public/thirdweb.png"
 import cointool from "@/public/cointool.png"
 import theGraph from "@/public/the-graph.png"
 import taskOn from "@/public/taskon.png"
-import ContactDetailsModal from "@/components/build/ContactDetailsModal";
 import { useRouter } from "next/navigation";
 import NavMenu from "@/components/NavMenu";
 import { buildSubMenuItems } from "@/lib/helpers";
@@ -56,22 +53,13 @@ const apps = [
 
 const Home = () => {
   const router = useRouter();
-  const dispatch = useAppDispatch();
-  const { isOperatorExist, isAuthenticated, isContactDetailsModalOpen } = useAppSelector(selectOperatorSlice);
 
   function createAccount() {
-    const operatorContactDetail = localStorage.getItem("Fuse-operatorContactDetail");
-
-    if (isAuthenticated || isOperatorExist || operatorContactDetail) {
-      return router.push("/dashboard");
-    }
-
-    dispatch(setIsContactDetailsModalOpen(true));
+    router.push("/dashboard");
   }
 
   return (
     <div className="w-full bg-light-gray">
-      {isContactDetailsModalOpen && <ContactDetailsModal />}
       <div className="w-full flex flex-col items-center">
         <div className="w-8/9 flex flex-col mt-[30.84px] md:w-9/10 max-w-7xl">
           <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="welcome" className="" />
@@ -576,11 +564,11 @@ const Home = () => {
             Ready to start your project?
           </p>
           <Button
-              text="Create an account"
-              className="text-lg font-semibold bg-pale-green rounded-full"
-              padding="py-4 px-[52px]"
-              onClick={createAccount}
-            />
+            text="Create an account"
+            className="text-lg font-semibold bg-pale-green rounded-full"
+            padding="py-4 px-[52px]"
+            onClick={createAccount}
+          />
         </div>
       </div>
     </div>

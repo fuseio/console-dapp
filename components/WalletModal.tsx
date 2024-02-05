@@ -23,7 +23,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { path, signDataMessage, walletType } from "@/lib/helpers";
-import { checkOperator, fetchOperator, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setIsValidated, setLogout, setRedirect, validateOperator } from "@/store/operatorSlice";
+import { checkIsActivated, checkOperator, createOperator, fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setIsValidated, setLogout, setRedirect, validateOperator } from "@/store/operatorSlice";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import { usePathname, useRouter } from "next/navigation";
 import { fuse } from "viem/chains";
@@ -41,7 +41,7 @@ const WalletModal = (): JSX.Element => {
   const router = useRouter();
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
-  const { isLogin, isValidated, isLoggedIn, isLoginError, isOperatorWalletModalOpen, redirect, signature } = useAppSelector(selectOperatorSlice);
+  const { isLogin, isValidated, isLoggedIn, isLoginError, isAuthenticated, isOperatorWalletModalOpen, redirect, signature, operatorContactDetail } = useAppSelector(selectOperatorSlice);
   const pathname = usePathname();
 
   const { signMessage } = useSignMessage({
@@ -125,12 +125,22 @@ const WalletModal = (): JSX.Element => {
       if (redirect) {
         dispatch(setRedirect(""));
         router.push(redirect);
-      } else {
-        dispatch(setIsContactDetailsModalOpen(true));
+      } else if (signer) {
+        dispatch(createOperator({
+          signer,
+          operatorContactDetail,
+        }));
       }
       dispatch(setIsLoginError(false));
     }
-  }, [isLoginError, redirect])
+  }, [isLoginError, redirect, signer, operatorContactDetail])
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(fetchSponsoredTransactions());
+      dispatch(checkIsActivated());
+    }
+  }, [isAuthenticated])
 
   useEffect(() => {
     if (isDisconnected) {

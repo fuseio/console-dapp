@@ -72,6 +72,8 @@ const config: Config = {
       "pink-swan": "#B8B8B8",
       "soft-peach": "#EDEDED",
       "lemon-chiffon": "#FFF9C3",
+      "pastel-gray": "#CDCDCD",
+      "star-dust-alpha-70": "#9f9f9fb3",
     },
     fontFamily: {
       mona: ["var(--font-mona-sans)"],

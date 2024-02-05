@@ -112,3 +112,27 @@ export const postCreatePaymaster = async (projectId: string, token: string): Pro
     )
     return response.data
 }
+
+export const checkActivated = async (token: string): Promise<AxiosResponse<any, any>> => {
+    const response = await axios.head(
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/is-activated`,
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    )
+    return response
+}
+
+export const fetchSponsoredTransactionCount = async (token: string): Promise<{sponsoredTransactions: number}> => {
+    const response = await axios.get(
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/sponsored-transaction`,
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    )
+    return response.data
+}

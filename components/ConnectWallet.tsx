@@ -31,6 +31,7 @@ import QRCode from "react-qr-code";
 import { selectOperatorSlice, setIsLogin, setIsOperatorWalletModalOpen } from "@/store/operatorSlice";
 import { usePathname } from "next/navigation";
 import switchNetworkIcon from "@/assets/switch-network.svg";
+import Copy from "./ui/Copy";
 
 const screenMediumWidth = 768;
 const menu: Variants = {
@@ -284,18 +285,16 @@ const ConnectWallet = ({
         >
           <div className="flex flex-col gap-[8.35px] px-[22px]">
             <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">
-              {operatorSlice.isAuthenticated ? "EOA" : "Connected"} account
+              Connected account
             </p>
             <div className="flex justify-between">
               <p className="font-bold">{eclipseAddress(String(address))}</p>
               <div className="flex gap-[19.02px]">
-                <Image
+                <Copy
                   src={copy.src}
-                  alt="copy address"
+                  text={String(address)}
                   width={18.97}
                   height={18.81}
-                  className="cursor-pointer"
-                  onClick={() => navigator.clipboard.writeText(String(address))}
                 />
                 <Image
                   src={qr.src}
@@ -309,52 +308,18 @@ const ConnectWallet = ({
             </div>
           </div>
           <hr className="border-border-dark-gray mt-[25.62px] mb-[18.5px]" />
-          {operatorSlice.isAuthenticated &&
-            <>
-              <div className="flex flex-col gap-[8.35px] px-[22px]">
-                <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">
-                  Smart contract account
-                </p>
-                <div className="flex justify-between">
-                  <p className="font-bold">
-                    {eclipseAddress(String(operatorSlice.operator.user.smartContractAccountAddress))}
-                  </p>
-                  <div className="flex gap-[19.02px]">
-                    <Image
-                      src={copy.src}
-                      alt="copy smart contract account address"
-                      width={18.97}
-                      height={18.81}
-                      className="cursor-pointer"
-                      onClick={() => navigator.clipboard
-                        .writeText(String(operatorSlice.operator.user.smartContractAccountAddress))
-                      }
-                    />
-                    <Image
-                      src={qr.src}
-                      alt="open qr code of smart contract account address"
-                      width={16.22}
-                      height={16.65}
-                      className="cursor-pointer"
-                      onClick={() => setIsQrCodeOpen(!isQrCodeOpen)}
-                    />
-                  </div>
-                </div>
-              </div>
-              <hr className="border-border-dark-gray mt-[25.62px] mb-[18.5px]" />
-            </>
-          }
-          <div className="flex flex-col gap-[8.35px] px-[22px] font-medium">
+          <div className="flex flex-col gap-[8.35px] pl-[22.2px] pr-[17.42px] font-medium">
             <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray">
               Wallet
             </p>
             <div className="flex justify-between items-center">
-              <div className="flex gap-3">
+              <div className="flex items-center gap-3">
                 <Image
                   src={icons[chain?.id ?? 0]}
                   alt={chain?.name ?? "Fuse"}
                   width={40}
                   height={40}
+                  className="border border-[0.5px] border-gray-alpha-40 rounded-full"
                 />
                 <div className="flex flex-col justify-between gap-[3.68px]">
                   <p>{chain?.name} Token</p>
@@ -385,7 +350,7 @@ const ConnectWallet = ({
               </div>
             </div>
           </div>
-          <hr className="border-border-dark-gray mt-[25.62px] mb-[18.5px]" />
+          <hr className="border-border-dark-gray mt-[22.6px] mb-[18.5px]" />
           <div
             className="flex items-center gap-[17.7px] cursor-pointer px-[22px]"
             onClick={() => {
@@ -438,11 +403,7 @@ const ConnectWallet = ({
             <div className="flex justify-center">
               <QRCode
                 size={150}
-                value={String(
-                  operatorSlice.isAuthenticated ?
-                    operatorSlice.operator.user.smartContractAccountAddress :
-                    address
-                )}
+                value={String(address)}
               />
             </div>
           </div>

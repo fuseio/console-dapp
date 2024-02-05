@@ -5,6 +5,7 @@ import { selectOperatorSlice, setIsYourSecretKeyModalOpen, setOperator } from "@
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
 import Button from "../ui/Button";
+import Copy from "../ui/Copy";
 
 const YourSecretKeyModal = (): JSX.Element => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
@@ -42,13 +43,12 @@ const YourSecretKeyModal = (): JSX.Element => {
                 <p className="text-xl leading-none text-text-dark-gray font-medium">
                   {operatorSlice.operator.project.secretKey}
                 </p>
-                <Image
+                <Copy
                   src={copy}
+                  text={String(operatorSlice.operator.project.secretKey)}
                   alt="copy API secret key"
                   width={18.97}
                   height={18.81}
-                  className="cursor-pointer"
-                  onClick={() => navigator.clipboard.writeText(String(operatorSlice.operator.project.secretKey))}
                 />
               </div>
               <div>

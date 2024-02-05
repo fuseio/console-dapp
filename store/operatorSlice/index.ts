@@ -4,7 +4,7 @@ import { Signer, ethers } from "ethers";
 import { FuseSDK } from "@fuseio/fusebox-web-sdk";
 import { hex } from "@/lib/helpers";
 import { Operator, OperatorContactDetail, SignData } from "@/lib/types";
-import { checkOperatorExist, fetchCurrentOperator, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, updateApiSecretKey } from "@/lib/api";
+import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
 import { parseEther, parseUnits } from "ethers/lib/utils";
@@ -32,9 +32,13 @@ const initOperator: Operator = {
     secretPrefix: "",
     secretLastFourChars: "",
     sponsorId: "",
-    isActivated: false,
-    sponsoredTransactions: 0,
   }
+}
+
+const initOperatorContactDetail: OperatorContactDetail = {
+  firstName: "",
+  lastName: "",
+  email: "",
 }
 
 export interface OperatorStateType {
@@ -45,6 +49,7 @@ export interface OperatorStateType {
   isAuthenticated: boolean;
   isHydrated: boolean;
   isValidated: boolean;
+  isActivated: boolean;
   isCheckingOperator: boolean;
   isValidatingOperator: boolean;
   isFetchingOperator: boolean;
@@ -63,11 +68,15 @@ export interface OperatorStateType {
   isCreatingPaymaster: boolean;
   isFundingPaymaster: boolean;
   isWithdrawing: boolean;
+  isCheckingActivation: boolean;
+  isFetchingSponsoredTransactions: boolean;
+  sponsoredTransactions: number;
   sponsorIdBalance: string;
   erc20Balance: string;
   redirect: string;
   signature: string;
   accessToken: string;
+  operatorContactDetail: OperatorContactDetail;
   operator: Operator;
 }
 
@@ -79,6 +88,7 @@ const INIT_STATE: OperatorStateType = {
   isOperatorExist: false,
   isHydrated: false,
   isValidated: false,
+  isActivated: false,
   isCheckingOperator: false,
   isValidatingOperator: false,
   isFetchingOperator: false,
@@ -97,11 +107,15 @@ const INIT_STATE: OperatorStateType = {
   isCreatingPaymaster: false,
   isFundingPaymaster: false,
   isWithdrawing: false,
+  isCheckingActivation: false,
+  isFetchingSponsoredTransactions: false,
+  sponsoredTransactions: 0,
   sponsorIdBalance: "",
   erc20Balance: "",
   redirect: "",
   signature: "",
   accessToken: "",
+  operatorContactDetail: initOperatorContactDetail,
   operator: initOperator,
 };
 
@@ -477,6 +491,55 @@ export const withdraw = createAsyncThunk<
   }
 );
 
+export const checkIsActivated = createAsyncThunk<
+  any,
+  undefined,
+  { state: RootState }
+>(
+  "OPERATOR/IS_ACTIVATED",
+  async (_, thunkAPI) => {
+    return new Promise<any>(async (resolve, reject) => {
+      try {
+        const state = thunkAPI.getState();
+        const operatorState: OperatorStateType = state.operator;
+        const operator = await checkActivated(operatorState.accessToken);
+        if (operator.status === 200) {
+          resolve("activated");
+        } else {
+          reject();
+        }
+      } catch (error) {
+        console.error(error);
+        reject();
+      }
+    });
+  }
+);
+
+export const fetchSponsoredTransactions = createAsyncThunk<
+  any,
+  undefined,
+  { state: RootState }
+>(
+  "OPERATOR/FETCH_SPONSORED_TRANSACTIONS",
+  async (
+    _,
+    thunkAPI
+  ) => {
+    return new Promise<any>(async (resolve, reject) => {
+      try {
+        const state = thunkAPI.getState();
+        const operatorState: OperatorStateType = state.operator;
+        const sponsoredTransactionCount = await fetchSponsoredTransactionCount(operatorState.accessToken)
+        resolve(sponsoredTransactionCount.sponsoredTransactions);
+      } catch (error) {
+        console.log(error);
+        reject(error);
+      }
+    });
+  }
+);
+
 const operatorSlice = createSlice({
   name: "OPERATOR_STATE",
   initialState: INIT_STATE,
@@ -523,6 +586,9 @@ const operatorSlice = createSlice({
     setRedirect: (state, action: PayloadAction<string>) => {
       state.redirect = action.payload
     },
+    setOperatorContactDetail: (state, action: PayloadAction<OperatorContactDetail>) => {
+      state.operatorContactDetail = action.payload
+    },
     setOperator: (state, action: PayloadAction<Operator>) => {
       state.operator = action.payload
     },
@@ -532,6 +598,8 @@ const operatorSlice = createSlice({
       state.operator = initOperator;
       state.signature = "";
       state.isAuthenticated = false;
+      state.operatorContactDetail = initOperatorContactDetail;
+      state.isActivated = false;
       localStorage.removeItem("Fuse-isOperatorExist");
       localStorage.removeItem("Fuse-operatorAccessToken");
       localStorage.removeItem("Fuse-operator");
@@ -540,6 +608,7 @@ const operatorSlice = createSlice({
       localStorage.removeItem("Fuse-isLoginError");
       localStorage.removeItem("Fuse-connectedWalletType");
       localStorage.removeItem("Fuse-operatorContactDetail");
+      localStorage.removeItem("Fuse-isActivated");
     },
     setHydrate: (state) => {
       const isOperatorExist = localStorage.getItem("Fuse-isOperatorExist");
@@ -547,11 +616,15 @@ const operatorSlice = createSlice({
       const operator = localStorage.getItem("Fuse-operator");
       const signature = localStorage.getItem("Fuse-operatorEoaSignature");
       const isAuthenticated = localStorage.getItem("Fuse-isOperatorAuthenticated");
+      const operatorContactDetail = localStorage.getItem("Fuse-operatorContactDetail");
+      const isActivated = localStorage.getItem("Fuse-isActivated");
       state.isOperatorExist = isOperatorExist ? JSON.parse(isOperatorExist) : false;
       state.accessToken = accessToken ?? "";
       state.operator = operator ? JSON.parse(operator) : initOperator;
       state.signature = signature ?? "";
       state.isAuthenticated = isAuthenticated ? JSON.parse(isAuthenticated) : false;
+      state.operatorContactDetail = operatorContactDetail ? JSON.parse(operatorContactDetail) : initOperatorContactDetail;
+      state.isActivated = isActivated ? JSON.parse(isActivated) : false;
       state.isHydrated = true;
     }
   },
@@ -691,6 +764,27 @@ const operatorSlice = createSlice({
       state.isWithdrawing = false;
       state.isWithdrawModalOpen = false;
     },
+    [checkIsActivated.pending.type]: (state) => {
+      state.isCheckingActivation = true;
+    },
+    [checkIsActivated.fulfilled.type]: (state) => {
+      state.isCheckingActivation = false;
+      state.isActivated = true;
+      localStorage.setItem("Fuse-isActivated", "true");
+    },
+    [checkIsActivated.rejected.type]: (state) => {
+      state.isCheckingActivation = false;
+    },
+    [fetchSponsoredTransactions.pending.type]: (state) => {
+      state.isFetchingSponsoredTransactions = true;
+    },
+    [fetchSponsoredTransactions.fulfilled.type]: (state, action) => {
+      state.isFetchingSponsoredTransactions = false;
+      state.sponsoredTransactions = action.payload;
+    },
+    [fetchSponsoredTransactions.rejected.type]: (state) => {
+      state.isFetchingSponsoredTransactions = false;
+    },
   },
 });
 
@@ -711,6 +805,7 @@ export const {
   setIsYourSecretKeyModalOpen,
   setIsRollSecretKeyModalOpen,
   setRedirect,
+  setOperatorContactDetail,
   setOperator,
   setLogout,
   setHydrate

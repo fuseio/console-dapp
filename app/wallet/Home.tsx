@@ -19,6 +19,7 @@ import fuseIcon from "@/assets/fuse-icon.svg";
 import qr from "@/assets/qr-white.svg";
 import Link from "next/link";
 import QrModal from "@/components/wallet/QrModal";
+import Copy from "@/components/ui/Copy";
 
 const Home = () => {
   const router = useRouter();
@@ -63,7 +64,7 @@ const Home = () => {
             <div className="flex flex-row justify-between md:flex-col gap-12">
               <div className="flex flex-col gap-y-[62px]">
                 <div className="flex flex-col gap-y-[18px]">
-                  <p className="text-lg text-darker-gray">
+                  <p className="text-lg leading-none text-darker-gray">
                     Balance
                   </p>
                   <div className="flex items-end gap-x-[30px] md:gap-x-4">
@@ -164,15 +165,12 @@ const Home = () => {
                   <p className="text-[40px] leading-none text-white font-bold ml-[19.02px] mr-[24.12px]">
                     {eclipseAddress(String(address))}
                   </p>
-                  <Image
+                  <Copy
                     src={copy}
+                    text={String(address)}
                     alt="Copy"
                     width={19}
                     height={19}
-                    className="cursor-pointer"
-                    onClick={() => {
-                      navigator.clipboard.writeText(String(address));
-                    }}
                   />
                   <Image
                     src={qr}
