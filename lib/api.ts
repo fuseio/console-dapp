@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CONFIG } from './config'
+import { CONFIG, NEXT_PUBLIC_COIN_GECKO_API_KEY } from './config'
 
 export const fetchAllNodes = () =>
     axios.get(`${CONFIG.bootApi}/nodes`).then(response => response.data)
@@ -20,10 +20,15 @@ export const fetchFuseTokenData = () =>
     axios.get(`${CONFIG.bootApi}/stats/circulating`).then(response => response.data)
 
 export const fetchTokenPrice = async (tokenId: string) => {
-  const response = await axios.get(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`
-  );
-  return response.data[`${tokenId}`].usd as number;
+    const response = await axios.get(
+        `https://pro-api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`,
+        {
+            headers: {
+                "x-cg-pro-api-key": NEXT_PUBLIC_COIN_GECKO_API_KEY,
+            }
+        }
+    );
+    return response.data[`${tokenId}`].usd as number;
 };
 
 export const fetchTotalSupply = async () => {
