@@ -35,7 +35,7 @@ export const fetchTotalSupply = async () => {
 
 export const checkOperatorExist = async (address: Address): Promise<AxiosResponse<any, any>> => {
     const response = await axios.head(
-        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/${address}`
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/eoaAddress/${address}`
     )
     return response
 }
@@ -50,7 +50,7 @@ export const postValidateOperator = async (signData: SignData): Promise<string> 
 
 export const fetchCurrentOperator = async (token: string): Promise<Operator> => {
     const response = await axios.get(
-        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/id_not_needed`,
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/me/id_not_needed`,
         {
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -114,7 +114,7 @@ export const postCreatePaymaster = async (projectId: string, token: string): Pro
 }
 
 export const checkActivated = async (token: string): Promise<AxiosResponse<any, any>> => {
-    const response = await axios.head(
+    const response = await axios.get(
         `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/is-activated`,
         {
             headers: {
