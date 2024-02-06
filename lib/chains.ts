@@ -13,7 +13,7 @@ export const chains: ChainConfigLike[] = [
     chainName: "Polygon",
     lzChainId: 109,
     icon: matic.src,
-    rpc: "https://polygon-mainnet.infura.io/v3/25d92ff45be9484f8a8b67525a8e6313",
+    rpc: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`,
     chainId: 137,
     logo: maticLogo,
     tokenId: "matic-network"
@@ -23,7 +23,7 @@ export const chains: ChainConfigLike[] = [
     lzChainId: 110,
     icon: arbi.src,
     chainId: 42161,
-    rpc: "https://rpc.tornadoeth.cash/arbitrum",
+    rpc: `https://arb-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ARBITRUM_API_KEY}`,
     logo: arbiLogo,
     tokenId: "arbitrum"
   },
@@ -31,7 +31,7 @@ export const chains: ChainConfigLike[] = [
     chainName: "Optimism",
     lzChainId: 111,
     icon: optimism.src,
-    rpc: "https://optimism-mainnet.infura.io/v3/feb624522609433abbaef05c015eeae3",
+    rpc: `https://opt-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_OPTIMISM_API_KEY}`,
     chainId: 10,
     logo: optimismLogo,
     tokenId: "optimism"
@@ -41,7 +41,7 @@ export const chains: ChainConfigLike[] = [
     lzChainId: 101,
     icon: eth.src,
     chainId: 1,
-    rpc: "https://rpc.eth.gateway.fm",
+    rpc: `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ETHEREUM_API_KEY}`,
     logo: "",
     tokenId: "ethereum"
   },
