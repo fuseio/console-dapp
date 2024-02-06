@@ -125,11 +125,8 @@ const WalletModal = (): JSX.Element => {
       if (redirect) {
         dispatch(setRedirect(""));
         router.push(redirect);
-      } else if (signer) {
-        dispatch(createOperator({
-          signer,
-          operatorContactDetail,
-        }));
+      } else {
+        dispatch(setIsContactDetailsModalOpen(true));
       }
       dispatch(setIsLoginError(false));
     }

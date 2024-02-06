@@ -24,7 +24,6 @@ import CongratulationModal from "@/components/build/CongratulationModal";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import { SignMessageArgs } from "wagmi/actions";
 import ConnectWallet from "@/components/ConnectWallet";
-import { useRouter } from "next/navigation";
 import ContactDetailsModal from "@/components/build/ContactDetailsModal";
 import Copy from "@/components/ui/Copy";
 
@@ -207,7 +206,6 @@ const Home = () => {
     watch: operatorSlice.isAuthenticated,
     chainId: fuse.id,
   });
-  const router = useRouter();
   const totalTransaction = 1000;
   const { isLoading, signMessage } = useSignMessage({
     message: signDataMessage,
