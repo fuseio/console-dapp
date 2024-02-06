@@ -91,11 +91,11 @@ const Home = () => {
             </p>
           </Link>
         </div>
-        <div className="flex flex-col gap-[44.26px] mt-[140.5px]">
+        <div className="flex flex-col mt-[140.5px]">
           <p className="text-[40px] leading-tight text-fuse-black font-semibold">
             Developer tools
           </p>
-          <div className="grid grid-cols-4 md:grid-cols-1 gap-[30px]">
+          <div className="grid grid-cols-4 md:grid-cols-1 gap-[30px] mt-[45.64px] mb-[151.36px]">
             <a
               href="https://docs.fuse.io/docs/developers/fuse-box/flutter-sdk/"
               target="_blank"
@@ -170,84 +170,43 @@ const Home = () => {
           <div className="grid grid-cols-2 md:grid-cols-1 gap-[30px]">
             <a
               href="mailto:console@fuse.io"
-              className="transition ease-in-out flex justify-between bg-white hover:bg-lightest-gray rounded-[20px] p-12 md:px-4 md:py-6 min-h-[250px]"
+              className="transition ease-in-out flex flex-row md:flex-col md:gap-8 justify-between bg-white hover:bg-success rounded-[20px] pt-[36px] pr-[51px] pb-[30px] pl-14 md:px-4 md:py-6 min-h-[174px]"
             >
-              <div className="flex flex-col justify-between">
-                <p className="text-2xl text-fuse-black font-bold max-w-[204.2px]">
+              <div className="flex flex-col justify-center gap-2">
+                <p className="text-2xl text-fuse-black font-bold">
                   Get Support
                 </p>
                 <p className="text-lg text-text-dark-gray max-w-[265.2px]">
-                  Learn all the basics about the Fuse network,
-                  including network details, wallets, bridges and more.
+                  Some text some text
                 </p>
               </div>
               <Image
                 src={fuseBasics}
                 alt="Fuse basics"
-                width={229}
-                height={148}
+                width={167}
+                height={108}
+                className="md:m-auto"
               />
             </a>
             <a
-              href="https://docs.fuse.io/docs/basics/intro-to-fuse/what-is-fuse#fuse-token"
+              href="https://docs.fuse.io/"
               target="_blank"
-              className="transition ease-in-out flex justify-between bg-white hover:bg-lightest-gray rounded-[20px] p-12 md:px-4 md:py-6 min-h-[250px]"
+              className="transition ease-in-out flex flex-row md:flex-col md:gap-8 justify-between bg-white hover:bg-success rounded-[20px] pt-[36px] pr-[51px] pb-[30px] pl-14 md:px-4 md:py-6 min-h-[174px]"
             >
-              <div className="flex flex-col justify-between">
-                <p className="text-2xl text-fuse-black font-bold max-w-[204.2px]">
-                  Fuse Token
+              <div className="flex flex-col justify-center gap-2">
+                <p className="text-2xl text-fuse-black font-bold">
+                  Developer Documentation
                 </p>
                 <p className="text-lg text-text-dark-gray max-w-[247.2px]">
-                  Learn more about FUSE - the native currency of the Fuse Network.
+                  Some text some text
                 </p>
               </div>
               <Image
                 src={fuseToken}
                 alt="Fuse token"
-                width={172}
-                height={156}
-              />
-            </a>
-            <a
-              href="https://docs.fuse.io/docs/category/fusebox"
-              target="_blank"
-              className="transition ease-in-out flex justify-between bg-white hover:bg-lightest-gray rounded-[20px] p-12 md:px-4 md:py-6 min-h-[250px]"
-            >
-              <div className="flex flex-col justify-between">
-                <p className="text-2xl text-fuse-black font-bold max-w-[204.2px]">
-                  Fuse SDK
-                </p>
-                <p className="text-lg text-text-dark-gray max-w-[291.2px]">
-                  Develop seamless UX with Fuse SDK on Fuse network,
-                  leveraging account abstraction, gasless transactions, and more.
-                </p>
-              </div>
-              <Image
-                src={fuseSdk}
-                alt="Fuse sdk"
-                width={96}
-                height={160}
-              />
-            </a>
-            <a
-              href="https://docs.fuse.io/docs/category/tutorials"
-              target="_blank"
-              className="transition ease-in-out flex justify-between bg-white hover:bg-lightest-gray rounded-[20px] p-12 md:px-4 md:py-6 min-h-[250px]"
-            >
-              <div className="flex flex-col justify-between">
-                <p className="text-2xl text-fuse-black font-bold max-w-[204.2px]">
-                  Fuse Guides
-                </p>
-                <p className="text-lg text-text-dark-gray max-w-[284.2px]">
-                  Discover everything you need to know about Fuse
-                  and how we are revolutionizing various industries with web3 technology.
-                </p>
-              </div>
-              <Image
-                src={fuseGuides}
-                alt="Fuse guides"
-                width={117}
-                height={151}
+                width={112}
+                height={102}
+                className="md:m-auto"
               />
             </a>
           </div>
