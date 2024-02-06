@@ -508,8 +508,13 @@ export const checkIsActivated = createAsyncThunk<
         } else {
           reject();
         }
-      } catch (error) {
-        console.error(error);
+      } catch (error: any) {
+        if(error?.response?.status === 404) {
+          const DEPOSIT_REQUIRED = 10;
+          console.log(`Error 404: Operator Wallet is not activated, deposit ${DEPOSIT_REQUIRED} FUSE to activate.`)
+        } else {
+          console.error(error);
+        }
         reject();
       }
     });
