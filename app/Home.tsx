@@ -177,7 +177,7 @@ const Home = () => {
                   Get Support
                 </p>
                 <p className="text-lg text-text-dark-gray max-w-[265.2px]">
-                  Some text some text
+                  Ask question or share feedback
                 </p>
               </div>
               <Image
@@ -198,7 +198,7 @@ const Home = () => {
                   Developer Documentation
                 </p>
                 <p className="text-lg text-text-dark-gray max-w-[247.2px]">
-                  Some text some text
+                  Find resources that help you to build on Fuse
                 </p>
               </div>
               <Image
