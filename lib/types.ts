@@ -274,6 +274,12 @@ export interface OperatorContactDetail {
   email: string;
 }
 
+export interface Withdraw {
+  amount: string;
+  token: string;
+  coinGeckoId: string;
+}
+
 export interface User {
   name: string;
   email: string;

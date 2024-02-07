@@ -3,7 +3,7 @@ import { AppState } from "../rootReducer";
 import { Signer, ethers } from "ethers";
 import { FuseSDK } from "@fuseio/fusebox-web-sdk";
 import { hex } from "@/lib/helpers";
-import { Operator, OperatorContactDetail, SignData } from "@/lib/types";
+import { Operator, OperatorContactDetail, SignData, Withdraw } from "@/lib/types";
 import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
@@ -41,6 +41,12 @@ const initOperatorContactDetail: OperatorContactDetail = {
   email: "",
 }
 
+const initWithdraw: Withdraw = {
+  amount: "",
+  token: "",
+  coinGeckoId: "",
+}
+
 export interface OperatorStateType {
   isLogin: boolean;
   isLoggedIn: boolean;
@@ -50,6 +56,7 @@ export interface OperatorStateType {
   isHydrated: boolean;
   isValidated: boolean;
   isActivated: boolean;
+  isWithdrawn: boolean;
   isCheckingOperator: boolean;
   isValidatingOperator: boolean;
   isFetchingOperator: boolean;
@@ -76,6 +83,7 @@ export interface OperatorStateType {
   redirect: string;
   signature: string;
   accessToken: string;
+  withdraw: Withdraw;
   operatorContactDetail: OperatorContactDetail;
   operator: Operator;
 }
@@ -89,6 +97,7 @@ const INIT_STATE: OperatorStateType = {
   isHydrated: false,
   isValidated: false,
   isActivated: false,
+  isWithdrawn: false,
   isCheckingOperator: false,
   isValidatingOperator: false,
   isFetchingOperator: false,
@@ -115,6 +124,7 @@ const INIT_STATE: OperatorStateType = {
   redirect: "",
   signature: "",
   accessToken: "",
+  withdraw: initWithdraw,
   operatorContactDetail: initOperatorContactDetail,
   operator: initOperator,
 };
@@ -425,6 +435,8 @@ export const withdraw = createAsyncThunk<
     amount: string;
     to: Address;
     decimals: number;
+    token: string;
+    coinGeckoId: string;
     isNative?: boolean;
     contractAddress?: Address;
   },
@@ -437,6 +449,8 @@ export const withdraw = createAsyncThunk<
       amount,
       to,
       decimals,
+      token,
+      coinGeckoId,
       isNative,
       contractAddress,
     }: {
@@ -444,6 +458,8 @@ export const withdraw = createAsyncThunk<
       amount: string;
       to: Address;
       decimals: number;
+      token: string;
+      coinGeckoId: string;
       isNative?: boolean;
       contractAddress?: Address;
     },
@@ -479,7 +495,7 @@ export const withdraw = createAsyncThunk<
         const transactionHash = result?.transactionHash;
 
         if (transactionHash) {
-          resolve(transactionHash);
+          resolve({ amount, token, coinGeckoId });
         } else {
           reject();
         }
@@ -509,7 +525,7 @@ export const checkIsActivated = createAsyncThunk<
           reject();
         }
       } catch (error: any) {
-        if(error?.response?.status === 404) {
+        if (error?.response?.status === 404) {
           const DEPOSIT_REQUIRED = 10;
           console.log(`Error 404: Operator Wallet is not activated, deposit ${DEPOSIT_REQUIRED} FUSE to activate.`)
         } else {
@@ -761,8 +777,10 @@ const operatorSlice = createSlice({
     [withdraw.pending.type]: (state) => {
       state.isWithdrawing = true;
     },
-    [withdraw.fulfilled.type]: (state) => {
+    [withdraw.fulfilled.type]: (state, action) => {
       state.isWithdrawing = false;
+      state.isWithdrawn = true;
+      state.withdraw = action.payload;
       state.isWithdrawModalOpen = false;
     },
     [withdraw.rejected.type]: (state) => {

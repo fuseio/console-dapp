@@ -22,6 +22,7 @@ type Coin = {
   name: string;
   decimals: number;
   icon: StaticImageData;
+  coinGeckoId: string;
   address?: Address;
   isNative?: boolean;
 }
@@ -35,24 +36,28 @@ const coins: Coins = {
     name: "USD Coin",
     decimals: 6,
     icon: usdc,
+    coinGeckoId: "usd-coin",
     address: "0x28C3d1cD466Ba22f6cae51b1a4692a831696391A",
   },
   "USDT": {
     name: "Tether USD",
     decimals: 6,
     icon: usdt,
+    coinGeckoId: "tether",
     address: "0x68c9736781E9316ebf5c3d49FE0C1f45D2D104Cd",
   },
   "WETH": {
     name: "Wrapped Ether",
     decimals: 18,
     icon: weth,
+    coinGeckoId: "weth",
     address: "0x5622F6dC93e08a8b717B149677930C38d5d50682",
   },
   "FUSE": {
     name: "Fuse",
     decimals: 18,
     icon: sFuse,
+    coinGeckoId: "fuse-network-token",
     isNative: true,
   },
 }
@@ -209,6 +214,8 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
                       amount,
                       to: address,
                       decimals: coins[selectedCoin].decimals,
+                      token: selectedCoin,
+                      coinGeckoId: coins[selectedCoin].coinGeckoId,
                       isNative: coins[selectedCoin].isNative,
                       contractAddress: coins[selectedCoin].address
                     }));

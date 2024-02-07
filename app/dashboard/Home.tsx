@@ -7,7 +7,7 @@ import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/bal
 import { useAccount, useBalance, useNetwork, useSignMessage } from "wagmi";
 import { fuse } from "wagmi/chains";
 import Link from "next/link";
-import { checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsTopupPaymasterModalOpen, setIsWithdrawModalOpen, validateOperator } from "@/store/operatorSlice";
+import { checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, validateOperator } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
@@ -27,6 +27,8 @@ import ConnectWallet from "@/components/ConnectWallet";
 import ContactDetailsModal from "@/components/build/ContactDetailsModal";
 import Copy from "@/components/ui/Copy";
 import DocumentSupport from "@/components/DocumentSupport";
+import * as amplitude from "@amplitude/analytics-browser";
+import { fetchTokenPrice } from "@/lib/api";
 
 type CreateOperatorWalletProps = {
   accessToken: string;
@@ -252,6 +254,21 @@ const Home = () => {
   useEffect(() => {
     dispatch(fetchSponsorIdBalance());
   }, [operatorSlice.isHydrated, operatorSlice.isFundingPaymaster, operatorSlice.isCreatingPaymaster])
+
+  useEffect(() => {
+    (async () => {
+      if (operatorSlice.isWithdrawn && operatorSlice.withdraw.amount) {
+        const priceUSD = await fetchTokenPrice(operatorSlice.withdraw.coinGeckoId);
+        const amountUSD = parseFloat(operatorSlice.withdraw.amount) * (typeof priceUSD === "string" ? parseFloat(priceUSD) : priceUSD);
+
+        amplitude.track("Account Balance Withdrawn", {
+          amount: operatorSlice.withdraw.amount,
+          amountUSD,
+          token: operatorSlice.withdraw.token
+        });
+      }
+    })();
+  }, [operatorSlice.isWithdrawn])
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
