@@ -478,8 +478,8 @@ const Home = () => {
                   <Image
                     src={rightArrow.src}
                     alt="right arrow"
-                    width={8}
-                    height={8}
+                    width={14}
+                    height={14}
                     className={operatorSlice.isActivated ? "transition ease-in-out delay-150 group-hover:translate-x-1" : ""}
                   />
                 </Link>
