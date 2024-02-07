@@ -4,10 +4,6 @@ import { useAppDispatch } from "@/store/store";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import Link from "next/link";
 import { useAccount } from "wagmi";
-import fuseBasics from "@/assets/fuse-basics.svg";
-import fuseToken from "@/assets/fuse-token.svg";
-import fuseSdk from "@/assets/fuse-sdk.svg";
-import fuseGuides from "@/assets/fuse-guides.svg";
 import { path } from "@/lib/helpers";
 import mobileSdk from "@/assets/mobile-sdk.svg";
 import fuseConnect from "@/assets/fuse-connect.svg";
@@ -15,6 +11,7 @@ import fuseConnectGreen from "@/assets/fuse-connect-green.svg";
 import faucet from "@/assets/faucet.svg";
 import fusebox from "@/assets/fusebox.svg";
 import { useState } from "react";
+import DocumentSupport from "@/components/DocumentSupport";
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -26,7 +23,7 @@ const Home = () => {
       <div className="w-8/9 flex flex-col mt-[130.98px] mb-[187px] md:w-9/10 max-w-7xl">
         <div className="flex flex-col justify-center items-center text-center">
           <h1 className="text-[70px]/[84.35px] text-fuse-black font-semibold max-w-[680.37px]">
-            Welcome to the Fuse console
+            Welcome to the Fuse Console
           </h1>
           <p className="text-[20px]/7 text-text-dark-gray md:text-base mt-[22px] mb-[36.52px]">
             A one-stop-shop for everything you need
@@ -167,49 +164,7 @@ const Home = () => {
               </div>
             </a>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-1 gap-[30px]">
-            <a
-              href="mailto:console@fuse.io"
-              className="transition ease-in-out flex flex-row md:flex-col md:gap-8 justify-between bg-white hover:bg-success rounded-[20px] pt-[36px] pr-[51px] pb-[30px] pl-14 md:px-4 md:py-6 min-h-[174px]"
-            >
-              <div className="flex flex-col justify-center gap-2">
-                <p className="text-2xl text-fuse-black font-bold">
-                  Get Support
-                </p>
-                <p className="text-text-dark-gray">
-                  Ask question or share feedback
-                </p>
-              </div>
-              <Image
-                src={fuseBasics}
-                alt="Fuse basics"
-                width={167}
-                height={108}
-                className="md:m-auto"
-              />
-            </a>
-            <a
-              href="https://docs.fuse.io/"
-              target="_blank"
-              className="transition ease-in-out flex flex-row md:flex-col md:gap-8 justify-between bg-white hover:bg-success rounded-[20px] pt-[36px] pr-[51px] pb-[30px] pl-14 md:px-4 md:py-6 min-h-[174px]"
-            >
-              <div className="flex flex-col justify-center gap-2">
-                <p className="text-2xl text-fuse-black font-bold">
-                  Developer Documentation
-                </p>
-                <p className="text-text-dark-gray">
-                  Find resources that help you to build on Fuse
-                </p>
-              </div>
-              <Image
-                src={fuseToken}
-                alt="Fuse token"
-                width={112}
-                height={102}
-                className="md:m-auto"
-              />
-            </a>
-          </div>
+          <DocumentSupport />
         </div>
       </div>
     </div>

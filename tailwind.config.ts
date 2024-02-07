@@ -74,6 +74,7 @@ const config: Config = {
       "lemon-chiffon": "#FFF9C3",
       "pastel-gray": "#CDCDCD",
       "star-dust-alpha-70": "#9f9f9fb3",
+      "gray-goose": "#CFCFCF",
     },
     fontFamily: {
       mona: ["var(--font-mona-sans)"],

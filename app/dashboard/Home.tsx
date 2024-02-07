@@ -26,6 +26,7 @@ import { SignMessageArgs } from "wagmi/actions";
 import ConnectWallet from "@/components/ConnectWallet";
 import ContactDetailsModal from "@/components/build/ContactDetailsModal";
 import Copy from "@/components/ui/Copy";
+import DocumentSupport from "@/components/DocumentSupport";
 
 type CreateOperatorWalletProps = {
   accessToken: string;
@@ -262,7 +263,7 @@ const Home = () => {
       {operatorSlice.isContactDetailsModalOpen && <ContactDetailsModal />}
       {operatorSlice.isAccountCreationModalOpen && <AccountCreationModal />}
       {operatorSlice.isCongratulationModalOpen && <CongratulationModal />}
-      <div className="w-8/9 flex flex-col mt-[30.84px] mb-[187px] md:w-9/10 max-w-7xl">
+      <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:w-9/10 max-w-7xl">
         <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="" />
         <div className={`mt-[66.29px] ${operatorSlice.isActivated ? "mb-[70px]" : "mb-[42px]"}`}>
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
@@ -292,7 +293,7 @@ const Home = () => {
             />
           </div>
         }
-        <div className="flex flex-col gap-y-[30px]">
+        <div className="flex flex-col gap-y-[30px] mb-[143.32px]">
           <div className="flex flex-row md:flex-col gap-x-4 gap-y-12 bg-lightest-gray justify-between rounded-[20px] p-12 md:p-8 min-h-[297px]">
             {(!isConnected || !signer) ?
               <ConnectEoaWallet /> :
@@ -448,7 +449,7 @@ const Home = () => {
             <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
               <div className="flex flex-col gap-4">
                 <p className="text-[20px] leading-none font-semibold">
-                  Learn what you can do
+                  Getting started tutorial
                 </p>
                 <p className="text-text-dark-gray md:text-base">
                   The Operator&apos;s account is a single information and control panel for Operators.
@@ -456,13 +457,20 @@ const Home = () => {
               </div>
               <div className="flex gap-8">
                 <Link href={"#"} className={`${operatorSlice.isActivated ? "group" : ""} flex gap-1 text-black font-semibold`}>
-                  <p>Learn more</p>
-                  <img src={rightArrow.src} alt="right arrow" className={operatorSlice.isActivated ? "transition ease-in-out delay-150 group-hover:translate-x-1" : ""} />
+                  <p>Start tutorial</p>
+                  <Image
+                    src={rightArrow.src}
+                    alt="right arrow"
+                    width={8}
+                    height={8}
+                    className={operatorSlice.isActivated ? "transition ease-in-out delay-150 group-hover:translate-x-1" : ""}
+                  />
                 </Link>
               </div>
             </div>
           </div>
         </div>
+        <DocumentSupport />
       </div>
     </div>
   );

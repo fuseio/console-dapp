@@ -69,7 +69,7 @@ const Home = () => {
         <div className="w-8/9 flex flex-col mt-[76.29px] md:w-9/10 max-w-7xl">
           <div className="flex flex-col justify-center items-center text-center">
             <h1 className="text-[70px]/[84.35px] text-fuse-black font-semibold max-w-[729.99px] mt-[13.98px] mb-[22px]">
-              Build your Web3 project with Fuse
+              Build your Web3 Project with Fuse
             </h1>
             <p className="text-[20px]/7 text-text-dark-gray mb-[50.52px] max-w-[395.25px]">
               A one-stop-shop for everything you need to get your dApp up and running
