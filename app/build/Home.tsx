@@ -91,8 +91,7 @@ const Home = () => {
                 Get started for free
               </p>
               <p className="text-[20px]/7 text-text-dark-gray mt-[30.61px] mb-[38.67px] max-w-[395.25px]">
-                Start here to build your crypto project
-                with Fuse without any crypto experience
+                Start building your project - no crypto expertise are needed
               </p>
               <div className="rounded-[20px] pt-[35.4px] px-10 pb-[50px] md:px-3 md:py-4">
                 <div className="flex flex-col gap-[25.79px]">

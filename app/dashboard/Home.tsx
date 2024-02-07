@@ -456,7 +456,7 @@ const Home = () => {
                 </p>
               </div>
               <div className="flex gap-8">
-                <Link href={"#"} className={`${operatorSlice.isActivated ? "group" : ""} flex gap-1 text-black font-semibold`}>
+                <Link href={"https://docs.fuse.io/docs/category/tutorials"} className={`${operatorSlice.isActivated ? "group" : ""} flex gap-1 text-black font-semibold`}>
                   <p>Start tutorial</p>
                   <Image
                     src={rightArrow.src}
