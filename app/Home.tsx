@@ -117,7 +117,7 @@ const Home = () => {
               href="https://docs.fuse.io/docs/developers/fuse-box/fuse-connect"
               target="_blank"
               className="transition ease-in-out flex justify-between items-center bg-lightest-gray hover:bg-success rounded-[20px] p-2 min-h-[220px]"
-              onMouseEnter={() => setHover("fuse connect")}
+              onMouseEnter={() => setHover("Fuse connect")}
               onMouseLeave={() => setHover("")}
             >
               <div className="flex flex-col justify-between items-center m-auto max-w-[140px] min-h-[144px]">

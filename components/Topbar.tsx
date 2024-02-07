@@ -7,6 +7,7 @@ import { useAppSelector } from "@/store/store";
 import { selectNavbarSlice } from "@/store/navbarSlice";
 import { selectOperatorSlice } from "@/store/operatorSlice";
 import { path } from "@/lib/helpers";
+import Image from "next/image";
 
 const Topbar = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -46,15 +47,19 @@ const Topbar = () => {
       <div className="flex justify-between h-full items-center w-8/9 md:w-9/10 max-w-7xl relative">
         <span>
           <a href="/">
-            <img
+            <Image
               src={fuseConsoleLogo.src}
               alt="fuse console logo"
-              className="h-6 z-50 md:hidden"
+              width={196}
+              height={28}
+              className="z-50 md:hidden"
             />
-            <img
+            <Image
               src={fuseLogoMobile.src}
               alt="fuse logo"
-              className="h-5 z-50 hidden md:block"
+              width={20}
+              height={20}
+              className="z-50 hidden md:block"
             />
           </a>
         </span>

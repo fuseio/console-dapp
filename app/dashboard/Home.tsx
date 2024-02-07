@@ -142,9 +142,10 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
           Operator account balance
           <div className="group relative cursor-pointer w-4 h-4 bg-black rounded-full flex justify-center items-center text-xs leading-none text-white">
             ?
-            <div className="tooltip-text hidden bottom-8 absolute bg-white p-6 rounded-2xl shadow-lg group-hover:block text-black text-sm font-medium">
+            <div className="tooltip-text hidden bottom-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg group-hover:block text-black text-sm font-medium">
               <p className="mb-5">
-                Balance
+                The operator account balance is needed in order to be able to use Paymaster and later pay for
+                Premium subscriptions. You can freely deposit and withdraw any tokens available on the Fuse Network.
               </p>
             </div>
           </div>
@@ -327,7 +328,7 @@ const Home = () => {
                   Sponsored Transactions
                   <div className="group relative cursor-pointer w-4 h-4 bg-black rounded-full flex justify-center items-center text-xs leading-none text-white">
                     ?
-                    <div className="tooltip-text hidden bottom-8 absolute bg-white p-6 rounded-2xl shadow-lg group-hover:block text-black text-sm font-medium">
+                    <div className="tooltip-text hidden bottom-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg group-hover:block text-black text-sm font-medium">
                       <p className="mb-5">
                         Sponsored transactions are a feature that allows you to pay for your customers gas fees.
                         Since the gas cost in the Fuse Network is very low, your customers will not have to solve
