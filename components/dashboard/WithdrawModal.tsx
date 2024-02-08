@@ -216,7 +216,6 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
                       decimals: coins[selectedCoin].decimals,
                       token: selectedCoin,
                       coinGeckoId: coins[selectedCoin].coinGeckoId,
-                      isNative: coins[selectedCoin].isNative,
                       contractAddress: coins[selectedCoin].address
                     }));
                   }

@@ -433,12 +433,11 @@ export const withdraw = createAsyncThunk<
   {
     signer: Signer;
     amount: string;
-    to: Address;
+    to: string;
     decimals: number;
     token: string;
     coinGeckoId: string;
-    isNative?: boolean;
-    contractAddress?: Address;
+    contractAddress?: string;
   },
   { state: RootState }
 >(
@@ -451,17 +450,15 @@ export const withdraw = createAsyncThunk<
       decimals,
       token,
       coinGeckoId,
-      isNative,
       contractAddress,
     }: {
       signer: Signer;
       amount: string;
-      to: Address;
+      to: string;
       decimals: number;
       token: string;
       coinGeckoId: string;
-      isNative?: boolean;
-      contractAddress?: Address;
+      contractAddress?: string;
     },
     thunkAPI
   ) => {
@@ -469,14 +466,20 @@ export const withdraw = createAsyncThunk<
       try {
         const state = thunkAPI.getState();
         const operatorState: OperatorStateType = state.operator;
-        const erc20Contract = contractAddress ? new ethers.Contract(contractAddress as string, ERC20ABI) : undefined;
-        const value = parseEther(isNative ? amount : "0");
-        const data = isNative ?
-          Uint8Array.from([]) :
-          ethers.utils.arrayify(erc20Contract!.interface.encodeFunctionData(
+
+        let recipient = to;
+        let value = parseEther(amount);
+        let data = Uint8Array.from([]);
+
+        if(contractAddress) {
+          const erc20Contract = new ethers.Contract(contractAddress as string, ERC20ABI);
+          recipient = contractAddress;
+          value = parseEther("0");
+          data = ethers.utils.arrayify(erc20Contract.interface.encodeFunctionData(
             "transfer",
             [to, parseUnits(amount, decimals)]
           ));
+        }
 
         const fuseSDK = await FuseSDK.init(
           operatorState.operator.project.publicKey,
@@ -486,8 +489,9 @@ export const withdraw = createAsyncThunk<
             signature: operatorState.signature
           }
         );
+
         const userOp = await fuseSDK.callContract(
-          isNative ? to as string : contractAddress as string,
+          recipient,
           value,
           data
         );
