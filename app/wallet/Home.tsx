@@ -197,7 +197,7 @@ const Home = () => {
             </div>
             <Link
               href="/build"
-              className="text-lg text-white font-semibold bg-black rounded-full py-4 px-[52px] md:px-6"
+              className="transition ease-in-out text-lg text-white font-semibold bg-black rounded-full py-4 px-[52px] md:px-6 hover:bg-white hover:text-black"
             >
               Become an operator
             </Link>

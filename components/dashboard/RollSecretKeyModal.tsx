@@ -47,7 +47,7 @@ const RollSecretKeyModal = (): JSX.Element => {
               <div className="flex justify-between items-center gap-4 mt-6 mx-auto">
                 <Button
                   text="Roll"
-                  className="flex justify-between items-center gap-2 text-lg text-white font-semibold bg-red-600 rounded-full"
+                  className="transition ease-in-out flex justify-between items-center gap-2 text-lg text-white font-semibold bg-red-600 rounded-full hover:bg-black"
                   padding="py-1 px-6"
                   onClick={() => {
                     dispatch(regenerateSecretApiKey());
@@ -57,7 +57,7 @@ const RollSecretKeyModal = (): JSX.Element => {
                 </Button>
                 <Button
                   text="Cancel"
-                  className="text-lg text-black font-semibold border border-black rounded-full"
+                  className="transition ease-in-out text-lg text-black font-semibold border border-black rounded-full hover:bg-black hover:text-white"
                   padding="py-1 px-6"
                   onClick={() => {
                     dispatch(setIsRollSecretKeyModalOpen(false));

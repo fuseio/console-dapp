@@ -205,7 +205,7 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
               <Button
                 text={Number(amount) > Number(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) ? "Insufficient balance" : Number(amount) < 0 ? "Incorrect amount" : "Withdraw"}
                 disabled={Number(amount) > Number(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) || Number(amount) <= 0 ? true : false}
-                className={`w-full flex justify-center items-center gap-4 text-lg leading-none font-semibold rounded-full ${Number(amount) > Number(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) ? "bg-[#FFEBE9] text-[#FD0F0F]" : Number(amount) < 0 ? "bg-gray text-white" : "bg-black text-white"}`}
+                className={`transition ease-in-out w-full flex justify-center items-center gap-4 text-lg leading-none font-semibold rounded-full ${Number(amount) > Number(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) ? "bg-[#FFEBE9] text-[#FD0F0F]" : Number(amount) < 0 ? "bg-gray text-white" : "bg-black text-white hover:bg-success hover:text-black"}`}
                 padding="px-12 py-4"
                 onClick={() => {
                   if (signer && Number(amount) <= Number(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) && Number(amount) > 0) {

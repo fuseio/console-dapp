@@ -2,7 +2,6 @@ import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectOperatorSlice, setIsYourSecretKeyModalOpen, setOperator } from "@/store/operatorSlice";
-import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
 import Button from "../ui/Button";
 import Copy from "../ui/Copy";
@@ -54,7 +53,7 @@ const YourSecretKeyModal = (): JSX.Element => {
               <div>
                 <Button
                   text="Done"
-                  className="w-full text-lg text-black font-semibold bg-fuse-green-bright rounded-full"
+                  className="transition ease-in-out w-full text-lg text-black font-semibold bg-fuse-green-bright rounded-full hover:bg-black hover:text-white"
                   onClick={() => {
                     const secretKey = operatorSlice.operator.project.secretKey
                     const operator = {

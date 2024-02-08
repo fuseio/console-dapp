@@ -127,7 +127,7 @@ const ContactDetailsModal = (): JSX.Element => {
             <div className="mt-4">
               <Button
                 text="Continue"
-                className="bg-success font-bold leading-none w-full h-14 rounded-full"
+                className="transition ease-in-out bg-success font-bold leading-none w-full h-14 rounded-full hover:bg-black hover:text-white"
                 type="submit"
               />
             </div>

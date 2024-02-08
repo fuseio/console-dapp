@@ -31,7 +31,7 @@ const Home = () => {
           {!isConnected &&
             <Button
               text="Connect Wallet"
-              className="text-lg font-semibold bg-pale-green rounded-full"
+              className="transition ease-in-out text-lg font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
               padding="py-4 px-[52px]"
               onClick={() => {
                 dispatch(setIsWalletModalOpen(true));

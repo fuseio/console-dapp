@@ -62,7 +62,7 @@ const Home = () => {
     <div className="w-full bg-light-gray">
       <div className="w-full flex flex-col items-center">
         <div className="w-8/9 flex flex-col mt-[30.84px] md:w-9/10 max-w-7xl">
-          <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="welcome" className="" />
+          <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="welcome" className="" liClassName="w-28" />
         </div>
       </div>
       <div className="w-full flex flex-col items-center">
@@ -76,7 +76,7 @@ const Home = () => {
             </p>
             <Button
               text="Create your project"
-              className="text-lg font-semibold bg-pale-green rounded-full"
+              className="transition ease-in-out text-lg font-semibold bg-pale-green rounded-full hover:bg-white"
               padding="py-4 px-[52px]"
               onClick={createAccount}
             />
@@ -327,7 +327,7 @@ const Home = () => {
                 <a
                   href="https://www.fuse.io/ecosystem"
                   target="_blank"
-                  className="bg-white rounded-full text-lg leading-none font-semibold text-center px-[36.5px] py-4"
+                  className="transition ease-in-out bg-white rounded-full text-lg leading-none font-semibold text-center px-[36.5px] py-4 hover:bg-success"
                 >
                   Explore more ecosystem partners
                 </a>
@@ -425,7 +425,7 @@ const Home = () => {
                 </div>
                 <Button
                   text="Get Started"
-                  className="text-lg text-white font-semibold bg-black rounded-full"
+                  className="transition ease-in-out text-lg text-white font-semibold bg-black rounded-full hover:bg-white hover:text-black"
                   padding="py-4 px-[52px] mt-[25.88px]"
                   onClick={createAccount}
                 />
@@ -492,7 +492,7 @@ const Home = () => {
                 </div>
                 <Button
                   text="Get Started"
-                  className="text-lg text-white font-semibold bg-black rounded-full"
+                  className="transition ease-in-out text-lg text-white font-semibold bg-black rounded-full hover:bg-success hover:text-black"
                   padding="py-4 px-[52px] mt-[25.88px]"
                   onClick={createAccount}
                 />
@@ -564,7 +564,7 @@ const Home = () => {
           </p>
           <Button
             text="Create an account"
-            className="text-lg font-semibold bg-pale-green rounded-full"
+            className="transition ease-in-out text-lg font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
             padding="py-4 px-[52px]"
             onClick={createAccount}
           />

@@ -63,9 +63,9 @@ const CreateOperatorWallet = ({ accessToken, signMessage, loading, dispatch }: C
       </div>
       <Button
         text="Create operator wallet"
-        className="flex justify-between items-center gap-2 bg-black text-lg leading-none text-white font-semibold rounded-full"
+        className="transition ease-in-out flex justify-between items-center gap-2 bg-black text-lg leading-none text-white font-semibold rounded-full hover:bg-success hover:text-black"
         padding="py-[18.5px] px-[38px]"
-        onClick={() => {
+        onClick={() => {  
           if (accessToken) {
             return dispatch(setIsContactDetailsModalOpen(true))
           }
@@ -91,7 +91,7 @@ const ConnectOperatorWallet = ({ signMessage, loading }: ConnectOperatorWalletPr
       </div>
       <Button
         text="Connect operator wallet"
-        className="flex justify-between items-center gap-2 text-lg leading-none text-white font-semibold bg-black rounded-full"
+        className="transition ease-in-out flex justify-between items-center gap-2 text-lg leading-none text-white font-semibold bg-black rounded-full hover:bg-success hover:text-black"
         padding="py-[18.5px] px-[38px]"
         onClick={() => {
           signMessage();
@@ -115,7 +115,7 @@ const ConnectEoaWallet = () => {
         </p>
       </div>
       <ConnectWallet
-        className="flex justify-between items-center gap-2 bg-black text-lg leading-none text-white font-semibold rounded-full py-[18.5px] px-[38px]"
+        className="transition ease-in-out flex justify-between items-center gap-2 bg-black text-lg leading-none text-white font-semibold rounded-full py-[18.5px] px-[38px] hover:bg-success hover:text-black"
       />
     </div>
   )
@@ -180,7 +180,7 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
       <div className="flex flex-row md:flex-col gap-2.5">
         <Button
           text="Deposit"
-          className="text-black text-white font-semibold bg-black rounded-full"
+          className="transition ease-in-out text-black text-white font-semibold bg-black rounded-full hover:text-black hover:bg-success"
           padding="py-4 px-[52px]"
           onClick={() => {
             dispatch(setIsTopupAccountModalOpen(true));
@@ -188,7 +188,7 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
         />
         <Button
           text="Withdraw"
-          className="text-black text-white font-semibold bg-black rounded-full"
+          className="transition ease-in-out text-black text-white font-semibold bg-black rounded-full hover:text-black hover:bg-success"
           padding="py-4 px-[52px]"
           onClick={() => {
             dispatch(setIsWithdrawModalOpen(true));
@@ -281,7 +281,7 @@ const Home = () => {
       {operatorSlice.isAccountCreationModalOpen && <AccountCreationModal />}
       {operatorSlice.isCongratulationModalOpen && <CongratulationModal />}
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:w-9/10 max-w-7xl">
-        <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="" />
+        <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="" liClassName="w-28" />
         <div className={`mt-[66.29px] ${operatorSlice.isActivated ? "mb-[70px]" : "mb-[42px]"}`}>
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
             Operator Dashboard
@@ -302,7 +302,7 @@ const Home = () => {
             </div>
             <Button
               text="Add funds"
-              className="text-lg leading-none text-white font-semibold bg-black rounded-full"
+              className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black hover:text-black hover:bg-white rounded-full"
               padding="py-3.5 px-[38px]"
               onClick={() => {
                 dispatch(setIsTopupAccountModalOpen(true));
@@ -453,7 +453,7 @@ const Home = () => {
                     </div> :
                     <Button
                       text="Generate a new API secret"
-                      className="flex justify-between items-center gap-2 font-semibold bg-pale-green rounded-full"
+                      className="transition ease-in-out flex justify-between items-center gap-2 font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
                       padding="py-4 px-6"
                       onClick={() => {
                         dispatch(generateSecretApiKey());

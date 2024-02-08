@@ -16,7 +16,7 @@ const DocumentSupport = () => {
           <a
             href="https://docs.fuse.io/"
             target="_blank"
-            className="text-lg leading-none text-white font-semibold rounded-full bg-black px-5 py-[11.5px]"
+            className="transition ease-in-out text-lg leading-none text-white font-semibold rounded-full bg-black px-5 py-[11.5px] hover:text-black hover:bg-success"
           >
             Read the Docs
           </a>
@@ -39,7 +39,7 @@ const DocumentSupport = () => {
             <a
               href="https://discord.com/invite/jpPMeSZ"
               target="_blank"
-              className="underline"
+              className="underline hover:opacity-60"
             >
               Discord
             </a>{" "}
@@ -47,7 +47,7 @@ const DocumentSupport = () => {
           </p>
           <a
             href="mailto:console@fuse.io"
-            className="text-lg leading-none text-white font-semibold rounded-full bg-black px-5 py-[11.5px]"
+            className="transition ease-in-out text-lg leading-none text-white font-semibold rounded-full bg-black px-5 py-[11.5px] hover:text-black hover:bg-success"
           >
             Get Support
           </a>

@@ -17,6 +17,7 @@ type NavMenuProps = {
   isOpen?: boolean;
   selected?: string;
   className?: string;
+  liClassName?: string;
 };
 
 const animateUL = {
@@ -47,7 +48,8 @@ const NavMenu = ({
   menuItems = [],
   isOpen = false,
   selected = "",
-  className = "items-center justify-between w-auto order-1 md:w-full absolute md:translate-y-8 md:top-1/2 md:bg-black left-[50%] -translate-x-[50%] rounded-md"
+  className = "items-center justify-between w-auto order-1 md:w-full absolute md:translate-y-8 md:top-1/2 md:bg-black left-[50%] -translate-x-[50%] rounded-md",
+  liClassName = "w-20"
 }: NavMenuProps) => {
   const matches = useMediaQuery("(min-width: 768px)");
   const { address, connector, isConnected } = useAccount();
@@ -109,54 +111,53 @@ const NavMenu = ({
           exit={{ opacity: !matches ? 0 : 1 }}
         >
           <motion.ul
-            className="flex flex-row items-center md:items-start p-0 md:p-4 mt-0 font-medium text-base/4 md:flex-col space-x-8 md:space-x-0 rounded"
+            className="flex flex-row items-center md:items-start gap-2 p-0 md:p-4 mt-0 font-medium text-base/4 md:flex-col"
             variants={!matches ? animateUL : undefined}
             initial="hidden"
             animate="show"
           >
             {menuItems.map((item, index) => (
-              <motion.li key={index} variants={!matches ? animateLI : undefined} className="md:w-full">
-                <a
-                  href={item.link}
-                  className={
-                    "block relative p-0 bg-transparent md:py-2 md:pl-3 md:pr-4 " +
-                    (item.title.toLowerCase() === selected
-                      ? "bg-lightest-gray py-2.5 px-4 rounded-full md:text-white pointer-events-none"
-                      : "md:text-gray pointer-events-auto group hover:text-text-darker-gray")
+              <motion.li
+                key={index}
+                variants={!matches ? animateLI : undefined}
+                className={`flex justify-center items-center rounded-full h-9 hover:bg-lightest-gray md:w-full md:justify-start ${liClassName} ${(item.title.toLowerCase() === selected ? "bg-lightest-gray py-2.5 px-4 md:text-white pointer-events-none" : "md:text-gray cursor-pointer group")}`}
+                aria-current={
+                  item.title.toLowerCase() === selected
+                    ? "page"
+                    : "false"
+                }
+                title={isOperatorMenuAndConnected(item) && !loading() ? "Verify your wallet to proceed" : ""}
+                onClick={(e) => {
+                  amplitude.track(openMenuItemEvent[item.title], {
+                    walletType: connector ? walletType[connector.id] : undefined,
+                    walletAddress: address
+                  });
+
+                  if (item.link !== path.BUILD) {
+                    return router.push(item.link);
                   }
-                  aria-current={
-                    item.title.toLowerCase() === selected
-                      ? "page"
-                      : "false"
-                  }
-                  title={isOperatorMenuAndConnected(item) && !loading() ? "Verify your wallet to proceed" : ""}
-                  onClick={(e) => {
-                    if (item.link === path.BUILD) {
-                      e.preventDefault();
-                      if (pathname === "/dashboard") {
-                        router.push(path.BUILD);
-                      } else if (isAuthenticated) {
-                        router.push("/dashboard");
-                      } else if (localStorage.getItem("Fuse-isLoginError")) {
-                        localStorage.removeItem("Fuse-isLoginError");
-                        dispatch(setIsContactDetailsModalOpen(true));
-                      } else if (signature) {
-                        router.push(path.BUILD);
-                      } else if (isConnected) {
-                        if (chain?.id !== fuse.id) {
-                          switchNetwork && switchNetwork(fuse.id)
-                        }
-                        signMessage();
-                      } else {
-                        router.push(path.BUILD);
-                      }
+
+                  e.preventDefault();
+                  if (pathname === "/dashboard") {
+                    router.push(path.BUILD);
+                  } else if (isAuthenticated) {
+                    router.push("/dashboard");
+                  } else if (localStorage.getItem("Fuse-isLoginError")) {
+                    localStorage.removeItem("Fuse-isLoginError");
+                    dispatch(setIsContactDetailsModalOpen(true));
+                  } else if (signature) {
+                    router.push(path.BUILD);
+                  } else if (isConnected) {
+                    if (chain?.id !== fuse.id) {
+                      switchNetwork && switchNetwork(fuse.id)
                     }
-                    amplitude.track(openMenuItemEvent[item.title], {
-                      walletType: connector ? walletType[connector.id] : undefined,
-                      walletAddress: address
-                    });
-                  }}
-                >
+                    signMessage();
+                  } else {
+                    router.push(path.BUILD);
+                  }
+                }}
+              >
+                <div className="block relative">
                   {item.title}
                   {(isOperatorMenuAndConnected(item) && !loading()) &&
                     <Image
@@ -170,7 +171,7 @@ const NavMenu = ({
                   {(isOperatorMenuAndConnected(item) && loading()) &&
                     <span className="absolute -right-2 -top-3 animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-3 h-3"></span>
                   }
-                </a>
+                </div>
               </motion.li>
             ))}
           </motion.ul>

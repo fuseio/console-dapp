@@ -690,7 +690,7 @@ const Home = () => {
               )}
               {!isConnected && displayButton ? (
                 <ConnectWallet
-                  className="mt-6 py-4 w-full"
+                  className="transition ease-in-out mt-6 py-4 w-full hover:bg-success hover:text-black"
                 />
               ) : displayButton &&
                 selected === 1 &&
