@@ -40,14 +40,16 @@ const ChainModal = ({
             }}
             className="bg-white w-[400.88px] h-fit rounded-xl flex flex-col p-10 relative top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 md:w-full md:top-full md:-translate-y-full md:rounded-b-none md:p-4"
           >
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-start">
               <p className="text-2xl text-dune font-bold max-w-[218.24px]">
                 You are in wrong network
               </p>
               <Image
                 src={close}
                 alt="close"
-                className="cursor-pointer w-8"
+                width={50}
+                height={50}
+                className="cursor-pointer"
                 onClick={() => setIsOpen(false)}
               />
             </div>
@@ -57,6 +59,7 @@ const ChainModal = ({
             <Image
               src={fuseGray}
               alt="Fuse gray"
+              className="m-auto"
               onClick={() => setIsOpen(false)}
             />
             <Button
