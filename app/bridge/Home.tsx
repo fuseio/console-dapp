@@ -795,7 +795,11 @@ const Home = () => {
                             ].tokens[depositSelectedTokenItem].isNative &&
                             !appConfig.wrappedBridge.chains[
                               depositSelectedChainItem
-                            ].tokens[depositSelectedTokenItem].isBridged)
+                            ].tokens[depositSelectedTokenItem].isBridged) ||
+                          (selected === 0 &&
+                            appConfig.wrappedBridge.chains[
+                              depositSelectedChainItem
+                            ].tokens[depositSelectedTokenItem].isNative)
                         ? "Bridge"
                         : parseFloat(balanceSlice.approval) < parseFloat(amount)
                         ? "Approve"
