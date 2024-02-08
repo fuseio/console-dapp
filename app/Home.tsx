@@ -53,7 +53,7 @@ const Home = () => {
             Create your project
           </Link>
         </div>
-        <div className="grid grid-cols-3 md:grid-cols-1 gap-[31px]">
+        <div className="grid grid-cols-3 lg:grid-cols-1 gap-[31px]">
           <Link
             href={path.STAKING}
             className="transition-all ease-in-out flex flex-col gap-[17.43px] bg-lightest-gray hover:bg-success rounded-[20px] pt-[42.36px] pr-[15px] pl-[46.8px] md:px-4 md:pt-6 min-h-[420px] md:min-h-[400px] bg-[url('/vectors/stake.svg')] hover:bg-[url('/vectors/stake-green.svg')] bg-no-repeat bg-bottom"

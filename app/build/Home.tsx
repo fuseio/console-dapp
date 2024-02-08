@@ -347,7 +347,7 @@ const Home = () => {
                 Here is the list of the Fuse products and solutions
               </p>
             </div>
-            <div className="flex flex-row md:flex-col justify-center gap-[30px]">
+            <div className="flex flex-row lg:flex-col lg:items-center justify-center gap-[30px]">
               <div className="flex flex-col gap-[30px] rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
                 <div className="h-[194px] md:h-auto">
                   <p className="text-3xl text-fuse-black font-semibold">

@@ -4,7 +4,7 @@ import getSupport from "@/assets/get-support.svg";
 
 const DocumentSupport = () => {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-1 gap-[30px] divide-x-[1px] md:divide-x-0 md:divide-y-[1px] divide-gray-goose">
+    <div className="grid grid-cols-2 lg:grid-cols-1 gap-[30px] divide-x-[1px] lg:divide-x-0 lg:divide-y-[1px] divide-gray-goose">
       <div className="transition ease-in-out flex flex-row md:flex-col md:gap-8 justify-between pt-[36px] pr-[51px] pb-[30px] pl-14 md:px-4 md:py-6 min-h-[174px]">
         <div className="flex flex-col justify-center items-start">
           <p className="text-2xl text-fuse-black font-bold">
