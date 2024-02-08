@@ -25,8 +25,8 @@ const Home = () => {
           <h1 className="text-[70px]/[84.35px] text-fuse-black font-semibold max-w-[680.37px]">
             Welcome to the Fuse Console
           </h1>
-          <p className="text-[20px]/7 text-text-dark-gray md:text-base mt-[22px] mb-[36.52px]">
-            A one-stop-shop for everything you need
+          <p className="text-[20px]/7 text-text-dark-gray md:text-base mt-[22px] mb-[36.52px] max-w-[395.25px]">
+            Get all the tools and services to start your journey on Fuse
           </p>
           {!isConnected &&
             <Button

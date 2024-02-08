@@ -218,7 +218,7 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
               {operatorSlice.isActivated &&
                 <div
                   title="Gas Estimate"
-                  className="w-full flex justify-end items-center gap-1 text-text-dark-gray my-2"
+                  className="w-full flex justify-end items-center gap-1 text-text-dark-gray mb-2"
                 >
                   <Image
                     src={gasIcon}
@@ -227,7 +227,7 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
                     height={12}
                   />
                   <p>
-                    {gasEstimateGwei} Gwei
+                    {new Intl.NumberFormat().format(parseFloat(gasEstimateGwei))} Gwei
                   </p>
                 </div>
               }

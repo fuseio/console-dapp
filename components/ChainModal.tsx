@@ -38,7 +38,7 @@ const ChainModal = ({
             transition={{
               duration: 0.5,
             }}
-            className="bg-white w-[400.88px] h-fit rounded-xl flex flex-col items-center justify-start text-center p-10 relative top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 md:w-full md:top-full md:-translate-y-full md:rounded-b-none md:p-4"
+            className="bg-white w-[400.88px] h-fit rounded-xl flex flex-col p-10 relative top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 md:w-full md:top-full md:-translate-y-full md:rounded-b-none md:p-4"
           >
             <div className="flex justify-between items-center">
               <p className="text-2xl text-dune font-bold max-w-[218.24px]">
@@ -47,7 +47,7 @@ const ChainModal = ({
               <Image
                 src={close}
                 alt="close"
-                className="cursor-pointer w-6"
+                className="cursor-pointer w-8"
                 onClick={() => setIsOpen(false)}
               />
             </div>
@@ -61,7 +61,7 @@ const ChainModal = ({
             />
             <Button
               text="Switch to Fuse chain"
-              className="transition ease-in-out w-full bg-success text-lg font-bold text-black rounded-full mt-[31.7px] mb-2.5 hover:bg-black hover:text-white"
+              className="transition ease-in-out w-full bg-success text-lg font-bold text-black rounded-xl mt-[31.7px] mb-2.5 hover:bg-black hover:text-white"
               padding="py-3.5"
               onClick={() => {
                 switchNetwork && switchNetwork(fuse.id);
@@ -69,7 +69,7 @@ const ChainModal = ({
             />
             <Button
               text="Disconnect Wallet"
-              className="transition ease-in-out w-full bg-success text-lg font-bold text-black rounded-full hover:bg-black hover:text-white"
+              className="transition ease-in-out w-full bg-dune text-lg font-bold text-white rounded-xl hover:bg-[#FFEBE9] hover:text-[#FD0F0F]"
               padding="py-3.5"
               onClick={() => {
                 disconnect();
