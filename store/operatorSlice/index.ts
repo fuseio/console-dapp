@@ -470,8 +470,9 @@ export const withdraw = createAsyncThunk<
         let recipient = to;
         let value = parseEther(amount);
         let data = Uint8Array.from([]);
+        let withPaymaster = false;
 
-        if(contractAddress) {
+        if (contractAddress) {
           const erc20Contract = new ethers.Contract(contractAddress as string, ERC20ABI);
           recipient = contractAddress;
           value = parseEther("0");
@@ -481,10 +482,15 @@ export const withdraw = createAsyncThunk<
           ));
         }
 
+        if (operatorState.isActivated) {
+          withPaymaster = true;
+        }
+
         const fuseSDK = await FuseSDK.init(
           operatorState.operator.project.publicKey,
           signer,
           {
+            withPaymaster,
             jwtToken: operatorState.accessToken,
             signature: operatorState.signature
           }

@@ -60,7 +60,7 @@ const Home = () => {
           </p>
         </div>
         <div className="flex flex-col gap-y-[30px]">
-          <div className="bg-fuse-black rounded-[20px] text-white px-12 md:px-8 py-14 md:py-10">
+          <div className="bg-fuse-black rounded-[20px] text-white px-12 md:px-4 py-[26px] md:py-6">
             <div className="flex flex-row justify-between md:flex-col gap-12">
               <div className="flex flex-col gap-y-[62px]">
                 <div className="flex flex-col gap-y-[18px]">

@@ -13,6 +13,8 @@ import usdt from "@/assets/usdt-logo.svg";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import { Address } from "viem";
 import { hex } from "@/lib/helpers";
+import gasIcon from "@/assets/gas.svg";
+import { ethers } from "ethers";
 
 type WithdrawModalProps = {
   balance: string;
@@ -29,6 +31,11 @@ type Coin = {
 
 type Coins = {
   [k: string]: Coin
+}
+
+const gas = {
+  "NATIVE": "1500000000000000",
+  "CONTRACT": "1336577000000000"
 }
 
 const coins: Coins = {
@@ -66,10 +73,12 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const dispatch = useAppDispatch();
   const [amount, setAmount] = useState("0.00");
-  const [address, setAddress] = useState<Address>(hex);
+  const [toAddress, setToAddress] = useState<Address>(hex);
   const signer = useEthersSigner();
   const [selectedCoin, setSelectedCoin] = useState("FUSE");
   const [isCoinDropdownOpen, setIsCoinDropdownOpen] = useState(false);
+  const [gasEstimateGwei, setGasEstimateGwei] = useState(ethers.utils.formatUnits(gas.NATIVE, "gwei"));
+  const [gasEstimate, setGasEstimate] = useState(ethers.utils.formatEther(gas.NATIVE));
 
   const coinDropdownRef = useOutsideClick<HTMLButtonElement>(() => {
     if (isCoinDropdownOpen) {
@@ -118,7 +127,7 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
                   Amount
                 </p>
                 <p>
-                  Balance: {new Intl.NumberFormat().format(Number(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance))} {selectedCoin}
+                  Balance: {new Intl.NumberFormat().format(parseFloat(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance))} {selectedCoin}
                 </p>
               </div>
               <div className="flex justify-between gap-2.5 mt-4 mb-6">
@@ -135,7 +144,7 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
                     text="Max"
                     className="bg-lightest-gray text-sm leading-none font-medium px-2 py-1 rounded-full"
                     onClick={() => {
-                      setAmount(balance)
+                      setAmount((parseFloat(balance) - parseFloat(gasEstimate)).toString())
                     }}
                   />
                 </div>
@@ -172,8 +181,12 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
                                 address: operatorSlice.operator.user.smartContractAccountAddress,
                                 decimals: coins[key].decimals,
                               }))
+                              setGasEstimateGwei(ethers.utils.formatUnits(gas.CONTRACT, "gwei"));
+                              setGasEstimate(ethers.utils.formatEther(gas.CONTRACT));
                             }
                             setSelectedCoin(key);
+                            setGasEstimateGwei(ethers.utils.formatUnits(gas.NATIVE, "gwei"));
+                            setGasEstimate(ethers.utils.formatEther(gas.NATIVE));
                           }}
                           className="flex gap-2 items-center"
                         >
@@ -198,21 +211,37 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
               <input
                 type="text"
                 name="address"
-                value={address}
-                onChange={e => setAddress(e.target.value as Address)}
+                value={toAddress}
+                onChange={e => setToAddress(e.target.value as Address)}
                 className="px-7 py[16.5px] border-[0.5px] border-gray-alpha-40 h-[55px] rounded-full mb-6 text-2xl text-text-dark-gray font-medium w-full focus:outline-none"
               />
+              {operatorSlice.isActivated &&
+                <div
+                  title="Gas Estimate"
+                  className="w-full flex justify-end items-center gap-1 text-text-dark-gray my-2"
+                >
+                  <Image
+                    src={gasIcon}
+                    alt="gas estimate"
+                    width={12}
+                    height={12}
+                  />
+                  <p>
+                    {gasEstimateGwei} Gwei
+                  </p>
+                </div>
+              }
               <Button
-                text={Number(amount) > Number(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) ? "Insufficient balance" : Number(amount) < 0 ? "Incorrect amount" : "Withdraw"}
-                disabled={Number(amount) > Number(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) || Number(amount) <= 0 ? true : false}
-                className={`transition ease-in-out w-full flex justify-center items-center gap-4 text-lg leading-none font-semibold rounded-full ${Number(amount) > Number(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) ? "bg-[#FFEBE9] text-[#FD0F0F]" : Number(amount) < 0 ? "bg-gray text-white" : "bg-black text-white hover:bg-success hover:text-black"}`}
+                text={(parseFloat(amount) + parseFloat(gasEstimate)) > parseFloat(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) ? "Insufficient balance" : parseFloat(amount) < 0 ? "Incorrect amount" : "Withdraw"}
+                disabled={(parseFloat(amount) + parseFloat(gasEstimate)) > parseFloat(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) || parseFloat(amount) <= 0 ? true : false}
+                className={`transition ease-in-out w-full flex justify-center items-center gap-4 text-lg leading-none font-semibold rounded-full ${(parseFloat(amount) + parseFloat(gasEstimate)) > parseFloat(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) ? "bg-[#FFEBE9] text-[#FD0F0F]" : parseFloat(amount) < 0 ? "bg-gray text-white" : "bg-black text-white hover:bg-success hover:text-black"}`}
                 padding="px-12 py-4"
                 onClick={() => {
-                  if (signer && Number(amount) <= Number(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) && Number(amount) > 0) {
+                  if (signer && (parseFloat(amount) + parseFloat(gasEstimate)) <= parseFloat(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) && parseFloat(amount) > 0) {
                     dispatch(withdraw({
                       signer,
                       amount,
-                      to: address,
+                      to: toAddress,
                       decimals: coins[selectedCoin].decimals,
                       token: selectedCoin,
                       coinGeckoId: coins[selectedCoin].coinGeckoId,

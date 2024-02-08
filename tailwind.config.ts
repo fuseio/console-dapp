@@ -75,6 +75,8 @@ const config: Config = {
       "pastel-gray": "#CDCDCD",
       "star-dust-alpha-70": "#9f9f9fb3",
       "gray-goose": "#CFCFCF",
+      "dune": "#333333",
+      "dove-gray": "#6B6B6B",
     },
     fontFamily: {
       mona: ["var(--font-mona-sans)"],
