@@ -88,7 +88,7 @@ const Home = () => {
           <div className="flex flex-row md:flex-col justify-center gap-[31px] mt-[117.5px] mb-[119px]">
             <div className="bg-white rounded-[20px] p-[51px] md:px-4 md:py-6 w-full max-w-[623px] h-[800px] bg-[url('/vectors/get-mobiles.svg')] bg-no-repeat bg-bottom">
               <p className="text-[34px] text-fuse-black font-bold">
-                Get started for free
+                Get started
               </p>
               <p className="text-[20px]/7 text-text-dark-gray mt-[30.61px] mb-[38.67px] max-w-[395.25px]">
                 Start building your project - no crypto expertise are needed
@@ -351,7 +351,7 @@ const Home = () => {
               <div className="flex flex-col gap-[30px] rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
                 <div className="h-[194px] md:h-auto">
                   <p className="text-3xl text-fuse-black font-semibold">
-                    Free tier
+                    Starter plan
                   </p>
                   <p className="text-night opacity-60 mt-[18.82px] mb-[30.7px] max-w-[300px]">
                     Unleash the power of your buissiness with the starter plan

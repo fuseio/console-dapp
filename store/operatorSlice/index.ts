@@ -2,7 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
 import { Signer, ethers } from "ethers";
 import { FuseSDK } from "@fuseio/fusebox-web-sdk";
-import { hex } from "@/lib/helpers";
+import { hex, splitSecretKey } from "@/lib/helpers";
 import { Operator, OperatorContactDetail, SignData, Withdraw } from "@/lib/types";
 import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
@@ -712,6 +712,9 @@ const operatorSlice = createSlice({
       state.isAuthenticated = true;
       state.isAccountCreationModalOpen = false;
       state.isCongratulationModalOpen = true;
+      const { secretPrefix, secretLastFourChars } = splitSecretKey(action.payload.operator.project.secretKey);
+      state.operator.project.secretPrefix = secretPrefix;
+      state.operator.project.secretLastFourChars = secretLastFourChars;
       localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
       localStorage.setItem("Fuse-isOperatorAuthenticated", "true");
       localStorage.removeItem("Fuse-operatorContactDetail");

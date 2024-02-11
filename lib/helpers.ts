@@ -49,7 +49,7 @@ export const IS_SERVER = typeof window === "undefined";
 export const walletType: WalletType = {
   "injected": "MetaMask",
   "walletConnect": "WalletConnect",
-  "coinbaseWallet": "Coinbase", 
+  "coinbaseWallet": "Coinbase",
   "google": "Google",
   "facebook": "Facebook",
   "twitter": "Twitter",
@@ -81,3 +81,10 @@ export const buildSubMenuItems = [
     link: "/dashboard",
   },
 ];
+
+export const splitSecretKey = (secretKey: string) => {
+  return {
+    secretPrefix: secretKey.split("_")[0] + "_",
+    secretLastFourChars: secretKey.slice(secretKey.length - 4, secretKey.length)
+  }
+}

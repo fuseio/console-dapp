@@ -5,6 +5,7 @@ import { selectOperatorSlice, setIsYourSecretKeyModalOpen, setOperator } from "@
 import copy from "@/assets/copy-black.svg";
 import Button from "../ui/Button";
 import Copy from "../ui/Copy";
+import { splitSecretKey } from "@/lib/helpers";
 
 const YourSecretKeyModal = (): JSX.Element => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
@@ -55,14 +56,15 @@ const YourSecretKeyModal = (): JSX.Element => {
                   text="Done"
                   className="transition ease-in-out w-full text-lg text-black font-semibold bg-fuse-green-bright rounded-full hover:bg-black hover:text-white"
                   onClick={() => {
-                    const secretKey = operatorSlice.operator.project.secretKey
+                    const secretKey = operatorSlice.operator.project.secretKey;
+                    const { secretPrefix, secretLastFourChars } = splitSecretKey(secretKey);
                     const operator = {
                       ...operatorSlice.operator,
                       project: {
                         ...operatorSlice.operator.project,
                         secretKey: "",
-                        secretPrefix: secretKey.split("_")[0] + "_",
-                        secretLastFourChars: secretKey.slice(secretKey.length - 4, secretKey.length)
+                        secretPrefix,
+                        secretLastFourChars
                       }
                     }
                     dispatch(setOperator(operator));

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
 import rightArrow from "@/assets/right-arrow.svg"
 import { buildSubMenuItems, signDataMessage } from "@/lib/helpers";
@@ -29,6 +29,8 @@ import Copy from "@/components/ui/Copy";
 import DocumentSupport from "@/components/DocumentSupport";
 import * as amplitude from "@amplitude/analytics-browser";
 import { fetchTokenPrice } from "@/lib/api";
+import show from "@/assets/show.svg";
+import hide from "@/assets/hide.svg";
 
 type CreateOperatorWalletProps = {
   accessToken: string;
@@ -65,7 +67,7 @@ const CreateOperatorWallet = ({ accessToken, signMessage, loading, dispatch }: C
         text="Create operator wallet"
         className="transition ease-in-out flex justify-between items-center gap-2 bg-black text-lg leading-none text-white font-semibold rounded-full hover:bg-success hover:text-black"
         padding="py-[18.5px] px-[38px]"
-        onClick={() => {  
+        onClick={() => {
           if (accessToken) {
             return dispatch(setIsContactDetailsModalOpen(true))
           }
@@ -203,6 +205,7 @@ const Home = () => {
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const operatorSlice = useAppSelector(selectOperatorSlice);
+  const [showSecretKey, setShowSecretKey] = useState(false);
   const controller = new AbortController();
   const { isConnected, address } = useAccount();
   const signer = useEthersSigner();
@@ -297,7 +300,7 @@ const Home = () => {
                 height={32}
               />
               <p className="font-medium">
-                To activate Free plan and get an API key it is required to deposit at least 10 FUSE to the Account balance
+                To activate Starter plan and get an API key it is required to deposit at least 10 FUSE to the Account balance
               </p>
             </div>
             <Button
@@ -340,7 +343,7 @@ const Home = () => {
                   Active plan
                 </p>
                 <p className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
-                  Free plan
+                  Starter plan
                 </p>
               </div>
               <div className="flex flex-col gap-[18px] w-full">
@@ -418,27 +421,30 @@ const Home = () => {
                     Account not activated
                   </p>
                 </div> :
-                operatorSlice.operator.project.secretKey ?
-                  <div className="w-full md:min-w-max flex justify-between bg-modal-bg rounded-[31px] border border-black/40 text-sm text-black font-semibold px-5 py-[15px]">
-                    <p>
-                      {operatorSlice.operator.project.secretKey}
-                    </p>
-                    <Image
-                      src={roll}
-                      alt="roll secret key"
-                      width={15}
-                      height={15}
-                      title="Roll Secret Key"
-                      className="cursor-pointer"
-                      onClick={() => {
-                        dispatch(setIsRollSecretKeyModalOpen(true));
-                      }}
-                    />
-                  </div> : operatorSlice.operator.project.secretLastFourChars ?
-                    <div className="w-full md:min-w-max flex justify-between bg-modal-bg rounded-[31px] border border-black/40 text-sm text-black font-semibold px-5 py-[15px]">
+                operatorSlice.operator.project.secretLastFourChars ?
+                  <div className="w-full md:min-w-max flex justify-between bg-modal-bg rounded-[31px] border border-black/40 text-xs text-black font-semibold px-5 py-[15px]">
+                    {operatorSlice.operator.project.secretKey && showSecretKey ?
+                      <p>
+                        {operatorSlice.operator.project.secretKey}
+                      </p> :
                       <p>
                         {operatorSlice.operator.project.secretPrefix}{new Array(20).fill("*")}{operatorSlice.operator.project.secretLastFourChars}
                       </p>
+                    }
+                    <div className="flex items-center gap-2">
+                      {operatorSlice.operator.project.secretKey &&
+                        <Image
+                          src={showSecretKey ? show : hide}
+                          alt="display secret key"
+                          width={20}
+                          height={20}
+                          title="Display Secret Key"
+                          className="cursor-pointer"
+                          onClick={() => {
+                            setShowSecretKey(!showSecretKey)
+                          }}
+                        />
+                      }
                       <Image
                         src={roll}
                         alt="roll secret key"
@@ -450,17 +456,18 @@ const Home = () => {
                           dispatch(setIsRollSecretKeyModalOpen(true));
                         }}
                       />
-                    </div> :
-                    <Button
-                      text="Generate a new API secret"
-                      className="transition ease-in-out flex justify-between items-center gap-2 font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
-                      padding="py-4 px-6"
-                      onClick={() => {
-                        dispatch(generateSecretApiKey());
-                      }}
-                    >
-                      {operatorSlice.isGeneratingSecretApiKey && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
-                    </Button>
+                    </div>
+                  </div> :
+                  <Button
+                    text="Generate a new API secret"
+                    className="transition ease-in-out flex justify-between items-center gap-2 font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
+                    padding="py-4 px-6"
+                    onClick={() => {
+                      dispatch(generateSecretApiKey());
+                    }}
+                  >
+                    {operatorSlice.isGeneratingSecretApiKey && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
+                  </Button>
               }
             </div>
             <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
