@@ -34,6 +34,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <WagmiConfig config={config}>
         <YMInitializer
           accounts={[parseInt(NEXT_PUBLIC_YANDEX_METRICA_ID)]}
+          options={{
+            clickmap: true,
+            trackLinks: true,
+            accurateTrackBounce: true,
+            webvisor: true
+          }}
         />
         <WalletModal />
         {children}
