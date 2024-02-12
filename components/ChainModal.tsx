@@ -40,19 +40,17 @@ const ChainModal = ({
             }}
             className="bg-white w-[400.88px] h-fit rounded-xl flex flex-col p-10 relative top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 md:w-full md:top-full md:-translate-y-full md:rounded-b-none md:p-4"
           >
-            <div className="flex justify-between items-start">
-              <p className="text-2xl text-dune font-bold max-w-[218.24px]">
-                You are in wrong network
-              </p>
-              <Image
-                src={close}
-                alt="close"
-                width={50}
-                height={50}
-                className="cursor-pointer"
-                onClick={() => setIsOpen(false)}
-              />
-            </div>
+            <Image
+              src={close}
+              alt="close"
+              width={30}
+              height={30}
+              className="absolute top-7 right-6 cursor-pointer"
+              onClick={() => setIsOpen(false)}
+            />
+            <p className="text-2xl text-dune font-bold max-w-[218.24px]">
+              You are in wrong network
+            </p>
             <p className="text-sm	text-dove-gray font-medium max-w-[252.62px] my-[26.5px]">
               {description}
             </p>

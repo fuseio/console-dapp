@@ -50,7 +50,7 @@ export const postValidateOperator = async (signData: SignData): Promise<string> 
 
 export const fetchCurrentOperator = async (token: string): Promise<Operator> => {
     const response = await axios.get(
-        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/me/id_not_needed`,
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/account`,
         {
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -62,7 +62,7 @@ export const fetchCurrentOperator = async (token: string): Promise<Operator> => 
 
 export const postCreateOperator = async (operatorContactDetail: OperatorContactDetail, token: string): Promise<Operator> => {
     const response = await axios.post(
-        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators`,
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/account`,
         operatorContactDetail,
         {
             headers: {
