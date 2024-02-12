@@ -20,7 +20,6 @@ import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { publicProvider } from "wagmi/providers/public";
-import { LedgerConnector } from "wagmi/connectors/ledger";
 import { IS_SERVER, hex, isIos } from "./helpers";
 import { Web3AuthGoogleConnector } from "./connectors/google";
 import { Web3AuthEmailConnector } from "./connectors/email";
@@ -66,12 +65,6 @@ export const config = createConfig({
       chains,
       options: {
         appName: "wagmi",
-      },
-    }),
-    new LedgerConnector({
-      chains,
-      options: {
-        projectId: NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
       },
     }),
     Web3AuthConnectorInstance(Web3AuthGoogleConnector, LOGIN_PROVIDER.GOOGLE),
