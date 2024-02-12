@@ -84,7 +84,7 @@ const Airdrop = () => {
           </span>
         </div>
         <div
-          className="bg-fuse-green-light text-black ms-auto px-4 py-[10px] rounded-full cursor-pointer font-semibold text-xs"
+          className="bg-success text-black ms-auto px-4 py-[10px] rounded-full cursor-pointer font-semibold text-xs"
           onClick={() => {
             onToggle(true);
           }}
