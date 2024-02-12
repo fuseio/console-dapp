@@ -570,7 +570,7 @@ const Home = () => {
                               icon: fuseToken,
                               lzChainId: 138,
                               name: "Fuse",
-                              rpcUrl: "https://rpc.fuse.io",
+                              rpcUrl: "https://fuse.liquify.com",
                               tokens: [],
                               wrapped: appConfig.wrappedBridge.fuse.wrapped,
                             })
@@ -583,7 +583,7 @@ const Home = () => {
                                 appConfig.wrappedBridge.chains[
                                   withdrawSelectedChainItem
                                 ].lzChainId,
-                              rpcUrl: "https://rpc.fuse.io",
+                              rpcUrl: "https://fuse.liquify.com",
                               tokenId: "fuse-network-token",
                             })
                           );
