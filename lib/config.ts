@@ -31,7 +31,6 @@ export const exchangeConfig = createExchangeConfig(exchanges);
 export const coinConfig = createCoinConfig(coins);
 export const appConfig = createAppConfig(bridgeConfig, chainConfig, coinConfig);
 
-export const NODE_ENV = process.env.NODE_ENV ?? ""
 export const GENERATE_SOURCEMAP = process.env.GENERATE_SOURCEMAP ?? ""
 export const NEXT_PUBLIC_GOOGLE_ANALYTICS_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID ?? ""
 export const NEXT_PUBLIC_YANDEX_METRICA_ID = process.env.NEXT_PUBLIC_YANDEX_METRICA_ID ?? ""
