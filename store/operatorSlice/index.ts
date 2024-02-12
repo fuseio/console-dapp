@@ -8,7 +8,7 @@ import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsore
 import { RootState } from "../store";
 import { Address } from "abitype";
 import { parseEther, parseUnits } from "ethers/lib/utils";
-import { CONFIG } from "@/lib/config";
+import { CONFIG, NEXT_PUBLIC_FUSE_API_BASE_URL } from "@/lib/config";
 import { PaymasterAbi } from "@/lib/abi/Paymaster";
 import { getSponsorIdBalance } from "@/lib/contractInteract";
 import * as amplitude from "@amplitude/analytics-browser";
@@ -195,6 +195,7 @@ export const fetchOperator = createAsyncThunk<
           operator.project.publicKey,
           signer,
           {
+            baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
             jwtToken: operatorState.accessToken,
             signature: operatorState.signature
           }
@@ -240,6 +241,7 @@ export const createOperator = createAsyncThunk<
         operator.project.publicKey,
         signer,
         {
+          baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
           jwtToken: operatorState.accessToken,
           signature: operatorState.signature
         }
@@ -382,6 +384,7 @@ export const fundPaymaster = createAsyncThunk<
           operatorState.operator.project.publicKey,
           signer,
           {
+            baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
             jwtToken: operatorState.accessToken,
             signature: operatorState.signature
           }
@@ -491,6 +494,7 @@ export const withdraw = createAsyncThunk<
           signer,
           {
             withPaymaster,
+            baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
             jwtToken: operatorState.accessToken,
             signature: operatorState.signature
           }

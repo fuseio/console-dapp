@@ -9,7 +9,6 @@ import { chains } from "./chains";
 import { coins } from "./coins";
 import { exchanges } from "./exchanges";
 import { Address } from "wagmi";
-import { Variables } from "@fuseio/fusebox-web-sdk/dist/src/constants/variables";
 
 type CONFIG = {
   fuseRPC: string;
@@ -24,8 +23,8 @@ export const CONFIG: CONFIG = {
   consensusAddress: "0x3014ca10b91cb3D0AD85fEf7A3Cb95BCAc9c0f79",
   blockRewardAddress: "0x63D4efeD2e3dA070247bea3073BCaB896dFF6C9B",
   bootApi: "https://bot.fuse.io/api/v1",
-  paymasterAddress: "0xEA1Ba4305A07cEd2bB5e42224D71aBE0BC3C3f28"
-,};
+  paymasterAddress: "0xEA1Ba4305A07cEd2bB5e42224D71aBE0BC3C3f28",
+};
 
 export const chainConfig = createChainConfig(chains);
 export const exchangeConfig = createExchangeConfig(exchanges);
@@ -45,4 +44,3 @@ export const NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL = process.env.NEXT_PUBLIC_FUS
 export const NEXT_PUBLIC_FUSE_API_BASE_URL = process.env.NEXT_PUBLIC_FUSE_API_BASE_URL ?? ""
 export const NEXT_PUBLIC_COIN_GECKO_API_KEY = process.env.NEXT_PUBLIC_COIN_GECKO_API_KEY ?? ""
 
-Variables.BASE_URL = NEXT_PUBLIC_FUSE_API_BASE_URL;
