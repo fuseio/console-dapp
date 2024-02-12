@@ -25,7 +25,7 @@ const WalletButton = ({
 
   return (
     <button
-      className="flex flex-col justify-between items-center relative p-2 border-[#CDD9E5] border rounded-md cursor-pointer hover:bg-[#F2F2F2] disabled:opacity-75 disabled:cursor-default transition-all duration-500 h-16"
+      className="flex flex-col justify-between items-center relative p-2 border-[#CDD9E5] border rounded-md cursor-pointer hover:bg-[#F2F2F2] disabled:opacity-75 disabled:cursor-default transition-all duration-500 h-[75px]"
       onClick={onClick}
       disabled={isConnected && connector?.id === id}
     >

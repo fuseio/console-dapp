@@ -49,7 +49,7 @@ export const IS_SERVER = typeof window === "undefined";
 export const walletType: WalletType = {
   "injected": "MetaMask",
   "walletConnect": "WalletConnect",
-  "coinbaseWallet": "Coinbase", 
+  "coinbaseWallet": "Coinbase",
   "google": "Google",
   "facebook": "Facebook",
   "twitter": "Twitter",
@@ -59,3 +59,32 @@ export const walletType: WalletType = {
 }
 
 export const isIos = !IS_SERVER && /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+export const signDataMessage = 'Verify your wallet ownership to create an Operator account';
+
+export const path = {
+  HOME: "/",
+  WALLET: "/wallet",
+  BUILD: "/build",
+  BRIDGE: "/bridge",
+  STAKING: "/staking",
+  DASHBOARD: "/dashboard",
+};
+
+export const buildSubMenuItems = [
+  {
+    title: "Welcome",
+    link: "/build",
+  },
+  {
+    title: "Dashboard",
+    link: "/dashboard",
+  },
+];
+
+export const splitSecretKey = (secretKey: string) => {
+  return {
+    secretPrefix: secretKey.split("_")[0] + "_",
+    secretLastFourChars: secretKey.slice(secretKey.length - 4, secretKey.length)
+  }
+}

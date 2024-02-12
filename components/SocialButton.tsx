@@ -24,7 +24,7 @@ const SocialButton = ({
   return (
     <button
       className={
-        "flex justify-center items-center relative rounded-md cursor-pointer h-10 disabled:opacity-75 disabled:cursor-default " +
+        "flex justify-center items-center relative rounded-md cursor-pointer disabled:opacity-75 disabled:cursor-default " +
         className
       }
       onClick={onClick}

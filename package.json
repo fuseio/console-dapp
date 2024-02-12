@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.2.3",
+    "@fuseio/fusebox-web-sdk": "^0.2.7",
     "@layerzerolabs/scan-client": "^0.0.6",
     "@layerzerolabs/ui-core": "^0.2.20",
     "@layerzerolabs/ui-erc20-sdk": "^1.0.2",
@@ -43,6 +44,7 @@
     "react-jazzicon": "^1.0.4",
     "react-qr-code": "^2.0.12",
     "react-redux": "^8.1.2",
+    "react-spinners": "^0.13.8",
     "react-sticky-box": "^2.0.4",
     "react-yandex-metrika": "^2.6.0",
     "redux": "^4.2.1",

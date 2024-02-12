@@ -1,0 +1,14 @@
+<svg width="43" height="44" viewBox="0 0 43 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_3769_3238" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="1" width="43" height="42">
+<path d="M0.956543 1.46362H42.1765V42.6836H0.956543V1.46362Z" fill="white"/>
+</mask>
+<g mask="url(#mask0_3769_3238)">
+<path d="M33.0554 27.1406C35.7673 24.9819 37.5057 21.6523 37.5057 17.9166C37.5057 11.409 32.2302 6.13349 25.7226 6.13349C21.9869 6.13349 18.6573 7.8719 16.4985 10.5839" stroke="black" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M31.871 32.3105C37.4568 29.9217 41.3709 24.3764 41.3709 17.9169C41.3709 9.27502 34.3653 2.2694 25.7234 2.2694C19.2453 2.2694 13.6867 6.20607 11.3092 11.8176" stroke="black" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M10.8297 24.0586H16.0627" stroke="black" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M10.8297 28.4043H16.0627" stroke="black" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M21.0128 21.3551C20.1192 20.6185 19.0162 20.1825 17.8221 20.1825C14.8431 20.1825 12.4281 22.8909 12.4281 26.2319C12.4281 29.5729 14.8431 32.2812 17.8221 32.2812C19.0162 32.2812 20.1192 31.8453 21.0128 31.1087" stroke="black" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M29.1916 26.2325C29.1916 19.7249 23.9161 14.4494 17.4085 14.4494C10.9009 14.4494 5.62537 19.7249 5.62537 26.2325C5.62537 32.7401 10.9009 38.0156 17.4085 38.0156C23.9161 38.0156 29.1916 32.7401 29.1916 26.2325Z" stroke="black" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M30.7218 34.4568C32.2015 32.0669 33.0556 29.2489 33.0556 26.2314C33.0556 17.5896 26.05 10.5839 17.4081 10.5839C8.76624 10.5839 1.76062 17.5896 1.76062 26.2314C1.76062 34.8733 8.76624 41.8789 17.4081 41.8789C20.4255 41.8789 23.2434 41.0249 25.6332 39.5453" stroke="black" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>

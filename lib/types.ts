@@ -261,3 +261,55 @@ export type MenuItems = MenuItem[];
 export type WalletType = {
   [k: string]: string;
 }
+
+export interface SignData {
+  externallyOwnedAccountAddress: Address;
+  message: string;
+  signature: string;
+}
+
+export interface OperatorContactDetail {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+export interface Withdraw {
+  amount: string;
+  token: string;
+  coinGeckoId: string;
+}
+
+export interface User {
+  name: string;
+  email: string;
+  auth0Id: string;
+  smartContractAccountAddress: Address;
+}
+
+export interface Project {
+  id: string;
+  ownerId: string;
+  name: string;
+  description: string;
+  publicKey: string;
+  secretKey: string;
+  secretPrefix: string;
+  secretLastFourChars: string;
+  sponsorId: string;
+}
+
+export interface Operator {
+  user: User;
+  project: Project;
+}
+
+export interface Paymaster {
+  paymasterAddress: string;
+  paymasterVersion: string;
+  entrypointAddress: string;
+  projectId: string;
+  sponsorId: string;
+  isActive: boolean;
+  environment: string;
+}

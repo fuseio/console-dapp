@@ -8,7 +8,7 @@ export interface NavbarStateType {
 }
 
 const INIT_STATE: NavbarStateType = {
-  selected: "console",
+  selected: "",
   isWalletModalOpen: false,
   isTransfiModalOpen: false,
 };

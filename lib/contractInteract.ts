@@ -11,10 +11,16 @@ import { Consensus } from "./abi/Consensus";
 import { getWalletClient, waitForTransaction } from "wagmi/actions";
 import { hex } from "./helpers";
 import { fuse } from "viem/chains";
+import { PaymasterAbi } from "./abi/Paymaster";
 
 const contractProperties = {
   address: CONFIG.consensusAddress,
   abi: Consensus,
+};
+
+const paymasterContractProperties = {
+  address: CONFIG.paymasterAddress,
+  abi: PaymasterAbi,
 };
 
 const publicClient = () => {
@@ -181,4 +187,13 @@ export const getMinStake = async () => {
     functionName: "getMinStake",
   });
   return formatEther(minStake);
+};
+
+export const getSponsorIdBalance = async (sponsorId: string) => {
+  const balance = await publicClient().readContract({
+    ...paymasterContractProperties,
+    functionName: "getBalance",
+    args: [sponsorId],
+  });
+  return formatEther(balance as bigint);
 };

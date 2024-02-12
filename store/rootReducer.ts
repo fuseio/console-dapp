@@ -13,6 +13,7 @@ import transactionReducer from "./transactionsSlice";
 import feeReducer from "./feeSlice";
 import toastReducer from "./toastSlice";
 import navbarReducer from "./navbarSlice";
+import operatorReducer from "./operatorSlice";
 
 const appReducer = combineReducers({
   validator: validatorReducer,
@@ -24,6 +25,7 @@ const appReducer = combineReducers({
   fee: feeReducer,
   toast: toastReducer,
   navbar: navbarReducer,
+  operator: operatorReducer,
 });
 
 export type AppState = CombinedState<{
@@ -36,6 +38,7 @@ export type AppState = CombinedState<{
   fee: ReturnType<typeof feeReducer>;
   toast: ReturnType<typeof toastReducer>;
   navbar: ReturnType<typeof navbarReducer>;
+  operator: ReturnType<typeof operatorReducer>;
 }>;
 
 const rootReducer: Reducer = (state: AppState, action: AnyAction) => {
