@@ -1,7 +1,6 @@
 import { MenuItem, MenuItems } from "@/lib/types";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "usehooks-ts";
 import * as amplitude from "@amplitude/analytics-browser";
 import { path, signDataMessage, walletType } from "@/lib/helpers";
@@ -18,21 +17,6 @@ type NavMenuProps = {
   selected?: string;
   className?: string;
   liClassName?: string;
-};
-
-const animateUL = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-    },
-  },
-};
-
-const animateLI = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1 },
 };
 
 type OpenMenuItemEvent = {
@@ -102,24 +86,13 @@ const NavMenu = ({
   }
 
   return (
-    <AnimatePresence>
+    <>
       {(isOpen || matches) && (
-        <motion.div
-          className={className}
-          initial={{ opacity: !matches ? 0 : 1 }}
-          animate={{ opacity: !matches ? 1 : 1 }}
-          exit={{ opacity: !matches ? 0 : 1 }}
-        >
-          <motion.ul
-            className="flex flex-row items-center md:items-start gap-2 p-0 md:p-4 mt-0 font-medium text-base/4 md:flex-col"
-            variants={!matches ? animateUL : undefined}
-            initial="hidden"
-            animate="show"
-          >
+        <div className={className}>
+          <ul className="flex flex-row items-center md:items-start gap-2 p-0 md:p-4 mt-0 font-medium text-base/4 md:flex-col">
             {menuItems.map((item, index) => (
-              <motion.li
+              <div
                 key={index}
-                variants={!matches ? animateLI : undefined}
                 className={`flex justify-center items-center rounded-full h-9 hover:bg-lightest-gray md:w-full md:justify-start ${liClassName} ${(item.title.toLowerCase() === selected ? "bg-lightest-gray py-2.5 px-4 md:text-white pointer-events-none" : "md:text-gray cursor-pointer group")}`}
                 aria-current={
                   item.title.toLowerCase() === selected
@@ -172,12 +145,12 @@ const NavMenu = ({
                     <span className="absolute -right-2 -top-3 animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-3 h-3"></span>
                   }
                 </div>
-              </motion.li>
+              </div>
             ))}
-          </motion.ul>
-        </motion.div>
+          </ul>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 };
 
