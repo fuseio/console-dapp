@@ -1,18 +1,17 @@
 "use client";
 
 import { useEffect } from "react";
-import Topbar from "@/components/Topbar";
-import Home from "./Home";
-
 import { useAppDispatch } from "@/store/store";
 import { setSelectedNavbar } from "@/store/navbarSlice";
+import Topbar from "@/components/Topbar";
+import Home from "./Home";
 import Footer from "@/components/Footer";
 
 const Console = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(setSelectedNavbar("console"));
+    dispatch(setSelectedNavbar(""));
   }, [])
 
   return (

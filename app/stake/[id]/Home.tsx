@@ -30,6 +30,7 @@ import Image from "next/image";
 import leftArrow from "@/assets/left-arrow.svg";
 import Link from "next/link";
 import { fetchTokenPrice } from "@/lib/api";
+import Copy from "@/components/ui/Copy";
 
 const Stake = ({ params }: { params: { id: string } }) => {
   const { id } = params;
@@ -289,13 +290,11 @@ const Stake = ({ params }: { params: { id: string } }) => {
                   {validator ? (
                     <span className="text-text-dark-gray text-base flex">
                       {eclipseAddress(id as string)}
-                      <img
-                        src={copy.src}
+                      <Copy
+                        src={copy}
                         alt="Copy"
                         className="ms-2 cursor-pointer"
-                        onClick={() => {
-                          navigator.clipboard.writeText(validator.address);
-                        }}
+                        text={validator.address}
                       />
                     </span>
                   ) : (

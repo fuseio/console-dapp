@@ -15,6 +15,7 @@ type CONFIG = {
   consensusAddress: Address;
   blockRewardAddress: Address;
   bootApi: string;
+  paymasterAddress: Address;
 }
 
 export const CONFIG: CONFIG = {
@@ -22,6 +23,7 @@ export const CONFIG: CONFIG = {
   consensusAddress: "0x3014ca10b91cb3D0AD85fEf7A3Cb95BCAc9c0f79",
   blockRewardAddress: "0x63D4efeD2e3dA070247bea3073BCaB896dFF6C9B",
   bootApi: "https://bot.fuse.io/api/v1",
+  paymasterAddress: "0xEA1Ba4305A07cEd2bB5e42224D71aBE0BC3C3f28",
 };
 
 export const chainConfig = createChainConfig(chains);
@@ -38,4 +40,7 @@ export const NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WAL
 export const NEXT_PUBLIC_AMPLITUDE_API_KEY = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY ?? ""
 export const NEXT_PUBLIC_TRANSFI_API_KEY = process.env.NEXT_PUBLIC_TRANSFI_API_KEY ?? ""
 export const NEXT_PUBLIC_WEB3AUTH_CLIENT_ID = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID ?? ""
+export const NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL = process.env.NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL ?? ""
+export const NEXT_PUBLIC_FUSE_API_BASE_URL = process.env.NEXT_PUBLIC_FUSE_API_BASE_URL ?? ""
 export const NEXT_PUBLIC_COIN_GECKO_API_KEY = process.env.NEXT_PUBLIC_COIN_GECKO_API_KEY ?? ""
+

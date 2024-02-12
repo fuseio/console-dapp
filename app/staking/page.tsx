@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Topbar from "@/components/Topbar";
 import Home from "./Home";
 import Footer from "@/components/Footer";
-import ChainModal from "@/components/staking/ChainModal";
+import ChainModal from "@/components/ChainModal";
 
 import { useAppDispatch } from "@/store/store";
 import { setSelectedNavbar } from "@/store/navbarSlice";
