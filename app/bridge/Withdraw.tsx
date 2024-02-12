@@ -132,7 +132,7 @@ const Withdraw = ({
                   appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
                     .decimals,
                 bridge: appConfig.wrappedBridge.fuse.wrapped,
-                rpc: "https://rpc.fuse.io",
+                rpc: "https://fuse.liquify.com",
               })
             );
       setPendingPromise(promise);
@@ -185,7 +185,7 @@ const Withdraw = ({
           icon: fuseToken,
           lzChainId: 138,
           name: "Fuse",
-          rpcUrl: "https://rpc.fuse.io",
+          rpcUrl: "https://fuse.liquify.com",
           tokens: [],
           wrapped: appConfig.wrappedBridge.fuse.wrapped,
         })
@@ -329,7 +329,7 @@ const Withdraw = ({
                 estimateWrappedFee({
                   contractAddress: appConfig.wrappedBridge.fuse.wrapped,
                   lzChainId: appConfig.wrappedBridge.chains[item].lzChainId,
-                  rpcUrl: "https://rpc.fuse.io",
+                  rpcUrl: "https://fuse.liquify.com",
                   tokenId: "fuse-network-token",
                 })
               );
