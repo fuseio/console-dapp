@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { CONFIG, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL } from './config'
+import { CONFIG, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL } from './config'
 import { Operator, OperatorContactDetail, Paymaster, SignData } from "./types";
 import { Address } from "viem";
 
@@ -23,7 +23,12 @@ export const fetchFuseTokenData = () =>
 
 export const fetchTokenPrice = async (tokenId: string) => {
     const response = await axios.get(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`
+        `https://pro-api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`,
+        {
+            headers: {
+                "x-cg-pro-api-key": NEXT_PUBLIC_COIN_GECKO_API_KEY,
+            }
+        }
     );
     return response.data[`${tokenId}`].usd as number;
 };
