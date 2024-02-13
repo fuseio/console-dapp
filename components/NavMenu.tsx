@@ -57,7 +57,7 @@ const NavMenu = ({
                     walletAddress: address
                   });
 
-                  if (isAuthenticated) {
+                  if (isAuthenticated && item.link === path.BUILD) {
                     router.push(path.DASHBOARD);
                   } else {
                     router.push(item.link);
