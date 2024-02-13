@@ -1,15 +1,12 @@
-import { MenuItem, MenuItems } from "@/lib/types";
-import { useAppDispatch, useAppSelector } from "@/store/store";
+import { MenuItems } from "@/lib/types";
+import { useAppSelector } from "@/store/store";
 
 import { useMediaQuery } from "usehooks-ts";
 import * as amplitude from "@amplitude/analytics-browser";
-import { path, signDataMessage, walletType } from "@/lib/helpers";
-import { useAccount, useNetwork, useSignMessage, useSwitchNetwork } from "wagmi";
-import { selectOperatorSlice, setIsContactDetailsModalOpen, setRedirect, validateOperator } from "@/store/operatorSlice";
-import { usePathname, useRouter } from "next/navigation";
-import { fuse } from "viem/chains";
-import Image from "next/image";
-import lock from "@/assets/lock.svg";
+import { path, walletType } from "@/lib/helpers";
+import { useAccount } from "wagmi";
+import { selectOperatorSlice } from "@/store/operatorSlice";
+import { useRouter } from "next/navigation";
 
 type NavMenuProps = {
   menuItems?: MenuItems;
@@ -36,54 +33,9 @@ const NavMenu = ({
   liClassName = "w-20"
 }: NavMenuProps) => {
   const matches = useMediaQuery("(min-width: 768px)");
-  const { address, connector, isConnected } = useAccount();
-  const { signature, isAuthenticated, isValidatingOperator, isFetchingOperator } = useAppSelector(selectOperatorSlice);
+  const { address, connector } = useAccount();
+  const { isAuthenticated } = useAppSelector(selectOperatorSlice);
   const router = useRouter();
-  const pathname = usePathname();
-  const dispatch = useAppDispatch();
-  const { chain } = useNetwork();
-  const { switchNetwork } = useSwitchNetwork();
-  const { isLoading, signMessage } = useSignMessage({
-    message: signDataMessage,
-    onSuccess(data) {
-      if (!address) {
-        return;
-      }
-      dispatch(setRedirect(path.BUILD));
-      dispatch(validateOperator({
-        signData: {
-          externallyOwnedAccountAddress: address,
-          message: signDataMessage,
-          signature: data
-        },
-      }));
-    }
-  });
-
-  const isOperatorMenuAndConnected = (item: MenuItem) => {
-    if (
-      matches &&
-      item.title.toLowerCase() === "build" &&
-      item.title.toLowerCase() !== selected &&
-      isConnected &&
-      !signature &&
-      !isAuthenticated
-    ) {
-      return true;
-    }
-    return false;
-  }
-
-  const loading = () => {
-    if (
-      isLoading ||
-      isValidatingOperator ||
-      isFetchingOperator
-    ) {
-      return true;
-    }
-    return false;
-  }
 
   return (
     <>
@@ -99,51 +51,21 @@ const NavMenu = ({
                     ? "page"
                     : "false"
                 }
-                title={isOperatorMenuAndConnected(item) && !loading() ? "Verify your wallet to proceed" : ""}
-                onClick={(e) => {
+                onClick={() => {
                   amplitude.track(openMenuItemEvent[item.title], {
                     walletType: connector ? walletType[connector.id] : undefined,
                     walletAddress: address
                   });
 
-                  if (item.link !== path.BUILD) {
-                    return router.push(item.link);
-                  }
-
-                  e.preventDefault();
-                  if (pathname === "/dashboard") {
-                    router.push(path.BUILD);
-                  } else if (isAuthenticated) {
-                    router.push("/dashboard");
-                  } else if (localStorage.getItem("Fuse-isLoginError")) {
-                    localStorage.removeItem("Fuse-isLoginError");
-                    dispatch(setIsContactDetailsModalOpen(true));
-                  } else if (signature) {
-                    router.push(path.BUILD);
-                  } else if (isConnected) {
-                    if (chain?.id !== fuse.id) {
-                      switchNetwork && switchNetwork(fuse.id)
-                    }
-                    signMessage();
+                  if (isAuthenticated && path.BUILD.includes(item.title.toLowerCase())) {
+                    router.push(path.DASHBOARD);
                   } else {
-                    router.push(path.BUILD);
+                    router.push(item.link);
                   }
                 }}
               >
                 <div className="block relative">
                   {item.title}
-                  {(isOperatorMenuAndConnected(item) && !loading()) &&
-                    <Image
-                      src={lock}
-                      alt="verify your wallet to proceed"
-                      width={12}
-                      height={12}
-                      className="absolute -right-2 -top-3 group-hover:opacity-50"
-                    />
-                  }
-                  {(isOperatorMenuAndConnected(item) && loading()) &&
-                    <span className="absolute -right-2 -top-3 animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-3 h-3"></span>
-                  }
                 </div>
               </div>
             ))}
