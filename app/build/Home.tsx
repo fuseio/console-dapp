@@ -11,6 +11,7 @@ import taskOn from "@/public/taskon.png"
 import { useRouter } from "next/navigation";
 import NavMenu from "@/components/NavMenu";
 import { buildSubMenuItems } from "@/lib/helpers";
+import * as amplitude from "@amplitude/analytics-browser";
 
 const apps = [
   {
@@ -54,7 +55,8 @@ const apps = [
 const Home = () => {
   const router = useRouter();
 
-  function createAccount() {
+  function createAccount(eventInput: string) {
+    amplitude.track(eventInput);
     router.push("/dashboard");
   }
 
@@ -78,7 +80,7 @@ const Home = () => {
               text="Create your project"
               className="transition ease-in-out text-lg font-semibold bg-pale-green rounded-full hover:bg-white"
               padding="py-4 px-[52px]"
-              onClick={createAccount}
+              onClick={() => createAccount("Build-Welcome: Create project - upper")}
             />
           </div>
         </div>
@@ -427,7 +429,7 @@ const Home = () => {
                   text="Get Started"
                   className="transition ease-in-out text-lg text-white font-semibold bg-black rounded-full hover:bg-white hover:text-black"
                   padding="py-4 px-[52px] mt-[25.88px]"
-                  onClick={createAccount}
+                  onClick={() => createAccount("Get started: Starter")}
                 />
               </div>
               <div className="flex flex-col gap-[30px] bg-white rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
@@ -494,7 +496,7 @@ const Home = () => {
                   text="Get Started"
                   className="transition ease-in-out text-lg text-white font-semibold bg-black rounded-full hover:bg-success hover:text-black"
                   padding="py-4 px-[52px] mt-[25.88px]"
-                  onClick={createAccount}
+                  onClick={() => createAccount("Get started: Pro")}
                 />
               </div>
               <div className="flex flex-col gap-[30px] rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
@@ -566,7 +568,7 @@ const Home = () => {
             text="Create an account"
             className="transition ease-in-out text-lg font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
             padding="py-4 px-[52px]"
-            onClick={createAccount}
+            onClick={() => createAccount("Build-Welcome: Create project - bottom")}
           />
         </div>
       </div>

@@ -12,6 +12,7 @@ import faucet from "@/assets/faucet.svg";
 import fusebox from "@/assets/fusebox.svg";
 import { useState } from "react";
 import DocumentSupport from "@/components/DocumentSupport";
+import * as amplitude from "@amplitude/analytics-browser";
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -49,6 +50,7 @@ const Home = () => {
           <Link
             href="/build"
             className="transition ease-in-out text-lg text-white hover:text-black font-semibold bg-black hover:bg-white rounded-full py-4 px-[52px] md:px-6"
+            onClick={() => amplitude.track("Home: Create project")}
           >
             Create your project
           </Link>
