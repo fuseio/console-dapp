@@ -57,7 +57,7 @@ const NavMenu = ({
                     walletAddress: address
                   });
 
-                  if (isAuthenticated && item.link === path.BUILD) {
+                  if (isAuthenticated && path.BUILD.includes(item.title.toLowerCase())) {
                     router.push(path.DASHBOARD);
                   } else {
                     router.push(item.link);
