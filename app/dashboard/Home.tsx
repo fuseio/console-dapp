@@ -379,9 +379,22 @@ const Home = () => {
           <div className={`flex md:flex-col gap-[30px] ${operatorSlice.isActivated ? "opacity-100" : "opacity-50"}`}>
             <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
               <div className="flex flex-col gap-4">
-                <p className="text-[20px] leading-none font-semibold">
-                  Your API Key
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-[20px] leading-none font-semibold">
+                    Your API Key
+                  </p>
+                  <div className="group relative cursor-pointer w-4 h-4 bg-black rounded-full flex justify-center items-center text-xs leading-none text-white">
+                    ?
+                    <div className="tooltip-text hidden bottom-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg group-hover:block text-black text-sm font-medium">
+                      <p className="mb-1">
+                        One of the advantages of the Fuse Network is that it is very cheap, so you can run any tests using the production API key.
+                      </p>
+                      <p>
+                        But if you still want to make tests on Spark network using a sandbox API key, contact us via chat and we will provide it to you.
+                      </p>
+                    </div>
+                  </div>
+                </div>
                 <p className="text-text-dark-gray md:text-base">
                   You will need this API key at the next stage for integration into the SDK
                 </p>
