@@ -286,7 +286,7 @@ export const bridgeConfig: BridgeConfigLike = {
     [
       {
         chainId: 111,
-        decimals: 6,
+        decimals: 18,
         symbol: "ETH",
         name: "Ether",
         isBridged: false,
@@ -299,7 +299,7 @@ export const bridgeConfig: BridgeConfigLike = {
       },
       {
         chainId: 110,
-        decimals: 6,
+        decimals: 18,
         symbol: "ETH",
         name: "Ether",
         isBridged: false,
@@ -312,7 +312,7 @@ export const bridgeConfig: BridgeConfigLike = {
       },
       {
         chainId: 101,
-        decimals: 6,
+        decimals: 18,
         symbol: "ETH",
         name: "Ether",
         isBridged: false,
