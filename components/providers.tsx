@@ -9,7 +9,8 @@ import { YMInitializer } from "react-yandex-metrika";
 import {
   NEXT_PUBLIC_AMPLITUDE_API_KEY,
   NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
-  NEXT_PUBLIC_YANDEX_METRICA_ID
+  NEXT_PUBLIC_YANDEX_METRICA_ID,
+  NEXT_PUBLIC_AMPLITUDE_SERVER_URL
 } from "@/lib/config";
 import { WagmiConfig } from "wagmi";
 import { config } from "@/lib/web3Auth";
@@ -27,7 +28,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }
 
   ReactGA.initialize(NEXT_PUBLIC_GOOGLE_ANALYTICS_ID as string);
-  amplitude.init(NEXT_PUBLIC_AMPLITUDE_API_KEY as string);
+  amplitude.init(NEXT_PUBLIC_AMPLITUDE_API_KEY as string, { serverUrl: NEXT_PUBLIC_AMPLITUDE_SERVER_URL });
 
   return (
     <Provider store={store}>
