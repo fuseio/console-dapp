@@ -122,14 +122,14 @@ const Home = () => {
                 <p className="text-[20px]/7 text-fuse-black font-bold">
                   Web SDK
                 </p>
-                <p className="text-sm text-text-dark-gray max-w-[201.78px]">
+                <p className="text-sm text-text-dark-gray text-center max-w-[201.78px]">
                   Easy way to Account Abstraction using JS SDK
                 </p>
                 <Image
                   src={webSdk}
                   alt="Fuse connect"
-                  width={46}
-                  height={76}
+                  width={92}
+                  height={65}
                 />
               </div>
             </a>
@@ -142,7 +142,7 @@ const Home = () => {
                 <p className="text-[20px]/7 text-fuse-black font-bold">
                   Fuse Faucet
                 </p>
-                <p className="text-sm text-text-dark-gray max-w-[201.78px]">
+                <p className="text-sm text-text-dark-gray text-center max-w-[201.78px]">
                   Get free FUSE for tests
                 </p>
                 <Image
@@ -162,8 +162,8 @@ const Home = () => {
                 <p className="text-[20px]/7 text-fuse-black font-bold">
                   FuseBox
                 </p>
-                <p className="text-sm text-text-dark-gray max-w-[213.4px]">
-                  Discover Fuse middleware API's
+                <p className="text-sm text-text-dark-gray text-center max-w-[213.4px]">
+                  Discover Fuse middleware API&apos;s
                 </p>
                 <Image
                   src={fusebox}
