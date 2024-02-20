@@ -57,10 +57,11 @@ const CreateOperatorWallet = ({ accessToken, signMessage, loading, dispatch }: C
     <div className="flex flex-col justify-between items-start md:gap-4">
       <div>
         <p className="text-2xl leading-none font-medium">
-          Please create your operator wallet.
+          Please create your Operator wallet.
         </p>
         <p className="text-lg leading-none text-text-dark-gray font-medium max-w-[358.29px] mt-[27.75px] mb-[17.25px]">
-          The operator wallet allows you to fund transactions on the network
+          Your Operator wallet enables you to finance user transactions on the network,
+          ensuring a seamless experience for your end users
         </p>
       </div>
       <Button
@@ -386,11 +387,9 @@ const Home = () => {
                   <div className="group relative cursor-pointer w-4 h-4 bg-black rounded-full flex justify-center items-center text-xs leading-none text-white">
                     ?
                     <div className="tooltip-text hidden bottom-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg group-hover:block text-black text-sm font-medium">
-                      <p className="mb-1">
-                        One of the advantages of the Fuse Network is that it is very cheap, so you can run any tests using the production API key.
-                      </p>
                       <p>
-                        But if you still want to make tests on Spark network using a sandbox API key, contact us via chat and we will provide it to you.
+                        The Fuse Network&apos;s low cost allows for testing with the production API key.
+                        For sandbox API key tests on the Spark network, reach out via chat for assistance.
                       </p>
                     </div>
                   </div>

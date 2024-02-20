@@ -272,6 +272,7 @@ export interface OperatorContactDetail {
   firstName: string;
   lastName: string;
   email: string;
+  name?: string;
 }
 
 export interface Withdraw {

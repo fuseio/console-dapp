@@ -15,38 +15,38 @@ import * as amplitude from "@amplitude/analytics-browser";
 
 const apps = [
   {
-    name: "Request Finance",
+    name: "Create an invoice",
     description: "A decentralized protocol that allows for efficient crypto payments",
     logo: requestFinance,
     link: "https://www.fuse.io/ecosystem-project/request-finance"
   },
   {
-    name: "Transak",
+    name: "Onramp from your bank",
     description: "Developer integration toolkit powering the best in Web3 payments",
     logo: transak,
     link: "https://www.fuse.io/ecosystem-project/transak"
   },
   {
-    name: "ThirdWeb",
+    name: "Deploy a contract",
     description: "ThirdWeb provides a complete set of tools for building Web3 applications",
     logo: thirdweb,
     link: "https://www.fuse.io/ecosystem-project/thirdweb"
   },
   {
-    name: "Cointool",
+    name: "Create a token",
     description: "Multichain digital currency toolbox facilitating Web3 development",
     logo: cointool,
     link: "https://www.fuse.io/ecosystem-project/cointool"
   },
   {
-    name: "The Graph",
+    name: "Deploy a subgraph",
     description: "Indexing protocol securing users' access to blockchain data via GraphQL",
     logo: theGraph,
     link: "https://www.fuse.io/ecosystem-project/the-graph"
   },
   {
-    name: "TaskOn",
-    description: "TaskOn is a Web3 Collaboration Platform that brings users a deep Web3 experience, including reward campaigns, first-hand information on Web3 projects, and more.",
+    name: "Create an air drop campaign",
+    description: "TaskOn is a Web3 Collaboration Platform offering rewards, exclusive Web3 project insights, and more.",
     logo: taskOn,
     link: "https://www.fuse.io/ecosystem-project/taskon"
   },
@@ -73,8 +73,8 @@ const Home = () => {
             <h1 className="text-[70px]/[84.35px] text-fuse-black font-semibold max-w-[729.99px] mt-[13.98px] mb-[22px]">
               Build your Web3 Project with Fuse
             </h1>
-            <p className="text-[20px]/7 text-text-dark-gray mb-[50.52px] max-w-[395.25px]">
-              A one-stop-shop for everything you need to get your dApp up and running
+            <p className="text-[20px]/7 text-text-dark-gray mb-[50.52px] max-w-[455px]">
+              Your all-in-one solution for effortlessly launching your decentralized Web3 application
             </p>
             <Button
               text="Create your project"
@@ -93,7 +93,7 @@ const Home = () => {
                 Get started
               </p>
               <p className="text-[20px]/7 text-text-dark-gray mt-[30.61px] mb-[38.67px] max-w-[395.25px]">
-                Start building your project - no crypto expertise are needed
+                Begin your crypto project on Fuse now, no prior experience required
               </p>
               <div className="rounded-[20px] pt-[35.4px] px-10 pb-[50px] md:px-3 md:py-4">
                 <div className="flex flex-col gap-[25.79px]">
@@ -156,7 +156,7 @@ const Home = () => {
                   Create programable wallets for your customers
                 </p>
                 <p className="text-[20px]/7 text-text-dark-gray mt-[12.98px] max-w-[352.54px]">
-                  Create a wallet for your customers with fast time to market
+                  Quickly launch a wallet for your customers
                 </p>
               </div>
               <div className="bg-white rounded-[20px] pt-[50px] px-[47.5px] md:px-4 md:py-6 h-[385px] md:h-auto">
@@ -164,7 +164,7 @@ const Home = () => {
                   Mobile and Web SDK&apos;s
                 </p>
                 <p className="text-xl text-text-dark-gray mt-[12.98px] mb-[25.31px]">
-                  Account abstraction straight from the box:
+                  Implement account abstraction out-of-the-box:
                 </p>
                 <div className="flex flex-col gap-[18.73px]">
                   <div className="flex items-center gap-[13.3px]">
@@ -205,17 +205,17 @@ const Home = () => {
           <div className="flex flex-col gap-28">
             <div className="flex justify-center text-center">
               <p className="text-[34px]/[50.32px] font-bold max-w-[688.35px]">
-                Onboard your users to web3 with a cost structure that makes sense
+                Introduce your users to Web3 with a cost-effective approach
               </p>
             </div>
             <div className="flex flex-row md:flex-col gap-[85.15px] px-[54.46px] py-[53.36px] md:px-4 md:py-6 h-[618px] md:h-auto bg-white rounded-[20px] bg-[url('/vectors/ecosystem.svg')] md:bg-none bg-no-repeat bg-right-bottom">
               <div>
                 <p className="text-[34px]/[40.97px] text-fuse-black font-bold">
-                  An ecosystem for web3 payments
+                  An ecosystem for Web3 payments
                 </p>
-                <p className="text-xl text-text-dark-gray mt-[32.14px] mb-[90.51px] max-w-[395.25px]">
-                  Fuse Operator account gives you access to a one stop shop of
-                  value add services. All accessible trough one simple pricing.
+                <p className="text-[20px]/7 text-text-dark-gray mt-[32.14px] mb-[90.51px] max-w-[395.25px]">
+                  Access a comprehensive suite of value-added services with a Fuse Operator account,
+                  all under a straightforward pricing model.
                 </p>
                 <div className="flex flex-col gap-[18.73px]">
                   <div className="flex items-center gap-[13.3px]">
@@ -254,7 +254,7 @@ const Home = () => {
                     alt="checkmark with background"
                   />
                   <p className="text-xl text-text-dark-gray font-bold">
-                    Most reliable business stack in web3
+                    Most reliable business stack in Web3
                   </p>
                 </div>
                 <div className="flex items-center gap-[13.3px]">
@@ -298,8 +298,8 @@ const Home = () => {
                   Explore our Apps & Services
                 </p>
                 <p className="text-[20px]/7 text-white max-w-[756.49px]">
-                  Simplify your work using trusted out of the box third-party solutions available
-                  on the Fuse Network. Explore and connect the services that your business requires.
+                  Streamline your operations with reliable, ready-to-use third-party solutions on the Fuse Network.
+                  Find and integrate the services your business needs.
                 </p>
               </div>
               <div className="grid grid-cols-3 md:grid-cols-1 justify-between gap-[30px]">
@@ -445,7 +445,7 @@ const Home = () => {
                     </div>
                   </div>
                   <p className="text-night opacity-60 mt-[18.82px] mb-[30.7px] max-w-[300px]">
-                    Unleash the power of your buissiness with the starter plan
+                    Elevate your business to new heights with the Pro Plan
                   </p>
                   <div className="flex items-baseline gap-[10.63px]">
                     <p className="text-[50px]/[60.25px] font-semibold">
@@ -505,7 +505,7 @@ const Home = () => {
                     Advanced plan
                   </p>
                   <p className="text-night opacity-60 mt-[18.82px] mb-[30.7px]">
-                    Unleash the power of your buissiness with the starter plan
+                    Maximize your business&apos;s potential with the Premium Plan
                   </p>
                   <div className="flex items-baseline gap-[10.63px]">
                     <p className="text-3xl text-ghost font-semibold">
