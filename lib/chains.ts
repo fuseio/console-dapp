@@ -10,42 +10,6 @@ import bnb from "@/public/bnb.png";
 
 export const chains: ChainConfigLike[] = [
   {
-    chainName: "Polygon",
-    lzChainId: 109,
-    icon: matic.src,
-    rpc: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`,
-    chainId: 137,
-    logo: maticLogo,
-    tokenId: "matic-network"
-  },
-  {
-    chainName: "Arbitrum",
-    lzChainId: 110,
-    icon: arbi.src,
-    chainId: 42161,
-    rpc: `https://arb-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ARBITRUM_API_KEY}`,
-    logo: arbiLogo,
-    tokenId: "arbitrum"
-  },
-  {
-    chainName: "Optimism",
-    lzChainId: 111,
-    icon: optimism.src,
-    rpc: `https://opt-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_OPTIMISM_API_KEY}`,
-    chainId: 10,
-    logo: optimismLogo,
-    tokenId: "optimism"
-  },
-  {
-    chainName: "Ethereum",
-    lzChainId: 101,
-    icon: eth.src,
-    chainId: 1,
-    rpc: `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ETHEREUM_API_KEY}`,
-    logo: "",
-    tokenId: "ethereum"
-  },
-  {
     chainName: "BNB",
     lzChainId: 102,
     icon: bnb.src,
