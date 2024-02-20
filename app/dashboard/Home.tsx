@@ -388,7 +388,7 @@ const Home = () => {
                     ?
                     <div className="tooltip-text hidden bottom-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg group-hover:block text-black text-sm font-medium">
                       <p>
-                        The Fuse Network's low cost allows for testing with the production API key.
+                        The Fuse Network&apos;s low cost allows for testing with the production API key.
                         For sandbox API key tests on the Spark network, reach out via chat for assistance.
                       </p>
                     </div>

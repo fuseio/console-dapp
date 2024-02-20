@@ -505,7 +505,7 @@ const Home = () => {
                     Advanced plan
                   </p>
                   <p className="text-night opacity-60 mt-[18.82px] mb-[30.7px]">
-                    Maximize your business's potential with the Premium Plan
+                    Maximize your business&apos;s potential with the Premium Plan
                   </p>
                   <div className="flex items-baseline gap-[10.63px]">
                     <p className="text-3xl text-ghost font-semibold">
