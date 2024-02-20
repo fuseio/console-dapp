@@ -49,7 +49,7 @@ const ChainModal = ({
               onClick={() => setIsOpen(false)}
             />
             <p className="text-2xl text-dune font-bold max-w-[218.24px]">
-              You are in wrong network
+              Wrong Network Connected
             </p>
             <p className="text-sm	text-dove-gray font-medium max-w-[252.62px] my-[26.5px]">
               {description}
