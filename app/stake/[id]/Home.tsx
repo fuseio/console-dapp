@@ -68,7 +68,7 @@ const Stake = ({ params }: { params: { id: string } }) => {
         ym("reachGoal", "stake");
         amplitude.track("Stake", {
           amount: getAmount(),
-          amountUSD: await fetchTokenPrice("fuse-network-token"),
+          amountUSD: await fetchTokenPrice("fuse-network-token") * getAmount(),
           walletType: connector ? walletType[connector.id] : undefined,
           walletAddress: address
         });
@@ -99,7 +99,7 @@ const Stake = ({ params }: { params: { id: string } }) => {
         ym("reachGoal", "unstake");
         amplitude.track("Unstake", {
           amount: getAmount(),
-          amountUSD: await fetchTokenPrice("fuse-network-token"),
+          amountUSD: await fetchTokenPrice("fuse-network-token") * getAmount(),
           walletType: connector ? walletType[connector.id] : undefined,
           walletAddress: address
         });
