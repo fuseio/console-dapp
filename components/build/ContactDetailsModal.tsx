@@ -12,6 +12,7 @@ const ContactDetailsModal = (): JSX.Element => {
   const signer = useEthersSigner();
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
+  const companyRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -35,6 +36,7 @@ const ContactDetailsModal = (): JSX.Element => {
     const operatorContactDetail = {
       firstName: firstNameRef.current.value,
       lastName: lastNameRef.current.value,
+      name: companyRef?.current?.value,
       email: emailRef.current.value,
     }
     dispatch(setOperatorContactDetail(operatorContactDetail));
@@ -110,6 +112,17 @@ const ContactDetailsModal = (): JSX.Element => {
                 className="bg-white border-[0.5px] border-gray-alpha-40 py-[17.5px] px-[34.81px] rounded-full h-[55px] placeholder:text-text-dark-gray"
                 ref={lastNameRef}
                 required
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="company" className="text-text-heading-gray font-bold">
+                Company (Optional)
+              </label>
+              <input
+                type="text"
+                name="company"
+                className="bg-white border-[0.5px] border-gray-alpha-40 py-[17.5px] px-[34.81px] rounded-full h-[55px] placeholder:text-text-dark-gray"
+                ref={companyRef}
               />
             </div>
             <div className="flex flex-col gap-1.5">

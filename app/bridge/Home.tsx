@@ -34,133 +34,10 @@ import { useAccount } from "wagmi";
 import { fuse } from "viem/chains";
 import { getNetwork, switchNetwork } from "wagmi/actions";
 import { hex, walletType } from "@/lib/helpers";
-import FAQ from "@/components/FAQ";
+import FAQ from "@/components/bridge/FAQ";
 import "@/styles/bridge.css";
 import { bridgeAndUnwrapNative } from "@/lib/wrappedBridge";
 import Airdrop from "@/components/bridge/Airdrop";
-
-const faqs = [
-  "I have USDC or WETH on the Fuse network and want to bridge it to another network. But the Bridge shows me a balance of 0.",
-  "I deposited USDC or WETH into the Fuse network, but I don't see the tokens in my wallet.",
-  "What are Fuse token addresses on Polygon, Optimism and Arbitrum?",
-  "What tokens can be transferred using the Fuse Token Bridge?",
-  "Between which networks can the tokens be transferred?",
-  "Is there a guide available on how to use the Fuse Token Bridge?",
-  "What is the native token of the Fuse Network?",
-  "What technology powers the Fuse bridge, and who monitors its security?",
-  "Are there any fees associated with using the Fuse Token Bridge?",
-  "Is there any liquidity concern users should know?",
-  "How are gas fees on Fuse Network calculated?",
-];
-
-const faqAnswers = [
-  <p key="one">
-    The Fuse Bridge uses other tokens USDC V2 and WETH V2 on the bridge.
-    Don&apos;t worry, their value is identical to standard USDC and WETH on the
-    Fuse network.
-    <br />
-    So first you need to swap your USDC/WETH tokens for USDC V2/WETH V2 on the{" "}
-    <a href="https://app.voltage.finance/#/swap" className="underline">
-      Voltage Finance dapp
-    </a>{" "}
-    and then bridge tokens from Fuse to another network.
-  </p>,
-  <p key="two">
-    By depositing USDC or WETH into the Fuse network, you receive new tokens
-    which exist specifically for the bridge. Therefore, to see them in your
-    wallet, you need to add them. You can use the &quot;Add Token&quot; button
-    or add them manually using the contract address.
-    <br />
-    USDC V2 contract address:{" "}
-    <a
-      href="https://explorer.fuse.io/token/0x28C3d1cD466Ba22f6cae51b1a4692a831696391A/token-transfers"
-      className="underline"
-    >
-      0x28c3d1cd466ba22f6cae51b1a4692a831696391a
-    </a>
-    <br />
-    WETH V2 contract address:{" "}
-    <a
-      href="https://explorer.fuse.io/token/0x5622F6dC93e08a8b717B149677930C38d5d50682/token-transfers"
-      className="underline"
-    >
-      0x5622f6dc93e08a8b717b149677930c38d5d50682
-    </a>
-    <br />
-    After that, you can swap these tokens for standard USDC and WETH on Fuse on
-    the Voltage Finance dapp:{" "}
-    <a href="https://app.voltage.finance/#/swap" className="underline">
-      https://app.voltage.finance/#/swap
-    </a>
-  </p>,
-  <p key="three">
-    Optimistic (OP): 0xe453d6649643F1F460C371dC3D1da98F7922fe51
-    <br />
-    <a
-      href="https://optimistic.etherscan.io/token/0xe453d6649643f1f460c371dc3d1da98f7922fe51"
-      className="underline"
-    >
-      https://optimistic.etherscan.io/token/0xe453d6649643f1f460c371dc3d1da98f7922fe51
-    </a>
-    <br />
-    Arbitrum (ARB): 0x6b021b3f68491974bE6D4009fEe61a4e3C708fD6
-    <br />
-    <a
-      href="https://arbiscan.io/token/0x6b021b3f68491974be6d4009fee61a4e3c708fd6"
-      className="underline"
-    >
-      https://arbiscan.io/token/0x6b021b3f68491974be6d4009fee61a4e3c708fd6
-    </a>
-    <br />
-    Polygon (MATIC): 0x6b021b3f68491974bE6D4009fEe61a4e3C708fD6
-    <br />
-    <a
-      href="https://polygonscan.com/token/0x6b021b3f68491974be6d4009fee61a4e3c708fd6"
-      className="underline"
-    >
-      https://polygonscan.com/token/0x6b021b3f68491974be6d4009fee61a4e3c708fd6
-    </a>
-  </p>,
-  <p key="four">The Fuse Token Bridge can send FUSE, USDC, and WETH tokens.</p>,
-  <p key="five">
-    The tokens can be transferred between the Fuse Network and Polygon,
-    Optimism, and Arbitrum.
-  </p>,
-  <p key="six">
-    Yes, a guide on how to use the Fuse Token Bridge is available on the
-    provided link.{" "}
-    <a
-      href="https://youtu.be/LUsoAdsTWM4?si=LuOxRsTlMZ9RSsHh"
-      className="underline"
-    >
-      https://youtu.be/LUsoAdsTWM4?si=LuOxRsTlMZ9RSsHh
-    </a>
-  </p>,
-  <p key="seven">
-    The native token of the Fuse Network is the Fuse token (FUSE).
-  </p>,
-  <p key="eight">
-    The token bridge is powered by LayerZero technology, and its security is
-    monitored by blockchain security experts Ironblocks.
-  </p>,
-  <p key="nine">
-    Currently, there are zero bridge fees on the Fuse Token Bridge.
-  </p>,
-  <p key="ten">
-    Users should be aware that liquidity at this stage is minimal, so they are
-    advised to avoid trying to bridge substantial amounts.
-  </p>,
-  <p key="eleven">
-    Blockchain gas fees are calculated based on the complexity of the
-    transaction or contract interaction on the network. Every operation, such as
-    sending tokens, interacting with a contract, or transferring assets,
-    requires a certain amount of computational work measured in &quot;gas.&quot;
-    <br />
-    The total gas fee is determined by multiplying the gas used by the gas
-    price, which is set by the user and measured in units like gwei for
-    Ethereum.
-  </p>,
-];
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -534,7 +411,7 @@ const Home = () => {
             </p>
             <ToastPane className="md:hidden" />
           </div>
-          <div className="flex-col items-center flex pt-16 md:w-full md:pt-0 md:mt-3">
+          <div className="flex-col items-center flex gap-2 pt-16 md:w-full md:pt-0 md:mt-3">
             <span
               className="flex bg-white ms-auto px-2 items-center rounded-md cursor-pointer"
               onClick={() => {
@@ -544,7 +421,7 @@ const Home = () => {
               <img src={history.src} alt="history" className="h-9" />
               <p className="font-medium ml-1 text-sm md:text-xs">History</p>
             </span>
-            <motion.div className="flex bg-white w-[525px] mt-3 rounded-lg px-8 pt-8 pb-9 flex-col max-w-full md:p-5">
+            <motion.div className="flex bg-white w-[525px] rounded-lg px-8 pt-8 pb-9 flex-col max-w-full md:p-5">
               <div className="flex w-full bg-modal-bg rounded-md p-[2px]">
                 {filters.map((filter, index) => {
                   return (
@@ -809,7 +686,7 @@ const Home = () => {
                 )
               )}
             </motion.div>
-            <motion.div className="flex bg-white w-[525px] mt-2 rounded-lg px-8 py-5 flex-col font-medium text-sm max-w-full md:text-xs mb-2">
+            <motion.div className="flex bg-white w-[525px] rounded-lg px-8 py-5 flex-col font-medium text-sm max-w-full md:text-xs">
               <div className="flex justify-between">
                 <span className="text-black/50">Bridge Fee</span>
                 <span>Free</span>
@@ -876,11 +753,11 @@ const Home = () => {
             </div> */}
             </motion.div>
             <Airdrop />
+            <FAQ />
             <ToastPane className="hidden md:flex" />
             <Footer />
           </div>
         </div>
-        <FAQ className="mt-28 mb-16" questions={faqs} answers={faqAnswers} />
       </div>
     </>
   );

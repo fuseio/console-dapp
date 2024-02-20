@@ -6,28 +6,25 @@ import Link from "next/link";
 import { useAccount } from "wagmi";
 import { path } from "@/lib/helpers";
 import mobileSdk from "@/assets/mobile-sdk.svg";
-import fuseConnect from "@/assets/fuse-connect.svg";
-import fuseConnectGreen from "@/assets/fuse-connect-green.svg";
+import webSdk from "@/assets/web-sdk.svg";
 import faucet from "@/assets/faucet.svg";
 import fusebox from "@/assets/fusebox.svg";
-import { useState } from "react";
 import DocumentSupport from "@/components/DocumentSupport";
 import * as amplitude from "@amplitude/analytics-browser";
 
 const Home = () => {
   const dispatch = useAppDispatch();
   const { isConnected } = useAccount();
-  const [hover, setHover] = useState("");
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <div className="w-8/9 flex flex-col mt-[130.98px] mb-[187px] md:w-9/10 max-w-7xl">
         <div className="flex flex-col justify-center items-center text-center">
-          <h1 className="text-[70px]/[84.35px] text-fuse-black font-semibold max-w-[680.37px]">
-            Welcome to the Fuse Console
+          <h1 className="text-[70px]/[84.35px] text-fuse-black font-semibold max-w-[474px]">
+            Welcome to Fuse Console
           </h1>
           <p className="text-[20px]/7 text-text-dark-gray md:text-base mt-[22px] mb-[36.52px] max-w-[395.25px]">
-            Get all the tools and services to start your journey on Fuse
+            Start your journey on Fuse
           </p>
           {!isConnected &&
             <Button
@@ -45,7 +42,8 @@ const Home = () => {
             Build your Web3 project with Fuse
           </p>
           <p className="text-[20px]/7 text-text-dark-gray md:text-base max-w-[395.25px] mt-[15.42px] mb-[35.58px]">
-            A low cost Web3 payments without the development headaches or vendor lock-in
+            Easily access affordable Web3 payment & loyalty infrastructure
+            without development hurdles or vendor dependencies.
           </p>
           <Link
             href="/build"
@@ -63,8 +61,8 @@ const Home = () => {
             <p className="text-2xl leading-tight text-fuse-black font-bold max-w-[204.2px]">
               Stake
             </p>
-            <p className="text-text-dark-gray max-w-[344.46px]">
-              Participate in Fuse Network security
+            <p className="text-text-dark-gray max-w-[309.2px]">
+              Earn over 10% annually and enhance the security and efficiency of the Fuse blockchain.
             </p>
           </Link>
           <Link
@@ -74,8 +72,8 @@ const Home = () => {
             <p className="text-2xl leading-tight text-fuse-black font-bold max-w-[204.2px]">
               Bridge
             </p>
-            <p className="text-text-dark-gray max-w-[344.46px]">
-              Transfer funds from popular blockchains to Fuse quickly and affordably
+            <p className="text-text-dark-gray max-w-[325px]">
+              Transfer funds to and from other blockchains to Fuse quickly and affordably.
             </p>
           </Link>
           <Link
@@ -85,8 +83,8 @@ const Home = () => {
             <p className="text-2xl leading-tight text-fuse-black font-bold max-w-[204.2px]">
               Wallet
             </p>
-            <p className="text-text-dark-gray max-w-[344.46px]">
-              Manage your crypto wallet with ease
+            <p className="text-text-dark-gray max-w-[307px]">
+              Create or sign in with a Web3 wallet and manage your assets.
             </p>
           </Link>
         </div>
@@ -100,9 +98,12 @@ const Home = () => {
               target="_blank"
               className="transition ease-in-out flex justify-between items-center bg-lightest-gray hover:bg-success rounded-[20px] p-2 min-h-[220px]"
             >
-              <div className="flex flex-col justify-between items-center m-auto max-w-[140px] min-h-[144px]">
+              <div className="flex flex-col justify-between items-center m-auto max-w-[215px] min-h-[144px]">
                 <p className="text-[20px]/7 text-fuse-black font-bold">
                   Mobile SDK
+                </p>
+                <p className="text-sm text-text-dark-gray text-center max-w-[201.78px]">
+                  Build Smart Contract Wallets with Flutter SDK
                 </p>
                 <Image
                   src={mobileSdk}
@@ -116,15 +117,16 @@ const Home = () => {
               href="https://docs.fuse.io/docs/developers/fuse-box/fuse-connect"
               target="_blank"
               className="transition ease-in-out flex justify-between items-center bg-lightest-gray hover:bg-success rounded-[20px] p-2 min-h-[220px]"
-              onMouseEnter={() => setHover("Fuse connect")}
-              onMouseLeave={() => setHover("")}
             >
-              <div className="flex flex-col justify-between items-center m-auto max-w-[140px] min-h-[144px]">
+              <div className="flex flex-col justify-between items-center m-auto max-w-[215px] min-h-[144px]">
                 <p className="text-[20px]/7 text-fuse-black font-bold">
-                  Fuse Connect
+                  Web SDK
+                </p>
+                <p className="text-sm text-text-dark-gray max-w-[201.78px]">
+                  Easy way to Account Abstraction using JS SDK
                 </p>
                 <Image
-                  src={hover === "Fuse connect" ? fuseConnectGreen : fuseConnect}
+                  src={webSdk}
                   alt="Fuse connect"
                   width={46}
                   height={76}
@@ -136,9 +138,12 @@ const Home = () => {
               target="_blank"
               className="transition ease-in-out flex justify-between items-center bg-lightest-gray hover:bg-success rounded-[20px] p-2 min-h-[220px]"
             >
-              <div className="flex flex-col justify-between items-center m-auto max-w-[140px] min-h-[144px]">
+              <div className="flex flex-col justify-between items-center m-auto max-w-[215px] min-h-[144px]">
                 <p className="text-[20px]/7 text-fuse-black font-bold">
-                  Faucet
+                  Fuse Faucet
+                </p>
+                <p className="text-sm text-text-dark-gray max-w-[201.78px]">
+                  Get free FUSE for tests
                 </p>
                 <Image
                   src={faucet}
@@ -153,9 +158,12 @@ const Home = () => {
               target="_blank"
               className="transition ease-in-out flex justify-between items-center bg-lightest-gray hover:bg-success rounded-[20px] p-2 min-h-[220px]"
             >
-              <div className="flex flex-col justify-between items-center m-auto max-w-[140px] min-h-[144px]">
+              <div className="flex flex-col justify-between items-center m-auto max-w-[215px] min-h-[144px]">
                 <p className="text-[20px]/7 text-fuse-black font-bold">
                   FuseBox
+                </p>
+                <p className="text-sm text-text-dark-gray max-w-[213.4px]">
+                  Discover Fuse middleware API's
                 </p>
                 <Image
                   src={fusebox}
