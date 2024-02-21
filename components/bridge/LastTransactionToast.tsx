@@ -35,7 +35,7 @@ const LastTransactionToast = () => {
             />
           </div>
           <div
-            className="flex text-sm text-secondary-gray mt-3 md:text-xs md:justify-between cursor-pointerg"
+            className="flex text-sm text-secondary-gray mt-3 md:text-xs md:justify-between cursor-pointer"
             onClick={() => {
               window.open(
                 getScanLink(
