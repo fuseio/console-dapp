@@ -260,10 +260,7 @@ const Withdraw = ({
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
               balanceSlice.isApprovalLoading ||
-              (appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                selectedTokenItem
-              ].isNative &&
-                chain?.id !== fuse.id) ? (
+              chain?.id !== fuse.id ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : (
                 balanceSlice.balance

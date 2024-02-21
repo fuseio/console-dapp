@@ -21,6 +21,7 @@ import { useAccount } from "wagmi";
 import { walletType } from "@/lib/helpers";
 import { fetchBalance as fetchWalletBalance } from "@wagmi/core";
 import AddToken from "@/components/bridge/AddToken";
+import { getNetwork } from "wagmi/actions";
 
 type DepositProps = {
   selectedChainSection: number;
@@ -73,6 +74,7 @@ const Deposit = ({
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const chainSlice = useAppSelector(selectChainSlice);
   const [nativeBalance, setNativeBalance] = React.useState("0");
+  const { chain } = getNetwork();
 
   useEffect(() => {
     async function updateBalance() {
@@ -142,7 +144,7 @@ const Deposit = ({
   }, [chainSlice.chainId, selectedChainSection]);
   return (
     <>
-    <AddToken />
+      <AddToken />
       <div className="flex bg-modal-bg rounded-md p-4 mt-3 w-full flex-col">
         <span className="font-medium mb-2 text-xs">From Network</span>
         <Dropdown
@@ -258,6 +260,8 @@ const Deposit = ({
             <span className="mt-3 text-xs font-medium">
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
+              chain?.id !==
+                appConfig.wrappedBridge.chains[selectedChainItem].chainId ||
               balanceSlice.isApprovalLoading ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : (
