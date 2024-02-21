@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { appConfig } from "@/lib/config";
 import tick from "@/public/tick.png";
 import Image from "next/image";
+import Copy from "../ui/Copy";
 
 const AddToken = () => {
   const tokenSlice = useAppSelector(selectToastSlice);
@@ -40,24 +41,6 @@ const AddToken = () => {
       (t) => t.symbol === token
     );
     return tokenDetails?.icon;
-  };
-  const [isCopied, setIsCopied] = useState(false);
-
-  useEffect(() => {
-    const oneSecondInMillisecond = 1000;
-
-    const timeoutId = setTimeout(() => {
-      setIsCopied(false);
-    }, oneSecondInMillisecond);
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [isCopied]);
-
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setIsCopied(true);
   };
 
   return (
@@ -111,24 +94,12 @@ const AddToken = () => {
                 <span className="text-base text-[#666] w-[60%] break-all">
                   {getTokenAddress(tokenSlice.token as string)}
                 </span>
-                <div className="relative w-[10%]">
-                  <Image
+                <div className="w-[10%] flex justify-center">
+                  <Copy
                     src={copy}
-                    alt="copy"
-                    className="h-4 w-[100%] cursor-pointer"
-                    onClick={() => {
-                      handleCopy(
-                        getTokenAddress(tokenSlice.token as string) as string
-                      );
-                    }}
+                    text={getTokenAddress(tokenSlice.token as string) as string}
+                    alt="copy token address"
                   />
-                  <div
-                    className={`copy-tooltip absolute left-1/2 -translate-x-1/2 top-8 bg-black px-[13.4px] py-[7.56px] rounded-2xl w-max shadow-lg text-white text-sm leading-none font-medium ${
-                      isCopied ? "block" : "hidden"
-                    }`}
-                  >
-                    <p>{"Address copied"}</p>
-                  </div>
                 </div>
               </div>
               <div className="w-full flex justify-center mt-24">
