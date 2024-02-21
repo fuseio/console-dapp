@@ -9,6 +9,7 @@ import { MessageStatus } from "@layerzerolabs/scan-client";
 import {
   getEstimatedTransactionTime,
   getNetworkByChainKey,
+  getScanLink,
 } from "@layerzerolabs/ui-core";
 import { getChainKey } from "@layerzerolabs/lz-sdk";
 import Pill from "./Pill";
@@ -33,7 +34,18 @@ const LastTransactionToast = () => {
               }}
             />
           </div>
-          <div className="flex text-sm text-secondary-gray mt-3 md:text-xs md:justify-between">
+          <div
+            className="flex text-sm text-secondary-gray mt-3 md:text-xs md:justify-between cursor-pointerg"
+            onClick={() => {
+              window.open(
+                getScanLink(
+                  transactionsSlice.transactionHashes[0].srcChainId,
+                  transactionsSlice.transactionHashes[0].hash
+                ),
+                "_blank"
+              );
+            }}
+          >
             <div className="flex flex-col w-2/5">
               <p className="text-sm text-secondary-gray">From</p>
               <div className="flex font-medium mt-1 text-black">
