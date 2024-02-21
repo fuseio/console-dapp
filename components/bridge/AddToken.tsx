@@ -24,23 +24,12 @@ const AddToken = () => {
   useEffect(() => {
     setChecked(false);
   }, [tokenSlice.token]);
-  const getTokenAddress = (token: string) => {
+
+  const getTokenDetails = (token: string) => {
     const tokenDetails = appConfig.wrappedBridge.fuse.tokens.find(
       (t) => t.symbol === token
     );
-    return tokenDetails?.address;
-  };
-  const getTokenDecimals = (token: string) => {
-    const tokenDetails = appConfig.wrappedBridge.fuse.tokens.find(
-      (t) => t.symbol === token
-    );
-    return tokenDetails?.decimals;
-  };
-  const getTokenIcon = (token: string) => {
-    const tokenDetails = appConfig.wrappedBridge.fuse.tokens.find(
-      (t) => t.symbol === token
-    );
-    return tokenDetails?.icon;
+    return tokenDetails;
   };
 
   return (
@@ -77,13 +66,14 @@ const AddToken = () => {
                 Add token to wallet
               </span>
               <span className="text-sm font-normal text-[#4d4d4d] mt-3">
-                After a transaction you&apos;ll receive a Fuse Bridge-specific token
-                on the Fuse Network side. You can manually add it to your wallet
-                using the contract address or simply click the &apos;Add token&apos; button below.
+                After a transaction you&apos;ll receive a Fuse Bridge-specific
+                token on the Fuse Network side. You can manually add it to your
+                wallet using the contract address or simply click the &apos;Add
+                token&apos; button below.
               </span>
               <div className="px-10 py-5 rounded-[14px] border-[1px] w-full border-[#D2D5D8] mt-6 flex items-center justify-between">
                 <img
-                  src={getTokenIcon(tokenSlice.token as string)}
+                  src={getTokenDetails(tokenSlice.token as string)?.icon}
                   alt="token"
                   className="w-[10%]"
                 />
@@ -91,12 +81,15 @@ const AddToken = () => {
                   {tokenSlice.token}
                 </span>
                 <span className="text-base text-[#666] w-[60%] break-all">
-                  {getTokenAddress(tokenSlice.token as string)}
+                  {getTokenDetails(tokenSlice.token as string)?.address}
                 </span>
                 <div className="w-[10%] flex justify-center">
                   <Copy
                     src={copy}
-                    text={getTokenAddress(tokenSlice.token as string) as string}
+                    text={
+                      getTokenDetails(tokenSlice.token as string)
+                        ?.address as string
+                    }
                     alt="copy token address"
                   />
                 </div>
@@ -111,11 +104,11 @@ const AddToken = () => {
                       params: {
                         type: "ERC20",
                         options: {
-                          address: getTokenAddress(tokenSlice.token as string),
+                          address: getTokenDetails(tokenSlice.token as string)
+                            ?.address,
                           symbol: tokenSlice.token,
-                          decimals: getTokenDecimals(
-                            tokenSlice.token as string
-                          ),
+                          decimals: getTokenDetails(tokenSlice.token as string)
+                            ?.decimals,
                           chainId: 122,
                         },
                       },
