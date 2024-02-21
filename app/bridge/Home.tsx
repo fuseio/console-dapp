@@ -65,7 +65,7 @@ const Home = () => {
   const [pendingPromise, setPendingPromise] = React.useState<any>();
   const { address, connector, isConnected } = useAccount();
   const { chain } = getNetwork();
-  
+
   useEffect(() => {
     setAmount("");
   }, [depositSelectedTokenItem, withdrawSelectedTokenItem]);
@@ -608,6 +608,35 @@ const Home = () => {
                       : "Minimum 0.5"
                   }
                 />
+              ) : displayButton &&
+                (selected === 0
+                  ? chain?.id !==
+                    appConfig.wrappedBridge.chains[depositSelectedChainItem]
+                      .chainId
+                  : chain?.id !== fuse.id) ? (
+                <Button
+                  className="bg-fuse-black text-white px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
+                  text={
+                    selected === 0
+                      ? "Switch to " +
+                        appConfig.wrappedBridge.chains[depositSelectedChainItem]
+                          .name
+                      : "Switch to Fuse"
+                  }
+                  onClick={() => {
+                    if (selected === 0)
+                      switchNetwork({
+                        chainId:
+                          appConfig.wrappedBridge.chains[
+                            depositSelectedChainItem
+                          ].chainId,
+                      });
+                    else
+                      switchNetwork({
+                        chainId: fuse.id,
+                      });
+                  }}
+                />
               ) : (
                 displayButton && (
                   <Button
@@ -646,23 +675,18 @@ const Home = () => {
                       }
                     }}
                     disabled={
-                      (selected === 1 && chain?.id === fuse.id) ||
-                      selected === 0
-                        ? balanceSlice.isApprovalLoading ||
-                          contractSlice.isBridgeLoading ||
-                          contractSlice.isApprovalLoading ||
-                          balanceSlice.isBalanceLoading ||
-                          !amount ||
-                          parseFloat(amount) === 0 ||
-                          isNaN(parseFloat(amount))
-                        : false
+                      balanceSlice.isApprovalLoading ||
+                      contractSlice.isBridgeLoading ||
+                      contractSlice.isApprovalLoading ||
+                      balanceSlice.isBalanceLoading ||
+                      !amount ||
+                      parseFloat(amount) === 0 ||
+                      isNaN(parseFloat(amount))
                     }
                     text={
                       contractSlice.isBridgeLoading ||
                       contractSlice.isApprovalLoading
                         ? "Loading..."
-                        : selected === 1 && chain?.id !== fuse.id
-                        ? "Switch To Fuse"
                         : (selected === 1 &&
                             appConfig.wrappedBridge.chains[
                               withdrawSelectedChainItem
