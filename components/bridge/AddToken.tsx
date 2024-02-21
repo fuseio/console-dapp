@@ -6,6 +6,8 @@ import copy from "@/assets/copy.svg";
 import { selectToastSlice, toggleAddTokenToast } from "@/store/toastSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { appConfig } from "@/lib/config";
+import tick from "@/public/tick.png";
+import Image from "next/image";
 
 const AddToken = () => {
   const tokenSlice = useAppSelector(selectToastSlice);
@@ -39,6 +41,25 @@ const AddToken = () => {
     );
     return tokenDetails?.icon;
   };
+  const [isCopied, setIsCopied] = useState(false);
+
+  useEffect(() => {
+    const oneSecondInMillisecond = 1000;
+
+    const timeoutId = setTimeout(() => {
+      setIsCopied(false);
+    }, oneSecondInMillisecond);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [isCopied]);
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setIsCopied(true);
+  };
+
   return (
     <>
       <AnimatePresence>
@@ -90,16 +111,25 @@ const AddToken = () => {
                 <span className="text-base text-[#666] w-[60%] break-all">
                   {getTokenAddress(tokenSlice.token as string)}
                 </span>
-                <img
-                  src={copy.src}
-                  alt="copy"
-                  className="h-4 w-[10%] cursor-pointer"
-                  onClick={() => {
-                    navigator.clipboard.writeText(
-                      getTokenAddress(tokenSlice.token as string) as string
-                    );
-                  }}
-                />
+                <div className="relative w-[10%]">
+                  <Image
+                    src={copy}
+                    alt="copy"
+                    className="h-4 w-[100%] cursor-pointer"
+                    onClick={() => {
+                      handleCopy(
+                        getTokenAddress(tokenSlice.token as string) as string
+                      );
+                    }}
+                  />
+                  <div
+                    className={`copy-tooltip absolute left-1/2 -translate-x-1/2 top-8 bg-black px-[13.4px] py-[7.56px] rounded-2xl w-max shadow-lg text-white text-sm leading-none font-medium ${
+                      isCopied ? "block" : "hidden"
+                    }`}
+                  >
+                    <p>{"Address copied"}</p>
+                  </div>
+                </div>
               </div>
               <div className="w-full flex justify-center mt-24">
                 <button
@@ -127,11 +157,7 @@ const AddToken = () => {
               </div>
               <div className="w-full flex justify-center mt-6 items-center">
                 <div
-                  className={
-                    !checked
-                      ? "h-[18px] w-[18px] outline-dashed outline-[1.5px] outline-black rounded cursor-pointer"
-                      : "h-[18px] w-[18px] border-[2px] border-white rounded cursor-pointer bg-success outline-dashed outline-[1.5px] outline-black"
-                  }
+                  className="h-[18px] w-[18px] rounded cursor-pointe outline outline-[1.5px] outline-black p-[2px]"
                   onClick={() => {
                     const tokensAdded = localStorage.getItem("tokensAdded");
                     if (checked) {
@@ -158,7 +184,11 @@ const AddToken = () => {
                     }
                     setChecked(!checked);
                   }}
-                />
+                >
+                  {checked && (
+                    <img src={tick.src} alt="tick" className="h-full w-full" />
+                  )}
+                </div>
                 <span className="text-sm ml-2">
                   {"Don't show this message again"}
                 </span>
