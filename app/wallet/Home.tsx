@@ -56,7 +56,7 @@ const Home = () => {
             Hello{isConnected ? `, ${eclipseAddress(String(address))}` : ""}
           </h1>
           <p className="text-[20px]/7 font-normal mt-4 text-text-dark-gray md:text-base">
-            One-stop-shop for all Fuse token holders.
+            The one-stop-shop for all Fuse token holders.
           </p>
         </div>
         <div className="flex flex-col gap-y-[30px]">

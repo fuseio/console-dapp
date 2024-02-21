@@ -77,10 +77,9 @@ const AddToken = () => {
                 Add token to wallet
               </span>
               <span className="text-sm font-normal text-[#4d4d4d] mt-3">
-                After completing a transaction, on the Fuse network you will
-                receive a version of the token minted specifically for Fuse
-                Bridge. You can add it to your wallet manually using the
-                contract address, or simply click Add token button below.
+                After a transaction you&apos;ll receive a Fuse Bridge-specific token
+                on the Fuse Network side. You can manually add it to your wallet
+                using the contract address or simply click the &apos;Add token&apos; button below.
               </span>
               <div className="px-10 py-5 rounded-[14px] border-[1px] w-full border-[#D2D5D8] mt-6 flex items-center justify-between">
                 <img
