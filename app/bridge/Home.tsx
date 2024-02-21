@@ -65,6 +65,10 @@ const Home = () => {
   const [pendingPromise, setPendingPromise] = React.useState<any>();
   const { address, connector, isConnected } = useAccount();
   const { chain } = getNetwork();
+  
+  useEffect(() => {
+    setAmount("");
+  }, [depositSelectedTokenItem, withdrawSelectedTokenItem]);
 
   useEffect(() => {
     if (address) {
@@ -567,9 +571,7 @@ const Home = () => {
                 />
               )}
               {!isConnected && displayButton ? (
-                <ConnectWallet
-                  className="transition ease-in-out mt-6 py-4 w-full hover:bg-success hover:text-black"
-                />
+                <ConnectWallet className="transition ease-in-out mt-6 py-4 w-full hover:bg-success hover:text-black" />
               ) : displayButton &&
                 selected === 1 &&
                 !appConfig.wrappedBridge.chains[withdrawSelectedChainItem]
