@@ -113,7 +113,11 @@ const Deposit = ({
               appConfig.wrappedBridge.chains[selectedChainItem].tokens[
                 selectedTokenItem
               ].decimals,
-            bridge: appConfig.wrappedBridge.chains[selectedChainItem].original,
+            bridge: appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+              selectedTokenItem
+            ].isNative
+              ? appConfig.wrappedBridge.chains[selectedChainItem].wrapped
+              : appConfig.wrappedBridge.chains[selectedChainItem].original,
           })
         );
         setPendingPromise(promise);
@@ -142,7 +146,7 @@ const Deposit = ({
   }, [chainSlice.chainId, selectedChainSection]);
   return (
     <>
-    <AddToken />
+      <AddToken />
       <div className="flex bg-modal-bg rounded-md p-4 mt-3 w-full flex-col">
         <span className="font-medium mb-2 text-xs">From Network</span>
         <Dropdown

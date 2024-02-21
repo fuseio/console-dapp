@@ -65,7 +65,7 @@ const Home = () => {
   const [pendingPromise, setPendingPromise] = React.useState<any>();
   const { address, connector, isConnected } = useAccount();
   const { chain } = getNetwork();
-  
+
   useEffect(() => {
     setAmount("");
   }, [depositSelectedTokenItem, withdrawSelectedTokenItem]);
@@ -621,6 +621,10 @@ const Home = () => {
                         if (!isConnected) return;
                         if (!amount) return;
                         if (
+                          parseFloat(balanceSlice.approval) < parseFloat(amount)
+                        ) {
+                          handleIncreaseAllowance();
+                        } else if (
                           selected === 1 &&
                           appConfig.wrappedBridge.chains[
                             withdrawSelectedChainItem
@@ -634,10 +638,6 @@ const Home = () => {
                           ].tokens[depositSelectedTokenItem].isNative
                         ) {
                           handleDeposit();
-                        } else if (
-                          parseFloat(balanceSlice.approval) < parseFloat(amount)
-                        ) {
-                          handleIncreaseAllowance();
                         } else if (selected === 0) {
                           handleDeposit();
                         } else if (selected === 1) {
@@ -663,6 +663,8 @@ const Home = () => {
                         ? "Loading..."
                         : selected === 1 && chain?.id !== fuse.id
                         ? "Switch To Fuse"
+                        : parseFloat(balanceSlice.approval) < parseFloat(amount)
+                        ? "Approve"
                         : (selected === 1 &&
                             appConfig.wrappedBridge.chains[
                               withdrawSelectedChainItem
@@ -679,8 +681,6 @@ const Home = () => {
                               depositSelectedChainItem
                             ].tokens[depositSelectedTokenItem].isNative)
                         ? "Bridge"
-                        : parseFloat(balanceSlice.approval) < parseFloat(amount)
-                        ? "Approve"
                         : "Bridge"
                     }
                     disabledClassname="bg-fuse-black/20 text-black px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
