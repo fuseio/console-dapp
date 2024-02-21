@@ -12,6 +12,7 @@ import { updateTransactions } from "../transactionsSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { fetchTokenPrice } from "@/lib/api";
 import { Address } from "abitype";
+import { checkandToggleAddTokenToast } from "../toastSlice";
 
 export interface ContractStateType {
   isBridgeLoading: boolean;
@@ -156,6 +157,9 @@ export const bridgeOriginalTokens = createAsyncThunk(
             timestamp: Date.now(),
             dstChainId,
           });
+          thunkAPI.dispatch(
+            checkandToggleAddTokenToast(symbol)
+          )
           thunkAPI.dispatch(
             updateTransactions({
               hash: txHash,

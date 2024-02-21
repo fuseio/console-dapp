@@ -20,6 +20,7 @@ import * as amplitude from "@amplitude/analytics-browser";
 import { useAccount } from "wagmi";
 import { walletType } from "@/lib/helpers";
 import { fetchBalance as fetchWalletBalance } from "@wagmi/core";
+import AddToken from "@/components/bridge/AddToken";
 
 type DepositProps = {
   selectedChainSection: number;
@@ -141,6 +142,7 @@ const Deposit = ({
   }, [chainSlice.chainId, selectedChainSection]);
   return (
     <>
+    <AddToken />
       <div className="flex bg-modal-bg rounded-md p-4 mt-3 w-full flex-col">
         <span className="font-medium mb-2 text-xs">From Network</span>
         <Dropdown
@@ -457,7 +459,7 @@ const Deposit = ({
                         decimals:
                           appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
                             .decimals,
-                        chainId: 138,
+                        chainId: 122,
                       },
                     },
                   });
