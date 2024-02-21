@@ -310,8 +310,8 @@ const Home = () => {
                     target="_blank"
                     className="flex flex-col gap-2.5 justify-between min-h-[269px] px-[30px] py-7 md:px-4 md:py-6 bg-white/5 hover:bg-white/10 rounded-[20px]"
                   >
-                    <div>
-                      <p className="text-white font-semibold">
+                    <div className="flex flex-col gap-2.5">
+                      <p className="text-2xl text-white font-semibold">
                         {app.name}
                       </p>
                       <p className="text-white opacity-60 max-w-[282.15px]">
