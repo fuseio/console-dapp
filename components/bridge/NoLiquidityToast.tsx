@@ -2,11 +2,9 @@ import React from "react";
 import stop from "@/assets/stop.svg";
 import dismiss from "@/assets/dismiss.svg";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { selectTransactionsSlice } from "@/store/transactionsSlice";
 import { toggleLiquidityToast } from "@/store/toastSlice";
 
 const NoLiquidityToast = () => {
-  const transactionsSlice = useAppSelector(selectTransactionsSlice);
   const dispatch = useAppDispatch();
   return (
     <div className="w-full rounded-md border-[#FD0F0F66]/40 border-[1px] bg-[#FFEBE9] md:mt-8">

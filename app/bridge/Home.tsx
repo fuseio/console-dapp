@@ -38,22 +38,32 @@ import FAQ from "@/components/bridge/FAQ";
 import "@/styles/bridge.css";
 import { bridgeAndUnwrapNative } from "@/lib/wrappedBridge";
 import Airdrop from "@/components/bridge/Airdrop";
+import {
+  selectSelectedChainSlice,
+  setDepositChainItem,
+  setWithdrawChainItem,
+} from "@/store/selectedChainSlice";
 
 const Home = () => {
+  const selectedChainSlice = useAppSelector(selectSelectedChainSlice);
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const contractSlice = useAppSelector(selectContractSlice);
   const [selected, setSelected] = useState(0);
   const [depositSelectedChainSection, setDepositSelectedChainSection] =
     useState(0);
-  const [depositSelectedChainItem, setDepositSelectedChainItem] = useState(0);
+  const setDepositSelectedChainItem = (item: number) => {
+    dispatch(setDepositChainItem(item));
+  };
   const [depositSelectedTokenSection, setDepositSelectedTokenSection] =
     useState(0);
   const [depositSelectedTokenItem, setDepositSelectedTokenItem] = useState(0);
   const [displayButton, setDisplayButton] = useState(true);
   const [withdrawSelectedChainSection, setWithdrawSelectedChainSection] =
     useState(0);
-  const [withdrawSelectedChainItem, setWithdrawSelectedChainItem] = useState(0);
+  const setWithdrawSelectedChainItem = (item: number) => {
+    dispatch(setWithdrawChainItem(item));
+  };
   const [withdrawSelectedTokenSection, setWithdrawSelectedTokenSection] =
     useState(0);
   const [withdrawSelectedTokenItem, setWithdrawSelectedTokenItem] = useState(0);
@@ -87,28 +97,32 @@ const Home = () => {
       dispatch(
         increaseERC20Allowance({
           contractAddress:
-            appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-              depositSelectedTokenItem
-            ].address,
+            appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens[depositSelectedTokenItem].address,
           amount: amount,
           bridge:
-            appConfig.wrappedBridge.chains[depositSelectedChainItem].original,
+            appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].original,
           decimals:
-            appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-              depositSelectedTokenItem
-            ].decimals,
+            appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens[depositSelectedTokenItem].decimals,
           address: address ?? hex,
           type: 0,
           network:
-            appConfig.wrappedBridge.chains[depositSelectedChainItem].name,
+            appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].name,
           token:
-            appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-              depositSelectedTokenItem
-            ].symbol,
+            appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens[depositSelectedTokenItem].symbol,
           tokenId:
-            appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-              depositSelectedTokenItem
-            ].coinGeckoId,
+            appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens[depositSelectedTokenItem].coinGeckoId,
           selectedChainId,
           walletType: connector ? walletType[connector.id] : undefined,
         })
@@ -141,7 +155,9 @@ const Home = () => {
   const handleIncreaseAllowance = () => {
     const selectedChainId =
       selected === 0
-        ? appConfig.wrappedBridge.chains[depositSelectedChainItem].chainId
+        ? appConfig.wrappedBridge.chains[
+            selectedChainSlice.depositSelectedChainItem
+          ].chainId
         : fuse.id;
     if (selectedChainId == chain?.id) {
       increaseAllowance(true, selectedChainId);
@@ -157,108 +173,123 @@ const Home = () => {
   const deposit = (res: any, selectedChainId: number) => {
     if (res) {
       if (
-        appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-          depositSelectedTokenItem
-        ].isBridged &&
-        appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-          depositSelectedTokenItem
-        ].isNative
+        appConfig.wrappedBridge.chains[
+          selectedChainSlice.depositSelectedChainItem
+        ].tokens[depositSelectedTokenItem].isBridged &&
+        appConfig.wrappedBridge.chains[
+          selectedChainSlice.depositSelectedChainItem
+        ].tokens[depositSelectedTokenItem].isNative
       ) {
         dispatch(
           bridgeAndUnwrap({
             address: address ?? hex,
             amount: amount,
             bridge:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem].wrapped,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].wrapped,
             contractAddress:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-                depositSelectedTokenItem
-              ].address,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].tokens[depositSelectedTokenItem].address,
             decimals:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-                depositSelectedTokenItem
-              ].decimals,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].tokens[depositSelectedTokenItem].decimals,
             srcChainId:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem]
-                .lzChainId,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].lzChainId,
             symbol:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-                depositSelectedTokenItem
-              ].symbol,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].tokens[depositSelectedTokenItem].symbol,
             chainId: 138,
             network:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem].name,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].name,
             tokenId: "fuse-network-token",
             selectedChainId,
             walletType: connector ? walletType[connector.id] : undefined,
           })
         );
       } else if (
-        appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-          depositSelectedTokenItem
-        ].isNative
+        appConfig.wrappedBridge.chains[
+          selectedChainSlice.depositSelectedChainItem
+        ].tokens[depositSelectedTokenItem].isNative
       ) {
         dispatch(
           bridgeNativeTokens({
             address: address ?? hex,
             amount: amount,
             bridge:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem].original,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].original,
             decimals:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-                depositSelectedTokenItem
-              ].decimals,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].tokens[depositSelectedTokenItem].decimals,
             srcChainId:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem]
-                .lzChainId,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].lzChainId,
             symbol:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-                depositSelectedTokenItem
-              ].symbol,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].tokens[depositSelectedTokenItem].symbol,
             dstChainId: 138,
             network:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem].name,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].name,
             tokenId:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-                depositSelectedTokenItem
-              ].coinGeckoId,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].tokens[depositSelectedTokenItem].coinGeckoId,
             selectedChainId,
             walletType: connector ? walletType[connector.id] : undefined,
           })
         );
       } else if (
-        !appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-          depositSelectedTokenItem
-        ].isBridged
+        !appConfig.wrappedBridge.chains[
+          selectedChainSlice.depositSelectedChainItem
+        ].tokens[depositSelectedTokenItem].isBridged
       )
         dispatch(
           bridgeOriginalTokens({
             address: address ?? hex,
             amount: amount,
             bridge:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem].original,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].original,
             contractAddress:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-                depositSelectedTokenItem
-              ].address,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].tokens[depositSelectedTokenItem].address,
             decimals:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-                depositSelectedTokenItem
-              ].decimals,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].tokens[depositSelectedTokenItem].decimals,
             srcChainId:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem]
-                .lzChainId,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].lzChainId,
             symbol:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-                depositSelectedTokenItem
-              ].symbol,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].tokens[depositSelectedTokenItem].symbol,
             dstChainId: 138,
             network:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem].name,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].name,
             tokenId:
-              appConfig.wrappedBridge.chains[depositSelectedChainItem].tokens[
-                depositSelectedTokenItem
-              ].coinGeckoId,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].tokens[depositSelectedTokenItem].coinGeckoId,
             selectedChainId,
             walletType: connector ? walletType[connector.id] : undefined,
           })
@@ -268,7 +299,9 @@ const Home = () => {
 
   const handleDeposit = () => {
     const selectedChainId =
-      appConfig.wrappedBridge.chains[depositSelectedChainItem].chainId;
+      appConfig.wrappedBridge.chains[
+        selectedChainSlice.depositSelectedChainItem
+      ].chainId;
     if (selectedChainId == chain?.id) {
       deposit(true, selectedChainId);
       return;
@@ -283,43 +316,47 @@ const Home = () => {
   const withdraw = (res: any, selectedChainId: number) => {
     if (res) {
       if (
-        appConfig.wrappedBridge.chains[withdrawSelectedChainItem].tokens[
-          withdrawSelectedTokenItem
-        ].isNative &&
-        appConfig.wrappedBridge.chains[withdrawSelectedChainItem].tokens[
-          withdrawSelectedTokenItem
-        ].isBridged
+        appConfig.wrappedBridge.chains[
+          selectedChainSlice.withdrawSelectedChainItem
+        ].tokens[withdrawSelectedTokenItem].isNative &&
+        appConfig.wrappedBridge.chains[
+          selectedChainSlice.withdrawSelectedChainItem
+        ].tokens[withdrawSelectedTokenItem].isBridged
       ) {
         dispatch(
           bridgeNativeTokens({
             address: address ?? hex,
             amount: amount,
             bridge:
-              appConfig.wrappedBridge.chains[withdrawSelectedChainItem]
-                .originalFuse,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.withdrawSelectedChainItem
+              ].originalFuse,
             decimals:
-              appConfig.wrappedBridge.chains[withdrawSelectedChainItem].tokens[
-                withdrawSelectedTokenItem
-              ].decimals,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.withdrawSelectedChainItem
+              ].tokens[withdrawSelectedTokenItem].decimals,
             dstChainId:
-              appConfig.wrappedBridge.chains[withdrawSelectedChainItem]
-                .lzChainId,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.withdrawSelectedChainItem
+              ].lzChainId,
             srcChainId: 138,
             symbol: "FUSE",
             network:
-              appConfig.wrappedBridge.chains[withdrawSelectedChainItem].name,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.withdrawSelectedChainItem
+              ].name,
             tokenId: "fuse-network-token",
             walletType: connector ? walletType[connector.id] : undefined,
             selectedChainId: fuse.id,
           })
         );
       } else if (
-        appConfig.wrappedBridge.chains[withdrawSelectedChainItem].tokens[
-          withdrawSelectedTokenItem
-        ].isNative &&
-        !appConfig.wrappedBridge.chains[withdrawSelectedChainItem].tokens[
-          withdrawSelectedTokenItem
-        ].isBridged
+        appConfig.wrappedBridge.chains[
+          selectedChainSlice.withdrawSelectedChainItem
+        ].tokens[withdrawSelectedTokenItem].isNative &&
+        !appConfig.wrappedBridge.chains[
+          selectedChainSlice.withdrawSelectedChainItem
+        ].tokens[withdrawSelectedTokenItem].isBridged
       ) {
         dispatch(
           bridgeAndUnwrap({
@@ -333,14 +370,17 @@ const Home = () => {
               appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
                 .decimals,
             chainId:
-              appConfig.wrappedBridge.chains[withdrawSelectedChainItem]
-                .lzChainId,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.withdrawSelectedChainItem
+              ].lzChainId,
             symbol:
               appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
                 .symbol,
             srcChainId: 138,
             network:
-              appConfig.wrappedBridge.chains[withdrawSelectedChainItem].name,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.withdrawSelectedChainItem
+              ].name,
             tokenId:
               appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
                 .coinGeckoId,
@@ -361,14 +401,17 @@ const Home = () => {
               appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
                 .decimals,
             chainId:
-              appConfig.wrappedBridge.chains[withdrawSelectedChainItem]
-                .lzChainId,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.withdrawSelectedChainItem
+              ].lzChainId,
             symbol:
               appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
                 .symbol,
             srcChainId: 138,
             network:
-              appConfig.wrappedBridge.chains[withdrawSelectedChainItem].name,
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.withdrawSelectedChainItem
+              ].name,
             tokenId:
               appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
                 .coinGeckoId,
@@ -462,7 +505,7 @@ const Home = () => {
                                 appConfig.wrappedBridge.fuse.wrapped,
                               lzChainId:
                                 appConfig.wrappedBridge.chains[
-                                  withdrawSelectedChainItem
+                                  selectedChainSlice.withdrawSelectedChainItem
                                 ].lzChainId,
                               rpcUrl: "https://fuse.liquify.com",
                               tokenId: "fuse-network-token",
@@ -478,7 +521,7 @@ const Home = () => {
                           dispatch(
                             setChain(
                               appConfig.wrappedBridge.chains[
-                                depositSelectedChainItem
+                                selectedChainSlice.depositSelectedChainItem
                               ]
                             )
                           );
@@ -486,15 +529,15 @@ const Home = () => {
                             estimateOriginalFee({
                               contractAddress:
                                 appConfig.wrappedBridge.chains[
-                                  depositSelectedChainItem
+                                  selectedChainSlice.depositSelectedChainItem
                                 ].original,
                               rpcUrl:
                                 appConfig.wrappedBridge.chains[
-                                  depositSelectedChainItem
+                                  selectedChainSlice.depositSelectedChainItem
                                 ].rpcUrl,
                               tokenId:
                                 appConfig.wrappedBridge.chains[
-                                  depositSelectedChainItem
+                                  selectedChainSlice.depositSelectedChainItem
                                 ].tokenId,
                             })
                           );
@@ -509,7 +552,9 @@ const Home = () => {
               </div>
               {selected === 0 ? (
                 <Deposit
-                  selectedChainItem={depositSelectedChainItem}
+                  selectedChainItem={
+                    selectedChainSlice.depositSelectedChainItem
+                  }
                   selectedChainSection={depositSelectedChainSection}
                   setSelectedChainItem={setDepositSelectedChainItem}
                   setSelectedChainSection={setDepositSelectedChainSection}
@@ -541,7 +586,9 @@ const Home = () => {
                 />
               ) : (
                 <Withdraw
-                  selectedChainItem={withdrawSelectedChainItem}
+                  selectedChainItem={
+                    selectedChainSlice.withdrawSelectedChainItem
+                  }
                   selectedChainSection={withdrawSelectedChainSection}
                   setSelectedChainItem={setWithdrawSelectedChainItem}
                   setSelectedChainSection={setWithdrawSelectedChainSection}
@@ -574,8 +621,9 @@ const Home = () => {
                 <ConnectWallet className="transition ease-in-out mt-6 py-4 w-full hover:bg-success hover:text-black" />
               ) : displayButton &&
                 selected === 1 &&
-                !appConfig.wrappedBridge.chains[withdrawSelectedChainItem]
-                  .tokens[withdrawSelectedTokenItem].isNative &&
+                !appConfig.wrappedBridge.chains[
+                  selectedChainSlice.withdrawSelectedChainItem
+                ].tokens[withdrawSelectedTokenItem].isNative &&
                 parseFloat(amount) > parseFloat(balanceSlice.liquidity) &&
                 parseFloat(amount) <= parseFloat(balanceSlice.balance) ? (
                 <Button
@@ -595,8 +643,8 @@ const Home = () => {
                       ? `Insufficient ${
                           appConfig.wrappedBridge.chains[
                             selected
-                              ? withdrawSelectedChainItem
-                              : depositSelectedChainItem
+                              ? selectedChainSlice.withdrawSelectedChainItem
+                              : selectedChainSlice.depositSelectedChainItem
                           ].tokens[
                             selected
                               ? withdrawSelectedTokenItem
@@ -611,16 +659,18 @@ const Home = () => {
               ) : displayButton &&
                 (selected === 0
                   ? chain?.id !==
-                    appConfig.wrappedBridge.chains[depositSelectedChainItem]
-                      .chainId
+                    appConfig.wrappedBridge.chains[
+                      selectedChainSlice.depositSelectedChainItem
+                    ].chainId
                   : chain?.id !== fuse.id) ? (
                 <Button
                   className="bg-fuse-black text-white px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
                   text={
                     selected === 0
                       ? "Switch to " +
-                        appConfig.wrappedBridge.chains[depositSelectedChainItem]
-                          .name
+                        appConfig.wrappedBridge.chains[
+                          selectedChainSlice.depositSelectedChainItem
+                        ].name
                       : "Switch to Fuse"
                   }
                   onClick={() => {
@@ -628,7 +678,7 @@ const Home = () => {
                       switchNetwork({
                         chainId:
                           appConfig.wrappedBridge.chains[
-                            depositSelectedChainItem
+                            selectedChainSlice.depositSelectedChainItem
                           ].chainId,
                       });
                     else
@@ -652,14 +702,14 @@ const Home = () => {
                         if (
                           selected === 1 &&
                           appConfig.wrappedBridge.chains[
-                            withdrawSelectedChainItem
+                            selectedChainSlice.withdrawSelectedChainItem
                           ].tokens[withdrawSelectedTokenItem].isNative
                         ) {
                           handleWithdraw();
                         } else if (
                           selected === 0 &&
                           appConfig.wrappedBridge.chains[
-                            depositSelectedChainItem
+                            selectedChainSlice.depositSelectedChainItem
                           ].tokens[depositSelectedTokenItem].isNative
                         ) {
                           handleDeposit();
@@ -689,18 +739,18 @@ const Home = () => {
                         ? "Loading..."
                         : (selected === 1 &&
                             appConfig.wrappedBridge.chains[
-                              withdrawSelectedChainItem
+                              selectedChainSlice.withdrawSelectedChainItem
                             ].tokens[withdrawSelectedTokenItem].isNative) ||
                           (selected === 0 &&
                             appConfig.wrappedBridge.chains[
-                              depositSelectedChainItem
+                              selectedChainSlice.depositSelectedChainItem
                             ].tokens[depositSelectedTokenItem].isNative &&
                             !appConfig.wrappedBridge.chains[
-                              depositSelectedChainItem
+                              selectedChainSlice.depositSelectedChainItem
                             ].tokens[depositSelectedTokenItem].isBridged) ||
                           (selected === 0 &&
                             appConfig.wrappedBridge.chains[
-                              depositSelectedChainItem
+                              selectedChainSlice.depositSelectedChainItem
                             ].tokens[depositSelectedTokenItem].isNative)
                         ? "Bridge"
                         : parseFloat(balanceSlice.approval) < parseFloat(amount)
@@ -756,7 +806,7 @@ const Home = () => {
                         getChainKey(
                           selected === 0
                             ? appConfig.wrappedBridge.chains[
-                                depositSelectedChainItem
+                                selectedChainSlice.depositSelectedChainItem
                               ].lzChainId
                             : 138
                         )

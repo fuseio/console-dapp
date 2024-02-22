@@ -24,6 +24,7 @@ import { fetchBalance as fetchWalletBalance } from "@wagmi/core";
 import { fuse } from "viem/chains";
 import { hex, walletType } from "@/lib/helpers";
 import { getNetwork } from "wagmi/actions";
+import { fetchAvailableLiquidityOnChains } from "@/store/liquiditySlice";
 
 type WithdrawProps = {
   selectedChainSection: number;
@@ -154,6 +155,15 @@ const Withdraw = ({
       parseFloat(amount) <= parseFloat(balanceSlice.balance)
     ) {
       dispatch(toggleLiquidityToast(true));
+      dispatch(
+        fetchAvailableLiquidityOnChains({
+          amount: amount,
+          token:
+            appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+              selectedTokenItem
+            ].symbol,
+        })
+      );
       amplitude.track("Withdraw: Insufficient Liquidity", {
         amount: parseFloat(amount),
         network: appConfig.wrappedBridge.chains[selectedChainItem].name,
