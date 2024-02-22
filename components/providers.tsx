@@ -12,12 +12,14 @@ import {
   NEXT_PUBLIC_YANDEX_METRICA_ID,
   NEXT_PUBLIC_AMPLITUDE_SERVER_URL
 } from "@/lib/config";
-import { WagmiConfig } from "wagmi";
+import { WagmiProvider } from 'wagmi'
 import { config } from "@/lib/web3Auth";
 import WalletModal from "./WalletModal";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [isClient, setIsClient] = useState(false);
+  const queryClient = new QueryClient();
 
   useEffect(() => {
     setIsClient(true);
@@ -32,19 +34,21 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <Provider store={store}>
-      <WagmiConfig config={config}>
-        <YMInitializer
-          accounts={[parseInt(NEXT_PUBLIC_YANDEX_METRICA_ID)]}
-          options={{
-            clickmap: true,
-            trackLinks: true,
-            accurateTrackBounce: true,
-            webvisor: true
-          }}
-        />
-        <WalletModal />
-        {children}
-      </WagmiConfig>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <YMInitializer
+            accounts={[parseInt(NEXT_PUBLIC_YANDEX_METRICA_ID)]}
+            options={{
+              clickmap: true,
+              trackLinks: true,
+              accurateTrackBounce: true,
+              webvisor: true
+            }}
+          />
+          <WalletModal />
+          {children}
+        </QueryClientProvider>
+      </WagmiProvider>
     </Provider>
   )
 }

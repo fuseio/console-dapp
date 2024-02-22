@@ -89,3 +89,5 @@ export const splitSecretKey = (secretKey: string) => {
     secretLastFourChars: secretKey.slice(secretKey.length - 4, secretKey.length)
   }
 }
+
+export const evmDecimals = 18;

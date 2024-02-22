@@ -4,13 +4,13 @@ import dollar from "@/assets/dollar.svg";
 import receive from "@/assets/receive.svg";
 import send from "@/assets/send.svg";
 import rightArrow from "@/assets/right-arrow.svg";
-import { eclipseAddress, walletType } from "@/lib/helpers";
+import { eclipseAddress, evmDecimals, walletType } from "@/lib/helpers";
 import copy from "@/assets/copy-white.svg";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import TransfiModal from "@/components/wallet/TransfiModal";
-import { useAccount, useBalance, useNetwork } from "wagmi";
+import { useAccount, useBalance, useBlockNumber } from "wagmi";
 import { fuse } from "wagmi/chains";
 import { setIsTransfiModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
@@ -20,18 +20,18 @@ import qr from "@/assets/qr-white.svg";
 import Link from "next/link";
 import QrModal from "@/components/wallet/QrModal";
 import Copy from "@/components/ui/Copy";
+import { formatUnits } from "viem";
 
 const Home = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const controller = new AbortController();
-  const { address, connector, isConnected } = useAccount();
-  const { chain } = useNetwork();
-  const [isQrModalOpen, setIsQrModalOpen] = useState(false)
-  const balance = useBalance({
+  const { address, connector, isConnected, chain } = useAccount();
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const { data: blockNumber } = useBlockNumber({ watch: true });
+  const { data: balance, refetch } = useBalance({
     address,
-    watch: true,
     chainId: fuse.id
   });
 
@@ -45,6 +45,10 @@ const Home = () => {
       controller.abort();
     }
   }, [isConnected])
+
+  useEffect(() => {
+    refetch();
+  }, [blockNumber]) 
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
@@ -71,7 +75,7 @@ const Home = () => {
                     <h1 className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
                       {(chain && chain.id === fuse.id) ?
                         new Intl.NumberFormat().format(
-                          parseFloat(balance.data?.formatted ?? "0")
+                          parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0")
                         ) :
                         0
                       } FUSE
@@ -81,7 +85,7 @@ const Home = () => {
                       <p className="text-xl text-darker-gray">
                         ${(chain && chain.id === fuse.id) ?
                           new Intl.NumberFormat().format(
-                            parseFloat((parseFloat(balance.data?.formatted ?? "0.00") * balanceSlice.price).toString())
+                            parseFloat((parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0.00") * balanceSlice.price).toString())
                           ) :
                           "0.00"
                         }

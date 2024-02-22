@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
 import rightArrow from "@/assets/right-arrow.svg"
-import { buildSubMenuItems, signDataMessage } from "@/lib/helpers";
+import { buildSubMenuItems, evmDecimals, signDataMessage } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
-import { useAccount, useBalance, useNetwork, useSignMessage } from "wagmi";
+import { useAccount, useBalance, useBlockNumber, useSignMessage } from "wagmi";
 import { fuse } from "wagmi/chains";
 import Link from "next/link";
 import { checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, validateOperator } from "@/store/operatorSlice";
@@ -31,6 +31,7 @@ import * as amplitude from "@amplitude/analytics-browser";
 import { fetchTokenPrice } from "@/lib/api";
 import show from "@/assets/show.svg";
 import hide from "@/assets/hide.svg";
+import { formatUnits } from "viem";
 
 type CreateOperatorWalletProps = {
   accessToken: string;
@@ -211,9 +212,9 @@ const Home = () => {
   const { isConnected, address } = useAccount();
   const signer = useEthersSigner();
   const { chain } = useNetwork();
-  const balance = useBalance({
+  const { data: blockNumber } = useBlockNumber({ watch: true });
+  const { data: balance, refetch } = useBalance({
     address: operatorSlice.operator.user.smartContractAccountAddress,
-    watch: operatorSlice.isAuthenticated,
     chainId: fuse.id,
   });
   const totalTransaction = 1000;
@@ -274,11 +275,17 @@ const Home = () => {
     })();
   }, [operatorSlice.isWithdrawn])
 
+  useEffect(() => {
+    if (operatorSlice.isAuthenticated) {
+      refetch();
+    }
+  }, [blockNumber, operatorSlice.isAuthenticated])
+
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TopupAccountModal />
-      <WithdrawModal balance={balance.data?.formatted ?? "0"} />
-      <TopupPaymasterModal balance={balance.data?.formatted ?? "0"} />
+      <WithdrawModal balance={formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0"} />
+      <TopupPaymasterModal balance={formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0"} />
       <YourSecretKeyModal />
       <RollSecretKeyModal />
       {operatorSlice.isContactDetailsModalOpen && <ContactDetailsModal />}
@@ -492,12 +499,7 @@ const Home = () => {
                 </p>
               </div>
               <div className="flex gap-8">
-                <Link
-                  href={"https://docs.fuse.io/docs/tutorials/tutorials/send-your-first-transaction"}
-                  target="_blank"
-                  className={`${operatorSlice.isActivated ? "group" : ""} flex gap-1 text-black font-semibold`}
-                  onClick={() => amplitude.track("Go to Tutorials")}
-                >
+                <Link href={"https://docs.fuse.io/docs/tutorials/tutorials/send-your-first-transaction"} className={`${operatorSlice.isActivated ? "group" : ""} flex gap-1 text-black font-semibold`}>
                   <p>Start tutorial</p>
                   <Image
                     src={rightArrow.src}
