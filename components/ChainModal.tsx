@@ -12,7 +12,7 @@ type ChainModalProps = {
 }
 
 const ChainModal = ({
-  description = "Please switch to the Fuse chain to continue using this page"
+  description = "Please switch to the Fuse Network to continue"
 }: ChainModalProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { switchNetwork } = useSwitchNetwork()
