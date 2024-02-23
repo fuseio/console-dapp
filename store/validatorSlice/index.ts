@@ -118,22 +118,39 @@ export const fetchValidatorMetadata = createAsyncThunk(
                         description: validatorData?.description ? validatorData?.description : undefined,
                     })
                 } else {
-                    let apiMetadata = await fetchNodeByAddress(validator)
-                    apiMetadata = apiMetadata["Node"]
-                    validatorMetadata.push({
-                        ...metadata,
-                        address: validator,
-                        name: validatorData?.name ? validatorData?.name : validator,
-                        website: validatorData?.website ? validatorData?.website : undefined,
-                        image: validatorData?.image ? validatorData?.image : undefined,
-                        firstSeen: apiMetadata?.firstSeen ? apiMetadata?.firstSeen : undefined,
-                        forDelegation: apiMetadata?.forDelegation ? apiMetadata?.forDelegation : undefined,
-                        totalValidated: apiMetadata?.totalValidated ? apiMetadata?.totalValidated : undefined,
-                        uptime: apiMetadata?.upTime ? apiMetadata?.upTime : undefined,
-                        description: validatorData?.description ? validatorData?.description : undefined,
-                        status,
-                        isPending: pendingValidators.includes(validator.toLowerCase())
-                    })
+                    try {
+                        const { Node } = await fetchNodeByAddress(validator)
+                        let apiMetadata = Node
+                        validatorMetadata.push({
+                            ...metadata,
+                            address: validator,
+                            name: validatorData?.name ? validatorData?.name : validator,
+                            website: validatorData?.website ? validatorData?.website : undefined,
+                            image: validatorData?.image ? validatorData?.image : undefined,
+                            firstSeen: apiMetadata?.firstSeen ? apiMetadata?.firstSeen : undefined,
+                            forDelegation: apiMetadata?.forDelegation ? apiMetadata?.forDelegation : undefined,
+                            totalValidated: apiMetadata?.totalValidated ? apiMetadata?.totalValidated : undefined,
+                            uptime: apiMetadata?.upTime ? apiMetadata?.upTime : undefined,
+                            description: validatorData?.description ? validatorData?.description : undefined,
+                            status,
+                            isPending: pendingValidators.includes(validator.toLowerCase())
+                        })
+                    } catch (error) {
+                        validatorMetadata.push({
+                            ...metadata,
+                            address: validator,
+                            name: validator,
+                            website: undefined,
+                            image: undefined,
+                            firstSeen: undefined,
+                            forDelegation: undefined,
+                            totalValidated: undefined,
+                            uptime: undefined,
+                            description: undefined,
+                            status,
+                            isPending: pendingValidators.includes(validator.toLowerCase())
+                        })
+                    }
                 }
             })).then(() => {
                 resolve({ validatorMetadata, totalDelegators })
