@@ -2,13 +2,12 @@ import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import {
   OpenloginAdapter,
-  OPENLOGIN_NETWORK,
   LOGIN_PROVIDER_TYPE,
   LOGIN_PROVIDER,
   UX_MODE,
 } from "@web3auth/openlogin-adapter";
 import { WalletServicesPlugin } from "@web3auth/wallet-services-plugin";
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { createConfig, http } from "wagmi";
 import {
   NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
@@ -37,6 +36,7 @@ export const config = createConfig({
     injected(),
     walletConnect({
       projectId: NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
+      showQrModal: true,
     }),
     coinbaseWallet({
       appName: "wagmi",
@@ -64,6 +64,7 @@ export default function Web3AuthConnectorInstance(
   loginProvider: LOGIN_PROVIDER_TYPE,
   chain: Chain = fuse,
 ) {
+  const name = "Fuse Console";
   const iconUrl = "https://news.fuse.io/wp-content/uploads/2023/12/fuse.svg";
   const chainConfig = {
     chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -72,32 +73,39 @@ export default function Web3AuthConnectorInstance(
     displayName: chain.name,
     tickerName: chain.nativeCurrency?.name,
     ticker: chain.nativeCurrency?.symbol,
-    blockExplorer: chain.blockExplorers?.default.url ?? "https://etherscan.io",
+    blockExplorerUrl: chain.blockExplorers?.default.url ?? "https://etherscan.io",
+    logo: iconUrl,
   };
 
   const privateKeyProvider = new EthereumPrivateKeyProvider({ config: { chainConfig } });
 
   const web3AuthInstance = new Web3AuthNoModal({
     clientId: NEXT_PUBLIC_WEB3AUTH_CLIENT_ID,
+    chainConfig,
     privateKeyProvider,
-    web3AuthNetwork: OPENLOGIN_NETWORK.SAPPHIRE_MAINNET,
+    uiConfig: {
+      appName: name,
+      defaultLanguage: "en",
+      logoLight: iconUrl,
+      logoDark: iconUrl,
+      mode: "light",
+    },
+    web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+    enableLogging: true,
   });
 
   const openloginAdapterInstance = new OpenloginAdapter({
     adapterSettings: {
       // see https://web3auth.io/community/t/iphone-safari-social-logins-dont-work/5662
       uxMode: isIos ? UX_MODE.REDIRECT : UX_MODE.POPUP
-    },
-    privateKeyProvider,
+    }
   });
   web3AuthInstance.configureAdapter(openloginAdapterInstance);
 
   const walletServicesPlugin = new WalletServicesPlugin({
     walletInitOptions: {
       whiteLabel: {
-        theme: { primary: "#B4F9BA", onPrimary: "#20B92E" },
-        logoDark: iconUrl,
-        logoLight: iconUrl,
+        showWidgetButton: true,
       },
     }
   });

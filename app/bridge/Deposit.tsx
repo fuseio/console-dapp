@@ -18,10 +18,11 @@ import sFuse from "@/assets/sFuse.svg";
 import { estimateOriginalFee } from "@/store/feeSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { useAccount, useConfig } from "wagmi";
-import { walletType } from "@/lib/helpers";
+import { evmDecimals, walletType } from "@/lib/helpers";
 import { getBalance } from "wagmi/actions";
 import AddToken from "@/components/bridge/AddToken";
 import { getAccount } from "wagmi/actions";
+import { formatUnits } from "viem";
 
 type DepositProps = {
   selectedChainSection: number;
@@ -85,7 +86,7 @@ const Deposit = ({
           address,
           chainId: appConfig.wrappedBridge.chains[selectedChainItem].chainId,
         });
-        setNativeBalance(balance.formatted);
+        setNativeBalance(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals));
       }
     }
     updateBalance();

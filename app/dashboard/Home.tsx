@@ -163,7 +163,7 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
           <h1 className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
             {(chain && chain.id === fuse.id) ?
               new Intl.NumberFormat().format(
-                parseFloat(balance?.formatted ?? "0")
+                parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0")
               ) :
               0
             } FUSE
@@ -173,7 +173,7 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
             <p className="text-[20px]/7 font-medium">
               ${(chain && chain.id === fuse.id) ?
                 new Intl.NumberFormat().format(
-                  parseFloat((parseFloat(balance?.formatted ?? "0.00") * balanceSlice.price).toString())
+                  parseFloat((parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0.00") * balanceSlice.price).toString())
                 ) :
                 "0.00"
               }

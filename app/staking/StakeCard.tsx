@@ -13,6 +13,8 @@ import ConnectWallet from "@/components/ConnectWallet";
 import { getBalance } from 'wagmi/actions';
 import { useAccount, useConfig } from "wagmi";
 import { fuse } from "viem/chains";
+import { formatUnits } from "viem";
+import { evmDecimals } from "@/lib/helpers";
 
 type StakeCardProps = {
   className?: string;
@@ -66,7 +68,7 @@ const StakeCard = ({
           address,
           chainId: fuse.id,
         })
-        setBalance(balance.formatted)
+        setBalance(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals))
       }
     }
     updateBalance();

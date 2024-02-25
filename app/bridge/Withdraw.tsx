@@ -22,9 +22,10 @@ import * as amplitude from "@amplitude/analytics-browser";
 import { useAccount, useConfig } from "wagmi";
 import { getBalance } from "wagmi/actions";
 import { fuse } from "viem/chains";
-import { hex, walletType } from "@/lib/helpers";
+import { evmDecimals, hex, walletType } from "@/lib/helpers";
 import { getAccount } from "wagmi/actions";
 import { fetchAvailableLiquidityOnChains } from "@/store/liquiditySlice";
+import { formatUnits } from "viem";
 
 type WithdrawProps = {
   selectedChainSection: number;
@@ -84,7 +85,7 @@ const Withdraw = ({
           address,
           chainId: fuse.id,
         });
-        setNativeBalance(balance.formatted);
+        setNativeBalance(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals));
       }
     }
     updateBalance();
