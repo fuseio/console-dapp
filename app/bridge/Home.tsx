@@ -30,13 +30,12 @@ import { getNativeCurrency } from "@layerzerolabs/ui-core";
 import { getChainKey } from "@layerzerolabs/lz-sdk";
 import ToastPane from "@/components/bridge/ToastPane";
 import Pill from "@/components/bridge/Pill";
-import { useAccount } from "wagmi";
+import { useAccount, useConfig } from "wagmi";
 import { fuse } from "viem/chains";
-import { getNetwork, switchNetwork } from "wagmi/actions";
+import { getAccount, switchChain } from "wagmi/actions";
 import { hex, walletType } from "@/lib/helpers";
 import FAQ from "@/components/bridge/FAQ";
 import "@/styles/bridge.css";
-import { bridgeAndUnwrapNative } from "@/lib/wrappedBridge";
 import Airdrop from "@/components/bridge/Airdrop";
 import {
   selectSelectedChainSlice,
@@ -74,7 +73,9 @@ const Home = () => {
   const [isDisabledChain, setIsDisabledChain] = useState(false);
   const [pendingPromise, setPendingPromise] = React.useState<any>();
   const { address, connector, isConnected } = useAccount();
-  const { chain } = getNetwork();
+  const config = useConfig();
+  const { chainId } = getAccount(config) 
+  const chain = config.chains.find(chain => chain.id === chainId) 
 
   useEffect(() => {
     setAmount("");
@@ -163,7 +164,7 @@ const Home = () => {
       increaseAllowance(true, selectedChainId);
       return;
     }
-    switchNetwork({ chainId: selectedChainId }).then((res) => {
+    switchChain(config, { chainId: selectedChainId }).then((res) => {
       if (res) {
         increaseAllowance(res, selectedChainId);
       }
@@ -306,7 +307,7 @@ const Home = () => {
       deposit(true, selectedChainId);
       return;
     }
-    switchNetwork({ chainId: selectedChainId }).then((res) => {
+    switchChain(config, { chainId: selectedChainId }).then((res) => {
       if (res) {
         deposit(res, selectedChainId);
       }
@@ -427,7 +428,7 @@ const Home = () => {
       withdraw(true, fuse.id);
       return;
     }
-    switchNetwork({
+    switchChain(config, {
       chainId: fuse.id,
     }).then((res) => {
       if (res) {
@@ -675,14 +676,14 @@ const Home = () => {
                   }
                   onClick={() => {
                     if (selected === 0)
-                      switchNetwork({
+                      switchChain(config, {
                         chainId:
                           appConfig.wrappedBridge.chains[
                             selectedChainSlice.depositSelectedChainItem
                           ].chainId,
                       });
                     else
-                      switchNetwork({
+                      switchChain(config, {
                         chainId: fuse.id,
                       });
                   }}
@@ -693,7 +694,7 @@ const Home = () => {
                     className="bg-fuse-black text-white px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
                     onClick={async () => {
                       if (selected === 1 && chain?.id !== fuse.id) {
-                        await switchNetwork({
+                        await switchChain(config, {
                           chainId: fuse.id,
                         });
                       } else {

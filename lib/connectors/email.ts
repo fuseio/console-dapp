@@ -12,13 +12,13 @@ function isIWeb3AuthModal(obj: IWeb3Auth | IWeb3AuthModal): obj is IWeb3AuthModa
   return typeof (obj as IWeb3AuthModal).initModal !== "undefined";
 }
 
-export function Web3AuthEmailConnector(parameters: Web3AuthConnectorParams, id: string) {
+export function Web3AuthEmailConnector(parameters: Web3AuthConnectorParams) {
   let walletProvider: Provider | null = null;
 
   const { web3AuthInstance, loginParams, modalConfig } = parameters;
 
   return createConnector<Provider>((config) => ({
-    id,
+    id: loginParams?.loginProvider ?? "email_passwordless",
     name: "Web3Auth",
     type: "Web3Auth",
     async connect({ chainId } = {}) {

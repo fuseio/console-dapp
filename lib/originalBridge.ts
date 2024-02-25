@@ -5,12 +5,12 @@ import { serializeAdapterParams } from "@layerzerolabs/ui-evm";
 import {
   getPublicClient,
   getWalletClient,
-  waitForTransaction,
+  waitForTransactionReceipt,
 } from "wagmi/actions";
 import { Address } from "abitype";
 import { createPublicClient, http, parseEther, parseUnits } from "viem";
 import { hex } from "./helpers";
-import { fuse } from "viem/chains";
+import { config } from "./web3Auth";
 
 const publicClient = (rpcUrl: string) => {
   return createPublicClient({
@@ -27,7 +27,12 @@ export const bridgeOriginal = async (
   dstChainId: number,
   selectedChainId: number
 ) => {
-  const publicClient = getPublicClient();
+  const publicClient = getPublicClient(config, {
+    chainId: selectedChainId
+  });
+  if (!publicClient) {
+    return;
+  }
   const dstGasLimit = await publicClient.readContract({
     address: bridgeAddress,
     abi: OriginalTokenBridgeAbi,
@@ -49,7 +54,7 @@ export const bridgeOriginal = async (
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const walletClient = await getWalletClient({ chainId: selectedChainId });
+  const walletClient = await getWalletClient(config, { chainId: selectedChainId });
   let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
@@ -70,7 +75,8 @@ export const bridgeOriginal = async (
     });
   }
   try {
-    await waitForTransaction({
+    await waitForTransactionReceipt(config, {
+      chainId: selectedChainId,
       hash: tx,
     });
   } catch (e) {
@@ -87,7 +93,12 @@ export const bridgeNative = async (
   dstChainId: number,
   selectedChainId: number
 ) => {
-  const publicClient = getPublicClient();
+  const publicClient = getPublicClient(config, {
+    chainId: selectedChainId
+  });
+  if (!publicClient) {
+    return;
+  }
   const dstGasLimit = await publicClient.readContract({
     address: bridgeAddress,
     abi: OriginalTokenBridgeAbi,
@@ -109,7 +120,7 @@ export const bridgeNative = async (
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const walletClient = await getWalletClient({ chainId: selectedChainId });
+  const walletClient = await getWalletClient(config, { chainId: selectedChainId });
   let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
@@ -129,7 +140,8 @@ export const bridgeNative = async (
     });
   }
   try {
-    await waitForTransaction({
+    await waitForTransactionReceipt(config, {
+      chainId: selectedChainId,
       hash: tx,
     });
   } catch (e) {

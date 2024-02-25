@@ -19,11 +19,11 @@ import sFuse from "@/assets/sFuse.svg";
 import { estimateWrappedFee } from "@/store/feeSlice";
 import { toggleLiquidityToast } from "@/store/toastSlice";
 import * as amplitude from "@amplitude/analytics-browser";
-import { useAccount } from "wagmi";
-import { fetchBalance as fetchWalletBalance } from "@wagmi/core";
+import { useAccount, useConfig } from "wagmi";
+import { getBalance } from "wagmi/actions";
 import { fuse } from "viem/chains";
 import { hex, walletType } from "@/lib/helpers";
-import { getNetwork } from "wagmi/actions";
+import { getAccount } from "wagmi/actions";
 import { fetchAvailableLiquidityOnChains } from "@/store/liquiditySlice";
 
 type WithdrawProps = {
@@ -73,12 +73,14 @@ const Withdraw = ({
   const chainSlice = useAppSelector(selectChainSlice);
   const [nativeBalance, setNativeBalance] = React.useState<string>("0");
   const { address, connector } = useAccount();
-  const { chain } = getNetwork();
+  const config = useConfig();
+  const { chainId } = getAccount(config)
+  const chain = config.chains.find(chain => chain.id === chainId)
 
   useEffect(() => {
     async function updateBalance() {
       if (address) {
-        const balance = await fetchWalletBalance({
+        const balance = await getBalance(config, {
           address,
           chainId: fuse.id,
         });
@@ -124,18 +126,18 @@ const Withdraw = ({
         (!tokenAddress || tokenAddress === hex) && chain?.id === fuse.id
           ? dispatch(setNativeBalanceThunk(nativeBalance.toString()))
           : dispatch(
-              fetchBalance({
-                address: address,
-                contractAddress:
-                  appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
-                    .address,
-                decimals:
-                  appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
-                    .decimals,
-                bridge: appConfig.wrappedBridge.fuse.wrapped,
-                rpc: "https://fuse.liquify.com",
-              })
-            );
+            fetchBalance({
+              address: address,
+              contractAddress:
+                appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
+                  .address,
+              decimals:
+                appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
+                  .decimals,
+              bridge: appConfig.wrappedBridge.fuse.wrapped,
+              rpc: "https://fuse.liquify.com",
+            })
+          );
       setPendingPromise(promise);
     }
   }, [
@@ -269,8 +271,8 @@ const Withdraw = ({
             <span className="mt-3 text-xs font-medium">
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
-              balanceSlice.isApprovalLoading ||
-              chain?.id !== fuse.id ? (
+                balanceSlice.isApprovalLoading ||
+                chain?.id !== fuse.id ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : (
                 balanceSlice.balance

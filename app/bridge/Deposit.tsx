@@ -17,11 +17,11 @@ import visit from "@/assets/visit.svg";
 import sFuse from "@/assets/sFuse.svg";
 import { estimateOriginalFee } from "@/store/feeSlice";
 import * as amplitude from "@amplitude/analytics-browser";
-import { useAccount } from "wagmi";
+import { useAccount, useConfig } from "wagmi";
 import { walletType } from "@/lib/helpers";
-import { fetchBalance as fetchWalletBalance } from "@wagmi/core";
+import { getBalance } from "wagmi/actions";
 import AddToken from "@/components/bridge/AddToken";
-import { getNetwork } from "wagmi/actions";
+import { getAccount } from "wagmi/actions";
 
 type DepositProps = {
   selectedChainSection: number;
@@ -74,12 +74,14 @@ const Deposit = ({
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const chainSlice = useAppSelector(selectChainSlice);
   const [nativeBalance, setNativeBalance] = React.useState("0");
-  const { chain } = getNetwork();
+  const config = useConfig();
+  const { chainId } = getAccount(config) 
+  const chain = config.chains.find(chain => chain.id === chainId) 
 
   useEffect(() => {
     async function updateBalance() {
       if (address) {
-        const balance = await fetchWalletBalance({
+        const balance = await getBalance(config, {
           address,
           chainId: appConfig.wrappedBridge.chains[selectedChainItem].chainId,
         });

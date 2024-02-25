@@ -3,7 +3,6 @@ import Button from "@/components/ui/Button";
 import dollar from "@/assets/dollar.svg";
 import receive from "@/assets/receive.svg";
 import send from "@/assets/send.svg";
-import rightArrow from "@/assets/right-arrow.svg";
 import { eclipseAddress, evmDecimals, walletType } from "@/lib/helpers";
 import copy from "@/assets/copy-white.svg";
 import { useRouter } from "next/navigation";

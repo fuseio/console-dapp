@@ -10,8 +10,8 @@ import {
 import { useAppSelector } from "@/store/store";
 import info from "@/assets/info-black.svg";
 import ConnectWallet from "@/components/ConnectWallet";
-import { fetchBalance } from '@wagmi/core';
-import { useAccount } from "wagmi";
+import { getBalance } from 'wagmi/actions';
+import { useAccount, useConfig } from "wagmi";
 import { fuse } from "viem/chains";
 
 type StakeCardProps = {
@@ -44,6 +44,7 @@ const StakeCard = ({
   const maxStake = useAppSelector(selectMaxStake);
   const minStake = useAppSelector(selectMinStake);
   const { address, isConnected } = useAccount();
+  const config = useConfig();
 
   useEffect(() => {
     if (closed) {
@@ -61,7 +62,7 @@ const StakeCard = ({
   useEffect(() => {
     async function updateBalance() {
       if(address) {
-        const balance = await fetchBalance({
+        const balance = await getBalance(config, {
           address,
           chainId: fuse.id,
         })

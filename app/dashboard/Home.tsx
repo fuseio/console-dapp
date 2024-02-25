@@ -22,7 +22,6 @@ import info from "@/assets/info.svg"
 import AccountCreationModal from "@/components/build/AccountCreationModal";
 import CongratulationModal from "@/components/build/CongratulationModal";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
-import { SignMessageArgs } from "wagmi/actions";
 import ConnectWallet from "@/components/ConnectWallet";
 import ContactDetailsModal from "@/components/build/ContactDetailsModal";
 import Copy from "@/components/ui/Copy";
@@ -32,16 +31,17 @@ import { fetchTokenPrice } from "@/lib/api";
 import show from "@/assets/show.svg";
 import hide from "@/assets/hide.svg";
 import { formatUnits } from "viem";
+import { SignMessageVariables } from "wagmi/query";
 
 type CreateOperatorWalletProps = {
   accessToken: string;
-  signMessage: (args?: SignMessageArgs | undefined) => void;
+  signMessage: (variables: SignMessageVariables) => void;
   loading: () => boolean;
   dispatch: any;
 }
 
 type ConnectOperatorWalletProps = {
-  signMessage: (args?: SignMessageArgs | undefined) => void;
+  signMessage: (variables: SignMessageVariables) => void;
   loading: () => boolean;
 }
 
@@ -73,7 +73,7 @@ const CreateOperatorWallet = ({ accessToken, signMessage, loading, dispatch }: C
           if (accessToken) {
             return dispatch(setIsContactDetailsModalOpen(true))
           }
-          signMessage();
+          signMessage({message: signDataMessage});
         }}
       >
         {loading() && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
@@ -98,7 +98,7 @@ const ConnectOperatorWallet = ({ signMessage, loading }: ConnectOperatorWalletPr
         className="transition ease-in-out flex justify-between items-center gap-2 text-lg leading-none text-white font-semibold bg-black rounded-full hover:bg-success hover:text-black"
         padding="py-[18.5px] px-[38px]"
         onClick={() => {
-          signMessage();
+          signMessage({message: signDataMessage});
         }}
       >
         {loading() && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
@@ -209,34 +209,34 @@ const Home = () => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const [showSecretKey, setShowSecretKey] = useState(false);
   const controller = new AbortController();
-  const { isConnected, address } = useAccount();
+  const { isConnected, address, chain } = useAccount();
   const signer = useEthersSigner();
-  const { chain } = useNetwork();
   const { data: blockNumber } = useBlockNumber({ watch: true });
   const { data: balance, refetch } = useBalance({
     address: operatorSlice.operator.user.smartContractAccountAddress,
     chainId: fuse.id,
   });
   const totalTransaction = 1000;
-  const { isLoading, signMessage } = useSignMessage({
-    message: signDataMessage,
-    onSuccess(data) {
-      if (!address) {
-        return;
+  const { isPending, signMessage } = useSignMessage({
+    mutation: {
+      onSuccess(data) {
+        if (!address) {
+          return;
+        }
+        dispatch(validateOperator({
+          signData: {
+            externallyOwnedAccountAddress: address,
+            message: signDataMessage,
+            signature: data
+          },
+        }));
       }
-      dispatch(validateOperator({
-        signData: {
-          externallyOwnedAccountAddress: address,
-          message: signDataMessage,
-          signature: data
-        },
-      }));
     }
   });
 
   const loading = () => {
     if (
-      isLoading ||
+      isPending ||
       operatorSlice.isValidatingOperator ||
       operatorSlice.isFetchingOperator
     ) {

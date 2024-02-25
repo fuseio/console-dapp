@@ -56,7 +56,7 @@ export const walletType: WalletType = {
   "discord": "Discord",
   "twitch": "Twitch",
   "github": "GitHub",
-  "email": "Email"
+  "email_passwordless": "Email"
 }
 
 export const isIos = !IS_SERVER && /iPad|iPhone|iPod/.test(navigator.userAgent);

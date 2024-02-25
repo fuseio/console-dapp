@@ -12,7 +12,7 @@ import {
   useBlockNumber,
   useConfig,
   useDisconnect,
-  useSwitchNetwork,
+  useSwitchChain,
 } from "wagmi";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import { eclipseAddress, evmDecimals, path } from "@/lib/helpers";
@@ -101,7 +101,7 @@ const ConnectWallet = ({
   const [isQrCodeOpen, setIsQrCodeOpen] = React.useState(false);
   const { address, connector, isConnected, chain } = useAccount();
   const { chains } = useConfig();
-  const { switchNetwork } = useSwitchNetwork();
+  const { switchChain } = useSwitchChain();
   const { disconnect } = useDisconnect();
   const { data: blockNumber } = useBlockNumber({ watch: true });
   const { data: balance, refetch } = useBalance({
@@ -220,7 +220,7 @@ const ConnectWallet = ({
                   : "cursor-pointer hover:opacity-70")
               }
               onClick={() => {
-                switchNetwork && switchNetwork(c.id);
+                switchChain({ chainId: c.id });
               }}
               key={c.id}
             >
@@ -452,7 +452,7 @@ const ConnectWallet = ({
             <div
               className="flex items-center gap-3 cursor-pointer"
               onClick={() => {
-                switchNetwork && switchNetwork(c.id);
+                switchChain({ chainId: c.id });
               }}
               key={c.id}
             >

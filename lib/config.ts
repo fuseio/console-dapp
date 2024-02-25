@@ -8,7 +8,7 @@ import {
 import { chains } from "./chains";
 import { coins } from "./coins";
 import { exchanges } from "./exchanges";
-import { Address } from "wagmi";
+import { Address } from "abitype";
 
 type CONFIG = {
   fuseRPC: string;
