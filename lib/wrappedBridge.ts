@@ -3,9 +3,11 @@ import { WrappedTokenBridgeAbi } from "@/lib/abi/WrappedTokenBridge";
 import { AdapterParams } from "@layerzerolabs/ui-core";
 import { serializeAdapterParams } from "@layerzerolabs/ui-evm";
 import {
+  getAccount,
   getPublicClient,
   getWalletClient,
   waitForTransactionReceipt,
+  writeContract,
 } from "wagmi/actions";
 import { Address } from "abitype";
 import { createPublicClient, http, parseUnits } from "viem";
@@ -28,7 +30,7 @@ export const bridgeWrapped = async (
   lzChainId: number
 ) => {
   const publicClient = getPublicClient(config);
-  if(!publicClient) {
+  if (!publicClient) {
     return;
   }
   const dstGasLimit = await publicClient.readContract({
@@ -57,11 +59,12 @@ export const bridgeWrapped = async (
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
   const walletClient = await getWalletClient(config, { chainId: fuse.id });
+  const { connector } = getAccount(config);
   let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
     const account = accounts[0];
-    tx = await walletClient.writeContract({
+    tx = await writeContract(config, {
       account,
       address: bridgeAddress,
       abi: WrappedTokenBridgeAbi,
@@ -76,6 +79,7 @@ export const bridgeWrapped = async (
         serializeAdapterParams(adapterParams) as Address,
       ],
       value: increasedNativeFee,
+      connector
     });
   }
   try {
@@ -98,7 +102,7 @@ export const bridgeAndUnwrapNative = async (
   selectedChainId: number
 ) => {
   const publicClient = getPublicClient(config);
-  if(!publicClient) {
+  if (!publicClient) {
     return;
   }
   const dstGasLimit = await publicClient.readContract({

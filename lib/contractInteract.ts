@@ -128,13 +128,13 @@ export const delegate = async (amount: string, validator: Address) => {
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
     const account = accounts[0];
-    const tx = await walletClient.writeContract({
-      address: CONFIG.consensusAddress,
-      abi: Consensus,
+    const tx = await writeContract(config, {
+      ...contractProperties,
       account,
       functionName: "delegate",
       args: [validator],
       value: parseEther(amount),
+      connector
     });
     try {
       await waitForTransactionReceipt(config, {

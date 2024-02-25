@@ -107,13 +107,10 @@ const WalletModal = (): JSX.Element => {
   }, [isConnected, isOperatorWalletModalOpen, chain, signature])
 
   useEffect(() => {
-    (async() => {
-      const awaitedSigner = await signer;
-      if (isValidated && awaitedSigner) {
-        dispatch(setIsValidated(false));
-        dispatch(fetchOperator({ signer: awaitedSigner }));
-      }
-    })()
+    if (isValidated && signer) {
+      dispatch(setIsValidated(false));
+      dispatch(fetchOperator({ signer }));
+    }
   }, [isValidated, signer])
 
   useEffect(() => {

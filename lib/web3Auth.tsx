@@ -7,6 +7,7 @@ import {
   LOGIN_PROVIDER,
   UX_MODE,
 } from "@web3auth/openlogin-adapter";
+import { WalletServicesPlugin } from "@web3auth/wallet-services-plugin";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { createConfig, http } from "wagmi";
 import {
@@ -40,13 +41,13 @@ export const config = createConfig({
     coinbaseWallet({
       appName: "wagmi",
     }),
-    Web3AuthConnectorInstance(Web3AuthSocialConnector, LOGIN_PROVIDER.GOOGLE, "google"),
-    Web3AuthConnectorInstance(Web3AuthSocialConnector, LOGIN_PROVIDER.FACEBOOK, "facebook"),
-    Web3AuthConnectorInstance(Web3AuthSocialConnector, LOGIN_PROVIDER.TWITTER, "twitter"),
-    Web3AuthConnectorInstance(Web3AuthSocialConnector, LOGIN_PROVIDER.DISCORD, "discord"),
-    Web3AuthConnectorInstance(Web3AuthSocialConnector, LOGIN_PROVIDER.TWITCH, "twitch"),
-    Web3AuthConnectorInstance(Web3AuthSocialConnector, LOGIN_PROVIDER.GITHUB, "github"),
-    Web3AuthConnectorInstance(Web3AuthEmailConnector, LOGIN_PROVIDER.EMAIL_PASSWORDLESS, "email"),
+    Web3AuthConnectorInstance(Web3AuthSocialConnector, LOGIN_PROVIDER.GOOGLE),
+    Web3AuthConnectorInstance(Web3AuthSocialConnector, LOGIN_PROVIDER.FACEBOOK),
+    Web3AuthConnectorInstance(Web3AuthSocialConnector, LOGIN_PROVIDER.TWITTER),
+    Web3AuthConnectorInstance(Web3AuthSocialConnector, LOGIN_PROVIDER.DISCORD),
+    Web3AuthConnectorInstance(Web3AuthSocialConnector, LOGIN_PROVIDER.TWITCH),
+    Web3AuthConnectorInstance(Web3AuthSocialConnector, LOGIN_PROVIDER.GITHUB),
+    Web3AuthConnectorInstance(Web3AuthEmailConnector, LOGIN_PROVIDER.EMAIL_PASSWORDLESS),
   ],
   transports: {
     [fuse.id]: http(),
@@ -61,9 +62,9 @@ export const config = createConfig({
 export default function Web3AuthConnectorInstance(
   LoginConnector: any,
   loginProvider: LOGIN_PROVIDER_TYPE,
-  id: string,
   chain: Chain = fuse,
 ) {
+  const iconUrl = "https://news.fuse.io/wp-content/uploads/2023/12/fuse.svg";
   const chainConfig = {
     chainNamespace: CHAIN_NAMESPACES.EIP155,
     chainId: hex + chain.id.toString(16),
@@ -82,7 +83,6 @@ export default function Web3AuthConnectorInstance(
     web3AuthNetwork: OPENLOGIN_NETWORK.SAPPHIRE_MAINNET,
   });
 
-
   const openloginAdapterInstance = new OpenloginAdapter({
     adapterSettings: {
       // see https://web3auth.io/community/t/iphone-safari-social-logins-dont-work/5662
@@ -92,13 +92,21 @@ export default function Web3AuthConnectorInstance(
   });
   web3AuthInstance.configureAdapter(openloginAdapterInstance);
 
-  return LoginConnector(
-    {
-      web3AuthInstance,
-      loginParams: {
-        loginProvider,
+  const walletServicesPlugin = new WalletServicesPlugin({
+    walletInitOptions: {
+      whiteLabel: {
+        theme: { primary: "#B4F9BA", onPrimary: "#20B92E" },
+        logoDark: iconUrl,
+        logoLight: iconUrl,
       },
+    }
+  });
+  web3AuthInstance.addPlugin(walletServicesPlugin);
+
+  return LoginConnector({
+    web3AuthInstance,
+    loginParams: {
+      loginProvider,
     },
-    id
-  );
+  });
 }
