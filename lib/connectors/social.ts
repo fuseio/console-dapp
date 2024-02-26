@@ -12,13 +12,13 @@ function isIWeb3AuthModal(obj: IWeb3Auth | IWeb3AuthModal): obj is IWeb3AuthModa
   return typeof (obj as IWeb3AuthModal).initModal !== "undefined";
 }
 
-export function Web3AuthSocialConnector(parameters: Web3AuthConnectorParams) {
+export function Web3AuthSocialConnector(parameters: Web3AuthConnectorParams, id: string) {
   let walletProvider: Provider | null = null;
 
   const { web3AuthInstance, loginParams, modalConfig } = parameters;
 
   return createConnector<Provider>((config) => ({
-    id: loginParams?.loginProvider ?? "google",
+    id,
     name: "Web3Auth",
     type: "Web3Auth",
     async connect({ chainId } = {}) {
@@ -78,6 +78,17 @@ export function Web3AuthSocialConnector(parameters: Web3AuthConnectorParams) {
       return normalizeChainId(chainId);
     },
     async getProvider(): Promise<Provider> {
+      const cachedAdapter = localStorage.getItem('Web3Auth-cachedAdapter');
+      const selectedConnectorId = localStorage.getItem('Fuse-selectedConnectorId');
+      if (
+        !cachedAdapter &&
+        id !== selectedConnectorId
+      ) {
+        return walletProvider!;
+      }
+
+      localStorage.removeItem('Fuse-selectedConnectorId');
+
       if (walletProvider) {
         return walletProvider;
       }

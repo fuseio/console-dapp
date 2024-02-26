@@ -116,5 +116,5 @@ export default function Web3AuthConnectorInstance(
     loginParams: {
       loginProvider,
     },
-  });
+  }, loginProvider);
 }
