@@ -78,9 +78,7 @@ const WalletModal = (): JSX.Element => {
     }
 
     if (address && connector) {
-      const identifyEvent = new amplitude.Identify();
-      identifyEvent.set('wallet_address', address);
-      amplitude.identify(identifyEvent);
+      amplitude.setUserId(address);
 
       amplitude.track("Wallet connected", {
         walletType: walletType[connector.id],
