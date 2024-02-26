@@ -78,34 +78,26 @@ export function Web3AuthSocialConnector(parameters: Web3AuthConnectorParams, id:
       return normalizeChainId(chainId);
     },
     async getProvider(): Promise<Provider> {
-      const cachedAdapter = localStorage.getItem('Web3Auth-cachedAdapter');
       const selectedConnectorId = localStorage.getItem('Fuse-selectedConnectorId');
-      if (
-        !cachedAdapter &&
-        id !== selectedConnectorId
-      ) {
-        return walletProvider!;
-      }
-
-      localStorage.removeItem('Fuse-selectedConnectorId');
-
-      if (walletProvider) {
-        return walletProvider;
-      }
-      if (web3AuthInstance.status === ADAPTER_STATUS.NOT_READY) {
-        if (isIWeb3AuthModal(web3AuthInstance)) {
-          await web3AuthInstance.initModal({
-            modalConfig,
-          });
-        } else if (loginParams) {
-          await web3AuthInstance.init();
-        } else {
-          log.error("please provide valid loginParams when using @web3auth/no-modal");
-          throw new UserRejectedRequestError("please provide valid loginParams when using @web3auth/no-modal" as unknown as Error);
+      if (selectedConnectorId === id) {
+        if (walletProvider) {
+          return walletProvider;
         }
-      }
+        if (web3AuthInstance.status === ADAPTER_STATUS.NOT_READY) {
+          if (isIWeb3AuthModal(web3AuthInstance)) {
+            await web3AuthInstance.initModal({
+              modalConfig,
+            });
+          } else if (loginParams) {
+            await web3AuthInstance.init();
+          } else {
+            log.error("please provide valid loginParams when using @web3auth/no-modal");
+            throw new UserRejectedRequestError("please provide valid loginParams when using @web3auth/no-modal" as unknown as Error);
+          }
+        }
 
-      walletProvider = web3AuthInstance.provider;
+        walletProvider = web3AuthInstance.provider;
+      }
       return walletProvider!;
     },
     async isAuthorized() {
@@ -151,6 +143,7 @@ export function Web3AuthSocialConnector(parameters: Web3AuthConnectorParams, id:
       const provider = await this.getProvider();
       provider.removeListener("accountsChanged", this.onAccountsChanged);
       provider.removeListener("chainChanged", this.onChainChanged);
+      localStorage.removeItem('Fuse-selectedConnectorId');
     },
     onAccountsChanged(accounts) {
       if (accounts.length === 0) config.emitter.emit("disconnect");
