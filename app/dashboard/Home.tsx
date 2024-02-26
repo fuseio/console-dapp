@@ -493,7 +493,7 @@ const Home = () => {
               </div>
               <div className="flex gap-8">
                 <Link
-                  href={"https://docs.fuse.io/docs/tutorials/tutorials/send-your-first-transaction"}
+                  href={"https://docs.fuse.io/docs/fuse-box/tutorials/send-your-first-gasless-transaction"}
                   target="_blank"
                   className={`${operatorSlice.isActivated ? "group" : ""} flex gap-1 text-black font-semibold`}
                   onClick={() => amplitude.track("Go to Tutorials")}
