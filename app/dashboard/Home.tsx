@@ -6,7 +6,6 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useNetwork, useSignMessage } from "wagmi";
 import { fuse } from "wagmi/chains";
-import Link from "next/link";
 import { checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, validateOperator } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
@@ -378,6 +377,26 @@ const Home = () => {
             </div>
           </div>
           <div className={`flex md:flex-col gap-[30px] ${operatorSlice.isActivated ? "opacity-100" : "opacity-50"}`}>
+            <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-black pl-12 pt-12 pr-4 pb-[55px]">
+              <div className="flex flex-col gap-4">
+                <p className="text-[20px] leading-none text-white font-semibold">
+                  Send your first transaction
+                </p>
+                <p className="text-base text-white">
+                  Learn how to submit your first transaction using a smart contract wallet
+                </p>
+              </div>
+              <button
+                className={`transition ease-in-out text-black font-semibold bg-modal-bg rounded-full px-7 py-4 ${operatorSlice.isActivated ? "hover:bg-success" : ""}`}
+                onClick={() => {
+                  amplitude.track("Go to Tutorials");
+                  window.open("https://docs.fuse.io/docs/fuse-box/tutorials/send-your-first-gasless-transaction", "_blank");
+                }}
+                disabled={!operatorSlice.isActivated}
+              >
+                Start tutorial
+              </button>
+            </div>
             <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-2">
@@ -481,33 +500,6 @@ const Home = () => {
                     {operatorSlice.isGeneratingSecretApiKey && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
                   </Button>
               }
-            </div>
-            <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
-              <div className="flex flex-col gap-4">
-                <p className="text-[20px] leading-none font-semibold">
-                  Getting started tutorial
-                </p>
-                <p className="text-text-dark-gray md:text-base">
-                  The Operator&apos;s account is a single information and control panel for Operators.
-                </p>
-              </div>
-              <div className="flex gap-8">
-                <Link
-                  href={"https://docs.fuse.io/docs/fuse-box/tutorials/send-your-first-gasless-transaction"}
-                  target="_blank"
-                  className={`${operatorSlice.isActivated ? "group" : ""} flex gap-1 text-black font-semibold`}
-                  onClick={() => amplitude.track("Go to Tutorials")}
-                >
-                  <p>Start tutorial</p>
-                  <Image
-                    src={rightArrow.src}
-                    alt="right arrow"
-                    width={14}
-                    height={14}
-                    className={operatorSlice.isActivated ? "transition ease-in-out delay-150 group-hover:translate-x-1" : ""}
-                  />
-                </Link>
-              </div>
             </div>
           </div>
         </div>
