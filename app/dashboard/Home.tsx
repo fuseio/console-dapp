@@ -72,7 +72,7 @@ const CreateOperatorWallet = ({ accessToken, signMessage, loading, dispatch }: C
           if (accessToken) {
             return dispatch(setIsContactDetailsModalOpen(true))
           }
-          signMessage({message: signDataMessage});
+          signMessage({ message: signDataMessage });
         }}
       >
         {loading() && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
@@ -97,7 +97,7 @@ const ConnectOperatorWallet = ({ signMessage, loading }: ConnectOperatorWalletPr
         className="transition ease-in-out flex justify-between items-center gap-2 text-lg leading-none text-white font-semibold bg-black rounded-full hover:bg-success hover:text-black"
         padding="py-[18.5px] px-[38px]"
         onClick={() => {
-          signMessage({message: signDataMessage});
+          signMessage({ message: signDataMessage });
         }}
       >
         {loading() && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
@@ -384,17 +384,17 @@ const Home = () => {
             </div>
           </div>
           <div className={`flex md:flex-col gap-[30px] ${operatorSlice.isActivated ? "opacity-100" : "opacity-50"}`}>
-            <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-black pl-12 pt-12 pr-4 pb-[55px]">
+            <div className={`flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] pl-12 pt-12 pr-4 pb-[55px] ${operatorSlice.isActivated ? "bg-black" : "bg-white"}`}>
               <div className="flex flex-col gap-4">
-                <p className="text-[20px] leading-none text-white font-semibold">
+                <p className={`text-[20px] leading-none font-semibold ${operatorSlice.isActivated ? "text-white" : "text-black"}`}>
                   Send your first transaction
                 </p>
-                <p className="text-base text-white">
+                <p className={`text-base ${operatorSlice.isActivated ? "text-white" : "text-text-dark-gray"}`}>
                   Learn how to submit your first transaction using a smart contract wallet
                 </p>
               </div>
               <button
-                className={`transition ease-in-out text-black font-semibold bg-modal-bg rounded-full px-7 py-4 ${operatorSlice.isActivated ? "hover:bg-success" : ""}`}
+                className={`transition ease-in-out text-black leading-none font-semibold bg-modal-bg rounded-full px-7 py-4 ${operatorSlice.isActivated ? "hover:bg-success" : "border border-black/40"}`}
                 onClick={() => {
                   amplitude.track("Go to Tutorials");
                   window.open("https://docs.fuse.io/docs/fuse-box/tutorials/send-your-first-gasless-transaction", "_blank");

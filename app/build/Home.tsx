@@ -134,7 +134,7 @@ const Home = () => {
                         alt="checkmark with background"
                       />
                       <p className="text-xl font-bold">
-                        10K Webhook call
+                        10K Webhook calls
                       </p>
                     </div>
                   </div>
@@ -401,7 +401,7 @@ const Home = () => {
                       height={10.5}
                     />
                     <p>
-                      10K Webhook call
+                      10K Webhook calls
                     </p>
                   </div>
                 </div>
