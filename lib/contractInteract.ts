@@ -8,10 +8,11 @@ import {
 } from "viem";
 import { CONFIG } from "./config";
 import { Consensus } from "./abi/Consensus";
-import { getWalletClient, waitForTransaction } from "wagmi/actions";
+import { getAccount, getWalletClient, waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { hex } from "./helpers";
 import { fuse } from "viem/chains";
 import { PaymasterAbi } from "./abi/Paymaster";
+import { config } from "./web3Auth";
 
 const contractProperties = {
   address: CONFIG.consensusAddress,
@@ -25,6 +26,7 @@ const paymasterContractProperties = {
 
 const publicClient = () => {
   return createPublicClient({
+    chain: fuse,
     transport: http(CONFIG.fuseRPC),
   });
 };
@@ -33,6 +35,7 @@ export const getTotalStakeAmount = async () => {
   const totalStakeAmount = await publicClient().readContract({
     ...contractProperties,
     functionName: "totalStakeAmount",
+    args: []
   });
   return formatEther(totalStakeAmount);
 };
@@ -41,6 +44,7 @@ export const getValidators = async () => {
   const validatorsMap = await publicClient().readContract({
     ...contractProperties,
     functionName: "getValidators",
+    args: []
   });
   const validators: string[] = [];
   validatorsMap.forEach((value, _) => {
@@ -53,6 +57,7 @@ export const getJailedValidators = async () => {
   const validatorsMap = await publicClient().readContract({
     ...contractProperties,
     functionName: "jailedValidators",
+    args: []
   });
   const validators: string[] = [];
   validatorsMap.forEach((value, _) => {
@@ -65,6 +70,7 @@ export const getPendingValidators = async () => {
   const validatorsMap = await publicClient().readContract({
     ...contractProperties,
     functionName: "pendingValidators",
+    args: []
   });
   const validators: string[] = [];
   validatorsMap.forEach((value, _) => {
@@ -117,19 +123,22 @@ export const getStake = async (
 };
 
 export const delegate = async (amount: string, validator: Address) => {
-  const walletClient = await getWalletClient({ chainId: fuse.id });
+  const walletClient = await getWalletClient(config, { chainId: fuse.id });
+  const { connector } = getAccount(config);
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
     const account = accounts[0];
-    const tx = await walletClient.writeContract({
+    const tx = await writeContract(config, {
       ...contractProperties,
       account,
       functionName: "delegate",
       args: [validator],
       value: parseEther(amount),
+      connector
     });
     try {
-      await waitForTransaction({
+      await waitForTransactionReceipt(config, {
+        chainId: fuse.id,
         hash: tx,
       });
     } catch (e) {
@@ -140,18 +149,21 @@ export const delegate = async (amount: string, validator: Address) => {
 };
 
 export const withdraw = async (amount: string, validator: Address) => {
-  const walletClient = await getWalletClient({ chainId: fuse.id });
+  const walletClient = await getWalletClient(config, { chainId: fuse.id });
+  const { connector } = getAccount(config);
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
     const account = accounts[0];
-    const tx = await walletClient.writeContract({
+    const tx = await writeContract(config, {
       ...contractProperties,
       account,
       functionName: "withdraw",
       args: [validator, parseEther(amount)],
+      connector
     });
     try {
-      await waitForTransaction({
+      await waitForTransactionReceipt(config, {
+        chainId: fuse.id,
         hash: tx,
       });
     } catch (e) {
@@ -177,6 +189,7 @@ export const getMaxStake = async () => {
   const maxStake = await publicClient().readContract({
     ...contractProperties,
     functionName: "getMaxStake",
+    args: []
   });
   return formatEther(maxStake);
 };
@@ -185,6 +198,7 @@ export const getMinStake = async () => {
   const minStake = await publicClient().readContract({
     ...contractProperties,
     functionName: "getMinStake",
+    args: []
   });
   return formatEther(minStake);
 };

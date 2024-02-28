@@ -23,7 +23,7 @@ import Modal from "@/components/staking/Modal";
 import FAQ from "@/components/FAQ";
 import WarningModal from "@/components/staking/WarningModal";
 import { delegate, withdraw } from "@/lib/contractInteract";
-import { Address, useAccount } from "wagmi";
+import { useAccount } from "wagmi";
 import * as amplitude from "@amplitude/analytics-browser";
 import useDeepCompareEffect, { useDeepCompareEffectNoCheck } from "use-deep-compare-effect";
 import Image from "next/image";
@@ -31,6 +31,7 @@ import leftArrow from "@/assets/left-arrow.svg";
 import Link from "next/link";
 import { fetchTokenPrice } from "@/lib/api";
 import Copy from "@/components/ui/Copy";
+import { Address } from "abitype";
 
 const Stake = ({ params }: { params: { id: string } }) => {
   const { id } = params;

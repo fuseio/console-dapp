@@ -149,6 +149,9 @@ export const bridgeOriginalTokens = createAsyncThunk(
               decimals,
             })
           );
+          if(!txHash) {
+            return resolve(undefined);
+          }
           insertTransactionToLocalStorage({
             hash: txHash,
             srcChainId,
@@ -223,6 +226,9 @@ export const bridgeNativeTokens = createAsyncThunk(
     return new Promise<any>(async (resolve, reject) => {
       bridgeNative(bridge, address, amount, decimals, dstChainId, selectedChainId)
         .then((txHash) => {
+          if(!txHash) {
+            return resolve(undefined);
+          }
           insertTransactionToLocalStorage({
             hash: txHash,
             srcChainId,
@@ -302,6 +308,9 @@ export const bridgeWrappedTokens = createAsyncThunk(
               decimals,
             })
           );
+          if(!txHash) {
+            return resolve(undefined);
+          }
           insertTransactionToLocalStorage({
             hash: txHash,
             srcChainId: srcChainId,
@@ -390,6 +399,9 @@ export const bridgeAndUnwrap = createAsyncThunk(
               decimals,
             })
           );
+          if(!txHash) {
+            return resolve(undefined);
+          }
           insertTransactionToLocalStorage({
             hash: txHash,
             srcChainId: srcChainId,
