@@ -4,7 +4,6 @@ import { ethers } from "ethers";
 import { estimateOriginalNativeFee } from "@/lib/originalBridge";
 import { estimateWrappedNativeFee } from "@/lib/wrappedBridge";
 import { Address } from "abitype";
-import { rpc } from "viem/utils";
 import { createPublicClient, http } from "viem";
 import { fetchTokenPrice } from "@/lib/api";
 

@@ -3,14 +3,17 @@ import { WrappedTokenBridgeAbi } from "@/lib/abi/WrappedTokenBridge";
 import { AdapterParams } from "@layerzerolabs/ui-core";
 import { serializeAdapterParams } from "@layerzerolabs/ui-evm";
 import {
+  getAccount,
   getPublicClient,
   getWalletClient,
-  waitForTransaction,
+  waitForTransactionReceipt,
+  writeContract,
 } from "wagmi/actions";
 import { Address } from "abitype";
 import { createPublicClient, http, parseUnits } from "viem";
 import { hex } from "./helpers";
 import { fuse } from "viem/chains";
+import { config } from "./web3Auth";
 
 const publicClient = (rpcUrl: string) => {
   return createPublicClient({
@@ -26,7 +29,10 @@ export const bridgeWrapped = async (
   decimals: number,
   lzChainId: number
 ) => {
-  const publicClient = getPublicClient();
+  const publicClient = getPublicClient(config);
+  if (!publicClient) {
+    return;
+  }
   const dstGasLimit = await publicClient.readContract({
     address: bridgeAddress,
     abi: WrappedTokenBridgeAbi,
@@ -52,12 +58,13 @@ export const bridgeWrapped = async (
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const walletClient = await getWalletClient({ chainId: fuse.id });
+  const walletClient = await getWalletClient(config, { chainId: fuse.id });
+  const { connector } = getAccount(config);
   let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
     const account = accounts[0];
-    tx = await walletClient.writeContract({
+    tx = await writeContract(config, {
       account,
       address: bridgeAddress,
       abi: WrappedTokenBridgeAbi,
@@ -72,10 +79,11 @@ export const bridgeWrapped = async (
         serializeAdapterParams(adapterParams) as Address,
       ],
       value: increasedNativeFee,
+      connector
     });
   }
   try {
-    await waitForTransaction({
+    await waitForTransactionReceipt(config, {
       hash: tx,
     });
   } catch (e) {
@@ -93,7 +101,10 @@ export const bridgeAndUnwrapNative = async (
   lzChainId: number,
   selectedChainId: number
 ) => {
-  const publicClient = getPublicClient();
+  const publicClient = getPublicClient(config);
+  if (!publicClient) {
+    return;
+  }
   const dstGasLimit = await publicClient.readContract({
     address: bridgeAddress,
     abi: WrappedTokenBridgeAbi,
@@ -115,7 +126,7 @@ export const bridgeAndUnwrapNative = async (
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const walletClient = await getWalletClient({ chainId: selectedChainId });
+  const walletClient = await getWalletClient(config, { chainId: selectedChainId });
   let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
@@ -138,7 +149,8 @@ export const bridgeAndUnwrapNative = async (
     });
   }
   try {
-    await waitForTransaction({
+    await waitForTransactionReceipt(config, {
+      chainId: selectedChainId,
       hash: tx,
     });
   } catch (e) {

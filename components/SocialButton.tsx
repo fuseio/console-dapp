@@ -1,7 +1,7 @@
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
 import checkCircle from "@/assets/check-circle.svg"
-import { useAccount, useConnect } from "wagmi";
+import { useAccount } from "wagmi";
 
 interface SocialButtonProps {
   onClick?: () => void;
@@ -19,7 +19,6 @@ const SocialButton = ({
   className
 }: SocialButtonProps) => {
   const { connector, isConnected, isConnecting } = useAccount();
-  const { isLoading, pendingConnector } = useConnect();
 
   return (
     <button
@@ -30,7 +29,7 @@ const SocialButton = ({
       onClick={onClick}
       disabled={isConnected && connector?.id === id}
     >
-      {((isConnecting && connectingWalletId === id) || (isLoading && pendingConnector?.id === id)) &&
+      {(isConnecting && connectingWalletId === id) &&
         <span className="absolute left-2 top-2 animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>
       }
       {isConnected && connector?.id === id &&

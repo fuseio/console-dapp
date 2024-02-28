@@ -17,13 +17,13 @@ import qr from "@/public/voltqrsample.png";
 import Image from "next/image";
 import WalletButton from "./WalletButton";
 import SocialButton from "./SocialButton";
-import { useAccount, useConnect, useNetwork, useSignMessage, useSwitchNetwork } from "wagmi";
+import { useAccount, useConnect, useSignMessage, useSwitchChain } from "wagmi";
 import ReactGA from "react-ga4";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { path, signDataMessage, walletType } from "@/lib/helpers";
-import { checkIsActivated, checkOperator, createOperator, fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setIsValidated, setLogout, setRedirect, validateOperator } from "@/store/operatorSlice";
+import { checkIsActivated, checkOperator, fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setIsValidated, setLogout, setRedirect, validateOperator } from "@/store/operatorSlice";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import { usePathname, useRouter } from "next/navigation";
 import { fuse } from "viem/chains";
@@ -36,30 +36,30 @@ const WalletModal = (): JSX.Element => {
   const emailRef = useRef<HTMLInputElement>(null);
   const { isWalletModalOpen } = useAppSelector(selectNavbarSlice);
   const dispatch = useAppDispatch();
-  const { address, connector, isConnected, isDisconnected } = useAccount();
+  const { address, connector, isConnected, isDisconnected, chain } = useAccount();
   const signer = useEthersSigner();
   const router = useRouter();
-  const { chain } = useNetwork();
-  const { switchNetwork } = useSwitchNetwork();
+  const { switchChain } = useSwitchChain();
   const { isLogin, isValidated, isLoggedIn, isLoginError, isAuthenticated, isOperatorWalletModalOpen, redirect, signature, operatorContactDetail } = useAppSelector(selectOperatorSlice);
   const pathname = usePathname();
 
   const { signMessage } = useSignMessage({
-    message: signDataMessage,
-    onMutate() {
-      toggleModal(false);
-    },
-    onSuccess(data) {
-      if (!address) {
-        return;
+    mutation: {
+      onMutate() {
+        toggleModal(false);
+      },
+      onSuccess(data) {
+        if (!address) {
+          return;
+        }
+        dispatch(validateOperator({
+          signData: {
+            externallyOwnedAccountAddress: address,
+            message: signDataMessage,
+            signature: data
+          },
+        }));
       }
-      dispatch(validateOperator({
-        signData: {
-          externallyOwnedAccountAddress: address,
-          message: signDataMessage,
-          signature: data
-        },
-      }));
     }
   })
 
@@ -98,9 +98,9 @@ const WalletModal = (): JSX.Element => {
   useEffect(() => {
     if (isConnected && isOperatorWalletModalOpen && chain && !signature) {
       if (chain.id !== fuse.id) {
-        switchNetwork && switchNetwork(fuse.id)
+        switchChain({ chainId: fuse.id })
       }
-      signMessage();
+      signMessage({ message: signDataMessage });
     }
   }, [isConnected, isOperatorWalletModalOpen, chain, signature])
 
@@ -154,7 +154,11 @@ const WalletModal = (): JSX.Element => {
   const connectWallet = (id: string) => {
     connectionEvent(id);
     setConnectingWalletId(id);
-    connect({ connector: connectors.find((connector) => connector.id === id) });
+    const selectedConnector = connectors.find((connector) => connector.id === id);
+    if(selectedConnector) {
+      localStorage.setItem("Fuse-selectedConnectorId", selectedConnector.id);
+      connect({ connector: selectedConnector });
+    }
     if (pathname === path.HOME) {
       router.push("/wallet");
     }
@@ -322,7 +326,7 @@ const WalletModal = (): JSX.Element => {
                       return
                     }
                     localStorage.setItem("Fuse-loginHint", emailRef.current.value);
-                    connectWallet("email");
+                    connectWallet("email_passwordless");
                   }}
                 >
                   Connect
