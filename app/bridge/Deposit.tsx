@@ -417,7 +417,7 @@ const Deposit = ({
                     icon: fuseToken,
                     lzChainId: 138,
                     name: "Fuse",
-                    rpcUrl: "https://fuse.liquify.com",
+                    rpcUrl: "https://rpc.fuse.io",
                     tokens: [],
                     wrapped: appConfig.wrappedBridge.fuse.wrapped,
                   })
