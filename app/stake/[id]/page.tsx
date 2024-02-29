@@ -1,15 +1,31 @@
 // see https://stackoverflow.com/a/77090142/12656707
 
+import { CONFIG } from "@/lib/config";
 import PageWrapper from "./wrapper";
-import { getJailedValidators, getValidators } from '@/lib/contractInteract';
+import { contractInterface, multicallContract } from '@/lib/contractInteract';
 
 export async function generateStaticParams() {
-  let validators = await getValidators()
-  const jailedValidators = await getJailedValidators()
-  validators = validators.concat(jailedValidators)
-  validators = [...new Set(validators)]
+  const calls = [
+    'getValidators',
+    'jailedValidators',
+  ].map((method) =>
+    [
+      CONFIG.consensusAddress,
+      contractInterface.encodeFunctionData(method, [])
+    ]
+  );
 
-  return validators.map((validator) => ({
+  const [[, results]] = await Promise.all([
+    multicallContract.aggregate(calls),
+  ]);
+
+  const [validators, jailedValidators] = results.map((result: any, index: any) =>
+    contractInterface.decodeFunctionResult(calls[index][1], result)[0]
+  );
+
+  const combinedValidators = [...new Set(validators.concat(jailedValidators))];
+
+  return combinedValidators.map((validator: any) => ({
     id: validator.toLowerCase(),
   }))
 }
