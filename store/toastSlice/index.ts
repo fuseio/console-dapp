@@ -69,19 +69,20 @@ const toastSlice = createSlice({
   name: "TRANSACTION_STATE",
   initialState: INIT_STATE,
   reducers: {},
-  extraReducers: {
-    [toggleLastTransactionToast.fulfilled.type]: (state, action) => {
-      state.isLastTransactionToastOpen = action.payload;
-    },
-    [toggleLiquidityToast.fulfilled.type]: (state, action) => {
-      state.isLiquidityToastOpen = action.payload;
-    },
-    [toggleAddTokenToast.fulfilled.type]: (state, action) => {
-      state.isAddTokenToastOpen = action.payload;
-    },
-    [checkandToggleAddTokenToast.fulfilled.type]: (state, action) => {
-      state.token = action.payload;
-    },
+  extraReducers: (builder) => {
+    builder
+      .addCase(toggleLastTransactionToast.fulfilled, (state, action) => {
+        state.isLastTransactionToastOpen = action.payload;
+      })
+      .addCase(toggleLiquidityToast.fulfilled, (state, action) => {
+        state.isLiquidityToastOpen = action.payload;
+      })
+      .addCase(toggleAddTokenToast.fulfilled, (state, action) => {
+        state.isAddTokenToastOpen = action.payload;
+      })
+      .addCase(checkandToggleAddTokenToast.fulfilled, (state, action) => {
+        state.token = action.payload;
+      })
   },
 });
 

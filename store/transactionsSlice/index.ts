@@ -87,54 +87,50 @@ const transactionsSlice = createSlice({
   name: "TRANSACTION_STATE",
   initialState: INIT_STATE,
   reducers: {},
-  extraReducers: {
-    [fetchBridgeTransactions.pending.type]: (state) => {
-      state.isTransactionLoading = true;
-    },
-    [fetchBridgeTransactions.fulfilled.type]: (state, action) => {
-      state.isTransactionLoading = false;
-      state.transactions = action.payload.transactions;
-      state.transactionHashes = action.payload.hashes;
-    },
-    [fetchBridgeTransactions.rejected.type]: (state) => {
-      state.isTransactionLoading = false;
-      state.isError = true;
-    },
-    [updateTransactions.pending.type]: (state) => {
-      state.isTransactionLoading = true;
-    },
-    [updateTransactions.fulfilled.type]: (state, action) => {
-      state.transactionHashes = [
-        action.payload.hash,
-        ...state.transactionHashes,
-      ];
-      state.transactions = [action.payload.transaction, ...state.transactions];
-      state.isTransactionLoading = false;
-    },
-    [updateTransactions.rejected.type]: (state) => {
-      state.isTransactionLoading = false;
-      state.isError = true;
-    },
-    [updateTransactionStatus.pending.type]: (state) => {
-      state.isTransactionLoading = true;
-    },
-    [updateTransactionStatus.fulfilled.type]: (state, action) => {
-      state.isTransactionLoading = false;
-      let transactions = state.transactions;
-      const hashes = state.transactionHashes;
-      hashes.forEach((transaction, index) => {
-        if (
-          transaction.hash.toLowerCase() === action.payload.hash.toLowerCase()
-        ) {
-          transactions[index] = action.payload.message;
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchBridgeTransactions.pending, (state) => {
+        state.isTransactionLoading = true;
+      })
+      .addCase(fetchBridgeTransactions.fulfilled, (state, action) => {
+        state.isTransactionLoading = false;
+        state.transactions = action.payload.transactions;
+        state.transactionHashes = action.payload.hashes;
+      })
+      .addCase(fetchBridgeTransactions.rejected, (state) => {
+        state.isTransactionLoading = false;
+        state.isError = true;
+      })
+      .addCase(updateTransactions.pending, (state) => {
+        state.isTransactionLoading = true;
+      })
+      .addCase(updateTransactions.fulfilled, (state, action) => {
+        state.isTransactionLoading = false;
+        state.transactionHashes = [
+          action.payload.hash,
+          ...state.transactionHashes,
+        ];
+        state.transactions = [action.payload.transaction, ...state.transactions];
+        state.isTransactionLoading = false;
+      })
+      .addCase(updateTransactions.rejected, (state) => {
+        state.isTransactionLoading = false;
+        state.isError = true;
+      })
+      .addCase(updateTransactionStatus.pending, (state) => {
+        state.isTransactionLoading = true;
+      })
+      .addCase(updateTransactionStatus.fulfilled, (state, action) => {
+        state.isTransactionLoading = false;
+        const index = state.transactionHashes.findIndex(transaction => transaction.hash.toLowerCase() === action.payload.hash.toLowerCase());
+        if (index !== -1) {
+          state.transactions[index] = action.payload.message;
         }
-      });
-      state.transactions = transactions;
-    },
-    [updateTransactionStatus.rejected.type]: (state) => {
-      state.isTransactionLoading = false;
-      state.isError = true;
-    },
+      })
+      .addCase(updateTransactionStatus.rejected, (state) => {
+        state.isTransactionLoading = false;
+        state.isError = true;
+      })
   },
 });
 

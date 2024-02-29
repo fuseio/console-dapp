@@ -663,168 +663,171 @@ const operatorSlice = createSlice({
       state.isHydrated = true;
     }
   },
-  extraReducers: {
-    [checkOperator.pending.type]: (state) => {
-      state.isCheckingOperator = true;
-    },
-    [checkOperator.fulfilled.type]: (state) => {
-      state.isCheckingOperator = false;
-      state.isOperatorExist = true;
-      localStorage.setItem("Fuse-isOperatorExist", "true");
-    },
-    [checkOperator.rejected.type]: (state) => {
-      state.isCheckingOperator = false;
-    },
-    [validateOperator.pending.type]: (state) => {
-      state.isValidatingOperator = true;
-    },
-    [validateOperator.fulfilled.type]: (state, action) => {
-      state.isValidatingOperator = false;
-      state.accessToken = action.payload.accessToken;
-      state.signature = action.payload.signature;
-      state.isValidated = true;
-      localStorage.setItem("Fuse-operatorAccessToken", action.payload.accessToken);
-      localStorage.setItem("Fuse-operatorEoaSignature", action.payload.signature);
-    },
-    [validateOperator.rejected.type]: (state) => {
-      state.isValidatingOperator = false;
-    },
-    [fetchOperator.pending.type]: (state) => {
-      state.isFetchingOperator = true;
-    },
-    [fetchOperator.fulfilled.type]: (state, action) => {
-      state.isFetchingOperator = false;
-      state.operator = action.payload.operator;
-      state.operator.user.smartContractAccountAddress = action.payload.smartContractAccountAddress;
-      state.isLoggedIn = true;
-      state.isAuthenticated = true;
-      localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
-      localStorage.setItem("Fuse-isOperatorAuthenticated", "true");
-    },
-    [fetchOperator.rejected.type]: (state) => {
-      state.isFetchingOperator = false;
-      state.isLoginError = true;
-      localStorage.setItem("Fuse-isLoginError", "true");
-    },
-    [createOperator.pending.type]: (state) => {
-      state.isContactDetailsModalOpen = false;
-      state.isAccountCreationModalOpen = true;
-    },
-    [createOperator.fulfilled.type]: (state, action) => {
-      state.operator = action.payload.operator;
-      state.operator.user.smartContractAccountAddress = action.payload.smartContractAccountAddress;
-      state.isAuthenticated = true;
-      state.isAccountCreationModalOpen = false;
-      state.isCongratulationModalOpen = true;
-      const { secretPrefix, secretLastFourChars } = splitSecretKey(action.payload.operator.project.secretKey);
-      state.operator.project.secretPrefix = secretPrefix;
-      state.operator.project.secretLastFourChars = secretLastFourChars;
-      localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
-      localStorage.setItem("Fuse-isOperatorAuthenticated", "true");
-      localStorage.removeItem("Fuse-operatorContactDetail");
-    },
-    [createOperator.rejected.type]: (state) => {
-      state.isAccountCreationModalOpen = false;
-    },
-    [generateSecretApiKey.pending.type]: (state) => {
-      state.isGeneratingSecretApiKey = true;
-    },
-    [generateSecretApiKey.fulfilled.type]: (state, action) => {
-      state.isGeneratingSecretApiKey = false;
-      state.operator.project.secretKey = action.payload;
-      state.isYourSecretKeyModalOpen = true;
-    },
-    [generateSecretApiKey.rejected.type]: (state) => {
-      state.isGeneratingSecretApiKey = false;
-    },
-    [regenerateSecretApiKey.pending.type]: (state) => {
-      state.isGeneratingSecretApiKey = true;
-    },
-    [regenerateSecretApiKey.fulfilled.type]: (state, action) => {
-      state.isGeneratingSecretApiKey = false;
-      state.operator.project.secretKey = action.payload;
-      state.isRollSecretKeyModalOpen = false;
-      state.isYourSecretKeyModalOpen = true;
-    },
-    [regenerateSecretApiKey.rejected.type]: (state) => {
-      state.isGeneratingSecretApiKey = false;
-    },
-    [fetchSponsorIdBalance.pending.type]: (state) => {
-      state.isFetchingSponsorIdBalance = true;
-    },
-    [fetchSponsorIdBalance.fulfilled.type]: (state, action) => {
-      state.isFetchingSponsorIdBalance = false;
-      state.sponsorIdBalance = action.payload;
-    },
-    [fetchSponsorIdBalance.rejected.type]: (state) => {
-      state.isFetchingSponsorIdBalance = false;
-    },
-    [createPaymaster.pending.type]: (state) => {
-      state.isCreatingPaymaster = true;
-    },
-    [createPaymaster.fulfilled.type]: (state, action) => {
-      state.isCreatingPaymaster = false;
-      state.operator.project.sponsorId = action.payload;
-      localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
-    },
-    [createPaymaster.rejected.type]: (state) => {
-      state.isCreatingPaymaster = false;
-    },
-    [fundPaymaster.pending.type]: (state) => {
-      state.isFundingPaymaster = true;
-    },
-    [fundPaymaster.fulfilled.type]: (state) => {
-      state.isFundingPaymaster = false;
-      state.isTopupPaymasterModalOpen = false;
-    },
-    [fundPaymaster.rejected.type]: (state) => {
-      state.isFundingPaymaster = false;
-      state.isTopupPaymasterModalOpen = false;
-    },
-    [fetchErc20Balance.pending.type]: (state) => {
-      state.isFetchingErc20Balance = true;
-    },
-    [fetchErc20Balance.fulfilled.type]: (state, action) => {
-      state.isFetchingErc20Balance = false;
-      state.erc20Balance = action.payload;
-    },
-    [fetchErc20Balance.rejected.type]: (state) => {
-      state.isFetchingErc20Balance = false;
-    },
-    [withdraw.pending.type]: (state) => {
-      state.isWithdrawing = true;
-    },
-    [withdraw.fulfilled.type]: (state, action) => {
-      state.isWithdrawing = false;
-      state.isWithdrawn = true;
-      state.withdraw = action.payload;
-      state.isWithdrawModalOpen = false;
-    },
-    [withdraw.rejected.type]: (state) => {
-      state.isWithdrawing = false;
-      state.isWithdrawModalOpen = false;
-    },
-    [checkIsActivated.pending.type]: (state) => {
-      state.isCheckingActivation = true;
-    },
-    [checkIsActivated.fulfilled.type]: (state) => {
-      state.isCheckingActivation = false;
-      state.isActivated = true;
-      localStorage.setItem("Fuse-isActivated", "true");
-    },
-    [checkIsActivated.rejected.type]: (state) => {
-      state.isCheckingActivation = false;
-    },
-    [fetchSponsoredTransactions.pending.type]: (state) => {
-      state.isFetchingSponsoredTransactions = true;
-    },
-    [fetchSponsoredTransactions.fulfilled.type]: (state, action) => {
-      state.isFetchingSponsoredTransactions = false;
-      state.sponsoredTransactions = action.payload;
-    },
-    [fetchSponsoredTransactions.rejected.type]: (state) => {
-      state.isFetchingSponsoredTransactions = false;
-    },
+  extraReducers: (builder) => {
+    builder
+      .addCase(checkOperator.pending, (state) => {
+        state.isCheckingOperator = true;
+      })
+      .addCase(checkOperator.fulfilled, (state) => {
+        state.isCheckingOperator = false;
+        state.isOperatorExist = true;
+        localStorage.setItem("Fuse-isOperatorExist", "true");
+      })
+      .addCase(checkOperator.rejected, (state) => {
+        state.isCheckingOperator = false;
+      })
+      .addCase(validateOperator.pending, (state) => {
+        state.isValidatingOperator = true;
+      })
+      .addCase(validateOperator.fulfilled, (state, action) => {
+        state.isValidatingOperator = false;
+        state.accessToken = action.payload.accessToken;
+        state.signature = action.payload.signature;
+        state.isValidated = true;
+        localStorage.setItem("Fuse-operatorAccessToken", action.payload.accessToken);
+        localStorage.setItem("Fuse-operatorEoaSignature", action.payload.signature);
+      })
+      .addCase(validateOperator.rejected, (state) => {
+        state.isValidatingOperator = false;
+      })
+      .addCase(fetchOperator.pending, (state) => {
+        state.isFetchingOperator = true;
+      })
+      .addCase(fetchOperator.fulfilled, (state, action) => {
+        state.isFetchingOperator = false;
+        state.operator = action.payload.operator;
+        state.operator.user.smartContractAccountAddress = action.payload.smartContractAccountAddress;
+        state.isLoggedIn = true;
+        state.isAuthenticated = true;
+        localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
+        localStorage.setItem("Fuse-isOperatorAuthenticated", "true");
+      })
+      .addCase(fetchOperator.rejected, (state) => {
+        state.isFetchingOperator = false;
+        state.isLoginError = true;
+        localStorage.setItem("Fuse-isLoginError", "true");
+      })
+      .addCase(createOperator.pending, (state) => {
+        state.isContactDetailsModalOpen = false;
+        state.isAccountCreationModalOpen = true;
+      })
+      .addCase(createOperator.fulfilled, (state, action) => {
+        state.operator = action.payload.operator;
+        state.operator.user.smartContractAccountAddress = action.payload.smartContractAccountAddress;
+        state.isAuthenticated = true;
+        state.isAccountCreationModalOpen = false;
+        state.isCongratulationModalOpen = true;
+        const { secretPrefix, secretLastFourChars } = splitSecretKey(action.payload.operator.project.secretKey);
+        state.operator.project.secretPrefix = secretPrefix;
+        state.operator.project.secretLastFourChars = secretLastFourChars;
+        localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
+        localStorage.setItem("Fuse-isOperatorAuthenticated", "true");
+        localStorage.removeItem("Fuse-operatorContactDetail");
+      })
+      .addCase(createOperator.rejected, (state) => {
+        state.isAccountCreationModalOpen = false;
+      })
+      .addCase(generateSecretApiKey.pending, (state) => {
+        state.isGeneratingSecretApiKey = true;
+      })
+      .addCase(generateSecretApiKey.fulfilled, (state, action) => {
+        state.isGeneratingSecretApiKey = false;
+        state.operator.project.secretKey = action.payload;
+        state.isRollSecretKeyModalOpen = false;
+        state.isYourSecretKeyModalOpen = true;
+      })
+      .addCase(generateSecretApiKey.rejected, (state) => {
+        state.isGeneratingSecretApiKey = false;
+      })
+      .addCase(regenerateSecretApiKey.pending, (state) => {
+        state.isGeneratingSecretApiKey = true;
+      })
+      .addCase(regenerateSecretApiKey.fulfilled, (state, action) => {
+        state.isGeneratingSecretApiKey = false;
+        state.operator.project.secretKey = action.payload;
+        state.isRollSecretKeyModalOpen = false;
+        state.isYourSecretKeyModalOpen = true;
+      })
+      .addCase(regenerateSecretApiKey.rejected, (state) => {
+        state.isGeneratingSecretApiKey = false;
+      })
+      .addCase(fetchSponsorIdBalance.pending, (state) => {
+        state.isFetchingSponsorIdBalance = true;
+
+      })
+      .addCase(fetchSponsorIdBalance.fulfilled, (state, action) => {
+        state.isFetchingSponsorIdBalance = false;
+        state.sponsorIdBalance = action.payload;
+      })
+      .addCase(fetchSponsorIdBalance.rejected, (state) => {
+        state.isFetchingSponsorIdBalance = false;
+      })
+      .addCase(createPaymaster.pending, (state) => {
+        state.isCreatingPaymaster = true;
+      })
+      .addCase(createPaymaster.fulfilled, (state, action) => {
+        state.isCreatingPaymaster = false;
+        state.operator.project.sponsorId = action.payload;
+        localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
+      })
+      .addCase(createPaymaster.rejected, (state) => {
+        state.isCreatingPaymaster = false;
+      })
+      .addCase(fundPaymaster.pending, (state) => {
+        state.isFundingPaymaster = true;
+      })
+      .addCase(fundPaymaster.fulfilled, (state, action) => {
+        state.isFundingPaymaster = false;
+        state.isTopupPaymasterModalOpen = false;
+      })
+      .addCase(fundPaymaster.rejected, (state) => {
+        state.isFundingPaymaster = false;
+        state.isTopupPaymasterModalOpen = false;
+      })
+      .addCase(fetchErc20Balance.pending, (state) => {
+        state.isFetchingErc20Balance = true;
+      })
+      .addCase(fetchErc20Balance.fulfilled, (state, action) => {
+        state.isFetchingErc20Balance = false;
+        state.erc20Balance = action.payload;
+      })
+      .addCase(fetchErc20Balance.rejected, (state) => {
+        state.isFetchingErc20Balance = false;
+      })
+      .addCase(withdraw.pending, (state) => {
+        state.isWithdrawing = true;
+      })
+      .addCase(withdraw.fulfilled, (state, action) => {
+        state.isWithdrawing = false;
+        state.isWithdrawn = true;
+        state.withdraw = action.payload;
+        state.isWithdrawModalOpen = false;
+      })
+      .addCase(withdraw.rejected, (state) => {
+        state.isWithdrawing = false;
+        state.isWithdrawModalOpen = false;
+      })
+      .addCase(checkIsActivated.pending, (state) => {
+        state.isCheckingActivation = true;
+      })
+      .addCase(checkIsActivated.fulfilled, (state) => {
+        state.isCheckingActivation = false;
+        state.isActivated = true;
+        localStorage.setItem("Fuse-isActivated", "true");
+      })
+      .addCase(checkIsActivated.rejected, (state) => {
+        state.isCheckingActivation = false;
+      })
+      .addCase(fetchSponsoredTransactions.pending, (state) => {
+        state.isFetchingSponsoredTransactions = true;
+      })
+      .addCase(fetchSponsoredTransactions.fulfilled, (state, action) => {
+        state.isFetchingSponsoredTransactions = false;
+        state.sponsoredTransactions = action.payload;
+      })
+      .addCase(fetchSponsoredTransactions.rejected, (state) => {
+        state.isFetchingSponsoredTransactions = false;
+      })
   },
 });
 
