@@ -88,7 +88,6 @@ export const getPendingValidators = async () => {
 };
 
 export const fetchValidatorData = async (address: Address) => {
-  const contractInterface = new Interface(Consensus);
   const stakeAmountCallData = contractInterface.encodeFunctionData("stakeAmount", [address]);
   const validatorFeeCallData = contractInterface.encodeFunctionData("validatorFee", [address]);
   const delegatorsCallData = contractInterface.encodeFunctionData("delegators", [address]);
