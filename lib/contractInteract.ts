@@ -8,11 +8,19 @@ import {
 } from "viem";
 import { CONFIG } from "./config";
 import { Consensus } from "./abi/Consensus";
+import { MULTICALL_ABI } from "./abi/MultiCall";
 import { getAccount, getWalletClient, waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { hex } from "./helpers";
 import { fuse } from "viem/chains";
 import { PaymasterAbi } from "./abi/Paymaster";
 import { config } from "./web3Auth";
+import { Contract, providers } from "ethers";
+import { Interface } from "ethers/lib/utils";
+
+const provider = new providers.JsonRpcProvider(CONFIG.fuseRPC);
+
+export const contractInterface = new Interface(Consensus);
+export const multicallContract = new Contract(CONFIG.multiCallAddress, MULTICALL_ABI, provider);
 
 const contractProperties = {
   address: CONFIG.consensusAddress,
@@ -80,25 +88,23 @@ export const getPendingValidators = async () => {
 };
 
 export const fetchValidatorData = async (address: Address) => {
-  const stakeAmount = await publicClient().readContract({
-    ...contractProperties,
-    functionName: "stakeAmount",
-    args: [address],
-  });
-  const fee = await publicClient().readContract({
-    ...contractProperties,
-    functionName: "validatorFee",
-    args: [address],
-  });
-  let delegators: [Address, string][] = [];
-  const delegatorsMap = await publicClient().readContract({
-    ...contractProperties,
-    functionName: "delegators",
-    args: [address],
-  });
-  delegatorsMap.forEach((value, _) => {
-    delegators.push([value, "0"]);
-  });
+  const stakeAmountCallData = contractInterface.encodeFunctionData("stakeAmount", [address]);
+  const validatorFeeCallData = contractInterface.encodeFunctionData("validatorFee", [address]);
+  const delegatorsCallData = contractInterface.encodeFunctionData("delegators", [address]);
+
+  const calls = [
+    [CONFIG.consensusAddress, stakeAmountCallData],
+    [CONFIG.consensusAddress, validatorFeeCallData],
+    [CONFIG.consensusAddress, delegatorsCallData],
+  ];
+
+  const data = await multicallContract.aggregate(calls);
+  const [, results] = data
+  const [stakeAmount] = contractInterface.decodeFunctionResult(contractInterface.getFunction('stakeAmount'), results[0]);
+  const [fee] = contractInterface.decodeFunctionResult(contractInterface.getFunction('validatorFee'), results[1]);
+  const [delegatorsMap] = contractInterface.decodeFunctionResult(contractInterface.getFunction('delegators'), results[2]);
+  const delegators = delegatorsMap.map((value: any) => [value, "0"]);
+
   return {
     stakeAmount: formatEther(stakeAmount),
     fee: formatUnits(fee, 16),
