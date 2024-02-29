@@ -16,9 +16,9 @@ import {
   selectSearchSlice,
   setReduxSearch,
   setReduxStateFilter,
-   setReduxStatusFilter,
-    setReduxMyStakeFilter,
-     setReduxSort 
+  setReduxStatusFilter,
+  setReduxMyStakeFilter,
+  setReduxSort
 } from "@/store/searchSlice";
 import ValidatorsPane from "./ValidatorsPane";
 import SortBar from "@/components/staking/SortBar";
@@ -76,7 +76,7 @@ const Home = () => {
     let oldFilter = JSON.parse(JSON.stringify(filter));
     oldFilter.search = search;
     setFilter(oldFilter);
-   dispatch(setReduxSearch(oldFilter.search))
+    dispatch(setReduxSearch(oldFilter.search))
   };
 
   const setStateFilter = (stateFilter: number) => {
@@ -141,7 +141,7 @@ const Home = () => {
       });
     } else if (filter.sort === 2) {
       filteredValidators.sort((a, b) => {
-        return (b.uptime ? b.uptime : 0) - (a.uptime ? a.uptime : 0)||parseFloat(b.stakeAmount) - parseFloat(a.stakeAmount);
+        return (b.uptime ? b.uptime : 0) - (a.uptime ? a.uptime : 0) || parseFloat(b.stakeAmount) - parseFloat(a.stakeAmount);
       });
     } else if (filter.sort === 3) {
       filteredValidators.sort((a, b) => {
@@ -267,7 +267,7 @@ const Home = () => {
               "~$ " +
               new Intl.NumberFormat().format(
                 parseFloat(validatorSlice.totalStakeAmount) *
-                  validatorSlice.fuseTokenUSDPrice
+                validatorSlice.fuseTokenUSDPrice
               )
             }
             Footer="Total Fuse Staked"
@@ -286,7 +286,7 @@ const Home = () => {
               "~$ " +
               new Intl.NumberFormat().format(
                 parseFloat(validatorSlice.myStakeAmount) *
-                  validatorSlice.fuseTokenUSDPrice
+                validatorSlice.fuseTokenUSDPrice
               )
             }
             Footer="My Total Stake"
