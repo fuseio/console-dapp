@@ -105,7 +105,6 @@ const transactionsSlice = createSlice({
         state.isTransactionLoading = true;
       })
       .addCase(updateTransactions.fulfilled, (state, action) => {
-        state.isTransactionLoading = false;
         state.transactionHashes = [
           action.payload.hash,
           ...state.transactionHashes,
