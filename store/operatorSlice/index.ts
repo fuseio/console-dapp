@@ -733,7 +733,6 @@ const operatorSlice = createSlice({
       .addCase(generateSecretApiKey.fulfilled, (state, action) => {
         state.isGeneratingSecretApiKey = false;
         state.operator.project.secretKey = action.payload;
-        state.isRollSecretKeyModalOpen = false;
         state.isYourSecretKeyModalOpen = true;
       })
       .addCase(generateSecretApiKey.rejected, (state) => {
