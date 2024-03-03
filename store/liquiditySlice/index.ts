@@ -51,12 +51,12 @@ const liquiditySlice = createSlice({
     name: "LIQUIDITY_STATE",
     initialState: INIT_STATE,
     reducers: {},
-    extraReducers: {
-        [fetchAvailableLiquidityOnChains.fulfilled.type]: (state, action) => {
+    extraReducers: (builder) => {
+        builder.addCase(fetchAvailableLiquidityOnChains.fulfilled, (state, action) => {
             state.chains = action.payload.chainsToFetch;
             console.log(action.payload.chainsToFetch);
-            state.amount = action.payload.amount
-        },
+            state.amount = action.payload.amount;
+        });
     },
 });
 
