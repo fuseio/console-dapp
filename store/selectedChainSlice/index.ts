@@ -33,13 +33,14 @@ const selectedChainSlice = createSlice({
   name: "SELECTED_CHAIN",
   initialState: INIT_STATE,
   reducers: {},
-  extraReducers: {
-    [setDepositChainItem.fulfilled.type]: (state, action) => {
-      state.depositSelectedChainItem = action.payload;
-    },
-    [setWithdrawChainItem.fulfilled.type]: (state, action) => {
-      state.withdrawSelectedChainItem = action.payload;
-    },
+  extraReducers: (builder) => {
+    builder
+      .addCase(setDepositChainItem.fulfilled, (state, action) => {
+        state.depositSelectedChainItem = action.payload;
+      })
+      .addCase(setWithdrawChainItem.fulfilled, (state, action) => {
+        state.withdrawSelectedChainItem = action.payload;
+      })
   },
 });
 

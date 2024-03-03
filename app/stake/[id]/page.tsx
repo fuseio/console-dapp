@@ -1,33 +1,27 @@
 // see https://stackoverflow.com/a/77090142/12656707
 
-import { CONFIG } from "@/lib/config";
 import PageWrapper from "./wrapper";
-import { contractInterface, multicallContract } from '@/lib/contractInteract';
+import { getJailedValidators, getValidators } from '@/lib/contractInteract';
 
 export async function generateStaticParams() {
-  const calls = [
-    'getValidators',
-    'jailedValidators',
-  ].map((method) =>
-    [
-      CONFIG.consensusAddress,
-      contractInterface.encodeFunctionData(method, [])
-    ]
-  );
+  try {
+    // Fetch validators and jailedValidators in parallel
+    const [validators, jailedValidators] = await Promise.all([
+      getValidators(),
+      getJailedValidators(),
+    ]);
 
-  const [[, results]] = await Promise.all([
-    multicallContract.aggregate(calls),
-  ]);
+    // Combine and deduplicate the validator lists using a Set
+    const uniqueValidators = new Set([...validators, ...jailedValidators]);
 
-  const [validators, jailedValidators] = results.map((result: any, index: any) =>
-    contractInterface.decodeFunctionResult(calls[index][1], result)[0]
-  );
-
-  const combinedValidators = [...new Set(validators.concat(jailedValidators))];
-
-  return combinedValidators.map((validator: any) => ({
-    id: validator.toLowerCase(),
-  }))
+    // Map the unique validators to the desired format
+    return Array.from(uniqueValidators).map(validator => ({
+      id: validator.toLowerCase(),
+    }));
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return []; // Return an empty array or handle the error as needed
+  }
 }
 
 const Stake = ({ params }: { params: { id: string } }) => {

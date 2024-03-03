@@ -80,7 +80,7 @@ export const fetchBalance = createAsyncThunk(
 );
 
 export const setNativeBalanceThunk = createAsyncThunk(
-  "BALANCE/FETCH_BALANCE",
+  "BALANCE/SET_NATIVE_BALANCE",
   async (balance: string, thunkAPI) => {
     return new Promise<any>(async (resolve, reject) => {
       resolve(balance);
@@ -181,54 +181,55 @@ const balanceSlice = createSlice({
   name: "BALANCE_STATE",
   initialState: INIT_STATE,
   reducers: {},
-  extraReducers: {
-    [fetchBalance.pending.type]: (state, action) => {
-      state.isBalanceLoading = true;
-    },
-    [fetchBalance.fulfilled.type]: (state, action) => {
-      state.balance = action.payload;
-      state.isBalanceLoading = false;
-    },
-    [fetchBalance.rejected.type]: (state, action) => {
-      state.isBalanceLoading = false;
-      state.isError = true;
-    },
-    [fetchApproval.pending.type]: (state, action) => {
-      state.isApprovalLoading = true;
-    },
-    [fetchApproval.fulfilled.type]: (state, action) => {
-      state.approval = action.payload;
-      state.isApprovalLoading = false;
-    },
-    [fetchApproval.rejected.type]: (state, action) => {
-      state.isApprovalLoading = false;
-      state.isError = true;
-    },
-    [fetchLiquidity.pending.type]: (state, action) => {
-      state.isLiquidityLoading = true;
-    },
-    [fetchLiquidity.fulfilled.type]: (state, action) => {
-      state.liquidity = action.payload;
-      state.isLiquidityLoading = false;
-    },
-    [fetchLiquidity.rejected.type]: (state, action) => {
-      state.isLiquidityLoading = false;
-      state.isError = true;
-    },
-    [setNativeBalanceThunk.fulfilled.type]: (state, action) => {
-      state.balance = action.payload;
-      state.isBalanceLoading = false;
-    },
-    [fetchUsdPrice.pending.type]: (state, action) => {
-      state.isUsdPriceLoading = true;
-    },
-    [fetchUsdPrice.fulfilled.type]: (state, action) => {
-      state.price = action.payload;
-      state.isUsdPriceLoading = false;
-    },
-    [fetchUsdPrice.rejected.type]: (state, action) => {
-      state.isUsdPriceLoading = false;
-    },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchBalance.pending, (state) => {
+        state.isBalanceLoading = true;
+      })
+      .addCase(fetchBalance.fulfilled, (state, action) => {
+        state.balance = action.payload;
+        state.isBalanceLoading = false;
+      })
+      .addCase(fetchBalance.rejected, (state) => {
+        state.isBalanceLoading = false;
+        state.isError = true;
+      })
+      .addCase(fetchApproval.pending, (state, action) => {
+        state.isApprovalLoading = true;
+      })
+      .addCase(fetchApproval.fulfilled, (state, action) => {
+        state.approval = action.payload;
+        state.isApprovalLoading = false;
+      })
+      .addCase(fetchApproval.rejected, (state, action) => {
+        state.isApprovalLoading = false;
+        state.isError = true;
+      })
+      .addCase(fetchLiquidity.pending, (state, action) => {
+        state.isLiquidityLoading = true;
+      })
+      .addCase(fetchLiquidity.fulfilled, (state, action) => {
+        state.liquidity = action.payload;
+        state.isLiquidityLoading = false;
+      })
+      .addCase(fetchLiquidity.rejected, (state, action) => {
+        state.isLiquidityLoading = false;
+        state.isError = true;
+      })
+      .addCase(setNativeBalanceThunk.fulfilled, (state, action) => {
+        state.balance = action.payload;
+        state.isBalanceLoading = false;
+      })
+      .addCase(fetchUsdPrice.pending, (state, action) => {
+        state.isUsdPriceLoading = true;
+      })
+      .addCase(fetchUsdPrice.fulfilled, (state, action) => {
+        state.price = action.payload;
+        state.isUsdPriceLoading = false;
+      })
+      .addCase(fetchUsdPrice.rejected, (state, action) => {
+        state.isUsdPriceLoading = false;
+      });
   },
 });
 

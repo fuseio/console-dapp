@@ -70,31 +70,31 @@ export const fetchValidators = createAsyncThunk(
             'jailedValidators',
             'getMaxStake',
             'getMinStake'
-        ];
+        ]
         const calls = methods.map((method) =>
             [
                 CONFIG.consensusAddress,
                 contractInterface.encodeFunctionData(method, [])
             ]
-        );
+        )
 
         try {
             const [[, results], totalSupply] = await Promise.all([
                 multicallContract.aggregate(calls),
                 fetchTotalSupply(),
-            ]);
+            ])
 
             const [totalStakeAmount, validators, jailedValidators, maxStake, minStake] = results.map((result: any, index: any) =>
                 contractInterface.decodeFunctionResult(calls[index][1], result)[0]
-            );
+            )
 
-            const combinedValidators = validators.concat(jailedValidators);
+            const combinedValidators = validators.concat(jailedValidators)
 
-            let price = 0;
+            let price = 0
             try {
-                price = await fetchTokenPrice('fuse-network-token');
+                price = await fetchTokenPrice('fuse-network-token')
             } catch (error) {
-                console.error('Error fetching token price:', error);
+                console.error('Error fetching token price:', error)
             }
 
             return {
@@ -104,41 +104,41 @@ export const fetchValidators = createAsyncThunk(
                 fuseTokenTotalSupply: totalSupply,
                 maxStake: formatEther(maxStake),
                 minStake: formatEther(minStake)
-            };
+            }
         } catch (error) {
-            console.error('Error fetching validators:', error);
-            return rejectWithValue('Failed to fetch validators information');
+            console.error('Error fetching validators:', error)
+            return rejectWithValue('Failed to fetch validators information')
         }
     }
-);
+)
 
 export const fetchValidatorMetadata = createAsyncThunk(
     'validators/fetchMetadata',
     async (validators: Address[], { rejectWithValue }) => {
         try {
-            const methods = ['jailedValidators', 'pendingValidators'];
+            const methods = ['jailedValidators', 'pendingValidators']
             const calls = methods.map((method) =>
                 [CONFIG.consensusAddress, contractInterface.encodeFunctionData(method, [])]
-            );
+            )
             const [[, results]] = await Promise.all([
                 multicallContract.aggregate(calls),
-            ]);
+            ])
             const [jailedValidators, pendingValidators] = results.map((result: any, index: any) =>
                 contractInterface.decodeFunctionResult(calls[index][1], result)[0]
-            );
+            )
             const validatorMap = new Map<string, {
                 name?: string,
                 website?: string,
                 image?: string,
                 description?: string
-            }>(Object.entries(Validators));
+            }>(Object.entries(Validators))
 
-            let totalDelegators = 0;
+            let totalDelegators = 0
             const validatorMetadata = await Promise.all(validators.map(async (validator) => {
-                const status = jailedValidators.includes(validator.toLowerCase()) ? 'inactive' : 'active';
-                const metadata = await fetchValidatorData(validator);
-                const validatorData = validatorMap.get(validator);
-                totalDelegators += parseInt(metadata.delegatorsLength, 10);
+                const status = jailedValidators.includes(validator.toLowerCase()) ? 'inactive' : 'active'
+                const metadata = await fetchValidatorData(validator)
+                const validatorData = validatorMap.get(validator)
+                totalDelegators += parseInt(metadata.delegatorsLength, 10)
 
                 const baseMetadata = {
                     ...metadata,
@@ -149,33 +149,33 @@ export const fetchValidatorMetadata = createAsyncThunk(
                     status,
                     isPending: pendingValidators.includes(validator.toLowerCase()),
                     description: validatorData?.description
-                };
+                }
 
                 if (status === 'inactive') {
-                    return baseMetadata;
+                    return baseMetadata
                 } else {
                     try {
-                        const { Node } = await fetchNodeByAddress(validator);
+                        const { Node } = await fetchNodeByAddress(validator)
                         return {
                             ...baseMetadata,
                             firstSeen: Node?.firstSeen,
                             forDelegation: Node?.forDelegation,
                             totalValidated: Node?.totalValidated,
                             uptime: Node?.upTime
-                        };
+                        }
                     } catch (error) {
-                        return baseMetadata;
+                        return baseMetadata
                     }
                 }
-            }));
+            }))
 
-            return { validatorMetadata, totalDelegators };
+            return { validatorMetadata, totalDelegators }
         } catch (error) {
-            console.error('Error fetching validator metadata:', error);
-            return rejectWithValue('Failed to fetch validator metadata');
+            console.error('Error fetching validator metadata:', error)
+            return rejectWithValue('Failed to fetch validator metadata')
         }
     }
-);
+)
 
 export const fetchSelfStake = createAsyncThunk(
     'validators/fetchSelfStake',
@@ -184,24 +184,24 @@ export const fetchSelfStake = createAsyncThunk(
             const calls = validators.map((validator) => [
                 CONFIG.consensusAddress,
                 contractInterface.encodeFunctionData('delegatedAmount', [address, validator]),
-            ]);
+            ])
 
-            const [, results] = await multicallContract.aggregate(calls);
+            const [, results] = await multicallContract.aggregate(calls)
 
             const delegatedAmounts: [Address, string][] = results.map((result: any, index: number) => {
-                const delegatedAmount = formatEther(contractInterface.decodeFunctionResult('delegatedAmount', result)[0]);
-                return [validators[index], delegatedAmount];
-            });
+                const delegatedAmount = formatEther(contractInterface.decodeFunctionResult('delegatedAmount', result)[0])
+                return [validators[index], delegatedAmount]
+            })
 
-            const amount = delegatedAmounts.reduce((acc, [, delegatedAmount]) => acc + parseFloat(delegatedAmount), 0);
+            const amount = delegatedAmounts.reduce((acc, [, delegatedAmount]) => acc + parseFloat(delegatedAmount), 0)
 
-            return { delegatedAmounts, amount };
+            return { delegatedAmounts, amount }
         } catch (error) {
-            console.error('Error fetching self stake:', error);
-            return rejectWithValue('Failed to fetch self stake information');
+            console.error('Error fetching self stake:', error)
+            return rejectWithValue('Failed to fetch self stake information')
         }
     }
-);
+)
 
 export const fetchDelegatedAmounts = createAsyncThunk(
     'VALIDATORS/FETCH_DELEGATED_AMOUNTS',
@@ -210,91 +210,92 @@ export const fetchDelegatedAmounts = createAsyncThunk(
             const calls = delegators.map((delegator) => [
                 CONFIG.consensusAddress,
                 contractInterface.encodeFunctionData('delegatedAmount', [address, delegator]),
-            ]);
-            const [, results] = await multicallContract.aggregate(calls);
+            ])
+            const [, results] = await multicallContract.aggregate(calls)
             const delegatedAmounts: [Address, string][] = results.map((result: any, index: number) => {
-                const delegatedAmount = formatEther(contractInterface.decodeFunctionResult('delegatedAmount', result)[0]);
-                return [delegators[index], delegatedAmount];
-            });
-            return { delegatedAmounts, address };
+                const delegatedAmount = formatEther(contractInterface.decodeFunctionResult('delegatedAmount', result)[0])
+                return [delegators[index], delegatedAmount]
+            })
+            return { delegatedAmounts, address }
         } catch (error) {
-            throw error;
+            throw error
         }
     }
-);
+)
 
 
 const validatorSlice = createSlice({
     name: 'VALIDATOR_STATE',
     initialState: INIT_STATE,
     reducers: {},
-    extraReducers: {
-        [fetchValidators.pending.toString()]: (state) => {
-            state.isLoading = true
-        },
-        [fetchValidators.fulfilled.toString()]: (state, { payload }) => {
-            state.isLoading = false
-            state.totalStakeAmount = payload.totalStakeAmount
-            state.validators = payload.validators
-            state.fuseTokenUSDPrice = payload.price
-            state.fuseTokenTotalSupply = payload.fuseTokenTotalSupply
-            state.maxStakeAmount = payload.maxStake
-            state.minStakeAmount = payload.minStake
-        },
-        [fetchValidators.rejected.toString()]: (state, { error }) => {
-            state.isLoading = false
-            state.isError = true
-            state.errorMessage = error.message
-        },
-        [fetchValidatorMetadata.pending.toString()]: (state) => {
-            state.isMetadataLoading = true
-        },
-        [fetchValidatorMetadata.fulfilled.toString()]: (state, { payload }) => {
-            state.isMetadataLoading = false
-            state.validatorMetadata = payload.validatorMetadata
-            state.totalDelegators = payload.totalDelegators
-        },
-        [fetchValidatorMetadata.rejected.toString()]: (state, { error }) => {
-            state.isMetadataLoading = false
-            state.isError = true
-            state.errorMessage = error.message
-        },
-        [fetchSelfStake.pending.toString()]: (state) => {
-            state.isBalanceLoading = true
-        },
-        [fetchSelfStake.fulfilled.toString()]: (state, { payload }) => {
-            state.isBalanceLoading = false
-            state.myStakeAmount = payload.amount
-            state.validatorMetadata = state.validatorMetadata.map((validator) => {
-                const delegatedAmount = payload.delegatedAmounts.filter((delegatedAmount: Array<string>) => delegatedAmount[0] === validator.address)[0]
-                return {
-                    ...validator,
-                    selfStakeAmount: delegatedAmount ? delegatedAmount[1] : '0'
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchValidators.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(fetchValidators.fulfilled, (state, { payload }) => {
+                state.isLoading = false
+                state.totalStakeAmount = payload.totalStakeAmount
+                state.validators = payload.validators
+                state.fuseTokenUSDPrice = payload.price
+                state.fuseTokenTotalSupply = payload.fuseTokenTotalSupply
+                state.maxStakeAmount = payload.maxStake
+                state.minStakeAmount = payload.minStake
+            })
+            .addCase(fetchValidators.rejected, (state, { error }) => {
+                state.isLoading = false
+                state.isError = true
+                state.errorMessage = error.message || 'Failed to fetch validators information'
+            })
+            .addCase(fetchValidatorMetadata.pending, (state) => {
+                state.isMetadataLoading = true
+            })
+            .addCase(fetchValidatorMetadata.fulfilled, (state, { payload }) => {
+                state.isMetadataLoading = false
+                state.validatorMetadata = payload.validatorMetadata
+                state.totalDelegators = payload.totalDelegators
+            })
+            .addCase(fetchValidatorMetadata.rejected, (state, { error }) => {
+                state.isMetadataLoading = false
+                state.isError = true
+                state.errorMessage = error.message || 'Failed to fetch validator metadata'
+            })
+            .addCase(fetchSelfStake.pending, (state) => {
+                state.isBalanceLoading = true
+            })
+            .addCase(fetchSelfStake.fulfilled, (state, { payload }) => {
+                state.isBalanceLoading = false
+                state.myStakeAmount = payload.amount.toString()
+                state.validatorMetadata = state.validatorMetadata.map((validator) => {
+                    const delegatedAmount = payload.delegatedAmounts.find(delegatedAmount => delegatedAmount[0] === validator.address)
+                    return {
+                        ...validator,
+                        selfStakeAmount: delegatedAmount ? delegatedAmount[1] : '0'
+                    }
+                })
+            })
+            .addCase(fetchSelfStake.rejected, (state, { error }) => {
+                state.isBalanceLoading = false
+                state.isError = true
+                state.errorMessage = error.message || 'Failed to fetch self stake information'
+            })
+            .addCase(fetchDelegatedAmounts.pending, (state) => {
+                state.isDelegatedAmountLoading = true
+            })
+            .addCase(fetchDelegatedAmounts.fulfilled, (state, { payload }) => {
+                const validatorIndex = state.validatorMetadata.findIndex((validator) => validator.address === payload.address)
+                if (validatorIndex !== -1) {
+                    let validator = state.validatorMetadata[validatorIndex]
+                    validator.delegators = payload.delegatedAmounts.sort((a, b) => parseInt(b[1]) - parseInt(a[1]))
+                    state.validatorMetadata[validatorIndex] = validator
                 }
+                state.isDelegatedAmountLoading = false
             })
-        },
-        [fetchSelfStake.rejected.toString()]: (state, { error }) => {
-            state.isBalanceLoading = false
-            state.isError = true
-            state.errorMessage = error.message
-        },
-        [fetchDelegatedAmounts.pending.toString()]: (state) => {
-            state.isDelegatedAmountLoading = true
-        },
-        [fetchDelegatedAmounts.fulfilled.toString()]: (state, { payload }) => {
-            let validator = state.validatorMetadata.filter((validator) => validator.address === payload.address)[0]
-            validator.delegators = (payload.delegatedAmounts).sort((a: [Address, string], b: [Address, string]) => {
-                return parseInt(b[1]) - parseInt(a[1]);
+            .addCase(fetchDelegatedAmounts.rejected, (state, { error }) => {
+                state.isDelegatedAmountLoading = false
+                state.isError = true
+                state.errorMessage = error.message || 'Failed to fetch delegated amounts'
             })
-            const index = state.validatorMetadata.findIndex((validator) => validator.address === payload.address)
-            state.validatorMetadata[index] = validator
-            state.isDelegatedAmountLoading = false
-        },
-        [fetchDelegatedAmounts.rejected.toString()]: (state, { error }) => {
-            state.isDelegatedAmountLoading = false
-            state.isError = true
-            state.errorMessage = error.message
-        }
     }
 })
 
