@@ -14,7 +14,7 @@ const DocumentSupport = () => {
             Find resources that help you to build on Fuse
           </p>
           <a
-            href="https://docs.fuse.io/docs/fuse-box/sdk/installation-and-setup"
+            href="https://docs.fuse.io/"
             target="_blank"
             className="transition ease-in-out text-lg leading-none text-white font-semibold rounded-full bg-black px-5 py-[11.5px] hover:text-black hover:bg-success"
           >
