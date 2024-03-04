@@ -23,6 +23,7 @@ export interface ValidatorType {
     uptime?: number
     description?: string
     isPending?: boolean
+    isJailed?: boolean
 }
 
 export interface ValidatorStateType {
@@ -116,14 +117,14 @@ export const fetchValidatorMetadata = createAsyncThunk(
     'validators/fetchMetadata',
     async (validators: Address[], { rejectWithValue }) => {
         try {
-            const methods = ['jailedValidators', 'pendingValidators']
+            const methods = ['pendingValidators']
             const calls = methods.map((method) =>
                 [CONFIG.consensusAddress, contractInterface.encodeFunctionData(method, [])]
             )
             const [[, results]] = await Promise.all([
                 multicallContract.aggregate(calls),
             ])
-            const [jailedValidators, pendingValidators] = results.map((result: any, index: any) =>
+            const [pendingValidators] = results.map((result: any, index: any) =>
                 contractInterface.decodeFunctionResult(calls[index][1], result)[0]
             )
             const validatorMap = new Map<string, {
@@ -135,8 +136,8 @@ export const fetchValidatorMetadata = createAsyncThunk(
 
             let totalDelegators = 0
             const validatorMetadata = await Promise.all(validators.map(async (validator) => {
-                const status = jailedValidators.includes(validator.toLowerCase()) ? 'inactive' : 'active'
                 const metadata = await fetchValidatorData(validator)
+                const status = metadata.isJailed ? 'inactive' : 'active'
                 const validatorData = validatorMap.get(validator)
                 totalDelegators += parseInt(metadata.delegatorsLength, 10)
 
