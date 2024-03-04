@@ -91,11 +91,13 @@ export const fetchValidatorData = async (address: Address) => {
   const stakeAmountCallData = contractInterface.encodeFunctionData("stakeAmount", [address]);
   const validatorFeeCallData = contractInterface.encodeFunctionData("validatorFee", [address]);
   const delegatorsCallData = contractInterface.encodeFunctionData("delegators", [address]);
+  const isJailedCallData = contractInterface.encodeFunctionData("isJailed", [address]);
 
   const calls = [
     [CONFIG.consensusAddress, stakeAmountCallData],
     [CONFIG.consensusAddress, validatorFeeCallData],
     [CONFIG.consensusAddress, delegatorsCallData],
+    [CONFIG.consensusAddress, isJailedCallData],
   ];
 
   const data = await multicallContract.aggregate(calls);
@@ -103,6 +105,8 @@ export const fetchValidatorData = async (address: Address) => {
   const [stakeAmount] = contractInterface.decodeFunctionResult(contractInterface.getFunction('stakeAmount'), results[0]);
   const [fee] = contractInterface.decodeFunctionResult(contractInterface.getFunction('validatorFee'), results[1]);
   const [delegatorsMap] = contractInterface.decodeFunctionResult(contractInterface.getFunction('delegators'), results[2]);
+  const [isJailed] = contractInterface.decodeFunctionResult(contractInterface.getFunction('isJailed'), results[3]);
+
   const delegators = delegatorsMap.map((value: any) => [value, "0"]);
 
   return {
@@ -110,6 +114,7 @@ export const fetchValidatorData = async (address: Address) => {
     fee: formatUnits(fee, 16),
     delegatorsLength: delegators.length.toString(),
     delegators,
+    isJailed
   };
 };
 

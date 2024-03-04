@@ -137,7 +137,7 @@ const ValidatorCard = ({
         ) : (
           <Pill
             type="error"
-            text="Inactive"
+            text="Jailed"
             isLoading={isLoading}
             className="ms-3"
           />
