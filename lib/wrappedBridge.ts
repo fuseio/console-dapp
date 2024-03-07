@@ -183,6 +183,6 @@ export const estimateWrappedNativeFee = async (
       ],
     })
   )[0];
-  const increasedNativeFee = (Number(nativeFee) * 1.2).toFixed(0);
+  const increasedNativeFee = BigInt(Number(nativeFee) * 1.2);
   return increasedNativeFee;
 };

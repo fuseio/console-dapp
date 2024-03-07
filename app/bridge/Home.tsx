@@ -74,8 +74,8 @@ const Home = () => {
   const [pendingPromise, setPendingPromise] = React.useState<any>();
   const { address, connector, isConnected } = useAccount();
   const config = useConfig();
-  const { chainId } = getAccount(config) 
-  const chain = config.chains.find(chain => chain.id === chainId) 
+  const { chainId } = getAccount(config);
+  const chain = config.chains.find((chain) => chain.id === chainId);
 
   useEffect(() => {
     setAmount("");
