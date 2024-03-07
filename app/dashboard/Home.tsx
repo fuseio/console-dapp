@@ -31,6 +31,7 @@ import show from "@/assets/show.svg";
 import hide from "@/assets/hide.svg";
 import { formatUnits } from "viem";
 import { SignMessageVariables } from "wagmi/query";
+import contactSupport from "@/assets/contact-support.svg";
 
 type CreateOperatorWalletProps = {
   accessToken: string;
@@ -292,10 +293,30 @@ const Home = () => {
       {operatorSlice.isCongratulationModalOpen && <CongratulationModal />}
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:w-9/10 max-w-7xl">
         <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="" liClassName="w-28" />
-        <div className={`mt-[66.29px] ${operatorSlice.isActivated ? "mb-[70px]" : "mb-[42px]"}`}>
+        <div className={`flex justify-between md:flex-col gap-2 mt-[66.29px] ${operatorSlice.isActivated ? "mb-[70px]" : "mb-[42px]"}`}>
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
             Operator Dashboard
           </h1>
+          <div className="flex items-center gap-px">
+            <Image
+              src={contactSupport}
+              alt="contact support"
+            />
+            <div className="flex items-center gap-1">
+              <p>
+                Not sure what&apos;s next?
+              </p>
+              <button
+                className="underline font-bold"
+                onClick={() => {
+                  amplitude.track("Contact us - Operators");
+                  window.open("https://meetings-eu1.hubspot.com/omri-haik/meet-with-omri", "_blank");
+                }}
+              >
+                Contact Us
+              </button>
+            </div>
+          </div>
         </div>
         {(operatorSlice.isAuthenticated && !operatorSlice.isActivated) &&
           <div className="flex flex-row md:flex-col gap-4 justify-between items-center bg-lemon-chiffon rounded-[20px] px-[30px] py-[18px] mb-[30px] border border-[0.5px] border-star-dust-alpha-70">
@@ -383,7 +404,7 @@ const Home = () => {
               </div>
             </div>
           </div>
-          <div className={`flex md:flex-col gap-[30px] ${operatorSlice.isActivated ? "opacity-100" : "opacity-50"}`}>
+          <div className="flex md:flex-col gap-[30px]">
             <div className={`flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] pl-12 pt-12 pr-4 pb-[55px] ${operatorSlice.isActivated ? "bg-black" : "bg-white"}`}>
               <div className="flex flex-col gap-4">
                 <p className={`text-[20px] leading-none font-semibold ${operatorSlice.isActivated ? "text-white" : "text-black"}`}>
@@ -394,17 +415,16 @@ const Home = () => {
                 </p>
               </div>
               <button
-                className={`transition ease-in-out text-black leading-none font-semibold bg-modal-bg rounded-full px-7 py-4 ${operatorSlice.isActivated ? "hover:bg-success" : "border border-black/40"}`}
+                className={`transition ease-in-out text-black leading-none font-semibold bg-modal-bg rounded-full px-7 py-4 ${operatorSlice.isActivated ? "hover:bg-success" : "border border-black/40 hover:bg-black hover:text-white hover:border-black"}`}
                 onClick={() => {
                   amplitude.track("Go to Tutorials");
                   window.open("https://docs.fuse.io/docs/fuse-box/tutorials/send-your-first-gasless-transaction", "_blank");
                 }}
-                disabled={!operatorSlice.isActivated}
               >
                 Start tutorial
               </button>
             </div>
-            <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
+            <div className={`flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px] ${operatorSlice.isActivated ? "opacity-100" : "opacity-50"}`}>
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-2">
                   <p className="text-[20px] leading-none font-semibold">
@@ -444,7 +464,7 @@ const Home = () => {
                 }
               </div>
             </div>
-            <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
+            <div className={`flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px] ${operatorSlice.isActivated ? "opacity-100" : "opacity-50"}`}>
               <div className="flex flex-col gap-4">
                 <p className="text-[20px] leading-none font-semibold">
                   Your API secret key
