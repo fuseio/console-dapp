@@ -19,8 +19,8 @@ const Bridge = () => {
     <div className="w-full font-mona justify-end min-h-screen">
       <div className="flex-col flex items-center bg-light-gray h-full">
         <Topbar />
-        {/* <Home /> */}
-        <Maintenance />
+        <Home />
+        {/* <Maintenance /> */}
         <Footer />
       </div>
     </div>

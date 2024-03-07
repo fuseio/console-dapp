@@ -726,7 +726,6 @@ const Home = () => {
                       }
                     }}
                     disabled={
-                      true ||
                       balanceSlice.isApprovalLoading ||
                       contractSlice.isBridgeLoading ||
                       contractSlice.isApprovalLoading ||
