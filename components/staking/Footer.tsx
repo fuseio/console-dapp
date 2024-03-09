@@ -90,9 +90,6 @@ const Footer = () => {
                 <a href="https://www.fuse.io/mobile">
                   <p className="text-text-dark-gray mt-4">Mobile Stack</p>
                 </a>
-                <a href="https://chargeweb3.com/">
-                  <p className="text-text-dark-gray mt-4">Fuse Charge</p>
-                </a>
                 <a href="https://voltage.finance/">
                   <p className="text-text-dark-gray mt-4">Voltage Finance</p>
                 </a>
@@ -105,7 +102,7 @@ const Footer = () => {
                 <a href="https://docs.fuse.io">
                   <p className="text-text-dark-gray mt-4">Documentation</p>
                 </a>
-                <a href="https://staking.fuse.io">
+                <a href="https://console.fuse.io/staking">
                   <p className="text-text-dark-gray mt-4">Fuse Staking</p>
                 </a>
                 <a href="https://forum.fuse.io/">
