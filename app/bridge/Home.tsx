@@ -105,7 +105,16 @@ const Home = () => {
           bridge:
             appConfig.wrappedBridge.chains[
               selectedChainSlice.depositSelectedChainItem
-            ].original,
+            ].tokens[depositSelectedTokenItem].isNative &&
+            appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens[depositSelectedTokenItem].isBridged
+              ? appConfig.wrappedBridge.chains[
+                  selectedChainSlice.depositSelectedChainItem
+                ].wrapped
+              : appConfig.wrappedBridge.chains[
+                  selectedChainSlice.depositSelectedChainItem
+                ].original,
           decimals:
             appConfig.wrappedBridge.chains[
               selectedChainSlice.depositSelectedChainItem
