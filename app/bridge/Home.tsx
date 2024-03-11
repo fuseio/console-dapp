@@ -105,7 +105,16 @@ const Home = () => {
           bridge:
             appConfig.wrappedBridge.chains[
               selectedChainSlice.depositSelectedChainItem
-            ].original,
+            ].tokens[depositSelectedTokenItem].isNative &&
+            appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens[depositSelectedTokenItem].isBridged
+              ? appConfig.wrappedBridge.chains[
+                  selectedChainSlice.depositSelectedChainItem
+                ].wrapped
+              : appConfig.wrappedBridge.chains[
+                  selectedChainSlice.depositSelectedChainItem
+                ].original,
           decimals:
             appConfig.wrappedBridge.chains[
               selectedChainSlice.depositSelectedChainItem
@@ -711,7 +720,10 @@ const Home = () => {
                           selected === 0 &&
                           appConfig.wrappedBridge.chains[
                             selectedChainSlice.depositSelectedChainItem
-                          ].tokens[depositSelectedTokenItem].isNative
+                          ].tokens[depositSelectedTokenItem].isNative &&
+                          !appConfig.wrappedBridge.chains[
+                            selectedChainSlice.depositSelectedChainItem
+                          ].tokens[depositSelectedTokenItem].isBridged
                         ) {
                           handleDeposit();
                         } else if (
@@ -748,11 +760,7 @@ const Home = () => {
                             ].tokens[depositSelectedTokenItem].isNative &&
                             !appConfig.wrappedBridge.chains[
                               selectedChainSlice.depositSelectedChainItem
-                            ].tokens[depositSelectedTokenItem].isBridged) ||
-                          (selected === 0 &&
-                            appConfig.wrappedBridge.chains[
-                              selectedChainSlice.depositSelectedChainItem
-                            ].tokens[depositSelectedTokenItem].isNative)
+                            ].tokens[depositSelectedTokenItem].isBridged)
                         ? "Bridge"
                         : parseFloat(balanceSlice.approval) < parseFloat(amount)
                         ? "Approve"
