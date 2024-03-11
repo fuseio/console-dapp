@@ -3,6 +3,7 @@ import LastTransactionToast from "./LastTransactionToast";
 import { useAppSelector } from "@/store/store";
 import { selectToastSlice } from "@/store/toastSlice";
 import NoLiquidityToast from "./NoLiquidityToast";
+import SwitchChainToast from "./SwitchChainToast";
 
 type ToastPaneProps = {
   className?: string;
@@ -17,6 +18,7 @@ const ToastPane = ({ className = "" }: ToastPaneProps) => {
       }
     >
       {toastSlice.isLiquidityToastOpen && <NoLiquidityToast />}
+      {toastSlice.isLiquidityToastOpen && <SwitchChainToast />}
       {toastSlice.isLastTransactionToastOpen && <LastTransactionToast />}
     </div>
   );

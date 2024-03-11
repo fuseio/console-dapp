@@ -62,7 +62,7 @@ const Home = () => {
               Stake
             </p>
             <p className="text-text-dark-gray max-w-[309.2px]">
-              Earn over 10% annually and enhance the security and efficiency of the Fuse blockchain.
+              Earn annually and enhance the security and efficiency of the Fuse blockchain.
             </p>
           </Link>
           <Link
@@ -94,11 +94,11 @@ const Home = () => {
           </p>
           <div className="grid grid-cols-4 md:grid-cols-1 gap-[30px] mt-[45.64px] mb-[151.36px]">
             <a
-              href="https://docs.fuse.io/docs/developers/fuse-box/flutter-sdk/"
+              href="https://docs.fuse.io/docs/fuse-box/sdk/installation-and-setup?platform=flutter"
               target="_blank"
               className="transition ease-in-out flex justify-between items-center bg-lightest-gray hover:bg-success rounded-[20px] p-2 min-h-[220px]"
             >
-              <div className="flex flex-col justify-between items-center m-auto max-w-[215px] min-h-[144px]">
+              <div className="flex flex-col justify-between items-center m-auto max-w-[215px] min-h-[159px]">
                 <p className="text-[20px]/7 text-fuse-black font-bold">
                   Mobile SDK
                 </p>
@@ -114,11 +114,11 @@ const Home = () => {
               </div>
             </a>
             <a
-              href="https://docs.fuse.io/docs/developers/fuse-box/fuse-connect"
+              href="https://docs.fuse.io/docs/fuse-box/sdk/installation-and-setup?platform=web"
               target="_blank"
               className="transition ease-in-out flex justify-between items-center bg-lightest-gray hover:bg-success rounded-[20px] p-2 min-h-[220px]"
             >
-              <div className="flex flex-col justify-between items-center m-auto max-w-[215px] min-h-[144px]">
+              <div className="flex flex-col justify-between items-center m-auto max-w-[215px] min-h-[152px]">
                 <p className="text-[20px]/7 text-fuse-black font-bold">
                   Web SDK
                 </p>
@@ -138,7 +138,7 @@ const Home = () => {
               target="_blank"
               className="transition ease-in-out flex justify-between items-center bg-lightest-gray hover:bg-success rounded-[20px] p-2 min-h-[220px]"
             >
-              <div className="flex flex-col justify-between items-center m-auto max-w-[215px] min-h-[144px]">
+              <div className="flex flex-col justify-between items-center m-auto max-w-[215px] min-h-[152px]">
                 <p className="text-[20px]/7 text-fuse-black font-bold">
                   Fuse Faucet
                 </p>
@@ -154,11 +154,11 @@ const Home = () => {
               </div>
             </a>
             <a
-              href="https://docs.fuse.io/docs/category/fusebox"
+              href="https://docs.fuse.io/docs/fuse-box/getting-started"
               target="_blank"
               className="transition ease-in-out flex justify-between items-center bg-lightest-gray hover:bg-success rounded-[20px] p-2 min-h-[220px]"
             >
-              <div className="flex flex-col justify-between items-center m-auto max-w-[215px] min-h-[144px]">
+              <div className="flex flex-col justify-between items-center m-auto max-w-[215px] min-h-[152px]">
                 <p className="text-[20px]/7 text-fuse-black font-bold">
                   FuseBox
                 </p>

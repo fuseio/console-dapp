@@ -149,6 +149,9 @@ export const bridgeOriginalTokens = createAsyncThunk(
               decimals,
             })
           );
+          if (!txHash) {
+            return resolve(undefined);
+          }
           insertTransactionToLocalStorage({
             hash: txHash,
             srcChainId,
@@ -223,6 +226,9 @@ export const bridgeNativeTokens = createAsyncThunk(
     return new Promise<any>(async (resolve, reject) => {
       bridgeNative(bridge, address, amount, decimals, dstChainId, selectedChainId)
         .then((txHash) => {
+          if (!txHash) {
+            return resolve(undefined);
+          }
           insertTransactionToLocalStorage({
             hash: txHash,
             srcChainId,
@@ -302,6 +308,9 @@ export const bridgeWrappedTokens = createAsyncThunk(
               decimals,
             })
           );
+          if (!txHash) {
+            return resolve(undefined);
+          }
           insertTransactionToLocalStorage({
             hash: txHash,
             srcChainId: srcChainId,
@@ -390,6 +399,9 @@ export const bridgeAndUnwrap = createAsyncThunk(
               decimals,
             })
           );
+          if (!txHash) {
+            return resolve(undefined);
+          }
           insertTransactionToLocalStorage({
             hash: txHash,
             srcChainId: srcChainId,
@@ -431,61 +443,61 @@ const contractSlice = createSlice({
   name: "CONTRACT_STATE",
   initialState: INIT_STATE,
   reducers: {},
-  extraReducers: {
-    [increaseERC20Allowance.pending.type]: (state) => {
-      state.isApprovalLoading = true;
-    },
-    [increaseERC20Allowance.fulfilled.type]: (state) => {
-      state.isApprovalLoading = false;
-    },
-    [increaseERC20Allowance.rejected.type]: (state) => {
-      state.isApprovalLoading = false;
-      state.isError = true;
-    },
-    [bridgeOriginalTokens.pending.type]: (state) => {
-      state.isBridgeLoading = true;
-    },
-    [bridgeOriginalTokens.fulfilled.type]: (state) => {
-      state.isBridgeLoading = false;
-    },
-    [bridgeOriginalTokens.rejected.type]: (state) => {
-      state.isBridgeLoading = false;
-      state.isError = true;
-    },
-    [bridgeWrappedTokens.pending.type]: (state) => {
-      state.isBridgeLoading = true;
-    },
-    [bridgeWrappedTokens.fulfilled.type]: (state) => {
-      state.isBridgeLoading = false;
-    },
-    [bridgeWrappedTokens.rejected.type]: (state) => {
-      state.isBridgeLoading = false;
-      state.isError = true;
-    },
-    [bridgeNativeTokens.pending.type]: (state) => {
-      state.isBridgeLoading = true;
-    },
-    [bridgeNativeTokens.fulfilled.type]: (state) => {
-      state.isBridgeLoading = false;
-    },
-    [bridgeNativeTokens.rejected.type]: (state) => {
-      state.isBridgeLoading = false;
-      state.isError = true;
-    },
-    [bridgeAndUnwrap.pending.type]: (state) => {
-      state.isBridgeLoading = true;
-    },
-    [bridgeAndUnwrap.fulfilled.type]: (state) => {
-      state.isBridgeLoading = false;
-    },
-    [bridgeAndUnwrap.rejected.type]: (state) => {
-      state.isBridgeLoading = false;
-      state.isError = true;
-    },
+  extraReducers: (builder) => {
+    builder
+      .addCase(increaseERC20Allowance.pending, (state) => {
+        state.isApprovalLoading = true;
+      })
+      .addCase(increaseERC20Allowance.fulfilled, (state) => {
+        state.isApprovalLoading = false;
+      })
+      .addCase(increaseERC20Allowance.rejected, (state) => {
+        state.isApprovalLoading = false;
+        state.isError = true;
+      })
+      .addCase(bridgeOriginalTokens.pending, (state) => {
+        state.isBridgeLoading = true;
+      })
+      .addCase(bridgeOriginalTokens.fulfilled, (state) => {
+        state.isBridgeLoading = false;
+      })
+      .addCase(bridgeOriginalTokens.rejected, (state) => {
+        state.isBridgeLoading = false;
+        state.isError = true;
+      })
+      .addCase(bridgeWrappedTokens.pending, (state) => {
+        state.isBridgeLoading = true;
+      })
+      .addCase(bridgeWrappedTokens.fulfilled, (state) => {
+        state.isBridgeLoading = false;
+      })
+      .addCase(bridgeWrappedTokens.rejected, (state) => {
+        state.isBridgeLoading = false;
+        state.isError = true;
+      })
+      .addCase(bridgeNativeTokens.pending, (state) => {
+        state.isBridgeLoading = true;
+      })
+      .addCase(bridgeNativeTokens.fulfilled, (state) => {
+        state.isBridgeLoading = false;
+      })
+      .addCase(bridgeNativeTokens.rejected, (state) => {
+        state.isBridgeLoading = false;
+        state.isError = true;
+      })
+      .addCase(bridgeAndUnwrap.pending, (state) => {
+        state.isBridgeLoading = true;
+      })
+      .addCase(bridgeAndUnwrap.fulfilled, (state) => {
+        state.isBridgeLoading = false;
+      })
+      .addCase(bridgeAndUnwrap.rejected, (state) => {
+        state.isBridgeLoading = false;
+        state.isError = true;
+      });
   },
 });
 
-export const selectContractSlice = (state: AppState): ContractStateType =>
-  state.contract;
+export const selectContractSlice = (state: AppState): ContractStateType => state.contract;
 
 export default contractSlice.reducer;

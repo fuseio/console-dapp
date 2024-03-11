@@ -80,7 +80,7 @@ const Airdrop = () => {
             Airdrop of 0.01 FUSE
           </span>
           <span className="text-xs ps-[2px]">
-            will be sent to every first time users!
+            will be sent to every first time user!
           </span>
         </div>
         <div

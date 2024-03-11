@@ -12,7 +12,7 @@ function isIWeb3AuthModal(obj: IWeb3Auth | IWeb3AuthModal): obj is IWeb3AuthModa
   return typeof (obj as IWeb3AuthModal).initModal !== "undefined";
 }
 
-export function Web3AuthEmailConnector(parameters: Web3AuthConnectorParams, id: string) {
+export function Web3AuthSocialConnector(parameters: Web3AuthConnectorParams, id: string) {
   let walletProvider: Provider | null = null;
 
   const { web3AuthInstance, loginParams, modalConfig } = parameters;
@@ -36,14 +36,7 @@ export function Web3AuthEmailConnector(parameters: Web3AuthConnectorParams, id: 
           if (isIWeb3AuthModal(web3AuthInstance)) {
             await web3AuthInstance.connect();
           } else if (loginParams) {
-            const loginHint = localStorage.getItem("Fuse-loginHint");
-            const loginParameters = {
-              ...loginParams,
-              extraLoginOptions: {
-                login_hint: loginHint,
-              }
-            }
-            await web3AuthInstance.connectTo(WALLET_ADAPTERS.OPENLOGIN, loginParameters);
+            await web3AuthInstance.connectTo(WALLET_ADAPTERS.OPENLOGIN, loginParams);
           } else {
             log.error("please provide valid loginParams when using @web3auth/no-modal");
             throw new UserRejectedRequestError("please provide valid loginParams when using @web3auth/no-modal" as unknown as Error);
@@ -150,7 +143,6 @@ export function Web3AuthEmailConnector(parameters: Web3AuthConnectorParams, id: 
       const provider = await this.getProvider();
       provider.removeListener("accountsChanged", this.onAccountsChanged);
       provider.removeListener("chainChanged", this.onChainChanged);
-      localStorage.removeItem("Fuse-loginHint");
       localStorage.removeItem('Fuse-selectedConnectorId');
     },
     onAccountsChanged(accounts) {

@@ -23,7 +23,7 @@ import Modal from "@/components/staking/Modal";
 import FAQ from "@/components/FAQ";
 import WarningModal from "@/components/staking/WarningModal";
 import { delegate, withdraw } from "@/lib/contractInteract";
-import { Address, useAccount } from "wagmi";
+import { useAccount } from "wagmi";
 import * as amplitude from "@amplitude/analytics-browser";
 import useDeepCompareEffect, { useDeepCompareEffectNoCheck } from "use-deep-compare-effect";
 import Image from "next/image";
@@ -31,6 +31,7 @@ import leftArrow from "@/assets/left-arrow.svg";
 import Link from "next/link";
 import { fetchTokenPrice } from "@/lib/api";
 import Copy from "@/components/ui/Copy";
+import { Address } from "abitype";
 
 const Stake = ({ params }: { params: { id: string } }) => {
   const { id } = params;
@@ -303,28 +304,28 @@ const Stake = ({ params }: { params: { id: string } }) => {
                 </div>
               </div>
               <div className="flex flex-col items-end justify-center w-1/3 h-full ms-6 md:w-full md:items-start md:ms-0 md:mt-8">
-                <p className="text-text-heading-gray text-base mb-2">
-                  Validating Since
-                  {validator ? (
-                    <span className="ms-1.5 font-semibold">
-                      {new Date(
-                        parseInt(validator.firstSeen as string) * 1000
-                      ).toLocaleDateString()}
-                    </span>
-                  ) : (
-                    <span className="ms-2 px-14 py-1 bg-dark-gray rounded-lg animate-pulse" />
-                  )}
-                </p>
-                <p className="text-text-heading-gray text-base md:mt-4 mt-2">
-                  Validated Blocks
-                  {validator ? (
-                    <span className="ms-1.5 font-semibold">
-                      {validator.totalValidated}
-                    </span>
-                  ) : (
-                    <span className="ms-2 px-7 py-1 bg-dark-gray rounded-lg animate-pulse" />
-                  )}
-                </p>
+                {
+                  validator && validator?.firstSeen && (
+                    <p className="text-text-heading-gray text-base mb-2">
+                      Validating Since
+                      <span className="ms-1.5 font-semibold">
+                        {new Date(
+                          parseInt(validator.firstSeen as string) * 1000
+                        ).toLocaleDateString()}
+                      </span>
+                    </p>
+                  )
+                }
+                {
+                  validator && validator?.totalValidated && (
+                    <p className="text-text-heading-gray text-base md:mt-4 mt-2">
+                      Validated Blocks
+                      <span className="ms-1.5 font-semibold">
+                        {validator.totalValidated}
+                      </span>
+                    </p>
+                  )
+                }
               </div>
             </div>
             <div className="grid grid-cols-2 mt-8 gap-4 md:grid-cols-1">
@@ -368,14 +369,19 @@ const Stake = ({ params }: { params: { id: string } }) => {
                   );
                 }}
               />
-              <InfoCard
-                size="large"
-                Header={validator?.uptime + "%"}
-                Body="&nbsp;"
-                Footer="Uptime"
-                type={2}
-                isLoading={!validator}
-              />
+              {
+                validator?.uptime && (
+                  <InfoCard
+                    size="large"
+                    Header={validator?.uptime + "%"}
+                    Body="&nbsp;"
+                    Footer="Uptime"
+                    type={2}
+                    isLoading={!validator}
+                  />
+                )
+              }
+
               <InfoCard
                 size="large"
                 Header={validator?.fee + "%"}
@@ -409,7 +415,7 @@ const Stake = ({ params }: { params: { id: string } }) => {
                 ) : (
                   <Pill
                     type="error"
-                    text={"Inactive"}
+                    text={"Jailed"}
                     className="me-auto mt-4 px-3 py-2.5"
                   />
                 )}

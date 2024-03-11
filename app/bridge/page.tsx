@@ -6,6 +6,7 @@ import { useAppDispatch } from "@/store/store";
 import { useEffect } from "react";
 import { setSelectedNavbar } from "@/store/navbarSlice";
 import Footer from "@/components/Footer";
+import Maintenance from "./Maintenance";
 
 const Bridge = () => {
   const dispatch = useAppDispatch();
@@ -19,6 +20,7 @@ const Bridge = () => {
       <div className="flex-col flex items-center bg-light-gray h-full">
         <Topbar />
         <Home />
+        {/* <Maintenance /> */}
         <Footer />
       </div>
     </div>

@@ -17,10 +17,12 @@ import visit from "@/assets/visit.svg";
 import sFuse from "@/assets/sFuse.svg";
 import { estimateOriginalFee } from "@/store/feeSlice";
 import * as amplitude from "@amplitude/analytics-browser";
-import { useAccount } from "wagmi";
-import { walletType } from "@/lib/helpers";
-import { fetchBalance as fetchWalletBalance } from "@wagmi/core";
+import { useAccount, useConfig } from "wagmi";
+import { evmDecimals, walletType } from "@/lib/helpers";
+import { getBalance } from "wagmi/actions";
 import AddToken from "@/components/bridge/AddToken";
+import { getAccount } from "wagmi/actions";
+import { formatUnits } from "viem";
 
 type DepositProps = {
   selectedChainSection: number;
@@ -73,15 +75,18 @@ const Deposit = ({
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const chainSlice = useAppSelector(selectChainSlice);
   const [nativeBalance, setNativeBalance] = React.useState("0");
+  const config = useConfig();
+  const { chainId } = getAccount(config) 
+  const chain = config.chains.find(chain => chain.id === chainId) 
 
   useEffect(() => {
     async function updateBalance() {
       if (address) {
-        const balance = await fetchWalletBalance({
+        const balance = await getBalance(config, {
           address,
           chainId: appConfig.wrappedBridge.chains[selectedChainItem].chainId,
         });
-        setNativeBalance(balance.formatted);
+        setNativeBalance(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals));
       }
     }
     updateBalance();
@@ -262,6 +267,8 @@ const Deposit = ({
             <span className="mt-3 text-xs font-medium">
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
+              chain?.id !==
+                appConfig.wrappedBridge.chains[selectedChainItem].chainId ||
               balanceSlice.isApprovalLoading ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : (
@@ -414,7 +421,7 @@ const Deposit = ({
                     icon: fuseToken,
                     lzChainId: 138,
                     name: "Fuse",
-                    rpcUrl: "https://fuse.liquify.com",
+                    rpcUrl: "https://rpc.fuse.io",
                     tokens: [],
                     wrapped: appConfig.wrappedBridge.fuse.wrapped,
                   })

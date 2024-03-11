@@ -4,14 +4,24 @@ import PageWrapper from "./wrapper";
 import { getJailedValidators, getValidators } from '@/lib/contractInteract';
 
 export async function generateStaticParams() {
-  let validators = await getValidators()
-  const jailedValidators = await getJailedValidators()
-  validators = validators.concat(jailedValidators)
-  validators = [...new Set(validators)]
+  try {
+    // Fetch validators and jailedValidators in parallel
+    const [validators, jailedValidators] = await Promise.all([
+      getValidators(),
+      getJailedValidators(),
+    ]);
 
-  return validators.map((validator) => ({
-    id: validator.toLowerCase(),
-  }))
+    // Combine and deduplicate the validator lists using a Set
+    const uniqueValidators = new Set([...validators, ...jailedValidators]);
+
+    // Map the unique validators to the desired format
+    return Array.from(uniqueValidators).map(validator => ({
+      id: validator.toLowerCase(),
+    }));
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return []; // Return an empty array or handle the error as needed
+  }
 }
 
 const Stake = ({ params }: { params: { id: string } }) => {

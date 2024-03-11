@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import close from "@/assets/close.svg";
 import fuseGray from "@/assets/fuse-gray.svg";
 import Button from "@/components/ui/Button";
-import { useAccount, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
+import { useAccount, useDisconnect, useSwitchChain } from "wagmi";
 import { fuse } from "viem/chains";
 import Image from "next/image";
 
@@ -12,12 +12,11 @@ type ChainModalProps = {
 }
 
 const ChainModal = ({
-  description = "Please switch to the Fuse chain to continue using this page"
+  description = "Please switch to the Fuse Network to continue"
 }: ChainModalProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { switchNetwork } = useSwitchNetwork()
-  const { isConnected } = useAccount();
-  const { chain } = useNetwork();
+  const { switchChain } = useSwitchChain()
+  const { isConnected, chain } = useAccount();
   const { disconnect } = useDisconnect();
 
   useEffect(() => {
@@ -65,7 +64,7 @@ const ChainModal = ({
               className="transition ease-in-out w-full bg-success text-lg font-bold text-black rounded-xl mt-[31.7px] mb-2.5 hover:bg-black hover:text-white"
               padding="py-3.5"
               onClick={() => {
-                switchNetwork && switchNetwork(fuse.id);
+                switchChain({ chainId: fuse.id });
               }}
             />
             <Button

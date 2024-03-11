@@ -1,8 +1,8 @@
 import { ERC20ABI } from "@/lib/abi/ERC20";
 import { Address, createPublicClient, http, parseUnits } from "viem";
-import { getWalletClient } from "wagmi/actions";
+import { getWalletClient, waitForTransactionReceipt } from "wagmi/actions";
 import { hex } from "./helpers";
-import { waitForTransaction } from "@wagmi/core";
+import { config } from "./web3Auth";
 
 const publicClient = (rpcUrl: string) => {
   return createPublicClient({
@@ -46,7 +46,7 @@ export const approveSpend = async (
   decimals: number = 18,
   selectedChainId: number
 ) => {
-  const walletClient = await getWalletClient({ chainId: selectedChainId });
+  const walletClient = await getWalletClient(config, { chainId: selectedChainId });
   let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
@@ -60,7 +60,8 @@ export const approveSpend = async (
     });
   }
   try {
-    await waitForTransaction({
+    await waitForTransactionReceipt(config, {
+      chainId: selectedChainId,
       hash: tx,
     });
   } catch (e) {

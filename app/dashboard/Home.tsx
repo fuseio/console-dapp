@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
 import rightArrow from "@/assets/right-arrow.svg"
-import { buildSubMenuItems, signDataMessage } from "@/lib/helpers";
+import { buildSubMenuItems, evmDecimals, signDataMessage } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
-import { useAccount, useBalance, useNetwork, useSignMessage } from "wagmi";
+import { useAccount, useBalance, useBlockNumber, useSignMessage } from "wagmi";
 import { fuse } from "wagmi/chains";
-import Link from "next/link";
 import { checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, validateOperator } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
@@ -22,7 +21,6 @@ import info from "@/assets/info.svg"
 import AccountCreationModal from "@/components/build/AccountCreationModal";
 import CongratulationModal from "@/components/build/CongratulationModal";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
-import { SignMessageArgs } from "wagmi/actions";
 import ConnectWallet from "@/components/ConnectWallet";
 import ContactDetailsModal from "@/components/build/ContactDetailsModal";
 import Copy from "@/components/ui/Copy";
@@ -31,16 +29,19 @@ import * as amplitude from "@amplitude/analytics-browser";
 import { fetchTokenPrice } from "@/lib/api";
 import show from "@/assets/show.svg";
 import hide from "@/assets/hide.svg";
+import { formatUnits } from "viem";
+import { SignMessageVariables } from "wagmi/query";
+import contactSupport from "@/assets/contact-support.svg";
 
 type CreateOperatorWalletProps = {
   accessToken: string;
-  signMessage: (args?: SignMessageArgs | undefined) => void;
+  signMessage: (variables: SignMessageVariables) => void;
   loading: () => boolean;
   dispatch: any;
 }
 
 type ConnectOperatorWalletProps = {
-  signMessage: (args?: SignMessageArgs | undefined) => void;
+  signMessage: (variables: SignMessageVariables) => void;
   loading: () => boolean;
 }
 
@@ -72,7 +73,7 @@ const CreateOperatorWallet = ({ accessToken, signMessage, loading, dispatch }: C
           if (accessToken) {
             return dispatch(setIsContactDetailsModalOpen(true))
           }
-          signMessage();
+          signMessage({ message: signDataMessage });
         }}
       >
         {loading() && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
@@ -97,7 +98,7 @@ const ConnectOperatorWallet = ({ signMessage, loading }: ConnectOperatorWalletPr
         className="transition ease-in-out flex justify-between items-center gap-2 text-lg leading-none text-white font-semibold bg-black rounded-full hover:bg-success hover:text-black"
         padding="py-[18.5px] px-[38px]"
         onClick={() => {
-          signMessage();
+          signMessage({ message: signDataMessage });
         }}
       >
         {loading() && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
@@ -162,7 +163,7 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
           <h1 className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
             {(chain && chain.id === fuse.id) ?
               new Intl.NumberFormat().format(
-                parseFloat(balance.data?.formatted ?? "0")
+                parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0")
               ) :
               0
             } FUSE
@@ -172,7 +173,7 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
             <p className="text-[20px]/7 font-medium">
               ${(chain && chain.id === fuse.id) ?
                 new Intl.NumberFormat().format(
-                  parseFloat((parseFloat(balance.data?.formatted ?? "0.00") * balanceSlice.price).toString())
+                  parseFloat((parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0.00") * balanceSlice.price).toString())
                 ) :
                 "0.00"
               }
@@ -208,34 +209,34 @@ const Home = () => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const [showSecretKey, setShowSecretKey] = useState(false);
   const controller = new AbortController();
-  const { isConnected, address } = useAccount();
+  const { isConnected, address, chain } = useAccount();
   const signer = useEthersSigner();
-  const { chain } = useNetwork();
-  const balance = useBalance({
+  const { data: blockNumber } = useBlockNumber({ watch: true });
+  const { data: balance, refetch } = useBalance({
     address: operatorSlice.operator.user.smartContractAccountAddress,
-    watch: operatorSlice.isAuthenticated,
     chainId: fuse.id,
   });
   const totalTransaction = 1000;
-  const { isLoading, signMessage } = useSignMessage({
-    message: signDataMessage,
-    onSuccess(data) {
-      if (!address) {
-        return;
+  const { isPending, signMessage } = useSignMessage({
+    mutation: {
+      onSuccess(data) {
+        if (!address) {
+          return;
+        }
+        dispatch(validateOperator({
+          signData: {
+            externallyOwnedAccountAddress: address,
+            message: signDataMessage,
+            signature: data
+          },
+        }));
       }
-      dispatch(validateOperator({
-        signData: {
-          externallyOwnedAccountAddress: address,
-          message: signDataMessage,
-          signature: data
-        },
-      }));
     }
   });
 
   const loading = () => {
     if (
-      isLoading ||
+      isPending ||
       operatorSlice.isValidatingOperator ||
       operatorSlice.isFetchingOperator
     ) {
@@ -274,11 +275,17 @@ const Home = () => {
     })();
   }, [operatorSlice.isWithdrawn])
 
+  useEffect(() => {
+    if (operatorSlice.isAuthenticated) {
+      refetch();
+    }
+  }, [blockNumber, operatorSlice.isAuthenticated])
+
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TopupAccountModal />
-      <WithdrawModal balance={balance.data?.formatted ?? "0"} />
-      <TopupPaymasterModal balance={balance.data?.formatted ?? "0"} />
+      <WithdrawModal balance={formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0"} />
+      <TopupPaymasterModal balance={formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0"} />
       <YourSecretKeyModal />
       <RollSecretKeyModal />
       {operatorSlice.isContactDetailsModalOpen && <ContactDetailsModal />}
@@ -286,10 +293,30 @@ const Home = () => {
       {operatorSlice.isCongratulationModalOpen && <CongratulationModal />}
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:w-9/10 max-w-7xl">
         <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="" liClassName="w-28" />
-        <div className={`mt-[66.29px] ${operatorSlice.isActivated ? "mb-[70px]" : "mb-[42px]"}`}>
+        <div className={`flex justify-between md:flex-col gap-2 mt-[66.29px] ${operatorSlice.isActivated ? "mb-[70px]" : "mb-[42px]"}`}>
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
             Operator Dashboard
           </h1>
+          <div className="flex items-center gap-px">
+            <Image
+              src={contactSupport}
+              alt="contact support"
+            />
+            <div className="flex items-center gap-1">
+              <p>
+                Not sure what&apos;s next?
+              </p>
+              <button
+                className="underline font-bold"
+                onClick={() => {
+                  amplitude.track("Contact us - Operators");
+                  window.open("https://meetings-eu1.hubspot.com/omri-haik/meet-with-omri", "_blank");
+                }}
+              >
+                Contact Us
+              </button>
+            </div>
+          </div>
         </div>
         {(operatorSlice.isAuthenticated && !operatorSlice.isActivated) &&
           <div className="flex flex-row md:flex-col gap-4 justify-between items-center bg-lemon-chiffon rounded-[20px] px-[30px] py-[18px] mb-[30px] border border-[0.5px] border-star-dust-alpha-70">
@@ -377,8 +404,27 @@ const Home = () => {
               </div>
             </div>
           </div>
-          <div className={`flex md:flex-col gap-[30px] ${operatorSlice.isActivated ? "opacity-100" : "opacity-50"}`}>
-            <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
+          <div className="flex md:flex-col gap-[30px]">
+            <div className={`flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] pl-12 pt-12 pr-4 pb-[55px] ${operatorSlice.isActivated ? "bg-black" : "bg-white"}`}>
+              <div className="flex flex-col gap-4">
+                <p className={`text-[20px] leading-none font-semibold ${operatorSlice.isActivated ? "text-white" : "text-black"}`}>
+                  Send your first transaction
+                </p>
+                <p className={`text-base ${operatorSlice.isActivated ? "text-white" : "text-text-dark-gray"}`}>
+                  Learn how to submit your first transaction using a smart contract wallet
+                </p>
+              </div>
+              <button
+                className={`transition ease-in-out text-black leading-none font-semibold bg-modal-bg rounded-full px-7 py-4 ${operatorSlice.isActivated ? "hover:bg-success" : "border border-black/40 hover:bg-black hover:text-white hover:border-black"}`}
+                onClick={() => {
+                  amplitude.track("Go to Tutorials");
+                  window.open("https://docs.fuse.io/docs/fuse-box/tutorials/send-your-first-gasless-transaction", "_blank");
+                }}
+              >
+                Start tutorial
+              </button>
+            </div>
+            <div className={`flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px] ${operatorSlice.isActivated ? "opacity-100" : "opacity-50"}`}>
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-2">
                   <p className="text-[20px] leading-none font-semibold">
@@ -418,7 +464,7 @@ const Home = () => {
                 }
               </div>
             </div>
-            <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
+            <div className={`flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px] ${operatorSlice.isActivated ? "opacity-100" : "opacity-50"}`}>
               <div className="flex flex-col gap-4">
                 <p className="text-[20px] leading-none font-semibold">
                   Your API secret key
@@ -481,28 +527,6 @@ const Home = () => {
                     {operatorSlice.isGeneratingSecretApiKey && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
                   </Button>
               }
-            </div>
-            <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px]">
-              <div className="flex flex-col gap-4">
-                <p className="text-[20px] leading-none font-semibold">
-                  Getting started tutorial
-                </p>
-                <p className="text-text-dark-gray md:text-base">
-                  The Operator&apos;s account is a single information and control panel for Operators.
-                </p>
-              </div>
-              <div className="flex gap-8">
-                <Link href={"https://docs.fuse.io/docs/tutorials/tutorials/send-your-first-transaction"} className={`${operatorSlice.isActivated ? "group" : ""} flex gap-1 text-black font-semibold`}>
-                  <p>Start tutorial</p>
-                  <Image
-                    src={rightArrow.src}
-                    alt="right arrow"
-                    width={14}
-                    height={14}
-                    className={operatorSlice.isActivated ? "transition ease-in-out delay-150 group-hover:translate-x-1" : ""}
-                  />
-                </Link>
-              </div>
             </div>
           </div>
         </div>

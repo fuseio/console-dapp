@@ -4,7 +4,6 @@ import { ethers } from "ethers";
 import { estimateOriginalNativeFee } from "@/lib/originalBridge";
 import { estimateWrappedNativeFee } from "@/lib/wrappedBridge";
 import { Address } from "abitype";
-import { rpc } from "viem/utils";
 import { createPublicClient, http } from "viem";
 import { fetchTokenPrice } from "@/lib/api";
 
@@ -27,7 +26,7 @@ const INIT_STATE: FeeStateType = {
 };
 
 export const estimateOriginalFee = createAsyncThunk(
-  "FEE/ESTIMATE_GAS",
+  "FEE/ESTIMATE_ORIGINAL_FEE",
   async (
     {
       contractAddress,
@@ -56,7 +55,7 @@ export const estimateOriginalFee = createAsyncThunk(
 );
 
 export const estimateWrappedFee = createAsyncThunk(
-  "FEE/ESTIMATE_GAS",
+  "FEE/ESTIMATE_WRAPPED_FEE",
   async (
     {
       contractAddress,
@@ -118,51 +117,52 @@ const feeSlice = createSlice({
   name: "FEE_STATE",
   initialState: INIT_STATE,
   reducers: {},
-  extraReducers: {
-    [estimateOriginalFee.pending.type]: (state) => {
-      state.isGasFeeLoading = true;
-    },
-    [estimateOriginalFee.fulfilled.type]: (state, action) => {
-      state.isGasFeeLoading = false;
-      state.destGasFee = action.payload;
-    },
-    [estimateOriginalFee.rejected.type]: (state) => {
-      state.isGasFeeLoading = false;
-      state.isError = true;
-    },
-    [estimateWrappedFee.pending.type]: (state) => {
-      state.isGasFeeLoading = true;
-    },
-    [estimateWrappedFee.fulfilled.type]: (state, action) => {
-      state.isGasFeeLoading = false;
-      state.destGasFee = action.payload;
-    },
-    [estimateWrappedFee.rejected.type]: (state) => {
-      state.isGasFeeLoading = false;
-      state.isError = true;
-    },
-    [estimateSourceFee.pending.type]: (state) => {
-      state.isSourceGasFeeLoading = true;
-    },
-    [estimateSourceFee.fulfilled.type]: (state, action) => {
-      state.isSourceGasFeeLoading = false;
-      state.sourceGasFee = action.payload;
-    },
-    [estimateSourceFee.rejected.type]: (state) => {
-      state.isSourceGasFeeLoading = false;
-      state.isError = true;
-    },
-    [fetchNativePrice.pending.type]: (state) => {
-      state.isGasFeeLoading = true;
-    },
-    [fetchNativePrice.fulfilled.type]: (state, action) => {
-      state.isGasFeeLoading = false;
-      state.tokenPrice = action.payload;
-    },
-    [fetchNativePrice.rejected.type]: (state) => {
-      state.isGasFeeLoading = false;
-      state.isError = true;
-    },
+  extraReducers: (builder) => {
+    builder
+      .addCase(estimateOriginalFee.pending, (state) => {
+        state.isGasFeeLoading = true;
+      })
+      .addCase(estimateOriginalFee.fulfilled, (state, action) => {
+        state.isGasFeeLoading = false;
+        state.destGasFee = action.payload;
+      })
+      .addCase(estimateOriginalFee.rejected, (state) => {
+        state.isGasFeeLoading = false;
+        state.isError = true;
+      })
+      .addCase(estimateWrappedFee.pending, (state) => {
+        state.isGasFeeLoading = true;
+      })
+      .addCase(estimateWrappedFee.fulfilled, (state, action) => {
+        state.isGasFeeLoading = false;
+        state.destGasFee = action.payload;
+      })
+      .addCase(estimateWrappedFee.rejected, (state) => {
+        state.isGasFeeLoading = false;
+        state.isError = true;
+      })
+      .addCase(estimateSourceFee.pending, (state) => {
+        state.isSourceGasFeeLoading = true;
+      })
+      .addCase(estimateSourceFee.fulfilled, (state, action) => {
+        state.isSourceGasFeeLoading = false;
+        state.sourceGasFee = action.payload;
+      })
+      .addCase(estimateSourceFee.rejected, (state) => {
+        state.isSourceGasFeeLoading = false;
+        state.isError = true;
+      })
+      .addCase(fetchNativePrice.pending, (state) => {
+        state.isGasFeeLoading = true;
+      })
+      .addCase(fetchNativePrice.fulfilled, (state, action) => {
+        state.isGasFeeLoading = false;
+        state.tokenPrice = action.payload;
+      })
+      .addCase(fetchNativePrice.rejected, (state) => {
+        state.isGasFeeLoading = false;
+        state.isError = true;
+      })
   },
 });
 

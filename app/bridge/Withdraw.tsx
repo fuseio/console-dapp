@@ -19,11 +19,13 @@ import sFuse from "@/assets/sFuse.svg";
 import { estimateWrappedFee } from "@/store/feeSlice";
 import { toggleLiquidityToast } from "@/store/toastSlice";
 import * as amplitude from "@amplitude/analytics-browser";
-import { useAccount } from "wagmi";
-import { fetchBalance as fetchWalletBalance } from "@wagmi/core";
+import { useAccount, useConfig } from "wagmi";
+import { getBalance } from "wagmi/actions";
 import { fuse } from "viem/chains";
-import { hex, walletType } from "@/lib/helpers";
-import { getNetwork } from "wagmi/actions";
+import { evmDecimals, hex, walletType } from "@/lib/helpers";
+import { getAccount } from "wagmi/actions";
+import { fetchAvailableLiquidityOnChains } from "@/store/liquiditySlice";
+import { formatUnits } from "viem";
 
 type WithdrawProps = {
   selectedChainSection: number;
@@ -72,16 +74,18 @@ const Withdraw = ({
   const chainSlice = useAppSelector(selectChainSlice);
   const [nativeBalance, setNativeBalance] = React.useState<string>("0");
   const { address, connector } = useAccount();
-  const { chain } = getNetwork();
+  const config = useConfig();
+  const { chainId } = getAccount(config)
+  const chain = config.chains.find(chain => chain.id === chainId)
 
   useEffect(() => {
     async function updateBalance() {
       if (address) {
-        const balance = await fetchWalletBalance({
+        const balance = await getBalance(config, {
           address,
           chainId: fuse.id,
         });
-        setNativeBalance(balance.formatted);
+        setNativeBalance(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals));
       }
     }
     updateBalance();
@@ -123,18 +127,18 @@ const Withdraw = ({
         (!tokenAddress || tokenAddress === hex) && chain?.id === fuse.id
           ? dispatch(setNativeBalanceThunk(nativeBalance.toString()))
           : dispatch(
-              fetchBalance({
-                address: address,
-                contractAddress:
-                  appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
-                    .address,
-                decimals:
-                  appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
-                    .decimals,
-                bridge: appConfig.wrappedBridge.fuse.wrapped,
-                rpc: "https://fuse.liquify.com",
-              })
-            );
+            fetchBalance({
+              address: address,
+              contractAddress:
+                appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
+                  .address,
+              decimals:
+                appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
+                  .decimals,
+              bridge: appConfig.wrappedBridge.fuse.wrapped,
+              rpc: "https://rpc.fuse.io",
+            })
+          );
       setPendingPromise(promise);
     }
   }, [
@@ -154,6 +158,15 @@ const Withdraw = ({
       parseFloat(amount) <= parseFloat(balanceSlice.balance)
     ) {
       dispatch(toggleLiquidityToast(true));
+      dispatch(
+        fetchAvailableLiquidityOnChains({
+          amount: amount,
+          token:
+            appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+              selectedTokenItem
+            ].symbol,
+        })
+      );
       amplitude.track("Withdraw: Insufficient Liquidity", {
         amount: parseFloat(amount),
         network: appConfig.wrappedBridge.chains[selectedChainItem].name,
@@ -185,7 +198,7 @@ const Withdraw = ({
           icon: fuseToken,
           lzChainId: 138,
           name: "Fuse",
-          rpcUrl: "https://fuse.liquify.com",
+          rpcUrl: "https://rpc.fuse.io",
           tokens: [],
           wrapped: appConfig.wrappedBridge.fuse.wrapped,
         })
@@ -259,11 +272,8 @@ const Withdraw = ({
             <span className="mt-3 text-xs font-medium">
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
-              balanceSlice.isApprovalLoading ||
-              (appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                selectedTokenItem
-              ].isNative &&
-                chain?.id !== fuse.id) ? (
+                balanceSlice.isApprovalLoading ||
+                chain?.id !== fuse.id ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : (
                 balanceSlice.balance
@@ -329,7 +339,7 @@ const Withdraw = ({
                 estimateWrappedFee({
                   contractAddress: appConfig.wrappedBridge.fuse.wrapped,
                   lzChainId: appConfig.wrappedBridge.chains[item].lzChainId,
-                  rpcUrl: "https://fuse.liquify.com",
+                  rpcUrl: "https://rpc.fuse.io",
                   tokenId: "fuse-network-token",
                 })
               );

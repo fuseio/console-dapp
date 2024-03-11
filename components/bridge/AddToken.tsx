@@ -6,6 +6,9 @@ import copy from "@/assets/copy.svg";
 import { selectToastSlice, toggleAddTokenToast } from "@/store/toastSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { appConfig } from "@/lib/config";
+import tick from "@/public/tick.png";
+import Image from "next/image";
+import Copy from "../ui/Copy";
 
 const AddToken = () => {
   const tokenSlice = useAppSelector(selectToastSlice);
@@ -21,24 +24,14 @@ const AddToken = () => {
   useEffect(() => {
     setChecked(false);
   }, [tokenSlice.token]);
-  const getTokenAddress = (token: string) => {
+
+  const getTokenDetails = (token: string) => {
     const tokenDetails = appConfig.wrappedBridge.fuse.tokens.find(
       (t) => t.symbol === token
     );
-    return tokenDetails?.address;
+    return tokenDetails;
   };
-  const getTokenDecimals = (token: string) => {
-    const tokenDetails = appConfig.wrappedBridge.fuse.tokens.find(
-      (t) => t.symbol === token
-    );
-    return tokenDetails?.decimals;
-  };
-  const getTokenIcon = (token: string) => {
-    const tokenDetails = appConfig.wrappedBridge.fuse.tokens.find(
-      (t) => t.symbol === token
-    );
-    return tokenDetails?.icon;
-  };
+
   return (
     <>
       <AnimatePresence>
@@ -73,14 +66,14 @@ const AddToken = () => {
                 Add token to wallet
               </span>
               <span className="text-sm font-normal text-[#4d4d4d] mt-3">
-                After completing a transaction, on the Fuse network you will
-                receive a version of the token minted specifically for Fuse
-                Bridge. You can add it to your wallet manually using the
-                contract address, or simply click Add token button below.
+                After a transaction you&apos;ll receive a Fuse Bridge-specific
+                token on the Fuse Network side. You can manually add it to your
+                wallet using the contract address or simply click the &apos;Add
+                token&apos; button below.
               </span>
               <div className="px-10 py-5 rounded-[14px] border-[1px] w-full border-[#D2D5D8] mt-6 flex items-center justify-between">
                 <img
-                  src={getTokenIcon(tokenSlice.token as string)}
+                  src={getTokenDetails(tokenSlice.token as string)?.icon}
                   alt="token"
                   className="w-[10%]"
                 />
@@ -88,18 +81,18 @@ const AddToken = () => {
                   {tokenSlice.token}
                 </span>
                 <span className="text-base text-[#666] w-[60%] break-all">
-                  {getTokenAddress(tokenSlice.token as string)}
+                  {getTokenDetails(tokenSlice.token as string)?.address}
                 </span>
-                <img
-                  src={copy.src}
-                  alt="copy"
-                  className="h-4 w-[10%] cursor-pointer"
-                  onClick={() => {
-                    navigator.clipboard.writeText(
-                      getTokenAddress(tokenSlice.token as string) as string
-                    );
-                  }}
-                />
+                <div className="w-[10%] flex justify-center">
+                  <Copy
+                    src={copy}
+                    text={
+                      getTokenDetails(tokenSlice.token as string)
+                        ?.address as string
+                    }
+                    alt="copy token address"
+                  />
+                </div>
               </div>
               <div className="w-full flex justify-center mt-24">
                 <button
@@ -111,11 +104,11 @@ const AddToken = () => {
                       params: {
                         type: "ERC20",
                         options: {
-                          address: getTokenAddress(tokenSlice.token as string),
+                          address: getTokenDetails(tokenSlice.token as string)
+                            ?.address,
                           symbol: tokenSlice.token,
-                          decimals: getTokenDecimals(
-                            tokenSlice.token as string
-                          ),
+                          decimals: getTokenDetails(tokenSlice.token as string)
+                            ?.decimals,
                           chainId: 122,
                         },
                       },
@@ -127,11 +120,7 @@ const AddToken = () => {
               </div>
               <div className="w-full flex justify-center mt-6 items-center">
                 <div
-                  className={
-                    !checked
-                      ? "h-[18px] w-[18px] outline-dashed outline-[1.5px] outline-black rounded cursor-pointer"
-                      : "h-[18px] w-[18px] border-[2px] border-white rounded cursor-pointer bg-success outline-dashed outline-[1.5px] outline-black"
-                  }
+                  className="h-[18px] w-[18px] rounded cursor-pointe outline outline-[1.5px] outline-black p-[2px]"
                   onClick={() => {
                     const tokensAdded = localStorage.getItem("tokensAdded");
                     if (checked) {
@@ -158,7 +147,11 @@ const AddToken = () => {
                     }
                     setChecked(!checked);
                   }}
-                />
+                >
+                  {checked && (
+                    <img src={tick.src} alt="tick" className="h-full w-full" />
+                  )}
+                </div>
                 <span className="text-sm ml-2">
                   {"Don't show this message again"}
                 </span>

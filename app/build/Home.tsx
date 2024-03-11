@@ -107,7 +107,7 @@ const Home = () => {
                         alt="checkmark with background"
                       />
                       <p className="text-xl font-bold">
-                        1M RPC calls a day
+                        1M RPC calls
                       </p>
                     </div>
                     <div className="flex items-center gap-[13.3px]">
@@ -116,7 +116,7 @@ const Home = () => {
                         alt="checkmark with background"
                       />
                       <p className="text-xl font-bold">
-                        10K FuseBox transactions a day
+                        1000 transactions
                       </p>
                     </div>
                     <div className="flex items-center gap-[13.3px]">
@@ -125,7 +125,7 @@ const Home = () => {
                         alt="checkmark with background"
                       />
                       <p className="text-xl font-bold">
-                        1M FuseBox API calls a day
+                        10K API calls
                       </p>
                     </div>
                     <div className="flex items-center gap-[13.3px]">
@@ -134,16 +134,7 @@ const Home = () => {
                         alt="checkmark with background"
                       />
                       <p className="text-xl font-bold">
-                        1M Subgraph calls a day
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-[13.3px]">
-                      <Image
-                        src={checkmarkBg}
-                        alt="checkmark with background"
-                      />
-                      <p className="text-xl font-bold">
-                        10K Webhook call
+                        10K Webhook calls
                       </p>
                     </div>
                   </div>
@@ -310,8 +301,8 @@ const Home = () => {
                     target="_blank"
                     className="flex flex-col gap-2.5 justify-between min-h-[269px] px-[30px] py-7 md:px-4 md:py-6 bg-white/5 hover:bg-white/10 rounded-[20px]"
                   >
-                    <div>
-                      <p className="text-white font-semibold">
+                    <div className="flex flex-col gap-2.5">
+                      <p className="text-2xl text-white font-semibold">
                         {app.name}
                       </p>
                       <p className="text-white opacity-60 max-w-[282.15px]">
@@ -377,7 +368,7 @@ const Home = () => {
                       height={10.5}
                     />
                     <p>
-                      1M RPC calls a day
+                      1M RPC calls
                     </p>
                   </div>
                   <div className="flex items-center gap-[13.98px]">
@@ -388,7 +379,7 @@ const Home = () => {
                       height={10.5}
                     />
                     <p>
-                      10K FuseBox transactions a day
+                      1000 transactions
                     </p>
                   </div>
                   <div className="flex items-center gap-[13.98px]">
@@ -399,7 +390,7 @@ const Home = () => {
                       height={10.5}
                     />
                     <p>
-                      1M FuseBox API calls a day
+                      10K API calls
                     </p>
                   </div>
                   <div className="flex items-center gap-[13.98px]">
@@ -410,18 +401,7 @@ const Home = () => {
                       height={10.5}
                     />
                     <p>
-                      1M Subgraph calls a day
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-[13.98px]">
-                    <Image
-                      src={checkmark}
-                      alt="checkmark"
-                      width={15.64}
-                      height={10.5}
-                    />
-                    <p>
-                      10K Webhook call
+                      10K Webhook calls
                     </p>
                   </div>
                 </div>
@@ -458,6 +438,17 @@ const Home = () => {
                 </div>
                 <hr className="w-full h-[0.5px] border-[#C0C0C0]" />
                 <div className="flex flex-col gap-4 h-[200px] md:h-auto">
+                  <div className="flex items-center gap-[13.98px]">
+                    <Image
+                      src={checkmark}
+                      alt="checkmark"
+                      width={15.64}
+                      height={10.5}
+                    />
+                    <p>
+                      Everything in the Starter Plan +
+                    </p>
+                  </div>
                   <div className="flex items-center gap-[13.98px]">
                     <Image
                       src={checkmark}
@@ -515,6 +506,17 @@ const Home = () => {
                 </div>
                 <hr className="w-full h-[0.5px] border-[#C0C0C0]" />
                 <div className="flex flex-col gap-4 h-[200px] md:h-auto">
+                  <div className="flex items-center gap-[13.98px]">
+                    <Image
+                      src={checkmark}
+                      alt="checkmark"
+                      width={15.64}
+                      height={10.5}
+                    />
+                    <p>
+                      Everything in the Pro Plan +
+                    </p>
+                  </div>
                   <div className="flex items-center gap-[13.98px]">
                     <Image
                       src={checkmark}

@@ -8,9 +8,10 @@ import {
 import { chains } from "./chains";
 import { coins } from "./coins";
 import { exchanges } from "./exchanges";
-import { Address } from "wagmi";
+import { Address } from "abitype";
 
 type CONFIG = {
+  multiCallAddress: Address;
   fuseRPC: string;
   consensusAddress: Address;
   blockRewardAddress: Address;
@@ -19,7 +20,8 @@ type CONFIG = {
 }
 
 export const CONFIG: CONFIG = {
-  fuseRPC: "https://fuse.liquify.com",
+  fuseRPC: "https://rpc.fuse.io",
+  multiCallAddress: "0x3CE6158b7278Bf6792e014FA7B4f3c6c46fe9410",
   consensusAddress: "0x3014ca10b91cb3D0AD85fEf7A3Cb95BCAc9c0f79",
   blockRewardAddress: "0x63D4efeD2e3dA070247bea3073BCaB896dFF6C9B",
   bootApi: "https://bot.fuse.io/api/v1",

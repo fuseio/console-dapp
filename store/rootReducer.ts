@@ -1,8 +1,7 @@
 import {
-  AnyAction,
-  CombinedState,
   combineReducers,
   Reducer,
+  UnknownAction,
 } from "@reduxjs/toolkit";
 import validatorReducer from './validatorSlice';
 import searchReducer from './searchSlice';
@@ -14,6 +13,8 @@ import feeReducer from "./feeSlice";
 import toastReducer from "./toastSlice";
 import navbarReducer from "./navbarSlice";
 import operatorReducer from "./operatorSlice";
+import liquidityReducer from "./liquiditySlice";
+import selectedChainReducer from "./selectedChainSlice";
 
 const appReducer = combineReducers({
   validator: validatorReducer,
@@ -26,9 +27,11 @@ const appReducer = combineReducers({
   toast: toastReducer,
   navbar: navbarReducer,
   operator: operatorReducer,
+  liquidity: liquidityReducer,
+  selectedChain: selectedChainReducer,
 });
 
-export type AppState = CombinedState<{
+export type AppState = {
   validator: ReturnType<typeof validatorReducer>;
   search: ReturnType<typeof searchReducer>;
   chain: ReturnType<typeof chainReducer>;
@@ -39,9 +42,11 @@ export type AppState = CombinedState<{
   toast: ReturnType<typeof toastReducer>;
   navbar: ReturnType<typeof navbarReducer>;
   operator: ReturnType<typeof operatorReducer>;
-}>;
+  liquidity: ReturnType<typeof liquidityReducer>;
+  selectedChain: ReturnType<typeof selectedChainReducer>;
+};
 
-const rootReducer: Reducer = (state: AppState, action: AnyAction) => {
+const rootReducer: Reducer = (state: AppState, action: UnknownAction) => {
   return appReducer(state, action);
 };
 

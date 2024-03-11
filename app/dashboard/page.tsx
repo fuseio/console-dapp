@@ -19,7 +19,7 @@ const Operator = () => {
   return (
     <div className="w-full font-mona justify-end min-h-screen">
       <div className="flex-col flex items-center bg-light-gray h-screen">
-        <ChainModal description="To work with the Operator account you must be connected to the Fuse network" />
+        <ChainModal description="To work with the Operator account you must be connected to the Fuse Network" />
         <Topbar />
         <Home />
         <Footer />
