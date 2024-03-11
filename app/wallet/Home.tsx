@@ -195,7 +195,7 @@ const Home = () => {
                 Want to run your project on Fuse?
               </p>
               <p className="text-[20px] text-text-dark-gray md:text-center">
-                Become an operator to run you project
+                Become an operator to run your project
               </p>
             </div>
             <Link
