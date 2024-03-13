@@ -163,7 +163,7 @@ const Home = () => {
                   FuseBox
                 </p>
                 <p className="text-sm text-text-dark-gray text-center max-w-[213.4px]">
-                  Discover Fuse middleware API&apos;s
+                  Discover Fuse middleware APIs
                 </p>
                 <Image
                   src={fusebox}
