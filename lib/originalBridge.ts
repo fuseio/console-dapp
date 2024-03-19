@@ -114,7 +114,7 @@ export const bridgeNative = async (
       args: [false, serializeAdapterParams(adapterParams) as Address],
     })
   )[0];
-  const increasedNativeFee = BigInt(Number(nativeFee) * 1.2);
+  const increasedNativeFee = BigInt((Number(nativeFee) * 1.2).toFixed(0));
   const amt = parseEther(amount);
   const callParams = {
     refundAddress: address,

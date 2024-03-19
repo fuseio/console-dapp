@@ -53,7 +53,7 @@ export const bridgeWrapped = async (
       ],
     })
   )[0];
-  const increasedNativeFee = BigInt(Number(nativeFee) * 1.2); // 20% increase
+  const increasedNativeFee = BigInt((Number(nativeFee) * 1.2).toFixed(0)); // 20% increase
   const callParams = {
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
@@ -183,6 +183,6 @@ export const estimateWrappedNativeFee = async (
       ],
     })
   )[0];
-  const increasedNativeFee = BigInt(Number(nativeFee) * 1.2);
+  const increasedNativeFee = BigInt((Number(nativeFee) * 1.2).toFixed(0));
   return increasedNativeFee;
 };
