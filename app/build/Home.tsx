@@ -152,7 +152,7 @@ const Home = () => {
               </div>
               <div className="bg-white rounded-[20px] pt-[50px] px-[47.5px] md:px-4 md:py-6 h-[385px] md:h-auto">
                 <p className="text-[34px]/[40.97px] text-fuse-black font-bold">
-                  Mobile and Web SDK&apos;s
+                  Mobile and Web SDKs
                 </p>
                 <p className="text-xl text-text-dark-gray mt-[12.98px] mb-[25.31px]">
                   Implement account abstraction out-of-the-box:
