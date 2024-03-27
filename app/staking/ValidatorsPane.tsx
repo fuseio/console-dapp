@@ -7,6 +7,8 @@ import coins from "@/assets/coins.svg";
 import ChevronDown from "@/assets/ChevronDown";
 import ChevronUp from "@/assets/ChevronUp";
 import { useDeepCompareEffectNoCheck } from "use-deep-compare-effect";
+import RpcNotice from "@/components/staking/RpcNotice";
+import { useBlockNumber } from "wagmi";
 
 const ValidatorsPane = ({
   validators,
@@ -24,8 +26,11 @@ const ValidatorsPane = ({
   const [validatorsToDisplay, setValidatorsToDisplay] = useState<
     ValidatorType[]
   >([]);
-
   const [page, setPage] = useState(1);
+  const { failureCount } = useBlockNumber({
+    watch: true
+  });
+
   useDeepCompareEffectNoCheck(() => {
     setValidatorsToDisplay(
       validators.slice(
@@ -97,13 +102,18 @@ const ValidatorsPane = ({
           );
         })}
       </div>
-      {validatorsToDisplay.length === 0 && selected === 1 && (
-        <div className="flex flex-col w-full items-center justify-center">
-          <img src={coins.src} alt="coins" className="mt-28" />
-          <p className="text-2xl font-black text-fuse-black mt-3 w-1/2 text-center md:w-full">
-            No staked validators yet! Begin your staking journey by delegating
-            tokens to a validator of your choice.
-          </p>
+      {validatorsToDisplay.length === 0 && (
+        <div className="flex flex-col w-full items-center justify-center mt-28">
+          {(!failureCount && selected === 1) &&
+            <>
+              <img src={coins.src} alt="coins" />
+              <p className="text-2xl font-black text-fuse-black mt-3 w-1/2 text-center md:w-full">
+                No staked validators yet! Begin your staking journey by delegating
+                tokens to a validator of your choice.
+              </p>
+            </>
+          }
+          {failureCount > 0 && <RpcNotice />}
         </div>
       )}
       <div className="flex w-full justify-center mt-12">
