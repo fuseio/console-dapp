@@ -1,30 +1,32 @@
-"use client";
+// see https://stackoverflow.com/a/77090142/12656707
 
-import { useEffect } from "react";
-import Topbar from "@/components/Topbar";
-import Home from "./Home";
-import ChainModal from "@/components/ChainModal";
-import Footer from "@/components/Footer";
+import PageWrapper from "./wrapper";
+import { getJailedValidators, getValidators } from '@/lib/contractInteract';
 
-import { useAppDispatch } from "@/store/store";
-import { setSelectedNavbar } from "@/store/navbarSlice";
+export async function generateStaticParams() {
+  try {
+    // Fetch validators and jailedValidators in parallel
+    const [validators, jailedValidators] = await Promise.all([
+      getValidators(),
+      getJailedValidators(),
+    ]);
 
-const Stake = () => {
-  const dispatch = useAppDispatch();
+    // Combine and deduplicate the validator lists using a Set
+    const uniqueValidators = new Set([...validators, ...jailedValidators]);
 
-  useEffect(() => {
-    dispatch(setSelectedNavbar("staking"));
-  }, [])
+    // Map the unique validators to the desired format
+    return Array.from(uniqueValidators).map(validator => ({
+      id: validator.toLowerCase(),
+    }));
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return []; // Return an empty array or handle the error as needed
+  }
+}
 
+const Stake = ({ params }: { params: { id: string } }) => {
   return (
-    <div className="w-full font-mona justify-end">
-      <div className="flex-col flex items-center bg-light-gray">
-        <ChainModal />
-        <Topbar />
-        <Home />
-        <Footer />
-      </div>
-    </div>
+    <PageWrapper params={params} />
   );
 };
 
