@@ -32,9 +32,10 @@ import Link from "next/link";
 import { fetchTokenPrice } from "@/lib/api";
 import Copy from "@/components/ui/Copy";
 import { Address } from "abitype";
+import { useParams } from "next/navigation";
 
-const Stake = ({ params }: { params: { id: string } }) => {
-  const { id } = params;
+const Stake = () => {
+  const { id } = useParams();
   const [validator, setValidator] = useState<ValidatorType | undefined>(
     undefined
   );
@@ -117,7 +118,12 @@ const Stake = ({ params }: { params: { id: string } }) => {
     if (validators.validatorMetadata.length > 0) {
       setValidator(
         validators.validatorMetadata.filter(
-          (v) => v.address.toLowerCase() === id?.toLowerCase()
+          (v) => {
+            if(typeof id === "string") {
+              return v.address.toLowerCase() === id?.toLowerCase();
+            }
+            return v.address.toLowerCase() === id[0]?.toLowerCase();
+          }
         )[0]
       );
     } else {
