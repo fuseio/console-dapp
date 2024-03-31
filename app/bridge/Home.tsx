@@ -30,7 +30,7 @@ import { getNativeCurrency } from "@layerzerolabs/ui-core";
 import { getChainKey } from "@layerzerolabs/lz-sdk";
 import ToastPane from "@/components/bridge/ToastPane";
 import Pill from "@/components/bridge/Pill";
-import { useAccount, useConfig } from "wagmi";
+import { useAccount, useBalance, useConfig } from "wagmi";
 import { fuse } from "viem/chains";
 import { getAccount, switchChain } from "wagmi/actions";
 import { hex, walletType } from "@/lib/helpers";
@@ -42,6 +42,7 @@ import {
   setDepositChainItem,
   setWithdrawChainItem,
 } from "@/store/selectedChainSlice";
+import { formatUnits } from "viem";
 
 const Home = () => {
   const selectedChainSlice = useAppSelector(selectSelectedChainSlice);
@@ -76,6 +77,9 @@ const Home = () => {
   const config = useConfig();
   const { chainId } = getAccount(config);
   const chain = config.chains.find((chain) => chain.id === chainId);
+  const { data: balance, refetch } = useBalance({
+    address,
+  });
 
   useEffect(() => {
     setAmount("");
@@ -446,6 +450,15 @@ const Home = () => {
     });
   };
 
+  const checkBalance = () => {
+    return (
+      parseFloat(
+        formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? 18)
+      ) >=
+      feeSlice.destGasFee + feeSlice.sourceGasFee
+    );
+  };
+
   return (
     <>
       <Transactions isOpen={isOpen} onToggle={setIsOpen} />
@@ -641,8 +654,9 @@ const Home = () => {
                   disabled
                   text="No Liquidity"
                 />
-              ) : displayButton &&
-                parseFloat(amount) > parseFloat(balanceSlice.balance) ? (
+              ) : (displayButton &&
+                  parseFloat(amount) > parseFloat(balanceSlice.balance)) ||
+                (!checkBalance() && parseFloat(amount) > 0) ? (
                 // || parseFloat(amount) > 10000
                 // || parseFloat(amount) < 0.5
                 <Button
@@ -661,6 +675,8 @@ const Home = () => {
                               : depositSelectedTokenItem
                           ].symbol
                         } Balance`
+                      : !checkBalance()
+                      ? `Insufficient ${balance?.symbol} for gas fee`
                       : parseFloat(amount) > 10000
                       ? "Exceeds Daily Limit"
                       : "Minimum 0.5"
