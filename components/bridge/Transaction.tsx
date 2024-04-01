@@ -20,7 +20,7 @@ const Transaction = ({
 }) => {
   return (
     <div
-      className="flex flex-col justify-between px-10 md:px-4 py-5 md:py-3 bg-transaction-bg w-full rounded-md mt-3 border-border-gray border-solid border font-medium cursor-pointer text-sm min-h-24 items-center"
+      className="flex flex-col justify-between px-10 md:px-4 py-5 md:py-3 bg-transaction-bg w-full rounded-md mt-3 border-border-gray border-solid border font-medium cursor-pointer text-sm min-h-16 items-center"
       onClick={() => {
         window.open(
           getScanLink(transactionHashes.srcChainId, transactionHashes.hash),
