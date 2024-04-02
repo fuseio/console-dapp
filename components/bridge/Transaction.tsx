@@ -36,7 +36,7 @@ const Transaction = ({
                 .name
             }
           </span>
-          <img src={right.src} alt="right" className="h-3" />
+          <img src={right.src} alt="right" className="h-3 mt-[3px]" />
           <span>
             {
               getNetworkByChainKey(getChainKey(transactionHashes.dstChainId))
