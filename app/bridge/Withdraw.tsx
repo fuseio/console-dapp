@@ -75,8 +75,8 @@ const Withdraw = ({
   const [nativeBalance, setNativeBalance] = React.useState<string>("0");
   const { address, connector } = useAccount();
   const config = useConfig();
-  const { chainId } = getAccount(config)
-  const chain = config.chains.find(chain => chain.id === chainId)
+  const { chainId } = getAccount(config);
+  const chain = config.chains.find((chain) => chain.id === chainId);
 
   useEffect(() => {
     async function updateBalance() {
@@ -85,7 +85,12 @@ const Withdraw = ({
           address,
           chainId: fuse.id,
         });
-        setNativeBalance(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals));
+        setNativeBalance(
+          formatUnits(
+            balance?.value ?? BigInt(0),
+            balance?.decimals ?? evmDecimals
+          )
+        );
       }
     }
     updateBalance();
@@ -127,18 +132,18 @@ const Withdraw = ({
         (!tokenAddress || tokenAddress === hex) && chain?.id === fuse.id
           ? dispatch(setNativeBalanceThunk(nativeBalance.toString()))
           : dispatch(
-            fetchBalance({
-              address: address,
-              contractAddress:
-                appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
-                  .address,
-              decimals:
-                appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
-                  .decimals,
-              bridge: appConfig.wrappedBridge.fuse.wrapped,
-              rpc: "https://rpc.fuse.io",
-            })
-          );
+              fetchBalance({
+                address: address,
+                contractAddress:
+                  appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
+                    .address,
+                decimals:
+                  appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
+                    .decimals,
+                bridge: appConfig.wrappedBridge.fuse.wrapped,
+                rpc: "https://rpc.fuse.io",
+              })
+            );
       setPendingPromise(promise);
     }
   }, [
@@ -147,6 +152,7 @@ const Withdraw = ({
     address,
     chainSlice.chainId,
     nativeBalance,
+    chain
   ]);
   useEffect(() => {
     if (
@@ -272,8 +278,8 @@ const Withdraw = ({
             <span className="mt-3 text-xs font-medium">
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
-                balanceSlice.isApprovalLoading ||
-                chain?.id !== fuse.id ? (
+              balanceSlice.isApprovalLoading ||
+              chain?.id !== fuse.id ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : (
                 balanceSlice.balance
