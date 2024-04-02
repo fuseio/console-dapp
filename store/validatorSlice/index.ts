@@ -132,13 +132,13 @@ export const fetchValidatorMetadata = createAsyncThunk(
                 website?: string,
                 image?: string,
                 description?: string
-            }>(Object.entries(Validators))
+            }>(Object.entries(Validators).map(([key, value]) => [key.toLowerCase(), value]))
 
             let totalDelegators = 0
             const validatorMetadata = await Promise.all(validators.map(async (validator) => {
                 const metadata = await fetchValidatorData(validator)
                 const status = metadata.isJailed ? 'inactive' : 'active'
-                const validatorData = validatorMap.get(validator)
+                const validatorData = validatorMap.get(validator.toLowerCase())
                 totalDelegators += parseInt(metadata.delegatorsLength, 10)
 
                 const baseMetadata = {
