@@ -50,7 +50,7 @@ const Transaction = ({
         <span className="col-span-3 md:text-left md:col-span-4 text-center">
           {new Date(transactionHashes.timestamp).toLocaleDateString()}
         </span>
-        <span className="col-span-2 justify-end ml-auto">
+        <span className="col-span-2 justify-end ml-auto -mt-[3px]">
           <Pill
             text={
               transaction === MessageStatus.DELIVERED
