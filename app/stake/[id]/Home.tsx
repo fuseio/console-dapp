@@ -255,8 +255,8 @@ const Stake = () => {
         minStake={validators.minStakeAmount}
       />
       <div className="flex w-8/9 flex-col md:w-9/10 max-w-7xl">
-        <div className="flex w-full md:flex-col">
-          <div className="w-[65%] flex flex-col md:w-full">
+        <div className="flex justify-between w-full md:flex-col">
+          <div className="w-[647px] flex flex-col md:w-full">
             <Link href="/staking" className="flex gap-[13.41px] mt-16 mb-[33.5px] hover:opacity-70">
               <Image
                 src={leftArrow}
@@ -453,7 +453,7 @@ const Stake = () => {
               </div>
             )}
           </div>
-          <div className="w-[35%] ps-16 pt-16 md:pt-8 md:pb-6 md:w-full md:ps-0">
+          <div className="w-[414px] pt-16 md:pt-8 md:pb-6 md:w-full md:ps-0">
             <StickyBox offsetTop={90}>
               <StakeCard
                 validator={validator}
