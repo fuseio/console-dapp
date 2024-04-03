@@ -27,10 +27,11 @@ const Modal = ({
   useEffect(() => {
     window.addEventListener("click", (e) => {
       if ((e.target as HTMLElement).id === "modal-bg") {
+        setDelegatorsToDisplay(delegators);
         onToggle(false);
       }
     });
-  }, [onToggle]);
+  }, [delegators, onToggle]);
   const [page, setPage] = useState(1);
   useDeepCompareEffect(() => {
     setDelegatorsToDisplay(delegators);
@@ -56,6 +57,7 @@ const Modal = ({
                 src={cross.src}
                 className="cursor-pointer w-6 h-6"
                 onClick={() => {
+                  setDelegatorsToDisplay(delegators);
                   onToggle(!isOpen);
                 }}
                 alt="close"
