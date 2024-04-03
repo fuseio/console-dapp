@@ -6,7 +6,7 @@ import StakeCard from "../../staking/StakeCard";
 import StickyBox from "react-sticky-box";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import link from "@/assets/link.svg";
-import arrow from "@/assets/arrow.svg";
+import expandArrow from "@/assets/expand-arrow.svg";
 import ReactGA from "react-ga4";
 import ym from "react-yandex-metrika";
 import {
@@ -309,7 +309,7 @@ const Stake = () => {
                   )}
                 </div>
               </div>
-              <div className="flex flex-col items-end justify-center w-1/3 h-full ms-6 md:w-full md:items-start md:ms-0 md:mt-8">
+              <div className="flex flex-col items-end justify-center w-1/3 h-full ms-6 md:w-full md:items-start md:ms-0 md:mt-8 whitespace-nowrap">
                 {
                   validator && validator?.firstSeen && (
                     <p className="text-text-heading-gray text-base mb-2">
@@ -360,7 +360,7 @@ const Stake = () => {
                 Footer="Total Delegators"
                 type={2}
                 isLoading={!validator}
-                icon={arrow.src}
+                icon={expandArrow}
                 onClick={() => {
                   setIsOpen(true);
                   let delegatorsFilter: Address[] = [];

@@ -210,7 +210,7 @@ export const fetchDelegatedAmounts = createAsyncThunk(
         try {
             const calls = delegators.map((delegator) => [
                 CONFIG.consensusAddress,
-                contractInterface.encodeFunctionData('delegatedAmount', [address, delegator]),
+                contractInterface.encodeFunctionData('delegatedAmount', [delegator, address]),
             ])
             const [, results] = await multicallContract.aggregate(calls)
             const delegatedAmounts: [Address, string][] = results.map((result: any, index: number) => {

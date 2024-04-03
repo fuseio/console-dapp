@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 
 type InfoCardProps = {
@@ -42,11 +43,13 @@ const InfoCard = ({
         <div className="flex justify-start items-start">
           <div className="text-xl/5 font-black text-black w-[95%]">{Header}</div>
           {icon && (
-            <img
+            <Image
               src={icon}
               alt="icon"
               className="cursor-pointer"
               onClick={onClick}
+              width={16}
+              height={16}
             />
           )}
         </div>
