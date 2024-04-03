@@ -317,51 +317,60 @@ const Home = () => {
             size="large"
           />
         </div>
-        <div className="flex mt-16 justify-between items-center md:flex-col md:justify-start md:items-start">
-          <SearchBar
-            className="w-1/6 md:w-full"
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
-            value={filter.search}
-          />
-          <SortBar
-            className="w-1/5 md:w-full md:mt-4"
-            options={[
-              "Highest Stake",
-              "Highest Delegators",
-              "Highest Uptime",
-              "Earliest Validation Start Date",
-            ]}
-            selected={filter.sort}
-            onChange={(i) => {
-              setSort(i);
-            }}
-          />
-          <FilterBar
-            className="w-3/10 md:mt-8 md:pe-0"
-            name="State"
-            states={["All", "Open", "Closed"]}
-            background={["#DDF5FF", "#E0FFDD", "#EBEBEB"]}
-            text={["#003D75", "#success-dark", "#000000"]}
-            onClick={(i, _) => {
-              setStateFilter(i);
-            }}
-            select={filter.stateFilter}
-            tooltip={`Validators can be "open" or "closed" for delegation. You can only delegate tokens to open validators. If a validator you've delegated to becomes closed, you can still unstake your tokens anytime.`}
-          />
-          <FilterBar
-            className="w-3/10 md:w-full md:mt-12"
-            name="Status"
-            states={["All", "Active", "Inactive"]}
-            background={["#DDF5FF", "#E0FFDD", "#FFDDDD"]}
-            text={["#003D75", "#success-dark", "#750000"]}
-            onClick={(i, _) => {
-              setStatusFilter(i);
-            }}
-            select={filter.statusFilter}
-            tooltip={`Validators can be "active" or "inactive". Active validators are currently validating blocks, while inactive validators are not, due to maintenance or being jailed.`}
-          />
+        <div className="flex flex-col gap-6 mt-16">
+          <p className="text-2xl text-black font-semibold">
+            Validators
+          </p>
+          <div className="flex gap-6 justify-between items-center md:flex-col md:justify-start md:items-start">
+          <div className="flex gap-3 md:gap-4 w-full md:flex-col md:justify-start md:items-start">
+            <SearchBar
+              className="w-[180px] md:w-full"
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
+              value={filter.search}
+            />
+            <SortBar
+              className="w-[180px] md:w-full md:mt-4"
+              options={[
+                "Highest Stake",
+                "Highest Delegators",
+                "Highest Uptime",
+                "Earliest Validation Start Date",
+              ]}
+              selected={filter.sort}
+              onChange={(i) => {
+                setSort(i);
+              }}
+            />
+          </div>
+          <div className="flex gap-12 md:gap-4 w-full md:flex-col md:justify-start md:items-start">
+            <FilterBar
+              className="w-[324px] md:w-full md:pe-0"
+              name="State"
+              states={["All", "Open", "Closed"]}
+              background={["#DDF5FF", "#E0FFDD", "#EBEBEB"]}
+              text={["#003D75", "#success-dark", "#000000"]}
+              onClick={(i, _) => {
+                setStateFilter(i);
+              }}
+              select={filter.stateFilter}
+              tooltip={`Validators can be "open" or "closed" for delegation. You can only delegate tokens to open validators. If a validator you've delegated to becomes closed, you can still unstake your tokens anytime.`}
+            />
+            <FilterBar
+              className="w-[332px] md:w-full"
+              name="Status"
+              states={["All", "Active", "Inactive"]}
+              background={["#DDF5FF", "#E0FFDD", "#FFDDDD"]}
+              text={["#003D75", "#success-dark", "#750000"]}
+              onClick={(i, _) => {
+                setStatusFilter(i);
+              }}
+              select={filter.statusFilter}
+              tooltip={`Validators can be "active" or "inactive". Active validators are currently validating blocks, while inactive validators are not, due to maintenance or being jailed.`}
+            />
+          </div>
+          </div>
         </div>
         <ValidatorsPane
           isLoading={

@@ -1,5 +1,6 @@
 import React from "react";
 import info from "@/assets/info.svg";
+import Image from "next/image";
 
 type FilterBarProps = {
   className?: string;
@@ -14,7 +15,7 @@ type FilterBarProps = {
 
 const FilterBar = ({
   className = "",
-  onClick = (index: number, element: string) => {},
+  onClick = (index: number, element: string) => { },
   name,
   states,
   background = [],
@@ -30,92 +31,98 @@ const FilterBar = ({
   return (
     <div
       className={
-        "relative flex justify-end md:w-full md:justify-center " + className
+        "relative flex justify-end items-center md:w-full md:justify-center " + className
       }
     >
-      <span className="font-normal text-base text-text-gray pe-1 md:text-sm">
+      <span className="font-normal text-sm text-text-gray pe-1">
         {name}
       </span>
-      <img src={info.src} alt="info" className="peer cursor-pointer mb-0.5" />
+      <Image
+        src={info.src}
+        alt="info"
+        className="peer cursor-pointer mb-0.5"
+        width={12}
+        height={12}
+      />
       {tooltip && (
         <div className="hidden absolute top-11 left-0 bg-white rounded-lg shadow-lg w-80 py-2 px-3 md:w-full peer-hover:block text-[10px]/[16px] z-50">
           {tooltip}
         </div>
       )}
-      <div className="ps-3">
+      <div className="ms-3 flex w-full max-w-[260px]">
         {states.map((state, index) => {
           if (index === 0) {
             return (
-              <span
+              <div
                 key={index}
                 style={
                   selected === index
                     ? {
-                        background: background[index]
-                          ? background[index]
-                          : "#E7E7E7",
-                        color: text[index] ? text[index] : "#000000",
-                      }
-                    : {}
-                }
-                className={
-                  selected === index
-                    ? "text-sm text-black cursor-pointer py-5 px-7 bg-dark-gray font-bold rounded-s-full"
-                    : "text-sm text-black cursor-pointer py-5 px-7 bg-white font-bold rounded-s-full"
-                }
-                onClick={() => handleClick(index)}
-              >
-                {state}
-              </span>
-            );
-          }
-          if (index === states.length - 1) {
-            return (
-              <span
-                key={index}
-                style={
-                  selected === index
-                    ? {
-                        background: background[index]
-                          ? background[index]
-                          : "#E7E7E7",
-                        color: text[index] ? text[index] : "#000000",
-                      }
-                    : {}
-                }
-                className={
-                  selected === index
-                    ? "text-sm text-black cursor-pointer py-5 px-7 bg-dark-gray font-bold rounded-e-full"
-                    : "text-sm text-black cursor-pointer py-5 px-7 bg-white font-bold rounded-e-full"
-                }
-                onClick={() => handleClick(index)}
-              >
-                {state}
-              </span>
-            );
-          }
-          return (
-            <span
-              key={index}
-              style={
-                selected === index
-                  ? {
                       background: background[index]
                         ? background[index]
                         : "#E7E7E7",
                       color: text[index] ? text[index] : "#000000",
                     }
+                    : {}
+                }
+                className={
+                  selected === index
+                    ? "flex justify-center items-center text-sm text-black cursor-pointer w-[86px] h-[42px] bg-dark-gray font-bold rounded-s-full"
+                    : "flex justify-center items-center text-sm text-black cursor-pointer w-[86px] h-[42px] bg-white font-bold rounded-s-full"
+                }
+                onClick={() => handleClick(index)}
+              >
+                {state}
+              </div>
+            );
+          }
+          if (index === states.length - 1) {
+            return (
+              <div
+                key={index}
+                style={
+                  selected === index
+                    ? {
+                      background: background[index]
+                        ? background[index]
+                        : "#E7E7E7",
+                      color: text[index] ? text[index] : "#000000",
+                    }
+                    : {}
+                }
+                className={
+                  selected === index
+                    ? "flex justify-center items-center text-sm text-black cursor-pointer w-[86px] h-[42px] bg-dark-gray font-bold rounded-e-full"
+                    : "flex justify-center items-center text-sm text-black cursor-pointer w-[86px] h-[42px] bg-white font-bold rounded-e-full"
+                }
+                onClick={() => handleClick(index)}
+              >
+                {state}
+              </div>
+            );
+          }
+          return (
+            <div
+              key={index}
+              style={
+                selected === index
+                  ? {
+                    background: background[index]
+                      ? background[index]
+                      : "#E7E7E7",
+                    color: text[index] ? text[index] : "#000000",
+                  }
                   : {}
               }
               className={
                 selected === index
-                  ? "text-sm text-black cursor-pointer py-5 px-7 bg-dark-gray font-bold"
-                  : "text-sm text-black cursor-pointer py-5 px-7 bg-white font-bold"
+                  ? "flex justify-center items-center text-sm text-black cursor-pointer w-[86px] h-[42px] bg-dark-gray font-bold"
+                  : "flex justify-center items-center text-sm text-black cursor-pointer w-[86px] h-[42px] bg-white font-bold"
               }
               onClick={() => handleClick(index)}
             >
               {state}
-            </span>
+            </div>
           );
         })}
       </div>
