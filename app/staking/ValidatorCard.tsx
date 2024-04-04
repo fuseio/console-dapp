@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useCallback } from "react";
 import Pill from "@/components/staking/Pill";
 import { useRouter } from 'next/navigation'
 import Jazzicon from "react-jazzicon";
+import Image from "next/image";
 
 type ValidatorCardProps = {
   className?: string;
-  onClick?: () => void;
   name: string;
   stakedAmount: string;
   status: string;
@@ -26,7 +26,6 @@ const ValidatorCard = ({
   status,
   className = "",
   commission,
-  onClick = () => {},
   isLoading = false,
   image = "",
   address,
@@ -35,16 +34,19 @@ const ValidatorCard = ({
   uptime,
 }: ValidatorCardProps) => {
   const router = useRouter()
+
+  const handleClick = useCallback(() => {
+    if (isLoading) return;
+    router.push(`/stake/${address.toLowerCase()}`);
+  }, [isLoading, address, router])
+
   return (
     <div
       className={
         "bg-white rounded-xl flex flex-col justify-between p-4 hover:shadow-lg transition-all duration-300 cursor-pointer  " +
         className
       }
-      onClick={() => {
-        if (isLoading) return;
-        router.push(`/stake/${address.toLowerCase()}`);
-      }}
+      onClick={handleClick}
     >
       <div className="flex items-center">
         {isLoading ? (
@@ -52,9 +54,11 @@ const ValidatorCard = ({
         ) : (
           <div className="h-16 w-16">
             {image ? (
-              <img
+              <Image
                 src={`/${image}`}
                 alt="validator"
+                width={64}
+                height={64}
                 className="rounded-lg h-16 w-16"
               />
             ) : (

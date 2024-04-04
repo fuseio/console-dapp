@@ -22,7 +22,7 @@ const TopupAccountModal = (): JSX.Element => {
         dispatch(setIsTopupAccountModalOpen(false));
       }
     });
-  }, []);
+  }, [dispatch]);
 
   return (
     <AnimatePresence>
@@ -50,7 +50,7 @@ const TopupAccountModal = (): JSX.Element => {
                   onClick={() => setIsQrCodeOpen(!isQrCodeOpen)}
                 >
                   <Image
-                    src={leftArrow.src}
+                    src={leftArrow}
                     alt="back arrow icon"
                     width={11.39}
                     height={5.7}
@@ -88,14 +88,14 @@ const TopupAccountModal = (): JSX.Element => {
                   </p>
                   <div className="flex justify-between w-full max-w-[55px]">
                     <Copy
-                      src={copy.src}
+                      src={copy}
                       text={String(operatorSlice.operator.user.smartContractAccountAddress)}
                       alt="copy smart contract account address"
                       width={18.97}
                       height={18.81}
                     />
                     <Image
-                      src={qr.src}
+                      src={qr}
                       alt="copy smart contract account address"
                       width={16.22}
                       height={16.65}

@@ -12,7 +12,7 @@ const Console = () => {
 
   useEffect(() => {
     dispatch(setSelectedNavbar(""));
-  }, [])
+  }, [dispatch])
 
   return (
     <div className="w-full font-mona justify-end min-h-screen">

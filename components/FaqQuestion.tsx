@@ -2,6 +2,7 @@ import React from "react";
 import plus from "@/assets/plus.svg";
 import minus from "@/assets/minus.svg";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 type FaqQuestionProps = {
   question: string;
@@ -40,9 +41,9 @@ const FaqQuestion = ({
         }}
       >
         {isAnswerVisible ? (
-          <img src={minus.src} alt="minus" className="mt-1" />
+          <Image src={minus} alt="minus" className="mt-1" />
         ) : (
-          <img src={plus.src} alt="plus" />
+          <Image src={plus} alt="plus" />
         )}
       </div>
       <span className="flex flex-col w-[95%] md:w-9/10">

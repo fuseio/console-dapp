@@ -21,7 +21,7 @@ const TopupPaymasterModal = ({ balance }: TopupPaymasterModalProps): JSX.Element
         dispatch(setIsTopupPaymasterModalOpen(false));
       }
     });
-  }, []);
+  }, [dispatch]);
 
   return (
     <AnimatePresence>

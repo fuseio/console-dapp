@@ -45,7 +45,7 @@ const Stake = () => {
   const validators = useAppSelector(selectValidatorSlice);
   const [isOpen, setIsOpen] = useState(false);
   const [isWarningOpen, setIsWarningOpen] = useState(false);
-  const [isWarningAknowledged, setIsWarningAknowledged] = useState(false);
+  const [isWarningAcknowledge, setIsWarningAcknowledge] = useState(false);
   const { address, connector } = useAccount();
 
   const getAmount = () => {
@@ -247,9 +247,9 @@ const Stake = () => {
       <WarningModal
         isOpen={isWarningOpen}
         onToggle={setIsWarningOpen}
-        isAknoledged={isWarningAknowledged}
+        isAcknowledge={isWarningAcknowledge}
         onConfirm={(arg) => {
-          setIsWarningAknowledged(arg);
+          setIsWarningAcknowledge(arg);
           if (arg) handleUnstake();
         }}
         minStake={validators.minStakeAmount}
@@ -272,7 +272,7 @@ const Stake = () => {
                   {!validator ? (
                     <div className="h-20 w-20 rounded-md bg-dark-gray animate-pulse"></div>
                   ) : validator.image ? (
-                    <img
+                    <Image
                       src={`/${validator.image}`}
                       alt="validator"
                       width="78"
@@ -440,7 +440,7 @@ const Stake = () => {
               <div className="flex flex-col my-6">
                 <p className="font-bold text-2xl">Links</p>
                 <span className="flex mt-4 items-center">
-                  <img src={link.src} alt="link" className="me-1" height={8} />
+                  <Image src={link} alt="link" className="me-1" height={8} />
                   <a
                     className="text-text-heading-gray me-auto hover:underline"
                     target="_blank"
@@ -458,9 +458,8 @@ const Stake = () => {
               <StakeCard
                 validator={validator}
                 closed={validator?.forDelegation ? false : true}
-                isWarningAknowledged={isWarningAknowledged}
                 warningToggle={() => {
-                  setIsWarningAknowledged(false);
+                  setIsWarningAcknowledge(false);
                   setIsWarningOpen(true);
                 }}
                 handleStake={handleStake}
@@ -468,7 +467,6 @@ const Stake = () => {
                 amount={amount}
                 setAmount={setAmount}
                 isLoading={isLoading}
-                setIsLoading={setIsLoading}
               />
             </StickyBox>
           </div>

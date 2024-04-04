@@ -6,6 +6,7 @@ import twitter from "@/assets/twitter.svg";
 import gh from "@/assets/gh.svg";
 import youtube from "@/assets/youtube.svg";
 import SubscribeBar from "@/components/staking/SubscribeBar";
+import Image from "next/image";
 
 const Footer = () => {
   return (
@@ -19,7 +20,7 @@ const Footer = () => {
               rel="noreferrer"
             >
               <div className="flex">
-                <img src={youtube.src} alt="medium" />
+                <Image src={youtube} alt="medium" />
                 <span className="font-bold text-lg pt-1 ms-4">YouTube</span>
               </div>
             </a>
@@ -31,7 +32,7 @@ const Footer = () => {
               rel="noreferrer"
             >
               <div className="flex">
-                <img src={gh.src} alt="medium" />
+                <Image src={gh} alt="medium" />
                 <span className="font-bold text-lg pt-1 ms-4">GitHub</span>
               </div>
             </a>
@@ -43,7 +44,7 @@ const Footer = () => {
               rel="noreferrer"
             >
               <div className="flex">
-                <img src={twitter.src} alt="medium" />
+                <Image src={twitter} alt="medium" />
                 <span className="font-bold text-lg pt-1 ms-4">Twitter</span>
               </div>
             </a>
@@ -51,7 +52,7 @@ const Footer = () => {
           <span className="flex">
             <a href="https://t.me/fuseio" target="_blank" rel="noreferrer">
               <div className="flex">
-                <img src={tele.src} alt="medium" />
+                <Image src={tele} alt="medium" />
                 <span className="font-bold text-lg pt-1 ms-4">Telegram</span>
               </div>
             </a>
@@ -63,7 +64,7 @@ const Footer = () => {
               rel="noreferrer"
             >
               <div className="flex">
-                <img src={discord.src} alt="medium" />
+                <Image src={discord} alt="medium" />
                 <span className="font-bold text-lg pt-1 ms-4">Discord</span>
               </div>
             </a>
@@ -71,7 +72,7 @@ const Footer = () => {
           <span className="flex">
             <a href="https://docs.fuse.io" target="_blank" rel="noreferrer">
               <div className="flex">
-                <img src={medium.src} alt="medium" />
+                <Image src={medium} alt="medium" />
                 <span className="font-bold text-lg pt-1 ms-4">Docs</span>
               </div>
             </a>

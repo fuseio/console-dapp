@@ -14,7 +14,7 @@ const RollSecretKeyModal = (): JSX.Element => {
         dispatch(setIsRollSecretKeyModalOpen(false));
       }
     });
-  }, []);
+  }, [dispatch]);
 
   return (
     <AnimatePresence>

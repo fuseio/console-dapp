@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
+import { StaticImageData } from "next/image";
 
 export interface ChainStateType {
   lzChainId: number;
   chainId: number;
   name: string;
-  icon: string;
+  icon: StaticImageData;
   wrapped: string | undefined;
   rpcUrl: string | undefined;
   tokens:
@@ -14,7 +15,7 @@ export interface ChainStateType {
         symbol: string;
         name: string;
         address: string;
-        icon: string;
+        icon: StaticImageData;
       }[];
 }
 
@@ -22,7 +23,7 @@ const INIT_STATE: ChainStateType = {
   lzChainId: 0,
   chainId: 0,
   name: "",
-  icon: "",
+  icon: {} as StaticImageData,
   wrapped: "",
   tokens: [],
   rpcUrl: "",

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import fuseToken from "@/assets/fuseToken.svg";
 import Button from "@/components/ui/Button";
 import {
@@ -15,38 +15,36 @@ import { useAccount, useConfig } from "wagmi";
 import { fuse } from "viem/chains";
 import { formatUnits } from "viem";
 import { evmDecimals } from "@/lib/helpers";
+import Image from "next/image";
 
 type StakeCardProps = {
-  className?: string;
   validator: ValidatorType | undefined;
   closed?: boolean;
   warningToggle?: () => void;
-  isWarningAknowledged?: boolean;
   handleStake: () => void;
   handleUnstake: () => void;
   amount: string | null;
   setAmount: (amount: string | null) => void;
   isLoading: boolean;
-  setIsLoading: (isLoading: boolean) => void;
 };
+
 const StakeCard = ({
-  className = "",
   validator,
   closed = false,
   warningToggle = () => { },
-  isWarningAknowledged = false,
   handleStake = () => { },
   handleUnstake = () => { },
   amount,
   setAmount,
   isLoading,
-  setIsLoading,
 }: StakeCardProps) => {
   const [cardMode, setCardMode] = React.useState(closed ? 1 : 0);
   const maxStake = useAppSelector(selectMaxStake);
   const minStake = useAppSelector(selectMinStake);
   const { address, isConnected } = useAccount();
+  const [balance, setBalance] = React.useState<string>("0.0");
   const config = useConfig();
+  const validatorSlice = useAppSelector(selectValidatorSlice);
 
   useEffect(() => {
     if (closed) {
@@ -56,14 +54,14 @@ const StakeCard = ({
     }
   }, [closed]);
 
-  const setMode = (mode: number) => {
+  const setMode = useCallback((mode: number) => {
     if (closed) return;
     setCardMode(mode);
-  };
-  const [balance, setBalance] = React.useState<string>("0.0");
+  }, [closed]);
+
   useEffect(() => {
     async function updateBalance() {
-      if(address) {
+      if (address) {
         const balance = await getBalance(config, {
           address,
           chainId: fuse.id,
@@ -72,9 +70,9 @@ const StakeCard = ({
       }
     }
     updateBalance();
-  }, [address]);
+  }, [address, config]);
 
-  const getPredictedReward = (amt: number) => {
+  const getPredictedReward = useCallback((amt: number) => {
     if (validator) {
       const reward =
         validatorSlice.fuseTokenTotalSupply *
@@ -84,18 +82,23 @@ const StakeCard = ({
       return reward;
     }
     return 0;
-  };
+  }, [validator, validatorSlice.fuseTokenTotalSupply, validatorSlice.totalStakeAmount]);
 
-  const handleWithdraw = () => {
+  const getAmount = useCallback(() => {
+    if (isNaN(parseFloat(amount as string))) return 0;
+    return parseFloat(amount as string);
+  }, [amount]);
+
+  const handleWithdraw = useCallback(() => {
     if (
       parseFloat(validator?.stakeAmount as string) - getAmount() <
       parseFloat(minStake as string)
     )
       warningToggle();
     else handleUnstake();
-  };
+  }, [getAmount, handleUnstake, minStake, validator, warningToggle]);
 
-  const getPredictedIncrease = () => {
+  const getPredictedIncrease = useCallback(() => {
     if (validator) {
       const reward =
         (validatorSlice.fuseTokenTotalSupply /
@@ -105,7 +108,7 @@ const StakeCard = ({
       return reward;
     }
     return 0;
-  };
+  }, [validator, validatorSlice.fuseTokenTotalSupply, validatorSlice.totalStakeAmount]);
 
   const [reward, setReward] = React.useState<number>(0.0);
 
@@ -127,14 +130,8 @@ const StakeCard = ({
         );
       else setReward(getPredictedReward(getAmount()));
     }
-  }, [amount, validator]);
+  }, [amount, cardMode, getAmount, getPredictedReward, validator]);
 
-  const getAmount = () => {
-    if (isNaN(parseFloat(amount as string))) return 0;
-    return parseFloat(amount as string);
-  };
-
-  const validatorSlice = useAppSelector(selectValidatorSlice);
   return (
     <div className="w-full bg-white rounded-xl p-6 flex flex-col">
       <div className="flex w-full bg-modal-bg rounded-md p-[2px]">
@@ -176,7 +173,7 @@ const StakeCard = ({
       <div className="flex w-full">
         <div className="w-full bg-bg-dark-gray rounded-lg flex py-[9px] ps-2 pe-4 mt-2 items-center">
           <div className="w-1/12">
-            <img src={fuseToken.src} alt="Fuse" />
+            <Image src={fuseToken} alt="Fuse" />
           </div>
           <input
             className="bg-bg-dark-gray ms-2 outline-none h-full w-9/12"
@@ -254,8 +251,8 @@ const StakeCard = ({
             Projected
             <br className="hidden md:block" /> Rewards (1y)
           </p>
-          <img
-            src={info.src}
+          <Image
+            src={info}
             alt="info"
             className="peer mb-1 ms-1 cursor-pointer"
           />
@@ -294,7 +291,7 @@ const StakeCard = ({
                   : "Unstake"
           }
           className="bg-black font-medium text-white mt-6 rounded-full"
-          disabledClassname="bg-black/25 font-medium text-white rounded-full w-full mt-6"
+          disabledClassName="bg-black/25 font-medium text-white rounded-full w-full mt-6"
           disabled={
             getAmount() === 0 ||
             isLoading ||

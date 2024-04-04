@@ -21,7 +21,7 @@ const ContactDetailsModal = (): JSX.Element => {
         dispatch(setIsContactDetailsModalOpen(false));
       }
     });
-  }, []);
+  }, [dispatch]);
 
   const submitContactDetails = () => {
     if (

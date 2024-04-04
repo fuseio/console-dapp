@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ValidatorCard from "./ValidatorCard";
 import { ValidatorType } from "@/store/validatorSlice";
 import Button from "@/components/ui/Button";
@@ -9,6 +9,7 @@ import ChevronUp from "@/assets/ChevronUp";
 import { useDeepCompareEffectNoCheck } from "use-deep-compare-effect";
 import RpcNotice from "@/components/staking/RpcNotice";
 import { useBlockNumber } from "wagmi";
+import Image from "next/image";
 
 const ValidatorsPane = ({
   validators,
@@ -106,7 +107,7 @@ const ValidatorsPane = ({
         <div className="flex flex-col w-full items-center justify-center mt-28">
           {(!failureCount && selected === 1) &&
             <>
-              <img src={coins.src} alt="coins" />
+              <Image src={coins} alt="coins" />
               <p className="text-2xl font-black text-fuse-black mt-3 w-1/2 text-center md:w-full">
                 No staked validators yet! Begin your staking journey by delegating
                 tokens to a validator of your choice.

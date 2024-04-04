@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Button from "@/components/ui/Button";
 import dollar from "@/assets/dollar.svg";
 import receive from "@/assets/receive.svg";
@@ -25,7 +25,7 @@ const Home = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
-  const controller = new AbortController();
+  const controller = useMemo(() => new AbortController(), []);
   const { address, connector, isConnected, chain } = useAccount();
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const { data: blockNumber } = useBlockNumber({ watch: true });
@@ -43,11 +43,11 @@ const Home = () => {
     return () => {
       controller.abort();
     }
-  }, [isConnected])
+  }, [controller, dispatch, isConnected])
 
   useEffect(() => {
     refetch();
-  }, [blockNumber]) 
+  }, [blockNumber, refetch]) 
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
@@ -105,7 +105,7 @@ const Home = () => {
                       }}
                       padding=""
                       className="flex items-center justify-center w-16 h-16 bg-success text-black font-semibold rounded-full"
-                      disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
+                      disabledClassName="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
                     >
                       <Image src={dollar} alt="dollar" />
                     </Button>
@@ -125,7 +125,7 @@ const Home = () => {
                       }}
                       padding=""
                       className="flex items-center justify-center w-16 h-16 bg-white text-black font-semibold rounded-full"
-                      disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
+                      disabledClassName="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
                       isLeft
                     >
                       <Image src={receive} alt="receive" />
@@ -146,7 +146,7 @@ const Home = () => {
                       }}
                       padding=""
                       className="flex items-center justify-center w-16 h-16 bg-white text-black font-semibold rounded-full"
-                      disabledClassname="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
+                      disabledClassName="flex items-center justify-center w-16 h-16 bg-button-inactive text-black font-semibold rounded-full"
                       isLeft
                     >
                       <Image src={send} alt="send" />

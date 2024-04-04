@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import close from "@/assets/close.svg";
 import metamask from "@/public/metamask.png";
@@ -43,6 +43,12 @@ const WalletModal = (): JSX.Element => {
   const { isLogin, isValidated, isLoggedIn, isLoginError, isAuthenticated, isOperatorWalletModalOpen, redirect, signature, operatorContactDetail } = useAppSelector(selectOperatorSlice);
   const pathname = usePathname();
 
+  const toggleModal = useCallback((isModal: boolean) => {
+    dispatch(setIsWalletModalOpen(isModal));
+    dispatch(setIsOperatorWalletModalOpen(isModal));
+    dispatch(setIsLogin(isModal));
+  }, [dispatch])
+
   const { signMessage } = useSignMessage({
     mutation: {
       onMutate() {
@@ -70,7 +76,7 @@ const WalletModal = (): JSX.Element => {
       }
     });
     dispatch(setHydrate());
-  }, []);
+  }, [dispatch, toggleModal]);
 
   useEffect(() => {
     if (isConnected) {
@@ -87,13 +93,13 @@ const WalletModal = (): JSX.Element => {
 
       localStorage.setItem("Fuse-connectedWalletType", walletType[connector.id]);
     }
-  }, [isConnected])
+  }, [address, connector, isConnected, toggleModal])
 
   useEffect(() => {
     if (isConnectedWallet && address) {
       dispatch(checkOperator({ address }));
     }
-  }, [isConnectedWallet, address])
+  }, [isConnectedWallet, address, dispatch])
 
   useEffect(() => {
     if (isConnected && isOperatorWalletModalOpen && chain && !signature) {
@@ -102,21 +108,21 @@ const WalletModal = (): JSX.Element => {
       }
       signMessage({ message: signDataMessage });
     }
-  }, [isConnected, isOperatorWalletModalOpen, chain, signature])
+  }, [isConnected, isOperatorWalletModalOpen, chain, signature, signMessage, switchChain])
 
   useEffect(() => {
     if (isValidated && signer) {
       dispatch(setIsValidated(false));
       dispatch(fetchOperator({ signer }));
     }
-  }, [isValidated, signer])
+  }, [dispatch, isValidated, signer])
 
   useEffect(() => {
     if (isLoggedIn) {
       dispatch(setIsLoggedIn(false));
       router.push("/dashboard")
     }
-  }, [isLoggedIn])
+  }, [dispatch, isLoggedIn, router])
 
   useEffect(() => {
     if (isLoginError) {
@@ -128,20 +134,20 @@ const WalletModal = (): JSX.Element => {
       }
       dispatch(setIsLoginError(false));
     }
-  }, [isLoginError, redirect, signer, operatorContactDetail])
+  }, [isLoginError, redirect, signer, operatorContactDetail, dispatch, router])
 
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(fetchSponsoredTransactions());
       dispatch(checkIsActivated());
     }
-  }, [isAuthenticated])
+  }, [dispatch, isAuthenticated])
 
   useEffect(() => {
     if (isDisconnected) {
       dispatch(setLogout());
     }
-  }, [isDisconnected])
+  }, [dispatch, isDisconnected])
 
   const connectionEvent = (id: string) => {
     ReactGA.event({
@@ -163,12 +169,6 @@ const WalletModal = (): JSX.Element => {
       router.push("/wallet");
     }
     setIsConnectedWallet(true);
-  }
-
-  const toggleModal = (isModal: boolean) => {
-    dispatch(setIsWalletModalOpen(isModal));
-    dispatch(setIsOperatorWalletModalOpen(isModal));
-    dispatch(setIsLogin(isModal));
   }
 
   return (

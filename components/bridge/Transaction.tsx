@@ -10,6 +10,7 @@ import {
 import { getChainKey } from "@layerzerolabs/lz-sdk";
 import { TransactionType } from "@/store/transactionsSlice";
 import Pill from "./Pill";
+import Image from "next/image";
 
 const Transaction = ({
   transaction,
@@ -36,7 +37,7 @@ const Transaction = ({
                 .name
             }
           </span>
-          <img src={right.src} alt="right" className="h-3 mt-[3px]" />
+          <Image src={right} alt="right" className="h-3 mt-[3px]" />
           <span>
             {
               getNetworkByChainKey(getChainKey(transactionHashes.dstChainId))
@@ -72,7 +73,7 @@ const Transaction = ({
       </div>
       {transaction === MessageStatus.INFLIGHT && (
         <div className="flex rounded-md px-3 md:px-2 py-[6px] bg-[#E9E9E9] mt-3 items-center mr-auto md:text-[10px]">
-          <img src={info.src} alt="info" className="h-3 mr-2 md:mr-1" />
+          <Image src={info} alt="info" className="h-3 mr-2 md:mr-1" />
           <span className="text-xs flex">
             Expected transaction completion time:{" "}
             <p className="font-semibold ml-1">

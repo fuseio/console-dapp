@@ -2,6 +2,7 @@ import React from "react";
 import down from "@/assets/dropdown-down.svg";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import { motion } from "framer-motion";
+import Image, { StaticImageData } from "next/image";
 
 type DropdownProps = {
   className?: string;
@@ -13,7 +14,7 @@ type DropdownProps = {
 type DropdownItemsType = {
   id: number;
   item: string;
-  icon: string;
+  icon: StaticImageData;
 };
 
 type DropdownSectionType = {
@@ -63,15 +64,17 @@ const Dropdown = ({
       onClick={() => setIsOpen(!isOpen)}
     >
       <div className="flex items-center w-full md:text-xs">
-        <img
+        <Image
           src={items[selectedSection].items[selectedItem].icon}
+          width={32}
+          height={32}
           alt={items[selectedSection].items[selectedItem].id.toString()}
           className="h-8 me-2 md:h-6"
         />
         <span className="font-semibold">
           {items[selectedSection].items[selectedItem].item}
         </span>
-        <img src={down.src} alt="down" className="ml-auto" />
+        <Image src={down} alt="down" className="ml-auto" />
       </div>
       <motion.div
         animate={isOpen ? "open" : "closed"}
@@ -96,9 +99,11 @@ const Dropdown = ({
                   }}
                   key={i}
                 >
-                  <img
+                  <Image
                     src={item.icon}
                     alt={item.id.toString()}
+                    width={32}
+                    height={32}
                     className="h-8 me-2 md:h-6"
                   />
                   <p className="font-medium cursor-pointer">{item.item}</p>

@@ -48,14 +48,14 @@ const Topbar = () => {
         <span>
           <a href="/">
             <Image
-              src={fuseConsoleLogo.src}
+              src={fuseConsoleLogo}
               alt="fuse console logo"
               width={196}
               height={28}
               className="z-50 md:hidden"
             />
             <Image
-              src={fuseLogoMobile.src}
+              src={fuseLogoMobile}
               alt="fuse logo"
               width={20}
               height={20}

@@ -20,8 +20,8 @@ const Disclaimer = () => {
           onClick={() => setShow(!show)}
         >
           <p className="text-base font-semibold">Legal Disclaimer</p>
-          <img
-            src={right.src}
+          <Image
+            src={right}
             alt="right"
             className={
               show ? "ml-auto h-2 -rotate-90" : "ml-auto h-2 rotate-90"
