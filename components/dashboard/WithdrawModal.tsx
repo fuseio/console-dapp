@@ -92,7 +92,7 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
         dispatch(setIsWithdrawModalOpen(false));
       }
     });
-  }, []);
+  }, [dispatch]);
 
   return (
     <AnimatePresence>
@@ -163,7 +163,7 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
                     {selectedCoin}
                   </p>
                   <Image
-                    src={down.src}
+                    src={down}
                     alt="down"
                     className={`${isCoinDropdownOpen && "rotate-180"}`}
                     width={10}

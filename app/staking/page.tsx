@@ -14,7 +14,7 @@ const Staking = () => {
 
   useEffect(() => {
     dispatch(setSelectedNavbar("staking"));
-  }, [])
+  }, [dispatch])
 
   return (
     <div className="w-full font-mona justify-end">

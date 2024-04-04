@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import piggybank from "@/assets/piggybank.svg";
 import FAQ from "@/components/FAQ";
 import FilterBar from "@/components/staking/FilterBar";
@@ -24,8 +24,8 @@ import ValidatorsPane from "./ValidatorsPane";
 import SortBar from "@/components/staking/SortBar";
 import { useAccount } from "wagmi";
 import { hex } from "@/lib/helpers";
+import Image from "next/image";
 import useDeepCompareEffect, { useDeepCompareEffectNoCheck } from "use-deep-compare-effect";
-
 
 const Home = () => {
   const validatorSlice = useAppSelector(selectValidatorSlice);
@@ -35,14 +35,16 @@ const Home = () => {
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(fetchValidators());
-  }, []);
+  }, [dispatch]);
 
   const [validatorsToDisplay, setValidatorsToDisplay] = useState<
     Array<ValidatorType>
   >([]);
+
   useDeepCompareEffect(() => {
     setValidatorsToDisplay(validatorSlice.validatorMetadata);
   }, [validatorSlice.validatorMetadata]);
+
   useDeepCompareEffect(() => {
     if (
       validatorSlice.validators.length > 0 &&
@@ -72,42 +74,42 @@ const Home = () => {
 
   const [filter, setFilter] = useState(SearchSlice);
 
-  const setSearch = (search: string) => {
+  const setSearch = useCallback((search: string) => {
     let oldFilter = JSON.parse(JSON.stringify(filter));
     oldFilter.search = search;
     setFilter(oldFilter);
     dispatch(setReduxSearch(oldFilter.search))
-  };
+  }, [dispatch, filter]);
 
-  const setStateFilter = (stateFilter: number) => {
+  const setStateFilter = useCallback((stateFilter: number) => {
     let oldFilter = JSON.parse(JSON.stringify(filter));
     oldFilter.stateFilter = stateFilter;
     setFilter(oldFilter);
     dispatch(setReduxStateFilter(oldFilter.stateFilter))
-  };
+  }, [dispatch, filter]);
 
-  const setStatusFilter = (statusFilter: number) => {
+  const setStatusFilter = useCallback((statusFilter: number) => {
     let oldFilter = JSON.parse(JSON.stringify(filter));
     oldFilter.statusFilter = statusFilter;
     setFilter(oldFilter);
     dispatch(setReduxStatusFilter(oldFilter.statusFilter))
-  };
+  }, [dispatch, filter]);
 
-  const setMyStakeFilter = (myStakeFilter: number) => {
+  const setMyStakeFilter = useCallback((myStakeFilter: number) => {
     let oldFilter = JSON.parse(JSON.stringify(filter));
     oldFilter.myStakeFilter = myStakeFilter;
     setFilter(oldFilter);
     dispatch(setReduxMyStakeFilter(oldFilter.myStakeFilter))
-  };
+  }, [dispatch, filter]);
 
-  const setSort = (sort: number) => {
+  const setSort = useCallback((sort: number) => {
     let oldFilter = JSON.parse(JSON.stringify(filter));
     oldFilter.sort = sort;
     setFilter(oldFilter);
     dispatch(setReduxSort(oldFilter.sort))
-  };
+  }, [dispatch, filter])
 
-  const filterValidators = () => {
+  const filterValidators = useCallback(() => {
     if (validatorSlice.validatorMetadata.length === 0) return;
     const filteredValidators = validatorSlice.validatorMetadata.filter(
       (validator) => {
@@ -153,7 +155,7 @@ const Home = () => {
     }
 
     setValidatorsToDisplay(filteredValidators);
-  };
+  }, [filter, validatorSlice.validatorMetadata]);
 
   useDeepCompareEffect(() => {
     filterValidators();
@@ -251,7 +253,7 @@ const Home = () => {
             </span>
           </div>
           <div className="w-7/12 flex justify-end md:hidden">
-            <img src={piggybank.src} alt="piggybank" />
+            <Image src={piggybank} alt="piggybank" />
           </div>
         </div>
         <div className="grid grid-cols-4 mt-0 gap-x-4 justify-between md:mt-12 md:grid-cols-1 md:gap-y-3 md:gap-x-3">

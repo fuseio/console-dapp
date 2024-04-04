@@ -13,7 +13,7 @@ const Wallet = () => {
 
   useEffect(() => {
     dispatch(setSelectedNavbar("wallet"));
-  }, [])
+  }, [dispatch])
 
   return (
     <div className="w-full font-mona justify-end min-h-screen">

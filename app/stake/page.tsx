@@ -8,7 +8,7 @@ const Stake = () => {
 
   useEffect(() => {
     router.push("/")
-  }, [])
+  }, [router])
 };
 
 export default Stake

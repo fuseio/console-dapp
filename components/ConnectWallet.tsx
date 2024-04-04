@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchValidators } from "@/store/validatorSlice";
 import copy from "@/assets/copy-black.svg";
@@ -97,7 +97,7 @@ const ConnectWallet = ({
   const dispatch = useAppDispatch();
   const [isChainOpen, setIsChainOpen] = React.useState(false);
   const [isAccountsOpen, setIsAccountsOpen] = React.useState(false);
-  const [isWrongNetwoksOpen, setIsWrongNetwoksOpen] = React.useState(false);
+  const [isWrongNetworksOpen, setIsWrongNetworksOpen] = React.useState(false);
   const [isQrCodeOpen, setIsQrCodeOpen] = React.useState(false);
   const { address, connector, isConnected, chain } = useAccount();
   const { chains } = useConfig();
@@ -108,7 +108,7 @@ const ConnectWallet = ({
     address,
   });
   const matches = useMediaQuery(`(min-width: ${screenMediumWidth}px)`);
-  const controller = new AbortController();
+  const controller = useMemo(() => new AbortController(), []);
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const pathname = usePathname();
 
@@ -123,8 +123,8 @@ const ConnectWallet = ({
     }
   });
   const wrongNetworkRef = useOutsideClick(() => {
-    if (isWrongNetwoksOpen) {
-      setIsWrongNetwoksOpen(false);
+    if (isWrongNetworksOpen) {
+      setIsWrongNetworksOpen(false);
     }
   });
 
@@ -136,7 +136,7 @@ const ConnectWallet = ({
 
   useEffect(() => {
     dispatch(fetchValidators());
-  }, [connector, chain]);
+  }, [connector, chain, dispatch]);
 
   useEffect(() => {
     dispatch(
@@ -149,11 +149,11 @@ const ConnectWallet = ({
     return () => {
       controller.abort();
     };
-  }, [isConnected, chain]);
+  }, [isConnected, chain, dispatch, controller]);
 
   useEffect(() => {
     refetch();
-  }, [blockNumber])
+  }, [blockNumber, refetch])
 
   return !isConnected ? (
     <div className={"flex justify-end " + containerClassName}>
@@ -192,7 +192,7 @@ const ConnectWallet = ({
           {eclipseAddress(String(address))}
         </p>
         <Image
-          src={down.src}
+          src={down}
           alt="down"
           className={`ms-[15px] ${isChainOpen && "rotate-180"} md:ms-1`}
           width={10}
@@ -244,7 +244,7 @@ const ConnectWallet = ({
           onClick={() => disconnect()}
         >
           <Image
-            src={disconnectIcon.src}
+            src={disconnectIcon}
             alt="disconnect wallet"
             width={17.68}
             height={20}
@@ -273,7 +273,7 @@ const ConnectWallet = ({
             {eclipseAddress(String(address))}
           </p>
           <Image
-            src={down.src}
+            src={down}
             alt="down"
             className={`ms-[15px] ${isAccountsOpen && "rotate-180"} md:ms-1`}
             width={10}
@@ -296,13 +296,13 @@ const ConnectWallet = ({
               <p className="font-bold">{eclipseAddress(String(address))}</p>
               <div className="flex gap-[19.02px]">
                 <Copy
-                  src={copy.src}
+                  src={copy}
                   text={String(address)}
                   width={18.97}
                   height={18.81}
                 />
                 <Image
-                  src={qr.src}
+                  src={qr}
                   alt="open qr code of address"
                   width={16.22}
                   height={16.65}
@@ -377,7 +377,7 @@ const ConnectWallet = ({
             onClick={() => disconnect()}
           >
             <Image
-              src={disconnectIcon.src}
+              src={disconnectIcon}
               alt="disconnect wallet"
               width={17.68}
               height={20}
@@ -398,7 +398,7 @@ const ConnectWallet = ({
               onClick={() => setIsQrCodeOpen(!isQrCodeOpen)}
             >
               <Image
-                src={leftArrow.src}
+                src={leftArrow}
                 alt="back arrow icon"
                 width={11.39}
                 height={5.7}
@@ -422,19 +422,19 @@ const ConnectWallet = ({
     >
       <div
         className="flex bg-[#FACBCB] px-[18.3px] py-3 md:py-1 md:px-2 rounded-full cursor-pointer items-center relative justify-center"
-        onClick={() => setIsWrongNetwoksOpen(!isWrongNetwoksOpen)}
+        onClick={() => setIsWrongNetworksOpen(!isWrongNetworksOpen)}
       >
         <p>Wrong Network</p>
         <Image
-          src={down.src}
+          src={down}
           alt="down"
-          className={`ml-[15px] ${isWrongNetwoksOpen && "rotate-180"}`}
+          className={`ml-[15px] ${isWrongNetworksOpen && "rotate-180"}`}
           width={10}
           height={10}
         />
       </div>
       <motion.div
-        animate={isWrongNetwoksOpen ? "open" : "closed"}
+        animate={isWrongNetworksOpen ? "open" : "closed"}
         initial="closed"
         exit="closed"
         variants={menu}
@@ -473,7 +473,7 @@ const ConnectWallet = ({
           onClick={() => disconnect()}
         >
           <Image
-            src={disconnectIcon.src}
+            src={disconnectIcon}
             alt="disconnect wallet"
             width={17.68}
             height={20}

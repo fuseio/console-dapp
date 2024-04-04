@@ -38,7 +38,7 @@ const FilterBar = ({
         {name}
       </span>
       <Image
-        src={info.src}
+        src={info}
         alt="info"
         className="peer cursor-pointer mb-0.5"
         width={12}

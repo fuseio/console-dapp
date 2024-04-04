@@ -17,7 +17,7 @@ const QrModal = ({ value, size, setIsQrModalOpen }: QrModalProps): JSX.Element =
         setIsQrModalOpen(false);
       }
     });
-  }, []);
+  }, [setIsQrModalOpen]);
 
   return (
     <AnimatePresence>

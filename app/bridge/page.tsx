@@ -6,14 +6,14 @@ import { useAppDispatch } from "@/store/store";
 import { useEffect } from "react";
 import { setSelectedNavbar } from "@/store/navbarSlice";
 import Footer from "@/components/Footer";
-import Maintenance from "./Maintenance";
+// import Maintenance from "./Maintenance";
 
 const Bridge = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(setSelectedNavbar("bridge"));
-  }, [])
+  }, [dispatch])
 
   return (
     <div className="w-full font-mona justify-end min-h-screen">

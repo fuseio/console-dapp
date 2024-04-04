@@ -1,10 +1,11 @@
 import { Address } from "abitype";
 import { disabledChains } from "./disabledChains";
+import { StaticImageData } from "next/image";
 
 export interface ChainConfigLike {
   lzChainId: number;
   chainName: string;
-  icon: string;
+  icon: StaticImageData;
   rpc: string;
   chainId: number;
   logo: string;
@@ -13,7 +14,7 @@ export interface ChainConfigLike {
 
 export interface DisabledChainConfigLike {
   chainName: string;
-  icon: string;
+  icon: StaticImageData;
   appName: string;
   appLogo: string;
   appURL: string;
@@ -45,17 +46,17 @@ export interface CoinConfigLike {
   name: string;
   symbol: string;
   decimals: number;
-  icon: string;
+  icon: StaticImageData;
   coinGeckoId: string;
 }
 
 export interface ExchangeConfigLike {
   name: string;
-  icon: string;
+  icon: StaticImageData;
   website: string;
   bridges: {
     name: string;
-    icon: string;
+    icon: StaticImageData;
     website: string;
   }[];
 }
@@ -98,7 +99,7 @@ interface TokenStateType {
   address: Address;
   isNative: boolean;
   isBridged: boolean;
-  recieveToken?: {
+  receiveToken?: {
     symbol: string;
     name: string;
   };
@@ -113,9 +114,9 @@ interface WrappedBridgeConfig {
       symbol: string;
       name: string;
       address: Address;
-      icon: string;
+      icon: StaticImageData;
       coinGeckoId: string;
-      recieveToken?: {
+      receiveToken?: {
         symbol: string;
         name: string;
       };
@@ -126,7 +127,7 @@ interface WrappedBridgeConfig {
     lzChainId: number;
     chainId: number;
     name: string;
-    icon: string;
+    icon: StaticImageData;
     original: Address;
     wrapped: Address;
     originalFuse: Address;
@@ -137,11 +138,11 @@ interface WrappedBridgeConfig {
       symbol: string;
       name: string;
       address: Address;
-      icon: string;
+      icon: StaticImageData;
       isNative: boolean;
       isBridged: boolean;
       coinGeckoId: string;
-      recieveToken?: {
+      receiveToken?: {
         symbol: string;
         name: string;
       };
@@ -163,9 +164,9 @@ export const createAppConfig = (
     symbol: string;
     name: string;
     address: Address;
-    icon: string;
+    icon: StaticImageData;
     coinGeckoId: string;
-    recieveToken?: {
+    receiveToken?: {
       symbol: string;
       name: string;
     };
@@ -199,11 +200,11 @@ export const createAppConfig = (
           symbol: string;
           name: string;
           address: Address;
-          icon: string;
+          icon: StaticImageData;
           isNative: boolean;
           isBridged: boolean;
           coinGeckoId: string;
-          recieveToken?: {
+          receiveToken?: {
             symbol: string;
             name: string;
           };
@@ -223,7 +224,7 @@ export const createAppConfig = (
                 isNative: token.isNative,
                 isBridged: token.isBridged,
                 coinGeckoId: coin.coinGeckoId,
-                recieveToken: token.recieveToken,
+                receiveToken: token.receiveToken,
               });
             }
           });

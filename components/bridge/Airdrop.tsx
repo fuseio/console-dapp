@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import airdrop from "@/assets/airdrop.svg";
 import { AnimatePresence, motion } from "framer-motion";
 import cross from "@/assets/cross.svg";
+import Image from "next/image";
 
 const Airdrop = () => {
   const [isOpen, onToggle] = useState(false);
@@ -34,8 +35,8 @@ const Airdrop = () => {
             >
               <div className="w-full flex justify-center relative">
                 <span className="font-bold">Gas Fee Airdrop Rules</span>
-                <img
-                  src={cross.src}
+                <Image
+                  src={cross}
                   alt="close"
                   className="cursor-pointer absolute ml-[100%]"
                   onClick={() => {
@@ -74,7 +75,7 @@ const Airdrop = () => {
         )}
       </AnimatePresence>
       <div className="bg-black w-full rounded-lg px-6 py-7 flex text-white items-center">
-        <img src={airdrop.src} alt="airdrop" />
+        <Image src={airdrop} alt="airdrop" />
         <div className="ps-4 flex flex-col">
           <span className="text-[20px] font-semibold">
             Airdrop of 0.01 FUSE
