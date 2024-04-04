@@ -6,7 +6,7 @@ import StakeCard from "../../staking/StakeCard";
 import StickyBox from "react-sticky-box";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import link from "@/assets/link.svg";
-import arrow from "@/assets/arrow.svg";
+import expandArrow from "@/assets/expand-arrow.svg";
 import ReactGA from "react-ga4";
 import ym from "react-yandex-metrika";
 import {
@@ -255,8 +255,8 @@ const Stake = () => {
         minStake={validators.minStakeAmount}
       />
       <div className="flex w-8/9 flex-col md:w-9/10 max-w-7xl">
-        <div className="flex w-full md:flex-col">
-          <div className="w-[65%] flex flex-col md:w-full">
+        <div className="flex justify-between w-full md:flex-col">
+          <div className="w-[647px] flex flex-col md:w-full">
             <Link href="/staking" className="flex gap-[13.41px] mt-16 mb-[33.5px] hover:opacity-70">
               <Image
                 src={leftArrow}
@@ -309,7 +309,7 @@ const Stake = () => {
                   )}
                 </div>
               </div>
-              <div className="flex flex-col items-end justify-center w-1/3 h-full ms-6 md:w-full md:items-start md:ms-0 md:mt-8">
+              <div className="flex flex-col items-end justify-center w-1/3 h-full ms-6 md:w-full md:items-start md:ms-0 md:mt-8 whitespace-nowrap">
                 {
                   validator && validator?.firstSeen && (
                     <p className="text-text-heading-gray text-base mb-2">
@@ -360,7 +360,7 @@ const Stake = () => {
                 Footer="Total Delegators"
                 type={2}
                 isLoading={!validator}
-                icon={arrow.src}
+                icon={expandArrow}
                 onClick={() => {
                   setIsOpen(true);
                   let delegatorsFilter: Address[] = [];
@@ -453,7 +453,7 @@ const Stake = () => {
               </div>
             )}
           </div>
-          <div className="w-[35%] ps-16 pt-16 md:pt-8 md:pb-6 md:w-full md:ps-0">
+          <div className="w-[414px] pt-16 md:pt-8 md:pb-6 md:w-full md:ps-0">
             <StickyBox offsetTop={90}>
               <StakeCard
                 validator={validator}
