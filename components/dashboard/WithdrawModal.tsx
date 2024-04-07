@@ -73,7 +73,7 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const dispatch = useAppDispatch();
   const [amount, setAmount] = useState("0.00");
-  const [toAddress, setToAddress] = useState<Address>(hex);
+  const [toAddress, setToAddress] = useState<Address>();
   const signer = useEthersSigner();
   const [selectedCoin, setSelectedCoin] = useState("FUSE");
   const [isCoinDropdownOpen, setIsCoinDropdownOpen] = useState(false);
@@ -211,6 +211,7 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
               <input
                 type="text"
                 name="address"
+                placeholder="0x"
                 value={toAddress}
                 onChange={e => setToAddress(e.target.value as Address)}
                 className="px-7 py[16.5px] border-[0.5px] border-gray-alpha-40 h-[55px] rounded-full mb-6 text-2xl text-text-dark-gray font-medium w-full focus:outline-none"
@@ -237,7 +238,12 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
                 className={`transition ease-in-out w-full flex justify-center items-center gap-4 text-lg leading-none font-semibold rounded-full ${(parseFloat(amount) + parseFloat(gasEstimate)) > parseFloat(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) ? "bg-[#FFEBE9] text-[#FD0F0F]" : parseFloat(amount) < 0 ? "bg-gray text-white" : "bg-black text-white hover:bg-success hover:text-black"}`}
                 padding="px-12 py-4"
                 onClick={() => {
-                  if (signer && (parseFloat(amount) + parseFloat(gasEstimate)) <= parseFloat(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) && parseFloat(amount) > 0) {
+                  if (
+                    signer &&
+                    (parseFloat(amount) + parseFloat(gasEstimate)) <= parseFloat(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) &&
+                    parseFloat(amount) > 0 &&
+                    toAddress
+                  ) {
                     dispatch(withdraw({
                       signer,
                       amount,

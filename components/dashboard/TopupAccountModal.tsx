@@ -20,6 +20,7 @@ const TopupAccountModal = (): JSX.Element => {
     window.addEventListener("click", (e) => {
       if ((e.target as HTMLElement).id === "topup-account-modal-bg") {
         dispatch(setIsTopupAccountModalOpen(false));
+        setIsQrCodeOpen(false);
       }
     });
   }, [dispatch]);
