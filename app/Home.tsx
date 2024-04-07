@@ -57,6 +57,7 @@ const Home = () => {
           <Link
             href={path.STAKING}
             className="transition-all ease-in-out flex flex-col gap-[17.43px] bg-lightest-gray hover:bg-success rounded-[20px] pt-[42.36px] pr-[15px] pl-[46.8px] md:px-4 md:pt-6 min-h-[420px] md:min-h-[400px] bg-[url('/vectors/stake.svg')] hover:bg-[url('/vectors/stake-green.svg')] bg-no-repeat bg-bottom"
+            onClick={() => amplitude.track("Go to Staking")}
           >
             <p className="text-2xl leading-tight text-fuse-black font-bold max-w-[204.2px]">
               Stake
@@ -68,6 +69,7 @@ const Home = () => {
           <Link
             href={path.BRIDGE}
             className="transition-all ease-in-out flex flex-col gap-[17.43px] bg-lightest-gray hover:bg-success rounded-[20px] pt-[42.36px] pr-[15px] pl-[46.8px] md:px-4 md:pt-6 min-h-[420px] md:min-h-[400px] bg-[url('/vectors/bridge.svg')] hover:bg-[url('/vectors/bridge-green.svg')] bg-no-repeat bg-bottom"
+            onClick={() => amplitude.track("Go to Bridge")}
           >
             <p className="text-2xl leading-tight text-fuse-black font-bold max-w-[204.2px]">
               Bridge

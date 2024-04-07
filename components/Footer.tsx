@@ -4,6 +4,7 @@ import telegram from "@/assets/telegram-gray.svg";
 import discord from "@/assets/discord-gray.svg";
 import youtube from "@/assets/youtube-gray.svg";
 import Image from "next/image";
+import * as amplitude from "@amplitude/analytics-browser";
 
 const socials = [
   {
@@ -42,6 +43,7 @@ const Footer = () => {
             href="https://docs.fuse.io"
             target="_blank"
             className="transition ease-in-out hover:text-darker-gray"
+            onClick={() => amplitude.track("Go to Docs")}
           >
             Read the Docs
           </a>
