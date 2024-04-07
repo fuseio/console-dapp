@@ -16,7 +16,6 @@ import { WagmiProvider } from 'wagmi'
 import { config } from "@/lib/web3Auth";
 import WalletModal from "./WalletModal";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { path } from "@/lib/helpers";
 import { useRouter } from "next/navigation";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -32,8 +31,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
     if (isClient) {
       ReactGA.initialize(NEXT_PUBLIC_GOOGLE_ANALYTICS_ID as string);
       amplitude.init(NEXT_PUBLIC_AMPLITUDE_API_KEY as string, { serverUrl: NEXT_PUBLIC_AMPLITUDE_SERVER_URL });
-
-      Object.values(path).map((pathname) => router.prefetch(pathname))
     }
   }, [isClient, router])
 
