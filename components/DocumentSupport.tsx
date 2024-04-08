@@ -1,6 +1,7 @@
 import Image from "next/image"
 import developerDocumentation from "@/assets/developer-documentation.svg";
 import getSupport from "@/assets/get-support.svg";
+import * as amplitude from "@amplitude/analytics-browser";
 
 const DocumentSupport = () => {
   return (
@@ -17,6 +18,7 @@ const DocumentSupport = () => {
             href="https://docs.fuse.io/"
             target="_blank"
             className="transition ease-in-out text-lg leading-none text-white font-semibold rounded-full bg-black px-5 py-[11.5px] hover:text-black hover:bg-success"
+            onClick={() => amplitude.track("Go to Docs")}
           >
             Read the Docs
           </a>

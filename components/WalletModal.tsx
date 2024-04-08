@@ -36,7 +36,7 @@ const WalletModal = (): JSX.Element => {
   const emailRef = useRef<HTMLInputElement>(null);
   const { isWalletModalOpen } = useAppSelector(selectNavbarSlice);
   const dispatch = useAppDispatch();
-  const { address, connector, isConnected, isDisconnected, chain } = useAccount();
+  const { address, isConnected, isDisconnected, chain } = useAccount();
   const signer = useEthersSigner();
   const router = useRouter();
   const { switchChain } = useSwitchChain();
@@ -82,18 +82,7 @@ const WalletModal = (): JSX.Element => {
     if (isConnected) {
       toggleModal(false);
     }
-
-    if (address && connector) {
-      amplitude.setUserId(address);
-
-      amplitude.track("Wallet connected", {
-        walletType: walletType[connector.id],
-        walletAddress: address
-      });
-
-      localStorage.setItem("Fuse-connectedWalletType", walletType[connector.id]);
-    }
-  }, [address, connector, isConnected, toggleModal])
+  }, [isConnected, toggleModal])
 
   useEffect(() => {
     if (isConnectedWallet && address) {
@@ -161,9 +150,23 @@ const WalletModal = (): JSX.Element => {
     connectionEvent(id);
     setConnectingWalletId(id);
     const selectedConnector = connectors.find((connector) => connector.id === id);
-    if(selectedConnector) {
+    if (selectedConnector) {
       localStorage.setItem("Fuse-selectedConnectorId", selectedConnector.id);
-      connect({ connector: selectedConnector });
+      connect({ connector: selectedConnector }, {
+        onSuccess(data) {
+          const [accountAddress] = data.accounts;
+          const connectorId = selectedConnector.id;
+
+          amplitude.setUserId(accountAddress);
+
+          amplitude.track("Wallet connected", {
+            walletType: walletType[connectorId],
+            walletAddress: accountAddress
+          });
+
+          localStorage.setItem("Fuse-connectedWalletType", walletType[connectorId]);
+        },
+      });
     }
     if (pathname === path.HOME) {
       router.push("/wallet");
