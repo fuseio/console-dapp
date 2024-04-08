@@ -72,7 +72,7 @@ const coins: Coins = {
 const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const dispatch = useAppDispatch();
-  const [amount, setAmount] = useState("0.00");
+  const [amount, setAmount] = useState("");
   const [toAddress, setToAddress] = useState<Address>();
   const signer = useEthersSigner();
   const [selectedCoin, setSelectedCoin] = useState("FUSE");
@@ -135,6 +135,7 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
                   <input
                     type="text"
                     name="amount"
+                    placeholder="0.00"
                     max={balance}
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
