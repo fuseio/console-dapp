@@ -62,7 +62,7 @@ const ValidatorsPane = ({
           );
         })}
       </div>
-      <div className="w-full grid grid-cols-4 mt-4 gap-4 md:grid-cols-1 md:gap-y-5">
+      <div className="w-full grid grid-cols-4 mt-4 gap-4 xl:grid-cols-3 md:grid-cols-1 md:gap-y-5">
         {isLoading &&
           Array.from([1, 2, 3, 4, 5, 6]).map((i) => {
             return (

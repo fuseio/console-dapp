@@ -174,7 +174,7 @@ const Modal = ({
                   ...
                 </div>
               )}
-              {
+              {(delegatorsToDisplay?.length / 11) > 9 &&
                 <div
                   className={
                     page === Math.ceil(delegatorsToDisplay?.length / 11)
