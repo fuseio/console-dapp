@@ -255,7 +255,7 @@ const Stake = () => {
         minStake={validators.minStakeAmount}
       />
       <div className="flex w-8/9 flex-col md:w-9/10 max-w-7xl">
-        <div className="flex justify-between w-full md:flex-col">
+        <div className="flex justify-between w-full xl:flex-col">
           <div className="w-[647px] flex flex-col md:w-full">
             <Link href="/staking" className="flex gap-[13.41px] mt-16 mb-[33.5px] hover:opacity-70">
               <Image
@@ -289,7 +289,7 @@ const Stake = () => {
                 <div className="flex flex-col h-full justify-between ms-6">
                   {validator ? (
                     <p className="font-semibold text-5xl text-fuse-black leading-none md:text-2xl">
-                      {validator.name}
+                      {validator.name?.includes(hex) ? eclipseAddress(validator.name) : validator.name}
                     </p>
                   ) : (
                     <p className="px-28 py-5 bg-dark-gray rounded-lg animate-pulse" />
