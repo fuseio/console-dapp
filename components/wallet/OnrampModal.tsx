@@ -5,6 +5,7 @@ import transakLogo from "@/assets/transak-logo.svg";
 import transfiLogo from "@/assets/transfi-logo.svg";
 import paybisLogo from "@/assets/paybis-logo.svg";
 import rampLogo from "@/assets/ramp-logo.svg";
+import Image from "next/image";
 
 interface OnrampModalProps {
   isOpen: boolean;
@@ -45,8 +46,8 @@ const OnrampModal = ({
                   <span className="font-bold">
                     Buy Fuse
                   </span>
-                  <img
-                    src={cross.src}
+                  <Image
+                    src={cross}
                     className="cursor-pointer w-6 h-6"
                     onClick={() => {
                       onToggle(!isOpen);
@@ -60,7 +61,7 @@ const OnrampModal = ({
               </div>
               <div className="grid grid-cols-auto-fit-250 gap-3">
                 <div className="flex flex-col justify-start items-start gap-6 border border-light-blue rounded pl-4 pt-4 pr-16 pb-[18px] cursor-pointer transition ease-in-out delay-150 hover:bg-lighter-blue">
-                  <img src={transakLogo.src} alt="Transak logo" />
+                  <Image src={transakLogo} alt="Transak logo" />
                   <div className="flex flex-col gap-2">
                     <p className="text-sm font-semibold">
                       Payment methods
@@ -71,7 +72,7 @@ const OnrampModal = ({
                   </div>
                 </div>
                 <div className="flex flex-col justify-start items-start gap-6 border border-light-blue rounded pl-4 pt-4 pr-16 pb-[18px] cursor-pointer transition ease-in-out delay-150 hover:bg-lighter-blue">
-                  <img src={rampLogo.src} alt="Ramp logo" />
+                  <Image src={rampLogo} alt="Ramp logo" />
                   <div className="flex flex-col gap-2">
                     <p className="text-sm font-semibold">
                       Payment methods
@@ -82,7 +83,7 @@ const OnrampModal = ({
                   </div>
                 </div>
                 <div className="flex flex-col justify-start items-start gap-6 border border-light-blue rounded pl-4 pt-4 pr-16 pb-[18px] cursor-pointer transition ease-in-out delay-150 hover:bg-lighter-blue">
-                  <img src={paybisLogo.src} alt="Paybis logo" />
+                  <Image src={paybisLogo} alt="Paybis logo" />
                   <div className="flex flex-col gap-2">
                     <p className="text-sm font-semibold">
                       Payment methods
@@ -99,7 +100,7 @@ const OnrampModal = ({
                     onTransfiToggle(true);
                   }}
                 >
-                  <img src={transfiLogo.src} alt="TransFi logo" />
+                  <Image src={transfiLogo} alt="TransFi logo" />
                   <div className="flex flex-col gap-2">
                     <p className="text-sm font-semibold">
                       Payment methods

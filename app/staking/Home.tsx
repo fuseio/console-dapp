@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import piggybank from "@/assets/piggybank.svg";
 import FAQ from "@/components/FAQ";
 import FilterBar from "@/components/staking/FilterBar";
@@ -24,8 +24,8 @@ import ValidatorsPane from "./ValidatorsPane";
 import SortBar from "@/components/staking/SortBar";
 import { useAccount } from "wagmi";
 import { hex } from "@/lib/helpers";
+import Image from "next/image";
 import useDeepCompareEffect, { useDeepCompareEffectNoCheck } from "use-deep-compare-effect";
-
 
 const Home = () => {
   const validatorSlice = useAppSelector(selectValidatorSlice);
@@ -35,14 +35,16 @@ const Home = () => {
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(fetchValidators());
-  }, []);
+  }, [dispatch]);
 
   const [validatorsToDisplay, setValidatorsToDisplay] = useState<
     Array<ValidatorType>
   >([]);
+
   useDeepCompareEffect(() => {
     setValidatorsToDisplay(validatorSlice.validatorMetadata);
   }, [validatorSlice.validatorMetadata]);
+
   useDeepCompareEffect(() => {
     if (
       validatorSlice.validators.length > 0 &&
@@ -72,42 +74,42 @@ const Home = () => {
 
   const [filter, setFilter] = useState(SearchSlice);
 
-  const setSearch = (search: string) => {
+  const setSearch = useCallback((search: string) => {
     let oldFilter = JSON.parse(JSON.stringify(filter));
     oldFilter.search = search;
     setFilter(oldFilter);
     dispatch(setReduxSearch(oldFilter.search))
-  };
+  }, [dispatch, filter]);
 
-  const setStateFilter = (stateFilter: number) => {
+  const setStateFilter = useCallback((stateFilter: number) => {
     let oldFilter = JSON.parse(JSON.stringify(filter));
     oldFilter.stateFilter = stateFilter;
     setFilter(oldFilter);
     dispatch(setReduxStateFilter(oldFilter.stateFilter))
-  };
+  }, [dispatch, filter]);
 
-  const setStatusFilter = (statusFilter: number) => {
+  const setStatusFilter = useCallback((statusFilter: number) => {
     let oldFilter = JSON.parse(JSON.stringify(filter));
     oldFilter.statusFilter = statusFilter;
     setFilter(oldFilter);
     dispatch(setReduxStatusFilter(oldFilter.statusFilter))
-  };
+  }, [dispatch, filter]);
 
-  const setMyStakeFilter = (myStakeFilter: number) => {
+  const setMyStakeFilter = useCallback((myStakeFilter: number) => {
     let oldFilter = JSON.parse(JSON.stringify(filter));
     oldFilter.myStakeFilter = myStakeFilter;
     setFilter(oldFilter);
     dispatch(setReduxMyStakeFilter(oldFilter.myStakeFilter))
-  };
+  }, [dispatch, filter]);
 
-  const setSort = (sort: number) => {
+  const setSort = useCallback((sort: number) => {
     let oldFilter = JSON.parse(JSON.stringify(filter));
     oldFilter.sort = sort;
     setFilter(oldFilter);
     dispatch(setReduxSort(oldFilter.sort))
-  };
+  }, [dispatch, filter])
 
-  const filterValidators = () => {
+  const filterValidators = useCallback(() => {
     if (validatorSlice.validatorMetadata.length === 0) return;
     const filteredValidators = validatorSlice.validatorMetadata.filter(
       (validator) => {
@@ -153,7 +155,7 @@ const Home = () => {
     }
 
     setValidatorsToDisplay(filteredValidators);
-  };
+  }, [filter, validatorSlice.validatorMetadata]);
 
   useDeepCompareEffect(() => {
     filterValidators();
@@ -251,7 +253,7 @@ const Home = () => {
             </span>
           </div>
           <div className="w-7/12 flex justify-end md:hidden">
-            <img src={piggybank.src} alt="piggybank" />
+            <Image src={piggybank} alt="piggybank" />
           </div>
         </div>
         <div className="grid grid-cols-4 mt-0 gap-x-4 justify-between md:mt-12 md:grid-cols-1 md:gap-y-3 md:gap-x-3">
@@ -317,51 +319,60 @@ const Home = () => {
             size="large"
           />
         </div>
-        <div className="flex mt-16 justify-between items-center md:flex-col md:justify-start md:items-start">
-          <SearchBar
-            className="w-1/6 md:w-full"
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
-            value={filter.search}
-          />
-          <SortBar
-            className="w-1/5 md:w-full md:mt-4"
-            options={[
-              "Highest Stake",
-              "Highest Delegators",
-              "Highest Uptime",
-              "Earliest Validation Start Date",
-            ]}
-            selected={filter.sort}
-            onChange={(i) => {
-              setSort(i);
-            }}
-          />
-          <FilterBar
-            className="w-3/10 md:mt-8 md:pe-0"
-            name="State"
-            states={["All", "Open", "Closed"]}
-            background={["#DDF5FF", "#E0FFDD", "#EBEBEB"]}
-            text={["#003D75", "#success-dark", "#000000"]}
-            onClick={(i, _) => {
-              setStateFilter(i);
-            }}
-            select={filter.stateFilter}
-            tooltip={`Validators can be "open" or "closed" for delegation. You can only delegate tokens to open validators. If a validator you've delegated to becomes closed, you can still unstake your tokens anytime.`}
-          />
-          <FilterBar
-            className="w-3/10 md:w-full md:mt-12"
-            name="Status"
-            states={["All", "Active", "Inactive"]}
-            background={["#DDF5FF", "#E0FFDD", "#FFDDDD"]}
-            text={["#003D75", "#success-dark", "#750000"]}
-            onClick={(i, _) => {
-              setStatusFilter(i);
-            }}
-            select={filter.statusFilter}
-            tooltip={`Validators can be "active" or "inactive". Active validators are currently validating blocks, while inactive validators are not, due to maintenance or being jailed.`}
-          />
+        <div className="flex flex-col gap-6 mt-16">
+          <p className="text-2xl text-black font-semibold">
+            Validators
+          </p>
+          <div className="flex gap-6 justify-between items-center xl:flex-col xl:justify-start xl:items-start">
+            <div className="flex gap-3 md:gap-4 w-full md:flex-col md:justify-start md:items-start">
+              <SearchBar
+                className="w-[180px] md:w-full"
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+                value={filter.search}
+              />
+              <SortBar
+                className="w-[180px] md:w-full md:mt-4"
+                options={[
+                  "Highest Stake",
+                  "Highest Delegators",
+                  "Highest Uptime",
+                  "Earliest Validation Start Date",
+                ]}
+                selected={filter.sort}
+                onChange={(i) => {
+                  setSort(i);
+                }}
+              />
+            </div>
+            <div className="flex gap-12 md:gap-4 w-full md:flex-col md:justify-start md:items-start">
+              <FilterBar
+                className="w-[324px] md:w-full md:pe-0"
+                name="State"
+                states={["All", "Open", "Closed"]}
+                background={["#DDF5FF", "#E0FFDD", "#EBEBEB"]}
+                text={["#003D75", "#success-dark", "#000000"]}
+                onClick={(i, _) => {
+                  setStateFilter(i);
+                }}
+                select={filter.stateFilter}
+                tooltip={`Validators can be "open" or "closed" for delegation. You can only delegate tokens to open validators. If a validator you've delegated to becomes closed, you can still unstake your tokens anytime.`}
+              />
+              <FilterBar
+                className="w-[332px] md:w-full"
+                name="Status"
+                states={["All", "Active", "Inactive"]}
+                background={["#DDF5FF", "#E0FFDD", "#FFDDDD"]}
+                text={["#003D75", "#success-dark", "#750000"]}
+                onClick={(i, _) => {
+                  setStatusFilter(i);
+                }}
+                select={filter.statusFilter}
+                tooltip={`Validators can be "active" or "inactive". Active validators are currently validating blocks, while inactive validators are not, due to maintenance or being jailed.`}
+              />
+            </div>
+          </div>
         </div>
         <ValidatorsPane
           isLoading={

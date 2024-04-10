@@ -3,8 +3,9 @@ import React, { useEffect } from "react";
 import { appConfig } from "@/lib/config";
 import Dropdown from "@/components/ui/Dropdown";
 import switchImg from "@/assets/switch.svg";
-import fuseToken from "@/assets/tokenLogo";
 import metamask from "@/assets/metamask.svg";
+import fuseToken from "@/assets/tokenLogo.svg";
+import Image from "next/image";
 import {
   selectBalanceSlice,
   fetchBalance,
@@ -218,8 +219,8 @@ const Withdraw = ({
           <div className="flex bg-modal-bg rounded-md p-4 mt-3 w-full flex-col">
             <span className="font-medium text-xs">
               From
-              <img
-                src={sFuse.src}
+              <Image
+                src={sFuse}
                 alt="sFuse"
                 className="inline-block ml-[6px] mr-[6px] h-5"
               />
@@ -261,7 +262,7 @@ const Withdraw = ({
                       return {
                         icon: coin.icon,
                         id: i,
-                        item: coin.recieveToken?.symbol || coin.symbol,
+                        item: coin.receiveToken?.symbol || coin.symbol,
                       };
                     }),
                   },
@@ -287,8 +288,8 @@ const Withdraw = ({
             </span>
           </div>
           <div className="flex justify-center">
-            <img
-              src={switchImg.src}
+            <Image
+              src={switchImg}
               alt="switch"
               className="mt-4 cursor-pointer"
               onClick={() => {
@@ -399,7 +400,7 @@ const Withdraw = ({
               });
             }}
           >
-            <img src={metamask.src} alt="metamask" className="h-5 mr-1" />
+            <Image src={metamask} alt="metamask" className="h-5 mr-1" />
             Add Token
           </div>
         </span>
@@ -408,7 +409,7 @@ const Withdraw = ({
         <>
           <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex md:flex-col">
             <div className="flex p-2 w-[10%] items-start md:p-0">
-              <img src={alert.src} alt="warning" className="h-5" />
+              <Image src={alert} alt="warning" className="h-5" />
             </div>
             <div className="flex flex-col font-medium text-sm md:text-xs md:mt-2">
               <p>
@@ -444,7 +445,7 @@ const Withdraw = ({
             }}
           >
             <div className="flex mt-2 bg-modal-bg py-4 px-5 rounded-md items-center cursor-pointer md:py-2 md:px-3">
-              <img
+              <Image
                 src={
                   appConfig.wrappedBridge.disabledChains[selectedChainItem]
                     .appLogo
@@ -465,7 +466,7 @@ const Withdraw = ({
                   }
                 </p>
               </div>
-              <img src={visit.src} alt="go" className="ml-auto" />
+              <Image src={visit} alt="go" className="ml-auto" />
             </div>
           </a>
         </>

@@ -6,7 +6,7 @@ import Withdraw from "./Withdraw";
 import Footer from "@/components/bridge/Footer";
 import history from "@/assets/history.svg";
 import Transactions from "@/components/bridge/Transactions";
-import fuseToken from "@/assets/tokenLogo";
+import fuseToken from "@/assets/tokenLogo.svg";
 import { appConfig } from "@/lib/config";
 import { selectBalanceSlice } from "@/store/balanceSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
@@ -43,6 +43,7 @@ import {
   setWithdrawChainItem,
 } from "@/store/selectedChainSlice";
 import { formatUnits } from "viem";
+import Image from 'next/image'
 
 const Home = () => {
   const selectedChainSlice = useAppSelector(selectSelectedChainSlice);
@@ -488,7 +489,7 @@ const Home = () => {
                 setIsOpen(true);
               }}
             >
-              <img src={history.src} alt="history" className="h-9" />
+              <Image src={history} alt="history" className="h-9" />
               <p className="font-medium ml-1 text-sm md:text-xs">History</p>
             </span>
             <motion.div className="flex bg-white w-[525px] rounded-lg px-8 pt-8 pb-9 flex-col max-w-full md:p-5">
@@ -782,7 +783,7 @@ const Home = () => {
                         ? "Approve"
                         : "Bridge"
                     }
-                    disabledClassname="bg-fuse-black/20 text-black px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
+                    disabledClassName="bg-fuse-black/20 text-black px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
                   />
                 )
               )}

@@ -15,7 +15,7 @@ const SearchBar = ({ className = "", onChange = () => {},value }: SearchBarProps
     >
       <input
         className="w-full [h-52px] px-6 text-sm font-medium rounded-full py-3.5"
-        placeholder="Search name or address"
+        placeholder="Search"
         onChange={onChange}
         value={value}
       />

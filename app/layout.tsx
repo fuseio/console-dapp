@@ -3,6 +3,7 @@ import '@/styles/globals.css'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import Script from 'next/script'
+import HolyLoader from "holy-loader";
 
 const monaSans = localFont({
   src: './MonaSans.woff2',
@@ -23,6 +24,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={monaSans.className}>
+        <HolyLoader
+          color="#A3F5AA"
+        />
         <Providers>{children}</Providers>
       </body>
       <Script

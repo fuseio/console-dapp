@@ -8,49 +8,49 @@ import layerswap from "@/public/layerswap.png";
 export const exchanges: ExchangeConfigLike[] = [
   {
     name: "Binance",
-    icon: binance.src,
+    icon: binance,
     website: "https://www.binance.com",
     bridges: [
       {
         name: "LayerSwap",
         website: "https://layerswap.io",
-        icon: layerswap.src,
+        icon: layerswap,
       },
     ],
   },
   {
     name: "Coinbase",
-    icon: coinbase.src,
+    icon: coinbase,
     website: "https://www.coinbase.com",
     bridges: [
       {
         name: "LayerSwap",
         website: "https://layerswap.io",
-        icon: layerswap.src,
+        icon: layerswap,
       },
     ],
   },
   {
     name: "KuCoin",
-    icon: kucoin.src,
+    icon: kucoin,
     website: "https://www.kucoin.com",
     bridges: [
       {
         name: "LayerSwap",
         website: "https://layerswap.io",
-        icon: layerswap.src,
+        icon: layerswap,
       },
     ],
   },
   {
     name: "Huobi Global",
-    icon: huobi.src,
+    icon: huobi,
     website: "https://www.huobi.com",
     bridges: [
       {
         name: "LayerSwap",
         website: "https://layerswap.io",
-        icon: layerswap.src,
+        icon: layerswap,
       },
     ],
   },

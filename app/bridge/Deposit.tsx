@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { exchangeConfig, appConfig } from "@/lib/config";
 import Dropdown from "@/components/ui/Dropdown";
 import switchImg from "@/assets/switch.svg";
-import fuseToken from "@/assets/tokenLogo";
+import fuseToken from "@/assets/tokenLogo.svg";
 import metamask from "@/assets/metamask.svg";
 import { selectChainSlice, setChain } from "@/store/chainSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
@@ -23,6 +23,7 @@ import { getBalance } from "wagmi/actions";
 import AddToken from "@/components/bridge/AddToken";
 import { getAccount } from "wagmi/actions";
 import { formatUnits } from "viem";
+import Image from 'next/image'
 
 type DepositProps = {
   selectedChainSection: number;
@@ -278,7 +279,7 @@ const Deposit = ({
         <>
           <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm md:text-xs md:flex-col">
             <div className="flex p-2 w-[15%] items-start md:p-0">
-              <img src={alert.src} alt="warning" className="h-5" />
+              <Image src={alert} alt="warning" className="h-5" />
             </div>
             <div className="flex flex-col font-medium md:mt-2">
               <p>
@@ -316,7 +317,7 @@ const Deposit = ({
                     className="flex mt-2 bg-modal-bg py-4 px-5 md:py-2 md:px-3 rounded-md items-center cursor-pointer"
                     key={i}
                   >
-                    <img src={bridge.icon} alt="icon" />
+                    <Image src={bridge.icon} alt="icon" />
                     <div className="flex flex-col ml-3">
                       <p className="font-semibold text-base md:text-sm">
                         {bridge.name}
@@ -325,7 +326,7 @@ const Deposit = ({
                         {bridge.website}
                       </p>
                     </div>
-                    <img src={visit.src} alt="go" className="ml-auto" />
+                    <Image src={visit} alt="go" className="ml-auto" />
                   </div>
                 </a>
               );
@@ -336,7 +337,7 @@ const Deposit = ({
         <>
           <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm md:text-xs">
             <div className="flex p-2 w-[10%] items-start">
-              <img src={alert.src} alt="warning" className="h-5" />
+              <Image src={alert} alt="warning" className="h-5" />
             </div>
             <div className="flex flex-col font-medium">
               <p>
@@ -372,7 +373,7 @@ const Deposit = ({
             }}
           >
             <div className="flex mt-2 bg-modal-bg py-4 px-5 rounded-md items-center cursor-pointer">
-              <img
+              <Image
                 src={
                   appConfig.wrappedBridge.disabledChains[selectedChainItem]
                     .appLogo
@@ -393,15 +394,15 @@ const Deposit = ({
                   }
                 </p>
               </div>
-              <img src={visit.src} alt="go" className="ml-auto" />
+              <Image src={visit} alt="go" className="ml-auto" />
             </div>
           </a>
         </>
       ) : (
         <>
           <div className="flex justify-center">
-            <img
-              src={switchImg.src}
+            <Image
+              src={switchImg}
               alt="switch"
               className="mt-4 cursor-pointer"
               onClick={() => {
@@ -429,8 +430,8 @@ const Deposit = ({
             <div className="flex flex-col">
               <span className="font-semibold text-base">
                 To
-                <img
-                  src={sFuse.src}
+                <Image
+                  src={sFuse}
                   alt="sFuse"
                   className="inline-block ml-2 mr-2 h-7"
                 />
@@ -441,7 +442,7 @@ const Deposit = ({
                 {amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0}{" "}
                 {appConfig.wrappedBridge.chains[selectedChainItem].tokens[
                   selectedTokenItem
-                ].recieveToken?.symbol ||
+                ].receiveToken?.symbol ||
                   appConfig.wrappedBridge.chains[selectedChainItem].tokens[
                     selectedTokenItem
                   ].symbol}
@@ -472,7 +473,7 @@ const Deposit = ({
                   });
                 }}
               >
-                <img src={metamask.src} alt="metamask" className="h-5 mr-1" />
+                <Image src={metamask} alt="metamask" className="h-5 mr-1" />
                 Add Token
               </div>
             )}

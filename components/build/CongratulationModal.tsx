@@ -21,7 +21,7 @@ const CongratulationModal = (): JSX.Element => {
         walletType[connector.id] :
         localStorage.getItem("Fuse-connectedWalletType") ?? undefined,
     });
-  }, [])
+  }, [connector])
 
   return (
     <AnimatePresence>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Button from "@/components/ui/Button";
 import rightArrow from "@/assets/right-arrow.svg"
 import { buildSubMenuItems, evmDecimals, signDataMessage } from "@/lib/helpers";
@@ -140,7 +140,7 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
     return () => {
       clearInterval(intervalId);
     }
-  }, [isActivated])
+  }, [dispatch, isActivated])
 
   return (
     <div className="flex flex-col justify-between items-start">
@@ -208,7 +208,7 @@ const Home = () => {
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const [showSecretKey, setShowSecretKey] = useState(false);
-  const controller = new AbortController();
+  const controller = useMemo(() => new AbortController(), []);
   const { isConnected, address, chain } = useAccount();
   const signer = useEthersSigner();
   const { data: blockNumber } = useBlockNumber({ watch: true });
@@ -254,11 +254,11 @@ const Home = () => {
     return () => {
       controller.abort();
     }
-  }, [isConnected])
+  }, [controller, dispatch, isConnected])
 
   useEffect(() => {
     dispatch(fetchSponsorIdBalance());
-  }, [operatorSlice.isHydrated, operatorSlice.isFundingPaymaster, operatorSlice.isCreatingPaymaster])
+  }, [operatorSlice.isHydrated, operatorSlice.isFundingPaymaster, operatorSlice.isCreatingPaymaster, dispatch])
 
   useEffect(() => {
     (async () => {
@@ -273,13 +273,13 @@ const Home = () => {
         });
       }
     })();
-  }, [operatorSlice.isWithdrawn])
+  }, [operatorSlice.isWithdrawn, operatorSlice.withdraw.amount, operatorSlice.withdraw.coinGeckoId, operatorSlice.withdraw.token])
 
   useEffect(() => {
     if (operatorSlice.isAuthenticated) {
       refetch();
     }
-  }, [blockNumber, operatorSlice.isAuthenticated])
+  }, [blockNumber, operatorSlice.isAuthenticated, refetch])
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">

@@ -20,7 +20,7 @@ const AddToken = () => {
         dispatch(toggleAddTokenToast(false));
       }
     });
-  }, []);
+  }, [dispatch]);
   useEffect(() => {
     setChecked(false);
   }, [tokenSlice.token]);
@@ -53,8 +53,8 @@ const AddToken = () => {
               className="bg-white w-[548px] top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] absolute px-[60px] py-[50px] flex flex-col items-start overflow-y-auto z-50 md:hidden justify-center rounded-[20px]"
             >
               <div className="w-full">
-                <img
-                  src={cross.src}
+                <Image
+                  src={cross}
                   alt="close"
                   className="cursor-pointer h-7 ml-auto translate-x-[150%] translate-y-[-100%]"
                   onClick={() => {
@@ -72,8 +72,8 @@ const AddToken = () => {
                 token&apos; button below.
               </span>
               <div className="px-10 py-5 rounded-[14px] border-[1px] w-full border-[#D2D5D8] mt-6 flex items-center justify-between">
-                <img
-                  src={getTokenDetails(tokenSlice.token as string)?.icon}
+                <Image
+                  src={getTokenDetails(tokenSlice.token as string)?.icon ?? ''}
                   alt="token"
                   className="w-[10%]"
                 />
@@ -149,7 +149,7 @@ const AddToken = () => {
                   }}
                 >
                   {checked && (
-                    <img src={tick.src} alt="tick" className="h-full w-full" />
+                    <Image src={tick} alt="tick" className="h-full w-full" />
                   )}
                 </div>
                 <span className="text-sm ml-2">

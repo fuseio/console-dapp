@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Staking - Fuse Console',
-  description: 'Participate in the consensus of Fuse network by staking FUSE tokens',
+  title: 'Stake - Fuse Console',
+  description: 'View information about current validator node on the Fuse Network',
 }
 
-export default function StakingLayout({
+export default function StakeLayout({
   children,
 }: {
   children: React.ReactNode

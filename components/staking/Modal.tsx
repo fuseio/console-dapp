@@ -8,6 +8,7 @@ import copy from "@/assets/copy.svg";
 import { Address } from "abitype";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import Copy from "../ui/Copy";
+import Image from "next/image";
 
 interface ModalProps {
   delegators?: [Address, string][] | undefined;
@@ -27,10 +28,11 @@ const Modal = ({
   useEffect(() => {
     window.addEventListener("click", (e) => {
       if ((e.target as HTMLElement).id === "modal-bg") {
+        setDelegatorsToDisplay(delegators);
         onToggle(false);
       }
     });
-  }, [onToggle]);
+  }, [delegators, onToggle]);
   const [page, setPage] = useState(1);
   useDeepCompareEffect(() => {
     setDelegatorsToDisplay(delegators);
@@ -52,17 +54,18 @@ const Modal = ({
           >
             <div className="font-semibold text-text-primary text-lg flex items-start justify-between w-full">
               <span className="font-bold">All Delegators</span>
-              <img
-                src={cross.src}
+              <Image
+                src={cross}
                 className="cursor-pointer w-6 h-6"
                 onClick={() => {
+                  setDelegatorsToDisplay(delegators);
                   onToggle(!isOpen);
                 }}
                 alt="close"
               />
             </div>
             <div className="flex w-full rounded bg-modal-bg text-text-gray py-2 px-3 mt-2 items-center">
-              <img src={search.src} alt="search" className="w-4 h-4" />
+              <Image src={search} alt="search" className="w-4 h-4" />
               <input
                 type="text"
                 className="w-full bg-modal-bg focus:outline-none px-2 pt-1 text-sm"
@@ -97,8 +100,8 @@ const Modal = ({
                         ) : (
                           <span className="text-xs text-text-gray md:hidden flex items-center">
                             {delegator[0]}
-                            <img
-                              src={copy.src}
+                            <Image
+                              src={copy}
                               alt="copy"
                               className="ms-2 h-4 cursor-pointer"
                               onClick={() => {
@@ -113,7 +116,7 @@ const Modal = ({
                           <span className="text-xs text-text-gray hidden md:flex items-center">
                             {eclipseAddress(delegator[0])}
                             <Copy
-                              src={copy.src}
+                              src={copy}
                               alt="copy"
                               className="ms-2 h-4 cursor-pointer"
                               text={delegator[0]}
@@ -140,7 +143,7 @@ const Modal = ({
                   }
                 }}
               >
-                <img src={sort.src} alt="p" className="rotate-90 h-4" />
+                <Image src={sort} alt="p" className="rotate-90 h-4" />
               </div>
               {delegatorsToDisplay != null &&
                 [
@@ -196,7 +199,7 @@ const Modal = ({
                   }
                 }}
               >
-                <img src={sort.src} alt="p" className="-rotate-90 h-4" />
+                <Image src={sort} alt="p" className="-rotate-90 h-4" />
               </div>
             </div>
           </motion.div>

@@ -1,12 +1,12 @@
-import React, { useEffect } from "react";
+import React from "react";
 import stopGreen from "@/assets/stop-green.svg";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { toggleLiquidityToast } from "@/store/toastSlice";
 import {
-  fetchAvailableLiquidityOnChains,
   selectLiquiditySlice,
 } from "@/store/liquiditySlice";
 import { setDepositChainItem } from "@/store/selectedChainSlice";
+import Image from "next/image";
 
 const SwitchChainToast = () => {
   const dispatch = useAppDispatch();
@@ -14,8 +14,8 @@ const SwitchChainToast = () => {
   return (
     <div className="w-full rounded-md border-[#03900F]/40 border-[1px] bg-[#E2FFE5] mt-3">
       <div className="flex p-4">
-        <img
-          src={stopGreen.src}
+        <Image
+          src={stopGreen}
           alt="stop"
           className="h-6 w-[5%] fill-[#03900F]"
         />

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import close from "@/assets/close.svg";
 import metamask from "@/public/metamask.png";
@@ -36,12 +36,18 @@ const WalletModal = (): JSX.Element => {
   const emailRef = useRef<HTMLInputElement>(null);
   const { isWalletModalOpen } = useAppSelector(selectNavbarSlice);
   const dispatch = useAppDispatch();
-  const { address, connector, isConnected, isDisconnected, chain } = useAccount();
+  const { address, isConnected, isDisconnected, chain } = useAccount();
   const signer = useEthersSigner();
   const router = useRouter();
   const { switchChain } = useSwitchChain();
   const { isLogin, isValidated, isLoggedIn, isLoginError, isAuthenticated, isOperatorWalletModalOpen, redirect, signature, operatorContactDetail } = useAppSelector(selectOperatorSlice);
   const pathname = usePathname();
+
+  const toggleModal = useCallback((isModal: boolean) => {
+    dispatch(setIsWalletModalOpen(isModal));
+    dispatch(setIsOperatorWalletModalOpen(isModal));
+    dispatch(setIsLogin(isModal));
+  }, [dispatch])
 
   const { signMessage } = useSignMessage({
     mutation: {
@@ -70,30 +76,19 @@ const WalletModal = (): JSX.Element => {
       }
     });
     dispatch(setHydrate());
-  }, []);
+  }, [dispatch, toggleModal]);
 
   useEffect(() => {
     if (isConnected) {
       toggleModal(false);
     }
-
-    if (address && connector) {
-      amplitude.setUserId(address);
-
-      amplitude.track("Wallet connected", {
-        walletType: walletType[connector.id],
-        walletAddress: address
-      });
-
-      localStorage.setItem("Fuse-connectedWalletType", walletType[connector.id]);
-    }
-  }, [isConnected])
+  }, [isConnected, toggleModal])
 
   useEffect(() => {
     if (isConnectedWallet && address) {
       dispatch(checkOperator({ address }));
     }
-  }, [isConnectedWallet, address])
+  }, [isConnectedWallet, address, dispatch])
 
   useEffect(() => {
     if (isConnected && isOperatorWalletModalOpen && chain && !signature) {
@@ -102,21 +97,21 @@ const WalletModal = (): JSX.Element => {
       }
       signMessage({ message: signDataMessage });
     }
-  }, [isConnected, isOperatorWalletModalOpen, chain, signature])
+  }, [isConnected, isOperatorWalletModalOpen, chain, signature, signMessage, switchChain])
 
   useEffect(() => {
     if (isValidated && signer) {
       dispatch(setIsValidated(false));
       dispatch(fetchOperator({ signer }));
     }
-  }, [isValidated, signer])
+  }, [dispatch, isValidated, signer])
 
   useEffect(() => {
     if (isLoggedIn) {
       dispatch(setIsLoggedIn(false));
       router.push("/dashboard")
     }
-  }, [isLoggedIn])
+  }, [dispatch, isLoggedIn, router])
 
   useEffect(() => {
     if (isLoginError) {
@@ -128,20 +123,20 @@ const WalletModal = (): JSX.Element => {
       }
       dispatch(setIsLoginError(false));
     }
-  }, [isLoginError, redirect, signer, operatorContactDetail])
+  }, [isLoginError, redirect, signer, operatorContactDetail, dispatch, router])
 
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(fetchSponsoredTransactions());
       dispatch(checkIsActivated());
     }
-  }, [isAuthenticated])
+  }, [dispatch, isAuthenticated])
 
   useEffect(() => {
     if (isDisconnected) {
       dispatch(setLogout());
     }
-  }, [isDisconnected])
+  }, [dispatch, isDisconnected])
 
   const connectionEvent = (id: string) => {
     ReactGA.event({
@@ -155,20 +150,28 @@ const WalletModal = (): JSX.Element => {
     connectionEvent(id);
     setConnectingWalletId(id);
     const selectedConnector = connectors.find((connector) => connector.id === id);
-    if(selectedConnector) {
+    if (selectedConnector) {
       localStorage.setItem("Fuse-selectedConnectorId", selectedConnector.id);
-      connect({ connector: selectedConnector });
+      connect({ connector: selectedConnector }, {
+        onSuccess(data) {
+          const [accountAddress] = data.accounts;
+          const connectorId = selectedConnector.id;
+
+          amplitude.setUserId(accountAddress);
+
+          amplitude.track("Wallet connected", {
+            walletType: walletType[connectorId],
+            walletAddress: accountAddress
+          });
+
+          localStorage.setItem("Fuse-connectedWalletType", walletType[connectorId]);
+        },
+      });
     }
     if (pathname === path.HOME) {
       router.push("/wallet");
     }
     setIsConnectedWallet(true);
-  }
-
-  const toggleModal = (isModal: boolean) => {
-    dispatch(setIsWalletModalOpen(isModal));
-    dispatch(setIsOperatorWalletModalOpen(isModal));
-    dispatch(setIsLogin(isModal));
   }
 
   return (

@@ -6,7 +6,7 @@ import * as amplitude from "@amplitude/analytics-browser";
 import { path, walletType } from "@/lib/helpers";
 import { useAccount } from "wagmi";
 import { selectOperatorSlice } from "@/store/operatorSlice";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type NavMenuProps = {
   menuItems?: MenuItems;
@@ -35,7 +35,6 @@ const NavMenu = ({
   const matches = useMediaQuery("(min-width: 768px)");
   const { address, connector } = useAccount();
   const { isAuthenticated } = useAppSelector(selectOperatorSlice);
-  const router = useRouter();
 
   return (
     <>
@@ -43,9 +42,10 @@ const NavMenu = ({
         <div className={className}>
           <ul className="flex flex-row items-center md:items-start gap-2 p-0 md:p-4 mt-0 font-medium text-base/4 md:flex-col">
             {menuItems.map((item, index) => (
-              <div
+              <Link
+                href={isAuthenticated && path.BUILD.includes(item.title.toLowerCase()) ? path.DASHBOARD : item.link}
                 key={index}
-                className={`flex justify-center items-center rounded-full h-9 hover:bg-lightest-gray md:w-full md:justify-start ${liClassName} ${(item.title.toLowerCase() === selected ? "bg-lightest-gray py-2.5 px-4 md:text-white pointer-events-none" : "md:text-gray cursor-pointer group")}`}
+                className={`flex justify-center items-center rounded-full h-9 px-4 hover:bg-lightest-gray md:w-full md:justify-start ${liClassName} ${(item.title.toLowerCase() === selected ? "bg-lightest-gray py-2.5 md:text-white pointer-events-none" : "md:text-gray cursor-pointer group")}`}
                 aria-current={
                   item.title.toLowerCase() === selected
                     ? "page"
@@ -56,18 +56,12 @@ const NavMenu = ({
                     walletType: connector ? walletType[connector.id] : undefined,
                     walletAddress: address
                   });
-
-                  if (isAuthenticated && path.BUILD.includes(item.title.toLowerCase())) {
-                    router.push(path.DASHBOARD);
-                  } else {
-                    router.push(item.link);
-                  }
                 }}
               >
                 <div className="block relative">
                   {item.title}
                 </div>
-              </div>
+              </Link>
             ))}
           </ul>
         </div>

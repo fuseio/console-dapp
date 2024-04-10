@@ -3,31 +3,33 @@ import twitter from "@/assets/twitter-gray.svg";
 import telegram from "@/assets/telegram-gray.svg";
 import discord from "@/assets/discord-gray.svg";
 import youtube from "@/assets/youtube-gray.svg";
+import Image from "next/image";
+import * as amplitude from "@amplitude/analytics-browser";
 
 const socials = [
   {
     name: "GitHub",
-    logo: github.src,
+    logo: github,
     link: "https://github.com/fuseio"
   },
   {
     name: "Twitter",
-    logo: twitter.src,
+    logo: twitter,
     link: "https://twitter.com/intent/user?screen_name=Fuse_network"
   },
   {
     name: "Telegram",
-    logo: telegram.src,
+    logo: telegram,
     link: "https://t.me/fuseio"
   },
   {
     name: "Discord",
-    logo: discord.src,
+    logo: discord,
     link: "https://discord.com/invite/jpPMeSZ"
   },
   {
     name: "YouTube",
-    logo: youtube.src,
+    logo: youtube,
     link: "https://www.youtube.com/c/fusenetwork?sub_confirmation=1"
   },
 ];
@@ -41,6 +43,7 @@ const Footer = () => {
             href="https://docs.fuse.io"
             target="_blank"
             className="transition ease-in-out hover:text-darker-gray"
+            onClick={() => amplitude.track("Go to Docs")}
           >
             Read the Docs
           </a>
@@ -67,7 +70,7 @@ const Footer = () => {
               rel="noopener noreferrer"
               className="transition ease-in-out delay-150 duration-300 hover:scale-125"
             >
-              <img src={social.logo} alt={social.name} />
+              <Image src={social.logo} alt={social.name} />
             </a>
           )}
         </div>

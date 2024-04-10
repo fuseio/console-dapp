@@ -14,6 +14,7 @@ import {
 import { getChainKey } from "@layerzerolabs/lz-sdk";
 import Pill from "./Pill";
 import { toggleLastTransactionToast } from "@/store/toastSlice";
+import Image from "next/image";
 
 const LastTransactionToast = () => {
   const transactionsSlice = useAppSelector(selectTransactionsSlice);
@@ -21,12 +22,12 @@ const LastTransactionToast = () => {
   return transactionsSlice.transactionHashes.length > 0 ? (
     <div className="w-full rounded-md border-[#8054FF66]/40 border-[1px] bg-[#EDEBFF] mt-4 p-4">
       <div className="flex">
-        <img src={historyPurple.src} alt="history" className="h-6 w-[5%]" />
+        <Image src={historyPurple} alt="history" className="h-6 w-[5%]" />
         <div className="flex flex-col w-[95%] ml-3">
           <div className="flex items-center justify-between">
             <p className="font-bold">Your last transaction</p>
-            <img
-              src={dismiss.src}
+            <Image
+              src={dismiss}
               alt="dismiss"
               className="h-5 cursor-pointer"
               onClick={() => {
@@ -58,7 +59,7 @@ const LastTransactionToast = () => {
                     ).name
                   }
                 </span>
-                <img src={right.src} alt="right" className="ml-2" />
+                <Image src={right} alt="right" className="ml-2" />
                 <span className="ml-2">
                   {
                     getNetworkByChainKey(
@@ -100,7 +101,7 @@ const LastTransactionToast = () => {
           </div>
           {transactionsSlice.transactions[0] === MessageStatus.INFLIGHT && (
             <div className="flex rounded-md px-3 py-[6px] bg-[#8054FF40] mt-3 items-center mr-auto">
-              <img src={info.src} alt="info" className="h-3 mr-2" />
+              <Image src={info} alt="info" className="h-3 mr-2" />
               <span className="text-xs flex md:text-[10px]">
                 Expected transaction completion time:{" "}
                 <p className="font-semibold ml-1">

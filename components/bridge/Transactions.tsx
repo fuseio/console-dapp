@@ -9,6 +9,7 @@ import {
 } from "@/store/transactionsSlice";
 import { Address } from "abitype";
 import { useAccount } from "wagmi";
+import Image from "next/image";
 
 interface TransactionProps {
   delegators?: [Address, string][] | undefined;
@@ -20,7 +21,6 @@ interface TransactionProps {
 const Transactions = ({
   isOpen,
   onToggle,
-  isLoading = false,
 }: TransactionProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const { address } = useAccount();
@@ -37,7 +37,7 @@ const Transactions = ({
     if (address && isOpen) {
       dispatch(fetchBridgeTransactions(address));
     }
-  }, [address, isOpen]);
+  }, [address, dispatch, isOpen]);
   return (
     <AnimatePresence>
       {isOpen && (
@@ -57,8 +57,8 @@ const Transactions = ({
             }}
             className="bg-white h-screen w-[50%] right-0 absolute p-6 flex flex-col items-start overflow-y-auto z-50 md:hidden"
           >
-            <img
-              src={cross.src}
+            <Image
+              src={cross}
               alt="cross"
               className="h-10 bg-modal-bg p-1 rounded-md cursor-pointer"
               onClick={() => {

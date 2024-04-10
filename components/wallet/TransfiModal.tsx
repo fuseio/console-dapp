@@ -15,7 +15,7 @@ const TransfiModal = (): JSX.Element => {
         dispatch(setIsTransfiModalOpen(false));
       }
     });
-  }, [setIsTransfiModalOpen]);
+  }, [dispatch]);
 
   return (
     <>

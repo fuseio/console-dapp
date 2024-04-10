@@ -2,6 +2,7 @@ import React from "react";
 import sort from "@/assets/sort.svg";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 type SortBarProps = {
   className?: string;
@@ -48,10 +49,10 @@ const SortBar = ({
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="font-medium text-sm">
-          Sort By: {options[selected].slice(0, 18)}
-          {options[selected].length > 18 && "..."}
+          Sort By: {options[selected].slice(0, 9)}
+          {options[selected].length > 9 && "..."}
         </span>
-        <img src={sort.src} alt="sort" />
+        <Image src={sort} alt="sort" />
       </div>
       <motion.div
         animate={isOpen ? "open" : "closed"}

@@ -14,7 +14,7 @@ const Operator = () => {
 
   useEffect(() => {
     dispatch(setSelectedNavbar("build"));
-  }, [])
+  }, [dispatch])
 
   return (
     <div className="w-full font-mona justify-end min-h-screen">
