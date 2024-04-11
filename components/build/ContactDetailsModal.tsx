@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppDispatch } from "@/store/store";
 import { createOperator, setIsContactDetailsModalOpen, setOperatorContactDetail } from "@/store/operatorSlice";
@@ -6,14 +6,46 @@ import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import Button from "../ui/Button";
 import Image from "next/image";
 import close from "@/assets/close.svg";
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+
+type ErrorProps = {
+  touched: boolean | undefined;
+  error: string | undefined;
+}
+
+const Error = ({ touched, error }: ErrorProps) => {
+  return (
+    <div className="h-3.5">
+      <AnimatePresence>
+        {touched && error ? (
+          <motion.div
+            initial={{
+              y: -2,
+              opacity: 0
+            }}
+            animate={{
+              y: 0,
+              opacity: 1
+            }}
+            exit={{
+              y: 2,
+              opacity: 0
+            }}
+            className="text-sm text-[#FD0F0F]"
+          >
+            {error}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </div>
+  )
+}
 
 const ContactDetailsModal = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const signer = useEthersSigner();
-  const firstNameRef = useRef<HTMLInputElement>(null);
-  const lastNameRef = useRef<HTMLInputElement>(null);
-  const companyRef = useRef<HTMLInputElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
+  const [isSignerError, setIsSignerError] = useState(false);
 
   useEffect(() => {
     window.addEventListener("click", (e) => {
@@ -23,30 +55,37 @@ const ContactDetailsModal = (): JSX.Element => {
     });
   }, [dispatch]);
 
-  const submitContactDetails = () => {
-    if (
-      !signer ||
-      (!firstNameRef.current || !firstNameRef.current.value.length) ||
-      (!lastNameRef.current || !lastNameRef.current.value.length) ||
-      (!emailRef.current || !emailRef.current.value.length)
-    ) {
-      return;
-    }
+  const formik = useFormik({
+    initialValues: {
+      firstName: '',
+      lastName: '',
+      name: '',
+      email: '',
+    },
+    validationSchema: Yup.object({
+      firstName: Yup.string()
+        .max(15, 'Must be 15 characters or less')
+        .required('Required'),
+      lastName: Yup.string()
+        .max(15, 'Must be 15 characters or less')
+        .required('Required'),
+      name: Yup.string().max(20, 'Must be 20 characters or less'),
+      email: Yup.string().email('Invalid email address').required('Required'),
+    }),
+    onSubmit: values => {
+      if (!signer) {
+        return setIsSignerError(true);
+      }
 
-    const operatorContactDetail = {
-      firstName: firstNameRef.current.value,
-      lastName: lastNameRef.current.value,
-      name: companyRef?.current?.value,
-      email: emailRef.current.value,
-    }
-    dispatch(setOperatorContactDetail(operatorContactDetail));
-    localStorage.setItem("Fuse-operatorContactDetail", JSON.stringify(operatorContactDetail));
+      dispatch(setOperatorContactDetail(values));
+      localStorage.setItem("Fuse-operatorContactDetail", JSON.stringify(values));
 
-    dispatch(createOperator({
-      signer,
-      operatorContactDetail,
-    }));
-  }
+      dispatch(createOperator({
+        signer,
+        operatorContactDetail: values,
+      }));
+    },
+  });
 
   return (
     <AnimatePresence>
@@ -64,7 +103,7 @@ const ContactDetailsModal = (): JSX.Element => {
           transition={{
             duration: 0.3,
           }}
-          className="bg-white min-h-[625px] md:min-h-[400px] w-[548px] max-w-[95%] z-50 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 pt-[47.5px] px-[62px] pb-[60px] md:px-5 md:py-8 rounded-[20px] flex flex-col"
+          className="bg-white min-h-[625px] md:min-h-[400px] w-[548px] max-w-[95%] z-50 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 pt-[47.5px] px-[62px] pb-[50px] md:px-5 md:py-8 rounded-[20px] flex flex-col"
         >
           <div className="flex">
             <p className="text-[34px]/[47.6px] font-bold">
@@ -84,46 +123,53 @@ const ContactDetailsModal = (): JSX.Element => {
             You&apos;ll be the first to know about new features and special offers.
           </p>
           <form
-            className="flex flex-col gap-[30px] w-full max-w-[441px] pt-[44.5px]"
-            onSubmit={e => {
-              e.preventDefault();
-              submitContactDetails();
-            }}
+            className="flex flex-col gap-3.5 w-full max-w-[441px] pt-[44.5px]"
+            onSubmit={formik.handleSubmit}
           >
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="first-name" className="text-text-heading-gray font-bold">
+              <label htmlFor="firstName" className="text-text-heading-gray font-bold">
                 First name
               </label>
               <input
                 type="text"
-                name="first-name"
+                id="firstName"
+                name="firstName"
                 className="bg-white border-[0.5px] border-gray-alpha-40 py-[17.5px] px-[34.81px] rounded-full h-[55px] placeholder:text-text-dark-gray"
-                ref={firstNameRef}
-                required
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.firstName}
               />
+              <Error touched={formik.touched.firstName} error={formik.errors.firstName} />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="last-name" className="text-text-heading-gray font-bold">
+              <label htmlFor="lastName" className="text-text-heading-gray font-bold">
                 Last name
               </label>
               <input
                 type="text"
-                name="last-name"
+                id="lastName"
+                name="lastName"
                 className="bg-white border-[0.5px] border-gray-alpha-40 py-[17.5px] px-[34.81px] rounded-full h-[55px] placeholder:text-text-dark-gray"
-                ref={lastNameRef}
-                required
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.lastName}
               />
+              <Error touched={formik.touched.lastName} error={formik.errors.lastName} />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="company" className="text-text-heading-gray font-bold">
+              <label htmlFor="name" className="text-text-heading-gray font-bold">
                 Company (Optional)
               </label>
               <input
                 type="text"
-                name="company"
+                id="name"
+                name="name"
                 className="bg-white border-[0.5px] border-gray-alpha-40 py-[17.5px] px-[34.81px] rounded-full h-[55px] placeholder:text-text-dark-gray"
-                ref={companyRef}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.name}
               />
+              <Error touched={formik.touched.name} error={formik.errors.name} />
             </div>
             <div className="flex flex-col gap-1.5">
               <label htmlFor="email" className="text-text-heading-gray font-bold">
@@ -131,18 +177,22 @@ const ContactDetailsModal = (): JSX.Element => {
               </label>
               <input
                 type="email"
+                id="email"
                 name="email"
                 className="border-[0.5px] border-gray-alpha-40 py-[17.5px] px-[34.81px] rounded-full h-[55px] placeholder:text-text-dark-gray"
-                ref={emailRef}
-                required
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.email}
               />
+              <Error touched={formik.touched.email} error={formik.errors.email} />
             </div>
-            <div className="mt-4">
+            <div className="mt-3 flex flex-col gap-1.5">
               <Button
                 text="Continue"
                 className="transition ease-in-out bg-success font-bold leading-none w-full h-14 rounded-full hover:bg-black hover:text-white"
                 type="submit"
               />
+              <Error touched={isSignerError} error={"Wallet connection issue. Please reconnect wallet."} />
             </div>
           </form>
         </motion.div>
