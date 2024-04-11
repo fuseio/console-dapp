@@ -34,6 +34,7 @@
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.1.4",
     "ethers": "^5.7.2",
+    "formik": "^2.4.5",
     "framer-motion": "^11.0.24",
     "holy-loader": "^2.2.10",
     "jazzicon": "^1.0.2",
@@ -55,7 +56,8 @@
     "use-deep-compare-effect": "^1.8.1",
     "usehooks-ts": "^3.0.2",
     "viem": "^2.9.9",
-    "wagmi": "^2.5.18"
+    "wagmi": "^2.5.18",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "assert": "^2.1.0",
