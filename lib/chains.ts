@@ -25,7 +25,8 @@ export const chains: ChainConfigLike[] = [
     chainId: 42161,
     rpc: `https://arb-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ARBITRUM_API_KEY}`,
     logo: arbiLogo,
-    tokenId: "arbitrum"
+    tokenId: "arbitrum",
+    gasTokenId: "ethereum"
   },
   {
     chainName: "Optimism",
@@ -34,7 +35,8 @@ export const chains: ChainConfigLike[] = [
     rpc: `https://opt-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_OPTIMISM_API_KEY}`,
     chainId: 10,
     logo: optimismLogo,
-    tokenId: "optimism"
+    tokenId: "optimism",
+    gasTokenId: "ethereum"
   },
   {
     chainName: "Ethereum",
