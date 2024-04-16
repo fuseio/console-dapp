@@ -43,7 +43,7 @@ import {
   setWithdrawChainItem,
 } from "@/store/selectedChainSlice";
 import { formatUnits } from "viem";
-import Image from 'next/image'
+import Image from "next/image";
 
 const Home = () => {
   const selectedChainSlice = useAppSelector(selectSelectedChainSlice);
@@ -562,6 +562,9 @@ const Home = () => {
                               tokenId:
                                 appConfig.wrappedBridge.chains[
                                   selectedChainSlice.depositSelectedChainItem
+                                ].gasTokenId ||
+                                appConfig.wrappedBridge.chains[
+                                  selectedChainSlice.depositSelectedChainItem
                                 ].tokenId,
                             })
                           );
@@ -644,6 +647,37 @@ const Home = () => {
               {!isConnected && displayButton ? (
                 <ConnectWallet className="transition ease-in-out mt-6 py-4 w-full hover:bg-success hover:text-black" />
               ) : displayButton &&
+                (selected === 0
+                  ? chain?.id !==
+                    appConfig.wrappedBridge.chains[
+                      selectedChainSlice.depositSelectedChainItem
+                    ].chainId
+                  : chain?.id !== fuse.id) ? (
+                <Button
+                  className="bg-fuse-black text-white px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
+                  text={
+                    selected === 0
+                      ? "Switch to " +
+                        appConfig.wrappedBridge.chains[
+                          selectedChainSlice.depositSelectedChainItem
+                        ].name
+                      : "Switch to Fuse"
+                  }
+                  onClick={() => {
+                    if (selected === 0)
+                      switchChain(config, {
+                        chainId:
+                          appConfig.wrappedBridge.chains[
+                            selectedChainSlice.depositSelectedChainItem
+                          ].chainId,
+                      });
+                    else
+                      switchChain(config, {
+                        chainId: fuse.id,
+                      });
+                  }}
+                />
+              ) : displayButton &&
                 selected === 1 &&
                 !appConfig.wrappedBridge.chains[
                   selectedChainSlice.withdrawSelectedChainItem
@@ -682,37 +716,6 @@ const Home = () => {
                       ? "Exceeds Daily Limit"
                       : "Minimum 0.5"
                   }
-                />
-              ) : displayButton &&
-                (selected === 0
-                  ? chain?.id !==
-                    appConfig.wrappedBridge.chains[
-                      selectedChainSlice.depositSelectedChainItem
-                    ].chainId
-                  : chain?.id !== fuse.id) ? (
-                <Button
-                  className="bg-fuse-black text-white px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
-                  text={
-                    selected === 0
-                      ? "Switch to " +
-                        appConfig.wrappedBridge.chains[
-                          selectedChainSlice.depositSelectedChainItem
-                        ].name
-                      : "Switch to Fuse"
-                  }
-                  onClick={() => {
-                    if (selected === 0)
-                      switchChain(config, {
-                        chainId:
-                          appConfig.wrappedBridge.chains[
-                            selectedChainSlice.depositSelectedChainItem
-                          ].chainId,
-                      });
-                    else
-                      switchChain(config, {
-                        chainId: fuse.id,
-                      });
-                  }}
                 />
               ) : (
                 displayButton && (

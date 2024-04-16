@@ -23,7 +23,7 @@ import { getBalance } from "wagmi/actions";
 import AddToken from "@/components/bridge/AddToken";
 import { getAccount } from "wagmi/actions";
 import { formatUnits } from "viem";
-import Image from 'next/image'
+import Image from "next/image";
 
 type DepositProps = {
   selectedChainSection: number;
@@ -77,8 +77,8 @@ const Deposit = ({
   const chainSlice = useAppSelector(selectChainSlice);
   const [nativeBalance, setNativeBalance] = React.useState("0");
   const config = useConfig();
-  const { chainId } = getAccount(config) 
-  const chain = config.chains.find(chain => chain.id === chainId) 
+  const { chainId } = getAccount(config);
+  const chain = config.chains.find((chain) => chain.id === chainId);
 
   useEffect(() => {
     async function updateBalance() {
@@ -87,7 +87,12 @@ const Deposit = ({
           address,
           chainId: appConfig.wrappedBridge.chains[selectedChainItem].chainId,
         });
-        setNativeBalance(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals));
+        setNativeBalance(
+          formatUnits(
+            balance?.value ?? BigInt(0),
+            balance?.decimals ?? evmDecimals
+          )
+        );
       }
     }
     updateBalance();
@@ -141,7 +146,9 @@ const Deposit = ({
           contractAddress:
             appConfig.wrappedBridge.chains[selectedChainItem].original,
           rpcUrl: appConfig.wrappedBridge.chains[selectedChainItem].rpcUrl,
-          tokenId: appConfig.wrappedBridge.chains[selectedChainItem].tokenId,
+          tokenId:
+            appConfig.wrappedBridge.chains[selectedChainItem].gasTokenId ||
+            appConfig.wrappedBridge.chains[selectedChainItem].tokenId,
         })
       );
     }
@@ -206,7 +213,9 @@ const Deposit = ({
                   contractAddress:
                     appConfig.wrappedBridge.chains[item].original,
                   rpcUrl: appConfig.wrappedBridge.chains[item].rpcUrl,
-                  tokenId: appConfig.wrappedBridge.chains[item].tokenId,
+                  tokenId:
+                    appConfig.wrappedBridge.chains[item].gasTokenId ||
+                    appConfig.wrappedBridge.chains[item].tokenId,
                 })
               );
               setDisplayButton(true);
