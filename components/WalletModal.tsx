@@ -83,6 +83,19 @@ const WalletModal = (): JSX.Element => {
       toggleModal(false);
     }
   }, [isConnected, toggleModal])
+  
+  useEffect(() => {
+    if(!address) {
+      return;
+    }
+
+    const previousAddress = localStorage.getItem("Fuse-walletAddress");
+    if(previousAddress && previousAddress !== address) {
+      dispatch(setLogout());
+    }
+
+    localStorage.setItem("Fuse-walletAddress", address);
+  }, [address, dispatch])
 
   useEffect(() => {
     if (isConnectedWallet && address) {

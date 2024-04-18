@@ -21,6 +21,13 @@ export const coins: CoinConfigLike[] = [
     coinGeckoId: "tether",
   },
   {
+    name: "Fuse",
+    symbol: "FUSE",
+    decimals: 18,
+    icon: sFuse,
+    coinGeckoId: "fuse-network-token",
+  },
+  {
     name: "Wrapped Ether",
     symbol: "WETH",
     decimals: 18,
@@ -33,12 +40,5 @@ export const coins: CoinConfigLike[] = [
     decimals: 18,
     icon: eth,
     coinGeckoId: "ethereum",
-  },
-  {
-    name: "Fuse",
-    symbol: "FUSE",
-    decimals: 18,
-    icon: sFuse,
-    coinGeckoId: "fuse-network-token",
   },
 ];
