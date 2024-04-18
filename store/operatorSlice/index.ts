@@ -635,6 +635,7 @@ const operatorSlice = createSlice({
       state.isAuthenticated = false;
       state.operatorContactDetail = initOperatorContactDetail;
       state.isActivated = false;
+      state.sponsoredTransactions = 0;
       localStorage.removeItem("Fuse-isOperatorExist");
       localStorage.removeItem("Fuse-operatorAccessToken");
       localStorage.removeItem("Fuse-operator");
