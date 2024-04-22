@@ -36,7 +36,7 @@ const LastTransactionToast = () => {
             />
           </div>
           <div
-            className="flex text-sm text-secondary-gray mt-3 md:text-xs md:justify-between cursor-pointer"
+            className="flex sm:flex-col sm:gap-2 text-sm text-secondary-gray mt-3 md:text-xs md:justify-between cursor-pointer"
             onClick={() => {
               window.open(
                 getScanLink(
@@ -47,7 +47,7 @@ const LastTransactionToast = () => {
               );
             }}
           >
-            <div className="flex flex-col w-2/5">
+            <div className="flex flex-col w-2/5 sm:w-full">
               <p className="text-sm text-secondary-gray">From</p>
               <div className="flex font-medium mt-1 text-black">
                 <span>
@@ -71,13 +71,13 @@ const LastTransactionToast = () => {
                 </span>
               </div>
             </div>
-            <div className="flex flex-col w-1/5">
+            <div className="flex flex-col w-1/5 sm:w-full">
               <p>Amount</p>
               <p className="font-medium text-black mt-1">
                 {transactionsSlice.transactionHashes[0].amount}
               </p>
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col sm:w-fit">
               <p className="mb-1">Status</p>
               <Pill
                 text={

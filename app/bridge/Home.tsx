@@ -464,7 +464,7 @@ const Home = () => {
     <>
       <Transactions isOpen={isOpen} onToggle={setIsOpen} />
       <div className="flex flex-col main w-8/9 md:w-9/10 max-w-7xl md:flex-col">
-        <div className="flex relative md:flex-col">
+        <div className="flex relative xl:flex-col">
           <div className="flex flex-col pt-16 w-2/3 me-[100px] md:w-full">
             <span className="flex items-center">
               <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-[32px]">
@@ -480,7 +480,7 @@ const Home = () => {
               The Fuse Bridge allows you to move funds from different networks
               and centralized exchanges to Fuse.
             </p>
-            <ToastPane className="md:hidden" />
+            <ToastPane className="xl:hidden" />
           </div>
           <div className="flex-col items-center flex gap-2 pt-16 md:w-full md:pt-0 md:mt-3">
             <span
@@ -859,7 +859,7 @@ const Home = () => {
             </motion.div>
             <Airdrop />
             <FAQ />
-            <ToastPane className="hidden md:flex" />
+            <ToastPane className="hidden xl:flex" />
             <Footer />
           </div>
         </div>
