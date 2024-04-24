@@ -857,9 +857,9 @@ const Home = () => {
               <span>0.5 Min - 10,000 max</span>
             </div> */}
             </motion.div>
+            <ToastPane className="hidden xl:flex" />
             <Airdrop />
             <FAQ />
-            <ToastPane className="hidden xl:flex" />
             <Footer />
           </div>
         </div>
