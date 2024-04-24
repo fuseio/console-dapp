@@ -56,7 +56,7 @@ const Airdrop = () => {
                     {"Eligible tokens: USDC, USDT, WETH, ETH"}
                   </li>
                   <li className="mb-3">
-                    {"Min value amount $0 bridging into the Fuse Network"}
+                    {"Min value amount $10 bridging into the Fuse Network"}
                   </li>
                   <li className="mb-3">
                     {
