@@ -80,6 +80,29 @@ const Deposit = ({
   const { chainId } = getAccount(config);
   const chain = config.chains.find((chain) => chain.id === chainId);
 
+  const handleDropdownSelectedItem = (section: number, item: number) => {
+    setSelectedTokenItem(0);
+    setSelectedChainSection(section);
+    setSelectedChainItem(item);
+  }
+
+  const handleDropdownSection = (item: number) => {
+    setIsExchange(false);
+    dispatch(setChain(appConfig.wrappedBridge.chains[item]));
+    dispatch(
+      estimateOriginalFee({
+        contractAddress:
+          appConfig.wrappedBridge.chains[item].original,
+        rpcUrl: appConfig.wrappedBridge.chains[item].rpcUrl,
+        tokenId:
+          appConfig.wrappedBridge.chains[item].gasTokenId ||
+          appConfig.wrappedBridge.chains[item].tokenId,
+      })
+    );
+    setDisplayButton(true);
+    setIsDisabledChain(false);
+  }
+
   useEffect(() => {
     async function updateBalance() {
       if (address) {
@@ -153,6 +176,26 @@ const Deposit = ({
       );
     }
   }, [chainSlice.chainId, selectedChainSection]);
+
+  useEffect(() => {
+    const section = 0;
+    let item = -1;
+    
+    appConfig.wrappedBridge.chains.map((wrappedBridgeChain, index) => {
+      if (wrappedBridgeChain.chainId !== chain?.id) {
+        return;
+      }
+      item = index;
+    })
+
+    if (item === -1) {
+      return;
+    }
+
+    handleDropdownSelectedItem(section, item);
+    handleDropdownSection(item);
+  }, [chain]);
+
   return (
     <>
       <AddToken />
@@ -194,9 +237,7 @@ const Deposit = ({
           selectedItem={selectedChainItem}
           className="w-full"
           onClick={(section, item) => {
-            setSelectedTokenItem(0);
-            setSelectedChainSection(section);
-            setSelectedChainItem(item);
+            handleDropdownSelectedItem(section, item);
             if (section === 1) {
               setIsExchange(false);
               setDisplayButton(false);
@@ -206,20 +247,7 @@ const Deposit = ({
               setDisplayButton(false);
               setIsDisabledChain(false);
             } else {
-              setIsExchange(false);
-              dispatch(setChain(appConfig.wrappedBridge.chains[item]));
-              dispatch(
-                estimateOriginalFee({
-                  contractAddress:
-                    appConfig.wrappedBridge.chains[item].original,
-                  rpcUrl: appConfig.wrappedBridge.chains[item].rpcUrl,
-                  tokenId:
-                    appConfig.wrappedBridge.chains[item].gasTokenId ||
-                    appConfig.wrappedBridge.chains[item].tokenId,
-                })
-              );
-              setDisplayButton(true);
-              setIsDisabledChain(false);
+              handleDropdownSection(item);
             }
           }}
         />
@@ -273,9 +301,9 @@ const Deposit = ({
             <span className="mt-3 text-xs font-medium">
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
-              chain?.id !==
+                chain?.id !==
                 appConfig.wrappedBridge.chains[selectedChainItem].chainId ||
-              balanceSlice.isApprovalLoading ? (
+                balanceSlice.isApprovalLoading ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : (
                 balanceSlice.balance

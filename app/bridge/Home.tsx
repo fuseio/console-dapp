@@ -69,7 +69,7 @@ const Home = () => {
     useState(0);
   const [withdrawSelectedTokenItem, setWithdrawSelectedTokenItem] = useState(0);
   const [amount, setAmount] = useState("");
-  const filters = ["Deposit", "Withdraw"];
+  const filters = ["Deposit to Fuse", "Withdraw from Fuse"];
   const [isOpen, setIsOpen] = useState(false);
   const [isExchange, setIsExchange] = useState(false);
   const [isDisabledChain, setIsDisabledChain] = useState(false);
@@ -857,9 +857,9 @@ const Home = () => {
               <span>0.5 Min - 10,000 max</span>
             </div> */}
             </motion.div>
+            <ToastPane className="hidden xl:flex" />
             <Airdrop />
             <FAQ />
-            <ToastPane className="hidden xl:flex" />
             <Footer />
           </div>
         </div>
