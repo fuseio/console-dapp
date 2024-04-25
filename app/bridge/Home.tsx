@@ -69,7 +69,7 @@ const Home = () => {
     useState(0);
   const [withdrawSelectedTokenItem, setWithdrawSelectedTokenItem] = useState(0);
   const [amount, setAmount] = useState("");
-  const filters = ["Deposit", "Withdraw"];
+  const filters = ["Deposit to Fuse", "Withdraw from Fuse"];
   const [isOpen, setIsOpen] = useState(false);
   const [isExchange, setIsExchange] = useState(false);
   const [isDisabledChain, setIsDisabledChain] = useState(false);
