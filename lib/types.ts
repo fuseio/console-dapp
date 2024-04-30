@@ -318,3 +318,16 @@ export interface Paymaster {
   isActive: boolean;
   environment: string;
 }
+
+export interface DelegatedAmountsRequest {
+  validator: Address;
+  delegators: Address[];
+}
+
+export type DelegatedAmount = {
+  address: Address;
+  amountFormatted: string;
+  amount: string;
+};
+
+export type DelegatedAmountsByDelegators = Record<Address, DelegatedAmount>;

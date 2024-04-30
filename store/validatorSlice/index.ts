@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { AppState } from '../rootReducer'
 import { fetchValidatorData, multicallContract, contractInterface } from '@/lib/contractInteract'
 import Validators from '@/validators/validators.json'
-import { fetchNodeByAddress, fetchTokenPrice, fetchTotalSupply } from '@/lib/api'
+import { fetchNodeByAddress, fetchTokenPrice, fetchTotalSupply, postConsensusDelegatedAmounts } from '@/lib/api'
 import { Address, formatEther } from 'viem'
 import { CONFIG } from '@/lib/config'
 
@@ -206,16 +206,13 @@ export const fetchSelfStake = createAsyncThunk(
 
 export const fetchDelegatedAmounts = createAsyncThunk(
     'VALIDATORS/FETCH_DELEGATED_AMOUNTS',
-    async ({ address, delegators }: { address: Address, delegators: Address[] }, thunkAPI) => {
+    async ({ address, delegators }: { address: Address, delegators: Address[] }) => {
         try {
-            const calls = delegators.map((delegator) => [
-                CONFIG.consensusAddress,
-                contractInterface.encodeFunctionData('delegatedAmount', [delegator, address]),
-            ])
-            const [, results] = await multicallContract.aggregate(calls)
-            const delegatedAmounts: [Address, string][] = results.map((result: any, index: number) => {
-                const delegatedAmount = formatEther(contractInterface.decodeFunctionResult('delegatedAmount', result)[0])
-                return [delegators[index], delegatedAmount]
+            const consensusDelegatedAmounts = await postConsensusDelegatedAmounts({ validator: address, delegators });
+            const delegatedAmountsByDelegators = consensusDelegatedAmounts.delegatedAmountsByDelegators;
+            const delegatedAmounts: [Address, string][] = Object.entries(delegatedAmountsByDelegators).map((delegatedAmountsByDelegator) => {
+                const [_, delegatedAmount] = delegatedAmountsByDelegator;
+                return [delegatedAmount.address, delegatedAmount.amountFormatted]
             })
             return { delegatedAmounts, address }
         } catch (error) {
