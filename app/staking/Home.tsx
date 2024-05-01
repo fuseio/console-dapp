@@ -50,7 +50,7 @@ const Home = () => {
       validatorSlice.validators.length > 0 &&
       validatorSlice.validatorMetadata.length === 0
     ) {
-      dispatch(fetchValidatorMetadata(validatorSlice.validators));
+      dispatch(fetchValidatorMetadata());
     }
   }, [validatorSlice.validators]);
 
