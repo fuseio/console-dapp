@@ -7,7 +7,6 @@ import SearchBar from "@/components/staking/SearchBar";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import {
   fetchSelfStake,
-  fetchValidatorMetadata,
   fetchValidators,
   selectValidatorSlice,
 } from "@/store/validatorSlice";
@@ -44,15 +43,6 @@ const Home = () => {
   useDeepCompareEffect(() => {
     setValidatorsToDisplay(validatorSlice.validatorMetadata);
   }, [validatorSlice.validatorMetadata]);
-
-  useDeepCompareEffect(() => {
-    if (
-      validatorSlice.validators.length > 0 &&
-      validatorSlice.validatorMetadata.length === 0
-    ) {
-      dispatch(fetchValidatorMetadata());
-    }
-  }, [validatorSlice.validators]);
 
   useDeepCompareEffectNoCheck(() => {
     if (address && validatorSlice.validatorMetadata.length > 0) {
@@ -313,9 +303,7 @@ const Home = () => {
             Footer="Total Delegators"
             type={2}
             key={4}
-            isLoading={
-              validatorSlice.isMetadataLoading || validatorSlice.isLoading
-            }
+            isLoading={validatorSlice.isLoading}
             size="large"
           />
         </div>
@@ -377,7 +365,7 @@ const Home = () => {
         <ValidatorsPane
           isLoading={
             validatorSlice.validatorMetadata.length === 0 &&
-            (validatorSlice.isMetadataLoading || validatorSlice.isLoading)
+            validatorSlice.isLoading
           }
           validators={validatorsToDisplay}
           filters={["All", "My Staked"]}

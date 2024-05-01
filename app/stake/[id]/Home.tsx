@@ -12,7 +12,6 @@ import ym from "react-yandex-metrika";
 import {
   fetchDelegatedAmounts,
   fetchSelfStake,
-  fetchValidatorMetadata,
   fetchValidators,
   selectValidatorSlice,
 } from "@/store/validatorSlice";
@@ -130,15 +129,6 @@ const Stake = () => {
       dispatch(fetchValidators());
     }
   }, [id, validators]);
-
-  useDeepCompareEffect(() => {
-    if (
-      validators.validators.length > 0 &&
-      validators.validatorMetadata.length === 0
-    ) {
-      dispatch(fetchValidatorMetadata());
-    }
-  }, [validators.validators]);
 
   useDeepCompareEffectNoCheck(() => {
     if (address && validator) {

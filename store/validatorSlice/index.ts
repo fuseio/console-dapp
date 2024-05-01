@@ -12,7 +12,6 @@ export interface ValidatorStateType {
     validatorMetadata: ValidatorType[]
     validators: Address[]
     isLoading: boolean
-    isMetadataLoading: boolean
     isBalanceLoading: boolean
     isDelegatedAmountLoading: boolean
     isError: boolean
@@ -31,7 +30,6 @@ const INIT_STATE: ValidatorStateType = {
     validatorMetadata: [],
     validators: [],
     isLoading: false,
-    isMetadataLoading: false,
     isError: false,
     errorMessage: '',
     isBalanceLoading: false,
@@ -46,7 +44,26 @@ export const fetchValidators = createAsyncThunk(
     'validators/fetch',
     async (_, { rejectWithValue }) => {
         try {
-            const { totalStakeAmount, totalSupply, maxStake, minStake, allValidators } = await fetchConsensusValidators();
+            const {
+                totalStakeAmount,
+                totalSupply,
+                maxStake,
+                minStake,
+                totalDelegators,
+                allValidators,
+                validatorsMetadata
+            } = await fetchConsensusValidators();
+
+            const validatorMetadata = Object.values(validatorsMetadata).map((metadata) => {
+                const delegators: [Address, string][] = Object.values(metadata.delegators).map((delegatedAmount) => {
+                    return [delegatedAmount.address, delegatedAmount.amountFormatted]
+                })
+
+                return {
+                    ...metadata,
+                    delegators
+                }
+            })
 
             let price = 0
             try {
@@ -61,36 +78,13 @@ export const fetchValidators = createAsyncThunk(
                 price,
                 fuseTokenTotalSupply: totalSupply,
                 maxStake,
-                minStake
+                minStake,
+                validatorMetadata,
+                totalDelegators
             }
         } catch (error) {
             console.error('Error fetching validators:', error)
             return rejectWithValue('Failed to fetch validators information')
-        }
-    }
-)
-
-export const fetchValidatorMetadata = createAsyncThunk(
-    'validators/fetchMetadata',
-    async (_, { rejectWithValue }) => {
-        try {
-            const { totalDelegators, validatorsMetadata } = await fetchConsensusValidators();
-
-            const validatorMetadata = Object.values(validatorsMetadata).map((metadata) => {
-                const delegators: [Address, string][] = Object.values(metadata.delegators).map((delegatedAmount) => {
-                    return [delegatedAmount.address, delegatedAmount.amountFormatted]
-                })
-
-                return {
-                    ...metadata,
-                    delegators
-                }
-            })
-
-            return { validatorMetadata, totalDelegators }
-        } catch (error) {
-            console.error('Error fetching validator metadata:', error)
-            return rejectWithValue('Failed to fetch validator metadata')
         }
     }
 )
@@ -137,7 +131,6 @@ export const fetchDelegatedAmounts = createAsyncThunk(
     }
 )
 
-
 const validatorSlice = createSlice({
     name: 'VALIDATOR_STATE',
     initialState: INIT_STATE,
@@ -155,24 +148,13 @@ const validatorSlice = createSlice({
                 state.fuseTokenTotalSupply = payload.fuseTokenTotalSupply
                 state.maxStakeAmount = payload.maxStake
                 state.minStakeAmount = payload.minStake
+                state.validatorMetadata = payload.validatorMetadata
+                state.totalDelegators = payload.totalDelegators
             })
             .addCase(fetchValidators.rejected, (state, { error }) => {
                 state.isLoading = false
                 state.isError = true
                 state.errorMessage = error.message || 'Failed to fetch validators information'
-            })
-            .addCase(fetchValidatorMetadata.pending, (state) => {
-                state.isMetadataLoading = true
-            })
-            .addCase(fetchValidatorMetadata.fulfilled, (state, { payload }) => {
-                state.isMetadataLoading = false
-                state.validatorMetadata = payload.validatorMetadata
-                state.totalDelegators = payload.totalDelegators
-            })
-            .addCase(fetchValidatorMetadata.rejected, (state, { error }) => {
-                state.isMetadataLoading = false
-                state.isError = true
-                state.errorMessage = error.message || 'Failed to fetch validator metadata'
             })
             .addCase(fetchSelfStake.pending, (state) => {
                 state.isBalanceLoading = true
