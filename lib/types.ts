@@ -331,3 +331,39 @@ export type DelegatedAmount = {
 };
 
 export type DelegatedAmountsByDelegators = Record<Address, DelegatedAmount>;
+
+export interface ValidatorType {
+  address: Address
+  stakeAmount: string
+  fee: string
+  delegatorsLength: string
+  delegators: [Address, string][]
+  selfStakeAmount?: string
+  name?: string
+  website?: string
+  firstSeen?: string
+  status?: string
+  image?: string
+  forDelegation?: boolean
+  totalValidated?: number
+  uptime?: number
+  description?: string
+  isPending?: boolean
+  isJailed?: boolean
+}
+
+export type ValidatorTypeResponse = Omit<ValidatorType, 'delegators'> & { delegators: DelegatedAmountsByDelegators };
+
+
+export interface ValidatorResponse {
+  totalStakeAmount: string
+  totalSupply: number
+  maxStake: string
+  minStake: string
+  totalDelegators: number
+  allValidators: Address[]
+  activeValidators: Address[]
+  jailedValidators: Address[]
+  pendingValidators: Address[]
+  validatorsMetadata: Record<Address, ValidatorTypeResponse>
+}

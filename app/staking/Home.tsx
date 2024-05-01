@@ -6,7 +6,6 @@ import InfoCard from "@/components/staking/InfoCard";
 import SearchBar from "@/components/staking/SearchBar";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import {
-  ValidatorType,
   fetchSelfStake,
   fetchValidatorMetadata,
   fetchValidators,
@@ -26,6 +25,7 @@ import { useAccount } from "wagmi";
 import { hex } from "@/lib/helpers";
 import Image from "next/image";
 import useDeepCompareEffect, { useDeepCompareEffectNoCheck } from "use-deep-compare-effect";
+import { ValidatorType } from "@/lib/types";
 
 const Home = () => {
   const validatorSlice = useAppSelector(selectValidatorSlice);

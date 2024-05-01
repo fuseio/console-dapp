@@ -1,30 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { AppState } from '../rootReducer'
-import { fetchValidatorData, multicallContract, contractInterface } from '@/lib/contractInteract'
-import Validators from '@/validators/validators.json'
-import { fetchNodeByAddress, fetchTokenPrice, fetchTotalSupply, postConsensusDelegatedAmounts } from '@/lib/api'
+import { multicallContract, contractInterface } from '@/lib/contractInteract'
+import { fetchConsensusValidators, fetchTokenPrice, postConsensusDelegatedAmounts } from '@/lib/api'
 import { Address, formatEther } from 'viem'
 import { CONFIG } from '@/lib/config'
-
-export interface ValidatorType {
-    address: Address
-    stakeAmount: string
-    fee: string
-    delegatorsLength: string
-    delegators: [Address, string][]
-    selfStakeAmount?: string
-    name?: string
-    website?: string
-    firstSeen?: string
-    status?: string
-    image?: string
-    forDelegation?: boolean
-    totalValidated?: number
-    uptime?: number
-    description?: string
-    isPending?: boolean
-    isJailed?: boolean
-}
+import { ValidatorType } from '@/lib/types'
 
 export interface ValidatorStateType {
     totalStakeAmount: string
@@ -65,31 +45,8 @@ const INIT_STATE: ValidatorStateType = {
 export const fetchValidators = createAsyncThunk(
     'validators/fetch',
     async (_, { rejectWithValue }) => {
-        const methods = [
-            'totalStakeAmount',
-            'getValidators',
-            'jailedValidators',
-            'getMaxStake',
-            'getMinStake'
-        ]
-        const calls = methods.map((method) =>
-            [
-                CONFIG.consensusAddress,
-                contractInterface.encodeFunctionData(method, [])
-            ]
-        )
-
         try {
-            const [[, results], totalSupply] = await Promise.all([
-                multicallContract.aggregate(calls),
-                fetchTotalSupply(),
-            ])
-
-            const [totalStakeAmount, validators, jailedValidators, maxStake, minStake] = results.map((result: any, index: any) =>
-                contractInterface.decodeFunctionResult(calls[index][1], result)[0]
-            )
-
-            const combinedValidators = validators.concat(jailedValidators)
+            const { totalStakeAmount, totalSupply, maxStake, minStake, allValidators } = await fetchConsensusValidators();
 
             let price = 0
             try {
@@ -99,12 +56,12 @@ export const fetchValidators = createAsyncThunk(
             }
 
             return {
-                totalStakeAmount: formatEther(totalStakeAmount),
-                validators: combinedValidators,
+                totalStakeAmount,
+                validators: allValidators,
                 price,
                 fuseTokenTotalSupply: totalSupply,
-                maxStake: formatEther(maxStake),
-                minStake: formatEther(minStake)
+                maxStake,
+                minStake
             }
         } catch (error) {
             console.error('Error fetching validators:', error)
@@ -115,60 +72,20 @@ export const fetchValidators = createAsyncThunk(
 
 export const fetchValidatorMetadata = createAsyncThunk(
     'validators/fetchMetadata',
-    async (validators: Address[], { rejectWithValue }) => {
+    async (_, { rejectWithValue }) => {
         try {
-            const methods = ['pendingValidators']
-            const calls = methods.map((method) =>
-                [CONFIG.consensusAddress, contractInterface.encodeFunctionData(method, [])]
-            )
-            const [[, results]] = await Promise.all([
-                multicallContract.aggregate(calls),
-            ])
-            const [pendingValidators] = results.map((result: any, index: any) =>
-                contractInterface.decodeFunctionResult(calls[index][1], result)[0]
-            )
-            const validatorMap = new Map<string, {
-                name?: string,
-                website?: string,
-                image?: string,
-                description?: string
-            }>(Object.entries(Validators).map(([key, value]) => [key.toLowerCase(), value]))
+            const { totalDelegators, validatorsMetadata } = await fetchConsensusValidators();
 
-            let totalDelegators = 0
-            const validatorMetadata = await Promise.all(validators.map(async (validator) => {
-                const metadata = await fetchValidatorData(validator)
-                const status = metadata.isJailed ? 'inactive' : 'active'
-                const validatorData = validatorMap.get(validator.toLowerCase())
-                totalDelegators += parseInt(metadata.delegatorsLength, 10)
+            const validatorMetadata = Object.values(validatorsMetadata).map((metadata) => {
+                const delegators: [Address, string][] = Object.values(metadata.delegators).map((delegatedAmount) => {
+                    return [delegatedAmount.address, delegatedAmount.amountFormatted]
+                })
 
-                const baseMetadata = {
+                return {
                     ...metadata,
-                    address: validator,
-                    name: validatorData?.name || validator,
-                    website: validatorData?.website,
-                    image: validatorData?.image,
-                    status,
-                    isPending: pendingValidators.includes(validator.toLowerCase()),
-                    description: validatorData?.description
+                    delegators
                 }
-
-                if (status === 'inactive') {
-                    return baseMetadata
-                } else {
-                    try {
-                        const { Node } = await fetchNodeByAddress(validator)
-                        return {
-                            ...baseMetadata,
-                            firstSeen: Node?.firstSeen,
-                            forDelegation: Node?.forDelegation,
-                            totalValidated: Node?.totalValidated,
-                            uptime: Node?.upTime
-                        }
-                    } catch (error) {
-                        return baseMetadata
-                    }
-                }
-            }))
+            })
 
             return { validatorMetadata, totalDelegators }
         } catch (error) {
@@ -210,8 +127,7 @@ export const fetchDelegatedAmounts = createAsyncThunk(
         try {
             const consensusDelegatedAmounts = await postConsensusDelegatedAmounts({ validator: address, delegators });
             const delegatedAmountsByDelegators = consensusDelegatedAmounts.delegatedAmountsByDelegators;
-            const delegatedAmounts: [Address, string][] = Object.entries(delegatedAmountsByDelegators).map((delegatedAmountsByDelegator) => {
-                const [_, delegatedAmount] = delegatedAmountsByDelegator;
+            const delegatedAmounts: [Address, string][] = Object.values(delegatedAmountsByDelegators).map((delegatedAmount) => {
                 return [delegatedAmount.address, delegatedAmount.amountFormatted]
             })
             return { delegatedAmounts, address }

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { CONFIG, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL, NEXT_PUBLIC_FUSE_API_BASE_URL } from './config'
-import { DelegatedAmountsByDelegators, DelegatedAmountsRequest, Operator, OperatorContactDetail, Paymaster, SignData } from "./types";
+import { DelegatedAmountsByDelegators, DelegatedAmountsRequest, Operator, OperatorContactDetail, Paymaster, SignData, ValidatorResponse } from "./types";
 import { Address } from "viem";
 
 export const fetchAllNodes = () =>
@@ -142,7 +142,7 @@ export const fetchSponsoredTransactionCount = async (token: string): Promise<{ s
     return response.data
 }
 
-export const fetchConsensusValidators = async () => {
+export const fetchConsensusValidators = async (): Promise<ValidatorResponse> => {
     const response = await axios.get(`https://${NEXT_PUBLIC_FUSE_API_BASE_URL}/api/v0/consensus/validators`)
     return response.data
 }
