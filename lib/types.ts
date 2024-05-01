@@ -354,7 +354,6 @@ export interface ValidatorType {
 
 export type ValidatorTypeResponse = Omit<ValidatorType, 'delegators'> & { delegators: DelegatedAmountsByDelegators };
 
-
 export interface ValidatorResponse {
   totalStakeAmount: string
   totalSupply: number
