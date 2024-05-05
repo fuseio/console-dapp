@@ -153,7 +153,7 @@ const Withdraw = ({
     address,
     chainSlice.chainId,
     nativeBalance,
-    chain
+    chain,
   ]);
   useEffect(() => {
     if (
@@ -241,9 +241,8 @@ const Withdraw = ({
                   className="text-black font-medium px-3 py-1 bg-lightest-gray rounded-full cursor-pointer"
                   onClick={() => {
                     setAmount(
-                      appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                        selectedTokenItem
-                      ].isNative && chain?.id === fuse.id
+                      appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
+                        .isNative && chain?.id === fuse.id
                         ? parseFloat(nativeBalance).toString()
                         : balanceSlice.balance
                     );
