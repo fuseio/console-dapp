@@ -10,10 +10,8 @@ import expandArrow from "@/assets/expand-arrow.svg";
 import ReactGA from "react-ga4";
 import ym from "react-yandex-metrika";
 import {
-  ValidatorType,
   fetchDelegatedAmounts,
   fetchSelfStake,
-  fetchValidatorMetadata,
   fetchValidators,
   selectValidatorSlice,
 } from "@/store/validatorSlice";
@@ -33,6 +31,7 @@ import { fetchTokenPrice } from "@/lib/api";
 import Copy from "@/components/ui/Copy";
 import { Address } from "abitype";
 import { useParams } from "next/navigation";
+import { ValidatorType } from "@/lib/types";
 
 const Stake = () => {
   const { id } = useParams();
@@ -119,7 +118,7 @@ const Stake = () => {
       setValidator(
         validators.validatorMetadata.filter(
           (v) => {
-            if(typeof id === "string") {
+            if (typeof id === "string") {
               return v.address.toLowerCase() === id?.toLowerCase();
             }
             return v.address.toLowerCase() === id[0]?.toLowerCase();
@@ -130,15 +129,6 @@ const Stake = () => {
       dispatch(fetchValidators());
     }
   }, [id, validators]);
-
-  useDeepCompareEffect(() => {
-    if (
-      validators.validators.length > 0 &&
-      validators.validatorMetadata.length === 0
-    ) {
-      dispatch(fetchValidatorMetadata(validators.validators));
-    }
-  }, [validators.validators]);
 
   useDeepCompareEffectNoCheck(() => {
     if (address && validator) {

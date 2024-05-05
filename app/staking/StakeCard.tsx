@@ -2,7 +2,6 @@ import React, { useCallback, useEffect } from "react";
 import fuseToken from "@/assets/fuseToken.svg";
 import Button from "@/components/ui/Button";
 import {
-  ValidatorType,
   selectMaxStake,
   selectMinStake,
   selectValidatorSlice,
@@ -16,6 +15,7 @@ import { fuse } from "viem/chains";
 import { formatUnits } from "viem";
 import { evmDecimals } from "@/lib/helpers";
 import Image from "next/image";
+import { ValidatorType } from "@/lib/types";
 
 type StakeCardProps = {
   validator: ValidatorType | undefined;
