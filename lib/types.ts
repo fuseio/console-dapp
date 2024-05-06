@@ -121,6 +121,8 @@ interface WrappedBridgeConfig {
         symbol: string;
         name: string;
       };
+      isNative: boolean;
+      isBridged: boolean;
     }[];
   };
   disabledChains: DisabledChainConfigLike[];
@@ -172,6 +174,8 @@ export const createAppConfig = (
       symbol: string;
       name: string;
     };
+    isNative: boolean;
+    isBridged: boolean;
   }[] = [];
   if (bridgeConfig.tokens.length > 0) {
     tokenConfig.coins.forEach((coin) => {
