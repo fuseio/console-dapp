@@ -2,11 +2,15 @@ import Image from "next/image"
 import developerDocumentation from "@/assets/developer-documentation.svg";
 import getSupport from "@/assets/get-support.svg";
 import * as amplitude from "@amplitude/analytics-browser";
+import { useMediaQuery } from "usehooks-ts";
+import { screenMediumWidth } from "@/lib/helpers";
 
 const DocumentSupport = () => {
+  const matches = useMediaQuery(`(min-width: ${screenMediumWidth}px)`);
+
   return (
     <div className="grid grid-cols-2 lg:grid-cols-1 gap-[30px] divide-x-[1px] lg:divide-x-0 lg:divide-y-[1px] divide-gray-goose">
-      <div className="transition ease-in-out flex flex-row md:flex-col md:gap-8 justify-between pt-[36px] pr-[51px] pb-[30px] pl-14 md:px-4 md:py-6 min-h-[174px]">
+      <div className="transition ease-in-out flex justify-between gap-3 pt-[36px] pr-[51px] pb-[30px] pl-14 md:px-4 md:py-6 min-h-[174px]">
         <div className="flex flex-col justify-center items-start">
           <p className="text-2xl text-fuse-black font-bold">
             Developer Documentation
@@ -28,10 +32,10 @@ const DocumentSupport = () => {
           alt="developer documentation"
           width={155}
           height={140}
-          className="md:m-auto"
+          className="md:m-auto min-w-0"
         />
       </div>
-      <div className="transition ease-in-out flex flex-row md:flex-col md:gap-8 justify-between pt-[36px] pr-[51px] pb-[30px] pl-14 md:px-4 md:py-6 min-h-[174px]">
+      <div className="transition ease-in-out flex justify-between gap-3 pt-[36px] pr-[51px] pb-[30px] pl-14 md:px-4 md:py-6 min-h-[174px]">
         <div className="flex flex-col justify-center items-start">
           <p className="text-2xl text-fuse-black font-bold">
             Get Support
@@ -57,13 +61,13 @@ const DocumentSupport = () => {
         <Image
           src={getSupport}
           alt="get support"
-          width={213}
-          height={138}
-          className="md:m-auto"
+          width={matches ? 213: 162}
+          height={matches ? 138: 105}
+          className="md:m-auto min-w-0"
         />
       </div>
     </div>
   )
 }
 
-export default DocumentSupport
+export default DocumentSupport;

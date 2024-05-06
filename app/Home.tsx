@@ -18,27 +18,27 @@ const Home = () => {
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
-      <div className="w-8/9 flex flex-col mt-[130.98px] mb-[187px] md:w-9/10 max-w-7xl">
+      <div className="w-8/9 flex flex-col mt-[130.98px] mb-[187px] md:mt-10 md:w-9/10 max-w-7xl">
         <div className="flex flex-col justify-center items-center text-center">
-          <h1 className="text-[70px]/[84.35px] text-fuse-black font-semibold max-w-[474px]">
+          <h1 className="text-[70px]/[84.35px] md:text-[32px] md:leading-tight text-fuse-black font-semibold max-w-[474px]">
             Welcome to Fuse Console
           </h1>
-          <p className="text-[20px]/7 text-text-dark-gray md:text-base mt-[22px] mb-[36.52px] max-w-[395.25px]">
+          <p className="text-[20px]/7 text-text-dark-gray mt-[22px] mb-[36.52px] md:mt-4 md:mb-[26px] max-w-[395.25px]">
             Start your journey on Fuse
           </p>
           {!isConnected &&
             <Button
               text="Connect Wallet"
-              className="transition ease-in-out text-lg font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
-              padding="py-4 px-[52px]"
+              className="transition ease-in-out text-[20px]/7 font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
+              padding="py-4 px-[52px] md:px-[60.5px]"
               onClick={() => {
                 dispatch(setIsWalletModalOpen(true));
               }}
             />
           }
         </div>
-        <div className="transition-all ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] px-[83.31px] pt-[60.36px] pb-[67px] md:px-4 md:py-6 mt-[99.5px] mb-10 bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-bottom">
-          <p className="text-[40px] leading-tight text-fuse-black font-semibold max-w-[414.86px]">
+        <div className="transition-all ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] md:min-h-[514px] px-[83.31px] pt-[60.36px] pb-[67px] md:px-4 md:py-6 mt-[99.5px] mb-10 md:mt-[78px] md:mb-5 bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-bottom">
+          <p className="text-[40px] md:text-[32px] leading-tight text-fuse-black font-semibold max-w-[414.86px]">
             Build your Web3 project with Fuse
           </p>
           <p className="text-[20px]/7 text-text-dark-gray md:text-base max-w-[395.25px] mt-[15.42px] mb-[35.58px]">
@@ -47,7 +47,7 @@ const Home = () => {
           </p>
           <Link
             href="/build"
-            className="transition ease-in-out text-lg text-white hover:text-black font-semibold bg-black hover:bg-white rounded-full py-4 px-[52px] md:px-6"
+            className="transition ease-in-out md:block md:text-center text-lg text-white hover:text-black font-semibold bg-black hover:bg-white rounded-full py-4 px-[52px] md:px-2 md:w-9/12"
             onClick={() => amplitude.track("Home: Create project")}
           >
             Create your project
@@ -90,11 +90,11 @@ const Home = () => {
             </p>
           </Link>
         </div>
-        <div className="flex flex-col mt-[140.5px]">
+        <div className="flex flex-col mt-[140.5px] md:mt-[59px]">
           <p className="text-[40px] leading-tight text-fuse-black font-semibold">
             Developer tools
           </p>
-          <div className="grid grid-cols-4 md:grid-cols-1 gap-[30px] mt-[45.64px] mb-[151.36px]">
+          <div className="grid grid-cols-4 md:grid-cols-1 gap-[30px] md:gap-5 mt-[45.64px] mb-[151.36px] md:mt-5 md:mb-[83px]">
             <a
               href="https://docs.fuse.io/fuse-box/sdk/installation-and-setup?platform=flutter"
               target="_blank"
