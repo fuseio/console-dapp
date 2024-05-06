@@ -324,5 +324,25 @@ export const bridgeConfig: BridgeConfigLike = {
         },
       },
     ],
+    [
+      {
+        chainId: 138,
+        decimals: 18,
+        symbol: "FDM",
+        name: "Freedom",
+        isBridged: true,
+        isNative: false,
+        address: "0xE3Df2C1f1ca54707AB49747eeBc7658bb1c8Bf1C",
+      },
+      {
+        chainId: 101,
+        decimals: 18,
+        symbol: "FDM",
+        name: "Freedom",
+        isBridged: false,
+        isNative: false,
+        address: "0x60d91f6D394c5004A782E0D175E2b839e078FB83",
+      },
+    ],
   ],
 };

@@ -4,6 +4,7 @@ import sFuse from "@/assets/sFuse.svg";
 import weth from "@/assets/weth.svg";
 import usdt from "@/assets/usdt-logo.svg";
 import eth from "@/public/eth.png";
+import fdm from "@/assets/fdm.svg";
 
 export const coins: CoinConfigLike[] = [
   {
@@ -40,5 +41,12 @@ export const coins: CoinConfigLike[] = [
     decimals: 18,
     icon: eth,
     coinGeckoId: "ethereum",
+  },
+  {
+    name: "Freedom",
+    symbol: "FDM",
+    decimals: 18,
+    icon: fdm,
+    coinGeckoId: "",
   },
 ];
