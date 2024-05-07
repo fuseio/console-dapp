@@ -291,8 +291,8 @@ const Home = () => {
       {operatorSlice.isContactDetailsModalOpen && <ContactDetailsModal />}
       {operatorSlice.isAccountCreationModalOpen && <AccountCreationModal />}
       {operatorSlice.isCongratulationModalOpen && <CongratulationModal />}
-      <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:w-9/10 max-w-7xl">
-        <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="" liClassName="w-28" />
+      <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
+        <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="md:flex md:justify-center" liClassName="w-28" />
         <div className={`flex justify-between md:flex-col gap-2 mt-[66.29px] ${operatorSlice.isActivated ? "mb-[70px]" : "mb-[42px]"}`}>
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
             Operator Dashboard
