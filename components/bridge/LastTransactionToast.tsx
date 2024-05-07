@@ -74,7 +74,7 @@ const LastTransactionToast = () => {
             <div className="flex flex-col w-1/5 sm:w-full">
               <p>Amount</p>
               <p className="font-medium text-black mt-1">
-                {parseFloat(transactionsSlice.transactionHashes[0].amount).toFixed(3)}
+                {parseFloat(transactionsSlice.transactionHashes[0].amount).toFixed(5)}
               </p>
             </div>
             <div className="flex flex-col sm:w-fit">
