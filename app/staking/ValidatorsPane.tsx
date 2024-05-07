@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import ValidatorCard from "./ValidatorCard";
-import { ValidatorType } from "@/store/validatorSlice";
 import Button from "@/components/ui/Button";
 import { eclipseAddress } from "@/lib/helpers";
 import coins from "@/assets/coins.svg";
@@ -10,6 +9,7 @@ import { useDeepCompareEffectNoCheck } from "use-deep-compare-effect";
 import RpcNotice from "@/components/staking/RpcNotice";
 import { useBlockNumber } from "wagmi";
 import Image from "next/image";
+import { ValidatorType } from "@/lib/types";
 
 const ValidatorsPane = ({
   validators,

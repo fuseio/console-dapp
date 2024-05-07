@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
-import { CONFIG, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL } from './config'
-import { Operator, OperatorContactDetail, Paymaster, SignData } from "./types";
+import { CONFIG, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL, NEXT_PUBLIC_FUSE_API_BASE_URL } from './config'
+import { DelegatedAmountsByDelegators, DelegatedAmountsRequest, Operator, OperatorContactDetail, Paymaster, SignData, ValidatorResponse } from "./types";
 import { Address } from "viem";
 
 export const fetchAllNodes = () =>
@@ -130,7 +130,7 @@ export const checkActivated = async (token: string): Promise<AxiosResponse<any, 
     return response
 }
 
-export const fetchSponsoredTransactionCount = async (token: string): Promise<{sponsoredTransactions: number}> => {
+export const fetchSponsoredTransactionCount = async (token: string): Promise<{ sponsoredTransactions: number }> => {
     const response = await axios.get(
         `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/sponsored-transaction`,
         {
@@ -138,6 +138,19 @@ export const fetchSponsoredTransactionCount = async (token: string): Promise<{sp
                 "Authorization": `Bearer ${token}`
             }
         }
+    )
+    return response.data
+}
+
+export const fetchConsensusValidators = async (): Promise<ValidatorResponse> => {
+    const response = await axios.get(`https://${NEXT_PUBLIC_FUSE_API_BASE_URL}/api/v0/consensus/validators`)
+    return response.data
+}
+
+export const postConsensusDelegatedAmounts = async (delegatedAmounts: DelegatedAmountsRequest): Promise<{ delegatedAmountsByDelegators: DelegatedAmountsByDelegators }> => {
+    const response = await axios.post(
+        `https://${NEXT_PUBLIC_FUSE_API_BASE_URL}/api/v0/consensus/delegated_amounts`,
+        delegatedAmounts
     )
     return response.data
 }
