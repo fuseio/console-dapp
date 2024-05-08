@@ -88,9 +88,11 @@ const usdTokens: UsdTokens = {
 
 const ConnectWallet = ({
   className = "",
+  defaultClassName = "bg-fuse-black text-white px-4 py-2 rounded-full font-medium md:text-sm ",
   containerClassName = "",
 }: {
   className?: string;
+  defaultClassName?: string;
   containerClassName?: string;
 }) => {
   const dispatch = useAppDispatch();
@@ -157,10 +159,7 @@ const ConnectWallet = ({
   return !isConnected ? (
     <div className={"flex justify-end " + containerClassName}>
       <button
-        className={
-          "bg-fuse-black text-white px-4 py-2 rounded-full font-medium md:text-sm " +
-          className
-        }
+        className={defaultClassName + className}
         onClick={() => {
           if (pathname === path.BUILD) {
             dispatch(setIsOperatorWalletModalOpen(true));
@@ -265,8 +264,8 @@ const ConnectWallet = ({
           <Image
             src={icons[chain?.id ?? 0]}
             alt={chain?.name ?? "Fuse"}
-            width={matches ? 25: 18}
-            height={matches ? 25: 18}
+            width={matches ? 25 : 18}
+            height={matches ? 25 : 18}
           />
           <p className="ms-[8.52px]">
             {eclipseAddress(String(address))}

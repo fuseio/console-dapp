@@ -120,6 +120,7 @@ const ConnectEoaWallet = () => {
       </div>
       <ConnectWallet
         className="transition ease-in-out flex justify-between items-center gap-2 bg-black text-lg leading-none text-white font-semibold rounded-full py-[18.5px] px-[38px] hover:bg-success hover:text-black"
+        defaultClassName=""
       />
     </div>
   )
@@ -159,8 +160,8 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
             </div>
           </div>
         </div>
-        <div className="flex items-end gap-x-[30px] md:gap-x-4">
-          <h1 className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
+        <div className="flex items-end md:flex-wrap gap-x-[30px] md:gap-x-4">
+          <h1 className="font-bold text-5xl leading-none whitespace-nowrap">
             {(chain && chain.id === fuse.id) ?
               new Intl.NumberFormat().format(
                 parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0")
@@ -181,19 +182,19 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
           }
         </div>
       </div>
-      <div className="flex flex-row md:flex-col gap-2.5">
+      <div className="flex flex-row md:flex-wrap gap-2.5">
         <Button
           text="Deposit"
-          className="transition ease-in-out text-black text-white font-semibold bg-black rounded-full hover:text-black hover:bg-success"
-          padding="py-4 px-[52px]"
+          className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black rounded-full hover:text-black hover:bg-success"
+          padding="py-[18.5px] px-[29.5px]"
           onClick={() => {
             dispatch(setIsTopupAccountModalOpen(true));
           }}
         />
         <Button
           text="Withdraw"
-          className="transition ease-in-out text-black text-white font-semibold bg-black rounded-full hover:text-black hover:bg-success"
-          padding="py-4 px-[52px]"
+          className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black rounded-full hover:text-black hover:bg-success"
+          padding="py-[18.5px] px-[29.5px]"
           onClick={() => {
             dispatch(setIsWithdrawModalOpen(true));
           }}
@@ -293,11 +294,11 @@ const Home = () => {
       {operatorSlice.isCongratulationModalOpen && <CongratulationModal />}
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
         <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="md:flex md:justify-center" liClassName="w-28" />
-        <div className={`flex justify-between md:flex-col gap-2 mt-[66.29px] ${operatorSlice.isActivated ? "mb-[70px]" : "mb-[42px]"}`}>
-          <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
+        <div className={`flex justify-between md:flex-col gap-2 mt-[66.29px] md:mt-14 ${operatorSlice.isActivated ? "mb-[70px]" : "mb-[42px]"} md:mb-[50px]`}>
+          <h1 className="text-5xl md:text-[32px] text-fuse-black font-semibold leading-none md:leading-tight md:text-center">
             Operator Dashboard
           </h1>
-          <div className="flex items-center gap-px">
+          <div className="flex items-center gap-px md:hidden">
             <Image
               src={contactSupport}
               alt="contact support"
@@ -341,7 +342,7 @@ const Home = () => {
             />
           </div>
         }
-        <div className="flex flex-col gap-y-[30px] mb-[143.32px]">
+        <div className="flex flex-col gap-y-[30px] md:gap-y-[21px] mb-[143.32px] md:mb-[66px]">
           <div className="flex flex-row md:flex-col gap-x-4 gap-y-12 bg-lightest-gray justify-between rounded-[20px] p-12 md:p-8 min-h-[297px]">
             {(!isConnected || !signer) ?
               <ConnectEoaWallet /> :
@@ -367,15 +368,15 @@ const Home = () => {
             }
             <div className="flex flex-col justify-between w-[361px] md:w-auto">
               <div className="flex flex-col gap-[18px]">
-                <p className="text-lg text-text-dark-gray">
+                <p className="text-lg text-text-dark-gray font-medium">
                   Active plan
                 </p>
-                <p className="font-bold text-5xl leading-none md:text-3xl whitespace-nowrap">
+                <p className="font-bold text-5xl leading-none whitespace-nowrap">
                   Starter plan
                 </p>
               </div>
-              <div className="flex flex-col gap-[18px] w-full">
-                <div className="flex items-center gap-2.5 text-lg text-text-dark-gray">
+              <div className="flex flex-col gap-[18px] w-full md:mt-[30px]">
+                <div className="flex items-center gap-2.5 text-lg text-text-dark-gray font-medium">
                   Sponsored Transactions
                   <div className="group relative cursor-pointer w-4 h-4 bg-black rounded-full flex justify-center items-center text-xs leading-none text-white">
                     ?
@@ -404,10 +405,10 @@ const Home = () => {
               </div>
             </div>
           </div>
-          <div className="flex md:flex-col gap-[30px]">
-            <div className={`flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] pl-12 pt-12 pr-4 pb-[55px] ${operatorSlice.isActivated ? "bg-black" : "bg-white"}`}>
+          <div className="flex md:flex-col gap-[30px] md:gap-5">
+            <div className={`flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] pl-12 pt-12 pr-4 pb-[55px] md:pl-[30px] md:py-8 md:pr-[23px] ${operatorSlice.isActivated ? "bg-black" : "bg-white"}`}>
               <div className="flex flex-col gap-4">
-                <p className={`text-[20px] leading-none font-semibold ${operatorSlice.isActivated ? "text-white" : "text-black"}`}>
+                <p className={`text-[20px] leading-none font-bold ${operatorSlice.isActivated ? "text-white" : "text-black"}`}>
                   Send your first transaction
                 </p>
                 <p className={`text-base ${operatorSlice.isActivated ? "text-white" : "text-text-dark-gray"}`}>
@@ -424,7 +425,7 @@ const Home = () => {
                 Start tutorial
               </button>
             </div>
-            <div className={`flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px] ${operatorSlice.isActivated ? "opacity-100" : "opacity-50"}`}>
+            <div className={`flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px] md:pl-[30px] md:py-8 md:pr-[23px] ${operatorSlice.isActivated ? "opacity-100" : "opacity-50"}`}>
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-2">
                   <p className="text-[20px] leading-none font-semibold">
@@ -444,7 +445,7 @@ const Home = () => {
                   You will need this API key at the next stage for integration into the SDK
                 </p>
               </div>
-              <div className="w-full md:min-w-max flex justify-between bg-modal-bg rounded-[31px] border border-black/40 text-sm text-black font-semibold px-5 py-[15px]">
+              <div className="w-full md:min-w-max flex justify-between items-center bg-modal-bg rounded-[31px] border border-black/40 text-sm text-black font-semibold px-5 py-[15px]">
                 {operatorSlice.isActivated ?
                   <>
                     <p>
@@ -453,6 +454,7 @@ const Home = () => {
                     <Copy
                       src={copy}
                       text={operatorSlice.operator.project.publicKey}
+                      tooltipText="API Key copied"
                       alt="copy API key"
                       width={15}
                       height={15}
@@ -464,7 +466,7 @@ const Home = () => {
                 }
               </div>
             </div>
-            <div className={`flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px] ${operatorSlice.isActivated ? "opacity-100" : "opacity-50"}`}>
+            <div className={`flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px] md:pl-[30px] md:py-8 md:pr-[23px] ${operatorSlice.isActivated ? "opacity-100" : "opacity-50"}`}>
               <div className="flex flex-col gap-4">
                 <p className="text-[20px] leading-none font-semibold">
                   Your API secret key
@@ -480,7 +482,7 @@ const Home = () => {
                   </p>
                 </div> :
                 operatorSlice.operator.project.secretLastFourChars ?
-                  <div className="w-full md:min-w-max flex justify-between bg-modal-bg rounded-[31px] border border-black/40 text-xs text-black font-semibold px-5 py-[15px]">
+                  <div className="w-full md:min-w-max flex justify-between items-center bg-modal-bg rounded-[31px] border border-black/40 text-xs text-black font-semibold px-5 py-[15px]">
                     {operatorSlice.operator.project.secretKey && showSecretKey ?
                       <p>
                         {operatorSlice.operator.project.secretKey}

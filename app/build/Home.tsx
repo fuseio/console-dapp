@@ -199,7 +199,7 @@ const Home = () => {
                 Introduce your users to Web3 with a cost-effective approach
               </p>
             </div>
-            <div className="flex flex-row md:flex-col gap-[85.15px] md:gap-[18.73px] px-[54.46px] py-[53.36px] md:pl-[30px] md:py-[30px] md:pr-[10px] h-[618px] md:h-[870px] bg-white rounded-[20px] bg-[url('/vectors/ecosystem.svg')] md:bg-[url('/vectors/ecosystem-responsive.svg')] bg-no-repeat bg-right-bottom md:bg-contain">
+            <div className="flex flex-row md:flex-col gap-[85.15px] md:gap-[18.73px] px-[54.46px] py-[53.36px] md:pl-[30px] md:py-[30px] md:pr-[10px] min-h-[618px] md:min-h-[870px] bg-white rounded-[20px] bg-[url('/vectors/ecosystem.svg')] md:bg-[url('/vectors/ecosystem-responsive.svg')] bg-no-repeat bg-right-bottom md:bg-contain">
               <div>
                 <p className="text-[34px]/[40.97px] md:text-[32px] md:leading-tight text-fuse-black font-bold md:font-semibold">
                   An ecosystem for Web3 payments
