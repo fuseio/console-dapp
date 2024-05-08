@@ -15,7 +15,7 @@ import {
   useSwitchChain,
 } from "wagmi";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
-import { eclipseAddress, evmDecimals, path } from "@/lib/helpers";
+import { eclipseAddress, evmDecimals, path, screenMediumWidth } from "@/lib/helpers";
 import { arbitrum, polygon, fuse, optimism, bsc, mainnet } from "wagmi/chains";
 import fuseIcon from "@/assets/fuse-icon.svg";
 import polygonIcon from "@/assets/polygon-icon.svg";
@@ -35,7 +35,6 @@ import switchNetworkIcon from "@/assets/switch-network.svg";
 import Copy from "./ui/Copy";
 import { formatUnits } from "viem";
 
-const screenMediumWidth = 768;
 const menu: Variants = {
   closed: (isCenter) => ({
     opacity: 0,
@@ -89,9 +88,11 @@ const usdTokens: UsdTokens = {
 
 const ConnectWallet = ({
   className = "",
+  defaultClassName = "bg-fuse-black text-white px-4 py-2 rounded-full font-medium md:text-sm ",
   containerClassName = "",
 }: {
   className?: string;
+  defaultClassName?: string;
   containerClassName?: string;
 }) => {
   const dispatch = useAppDispatch();
@@ -158,10 +159,7 @@ const ConnectWallet = ({
   return !isConnected ? (
     <div className={"flex justify-end " + containerClassName}>
       <button
-        className={
-          "bg-fuse-black text-white px-4 py-2 rounded-full font-medium md:text-sm " +
-          className
-        }
+        className={defaultClassName + className}
         onClick={() => {
           if (pathname === path.BUILD) {
             dispatch(setIsOperatorWalletModalOpen(true));
@@ -175,18 +173,18 @@ const ConnectWallet = ({
     </div>
   ) : checkCorrectNetwork() && isChainOpen ? (
     <div
-      className="flex relative justify-end md:me-2 text-base/4 md:text-[8px] h-9 md:h-7"
+      className="flex relative justify-end md:me-5 text-base/4 md:text-sm h-9 md:h-7"
       ref={chainRef}
     >
       <div
-        className="flex bg-lightest-gray px-4 py-3 md:py-3.5 rounded-full cursor-pointer items-center relative text-base/4 md:text-[8px]/[25px] font-normal ml-2 md:ml-1"
+        className="flex bg-lightest-gray px-4 py-3 md:py-3.5 rounded-full cursor-pointer items-center relative text-base/4 md:text-sm font-normal ml-2 md:ml-1"
         onClick={() => setIsChainOpen(!isChainOpen)}
       >
         <Image
           src={icons[chain?.id ?? 0]}
           alt={chain?.name ?? "Fuse"}
-          width={25}
-          height={25}
+          width={matches ? 25 : 18}
+          height={matches ? 25 : 18}
         />
         <p className="ms-[8.52px]">
           {eclipseAddress(String(address))}
@@ -254,9 +252,9 @@ const ConnectWallet = ({
       </motion.div>
     </div>
   ) : checkCorrectNetwork() ? (
-    <div className="flex justify-end md:justify-center relative w-[410px] md:w-[90%] h-9 md:h-7">
+    <div className="flex justify-end md:justify-center md:me-5 relative w-[410px] md:w-fit h-9 md:h-7">
       <div
-        className="flex bg-lightest-gray px-4 py-3 md:py-3.5 rounded-full cursor-pointer items-center relative text-base/4 md:text-[8px]/[25px] font-normal ml-2 md:ml-1"
+        className="flex bg-lightest-gray px-4 py-3 md:py-3.5 rounded-full cursor-pointer items-center relative text-base/4 md:text-sm font-normal ml-2 md:ml-1"
         ref={accountsRef}
       >
         <div
@@ -266,8 +264,8 @@ const ConnectWallet = ({
           <Image
             src={icons[chain?.id ?? 0]}
             alt={chain?.name ?? "Fuse"}
-            width={25}
-            height={25}
+            width={matches ? 25 : 18}
+            height={matches ? 25 : 18}
           />
           <p className="ms-[8.52px]">
             {eclipseAddress(String(address))}
@@ -417,7 +415,7 @@ const ConnectWallet = ({
     </div>
   ) : (
     <div
-      className="flex relative justify-end md:me-2 text-base/4 md:text-[8px]"
+      className="flex relative justify-end md:me-5 text-base/4 md:text-sm"
       ref={wrongNetworkRef}
     >
       <div

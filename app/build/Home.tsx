@@ -63,22 +63,22 @@ const Home = () => {
   return (
     <div className="w-full bg-light-gray">
       <div className="w-full flex flex-col items-center">
-        <div className="w-8/9 flex flex-col mt-[30.84px] md:w-9/10 max-w-7xl">
-          <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="welcome" className="" liClassName="w-28" />
+        <div className="w-8/9 flex flex-col mt-[30.84px] md:mt-12 md:w-9/10 max-w-7xl">
+          <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="welcome" className="md:flex md:justify-center" liClassName="w-28" />
         </div>
       </div>
       <div className="w-full flex flex-col items-center">
-        <div className="w-8/9 flex flex-col mt-[76.29px] md:w-9/10 max-w-7xl">
+        <div className="w-8/9 flex flex-col mt-[76.29px] md:mt-14 md:w-9/10 max-w-7xl">
           <div className="flex flex-col justify-center items-center text-center">
-            <h1 className="text-[70px]/[84.35px] text-fuse-black font-semibold max-w-[729.99px] mt-[13.98px] mb-[22px]">
+            <h1 className="text-[70px]/[84.35px] md:text-[32px] md:leading-tight text-fuse-black font-semibold max-w-[729.99px] mt-[13.98px] mb-[22px]">
               Build your Web3 Project with Fuse
             </h1>
-            <p className="text-[20px]/7 text-text-dark-gray mb-[50.52px] max-w-[455px]">
+            <p className="text-[20px]/7 text-text-dark-gray mb-[50.52px] md:mb-[18px] max-w-[455px]">
               Your all-in-one solution for effortlessly launching your decentralized Web3 application
             </p>
             <Button
               text="Create your project"
-              className="transition ease-in-out text-lg font-semibold bg-pale-green rounded-full hover:bg-white"
+              className="transition ease-in-out text-lg leading-none font-semibold bg-pale-green rounded-full hover:bg-white"
               padding="py-4 px-[52px]"
               onClick={() => createAccount("Build-Welcome: Create project - upper")}
             />
@@ -87,53 +87,53 @@ const Home = () => {
       </div>
       <div className="w-full flex flex-col items-center">
         <div className="w-8/9 flex flex-col md:w-9/10 max-w-7xl">
-          <div className="flex flex-row md:flex-col justify-center gap-[31px] mt-[117.5px] mb-[119px]">
-            <div className="bg-white rounded-[20px] p-[51px] md:px-4 md:py-6 w-full max-w-[623px] h-[800px] bg-[url('/vectors/get-mobiles.svg')] bg-no-repeat bg-bottom">
-              <p className="text-[34px] text-fuse-black font-bold">
+          <div className="flex flex-row md:flex-col justify-center gap-[31px] md:gap-[21px] mt-[117.5px] mb-[119px] md:mb-[70px] md:mt-[54px]">
+            <div className="bg-white rounded-[20px] p-[51px] md:pl-[30px] md:py-[30px] md:pr-5 w-full max-w-[623px] md:max-w-none h-[800px] md:h-[578px] bg-[url('/vectors/get-mobiles.svg')] md:bg-[url('/vectors/get-mobiles-responsive.svg')] bg-no-repeat bg-bottom md:bg-contain">
+              <p className="text-[34px] md:text-[32px] md:leading-tight text-fuse-black font-bold md:font-semibold">
                 Get started
               </p>
-              <p className="text-[20px]/7 text-text-dark-gray mt-[30.61px] mb-[38.67px] max-w-[395.25px]">
+              <p className="text-[20px]/7 md:text-base text-text-dark-gray mt-[30.61px] mb-[38.67px] md:mt-5 md:mb-6 max-w-[395.25px]">
                 Begin your crypto project on Fuse now, no prior experience required
               </p>
-              <div className="rounded-[20px] pt-[35.4px] px-10 pb-[50px] md:px-3 md:py-4">
-                <div className="flex flex-col gap-[25.79px]">
-                  <p className="text-[50px] text-fuse-black font-bold">
+              <div className="rounded-[20px] pt-[35.4px] px-10 pb-[50px] md:px-0 md:py-0">
+                <div className="flex flex-col gap-[25.79px] md:gap-7">
+                  <p className="text-[50px] md:text-5xl text-fuse-black font-bold">
                     $0
                   </p>
-                  <div className="flex flex-col gap-[18.73px]">
-                    <div className="flex items-center gap-[13.3px]">
+                  <div className="flex flex-col gap-[18.73px] md:gap-4">
+                    <div className="flex items-center gap-[13.3px] md:gap-[9px]">
                       <Image
                         src={checkmarkBg}
                         alt="checkmark with background"
                       />
-                      <p className="text-xl font-bold">
+                      <p className="text-[20px]/7 md:text-base font-bold">
                         1M RPC calls
                       </p>
                     </div>
-                    <div className="flex items-center gap-[13.3px]">
+                    <div className="flex items-center gap-[13.3px] md:gap-[9px]">
                       <Image
                         src={checkmarkBg}
                         alt="checkmark with background"
                       />
-                      <p className="text-xl font-bold">
+                      <p className="text-[20px]/7 md:text-base font-bold">
                         1000 transactions
                       </p>
                     </div>
-                    <div className="flex items-center gap-[13.3px]">
+                    <div className="flex items-center gap-[13.3px] md:gap-[9px]">
                       <Image
                         src={checkmarkBg}
                         alt="checkmark with background"
                       />
-                      <p className="text-xl font-bold">
+                      <p className="text-[20px]/7 md:text-base font-bold">
                         10K API calls
                       </p>
                     </div>
-                    <div className="flex items-center gap-[13.3px]">
+                    <div className="flex items-center gap-[13.3px] md:gap-[9px]">
                       <Image
                         src={checkmarkBg}
                         alt="checkmark with background"
                       />
-                      <p className="text-xl font-bold">
+                      <p className="text-[20px]/7 md:text-base font-bold">
                         10K Webhook calls
                       </p>
                     </div>
@@ -141,20 +141,20 @@ const Home = () => {
                 </div>
               </div>
             </div>
-            <div className="flex flex-col gap-[30px] w-[626px] md:w-auto">
-              <div className="bg-white rounded-[20px] pt-[50px] px-[47.5px] md:px-4 md:py-6 h-[385px] md:h-auto bg-[url('/vectors/create-mobiles.svg')] md:bg-none bg-no-repeat bg-bottom">
-                <p className="text-[34px]/[40.97px] text-fuse-black font-bold max-w-[473.16px]">
+            <div className="flex flex-col gap-[30px] md:gap-5 w-[626px] md:w-auto">
+              <div className="bg-white rounded-[20px] md:flex md:flex-col md:justify-end pt-[50px] px-[47.5px] md:px-6 md:py-[30px] h-[385px] md:h-[431px] bg-[url('/vectors/create-mobiles.svg')] md:bg-[url('/vectors/create-mobiles-responsive.svg')] bg-no-repeat bg-bottom md:bg-top md:bg-contain">
+                <p className="text-[34px]/[40.97px] md:text-[32px] md:leading-tight text-fuse-black font-bold md:font-semibold max-w-[473.16px]">
                   Create programable wallets for your customers
                 </p>
-                <p className="text-[20px]/7 text-text-dark-gray mt-[12.98px] max-w-[352.54px]">
+                <p className="text-[20px]/7 md:text-base text-text-dark-gray mt-[12.98px] md:mt-2.5 max-w-[352.54px]">
                   Quickly launch a wallet for your customers
                 </p>
               </div>
-              <div className="bg-white rounded-[20px] pt-[50px] px-[47.5px] md:px-4 md:py-6 h-[385px] md:h-auto">
-                <p className="text-[34px]/[40.97px] text-fuse-black font-bold">
+              <div className="bg-white rounded-[20px] pt-[50px] px-[47.5px] lg:pl-[30px] lg:py-[30px] lg:pr-1.5 h-[385px] md:h-auto">
+                <p className="text-[34px]/[40.97px] md:text-[32px] md:leading-tight text-fuse-black font-bold md:font-semibold">
                   Mobile and Web SDKs
                 </p>
-                <p className="text-xl text-text-dark-gray mt-[12.98px] mb-[25.31px]">
+                <p className="text-[20px]/7 md:text-base text-text-dark-gray mt-[12.98px] mb-[25.31px] md:mt-[18px] md:mb-[27px] md:max-w-[257px]">
                   Implement account abstraction out-of-the-box:
                 </p>
                 <div className="flex flex-col gap-[18.73px]">
@@ -163,7 +163,7 @@ const Home = () => {
                       src={checkmarkBg}
                       alt="checkmark with background"
                     />
-                    <p className="text-xl text-text-dark-gray">
+                    <p className="text-[20px]/7 md:text-base text-text-dark-gray">
                       Social logins
                     </p>
                   </div>
@@ -172,7 +172,7 @@ const Home = () => {
                       src={checkmarkBg}
                       alt="checkmark with background"
                     />
-                    <p className="text-xl text-text-dark-gray">
+                    <p className="text-[20px]/7 md:text-base text-text-dark-gray">
                       Gasless transactions
                     </p>
                   </div>
@@ -181,7 +181,7 @@ const Home = () => {
                       src={checkmarkBg}
                       alt="checkmark with background"
                     />
-                    <p className="text-xl text-text-dark-gray">
+                    <p className="text-[20px]/7 md:text-base text-text-dark-gray">
                       Business automations
                     </p>
                   </div>
@@ -193,67 +193,67 @@ const Home = () => {
       </div>
       <div className="w-full flex flex-col items-center">
         <div className="w-8/9 flex flex-col md:w-9/10 max-w-7xl">
-          <div className="flex flex-col gap-28">
+          <div className="flex flex-col gap-28 md:gap-[26px]">
             <div className="flex justify-center text-center">
-              <p className="text-[34px]/[50.32px] font-bold max-w-[688.35px]">
+              <p className="text-[34px]/[50.32px] md:text-[32px] md:leading-tight font-bold md:font-semibold max-w-[688.35px]">
                 Introduce your users to Web3 with a cost-effective approach
               </p>
             </div>
-            <div className="flex flex-row md:flex-col gap-[85.15px] px-[54.46px] py-[53.36px] md:px-4 md:py-6 h-[618px] md:h-auto bg-white rounded-[20px] bg-[url('/vectors/ecosystem.svg')] md:bg-none bg-no-repeat bg-right-bottom">
+            <div className="flex flex-row md:flex-col gap-[85.15px] md:gap-[18.73px] px-[54.46px] py-[53.36px] md:pl-[30px] md:py-[30px] md:pr-[10px] min-h-[618px] md:min-h-[870px] bg-white rounded-[20px] bg-[url('/vectors/ecosystem.svg')] md:bg-[url('/vectors/ecosystem-responsive.svg')] bg-no-repeat bg-right-bottom md:bg-contain">
               <div>
-                <p className="text-[34px]/[40.97px] text-fuse-black font-bold">
+                <p className="text-[34px]/[40.97px] md:text-[32px] md:leading-tight text-fuse-black font-bold md:font-semibold">
                   An ecosystem for Web3 payments
                 </p>
-                <p className="text-[20px]/7 text-text-dark-gray mt-[32.14px] mb-[90.51px] max-w-[395.25px]">
+                <p className="text-[20px]/7 md:text-base text-text-dark-gray mt-[32.14px] mb-[90.51px] md:mt-2.5 md:mb-[31px] max-w-[395.25px] md:max-w-[340px]">
                   Access a comprehensive suite of value-added services with a Fuse Operator account,
                   all under a straightforward pricing model.
                 </p>
                 <div className="flex flex-col gap-[18.73px]">
-                  <div className="flex items-center gap-[13.3px]">
+                  <div className="flex items-center gap-[13.3px] md:gap-[9px]">
                     <Image
                       src={checkmarkBg}
                       alt="checkmark with background"
                     />
-                    <p className="text-xl text-text-dark-gray font-bold">
+                    <p className="text-[20px]/7 md:text-base text-text-dark-gray font-bold">
                       KYC and fiat on/off-ramping
                     </p>
                   </div>
-                  <div className="flex items-center gap-[13.3px]">
+                  <div className="flex items-center gap-[13.3px] md:gap-[9px]">
                     <Image
                       src={checkmarkBg}
                       alt="checkmark with background"
                     />
-                    <p className="text-xl text-text-dark-gray font-bold">
+                    <p className="text-[20px]/7 md:text-base text-text-dark-gray font-bold">
                       Recurring payments - coming soon
                     </p>
                   </div>
-                  <div className="flex items-center gap-[13.3px]">
+                  <div className="flex items-center gap-[13.3px] md:gap-[9px]">
                     <Image
                       src={checkmarkBg}
                       alt="checkmark with background"
                     />
-                    <p className="text-xl text-text-dark-gray font-bold">
+                    <p className="text-[20px]/7 md:text-base text-text-dark-gray font-bold">
                       Private business transactions - coming soon
                     </p>
                   </div>
                 </div>
               </div>
               <div className="flex flex-col gap-[18.73px]">
-                <div className="flex items-center gap-[13.3px]">
+                <div className="flex items-center gap-[13.3px] md:gap-[9px]">
                   <Image
                     src={checkmarkBg}
                     alt="checkmark with background"
                   />
-                  <p className="text-xl text-text-dark-gray font-bold">
+                  <p className="text-[20px]/7 md:text-base text-text-dark-gray font-bold">
                     Most reliable business stack in Web3
                   </p>
                 </div>
-                <div className="flex items-center gap-[13.3px]">
+                <div className="flex items-center gap-[13.3px] md:gap-[9px]">
                   <Image
                     src={checkmarkBg}
                     alt="checkmark with background"
                   />
-                  <p className="text-xl text-text-dark-gray font-bold">
+                  <p className="text-[20px]/7 md:text-base text-text-dark-gray font-bold">
                     Pay as you go only if you have traction
                   </p>
                 </div>
@@ -262,16 +262,16 @@ const Home = () => {
                     src={checkmarkBg}
                     alt="checkmark with background"
                   />
-                  <p className="text-xl text-text-dark-gray font-bold">
+                  <p className="text-[20px]/7 md:text-base text-text-dark-gray font-bold">
                     High availability for real time payments
                   </p>
                 </div>
-                <div className="flex items-center gap-[13.3px]">
+                <div className="flex items-center gap-[13.3px] md:gap-[9px]">
                   <Image
                     src={checkmarkBg}
                     alt="checkmark with background"
                   />
-                  <p className="text-xl text-text-dark-gray font-bold">
+                  <p className="text-[20px]/7 md:text-base text-text-dark-gray font-bold">
                     Fault tolerance - build once and scale
                   </p>
                 </div>
@@ -280,26 +280,26 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <div className="w-full bg-fuse-black pt-[122.6px] pb-[147px] mt-[368px] mb-[169.47px] bg-[url('/vectors/pluses.svg')]">
+      <div className="w-full bg-fuse-black pt-[122.6px] pb-[147px] md:pt-[59px] md:pb-[58px] mt-[368px] mb-[169.47px] md:mt-20 md:mb-16 bg-[url('/vectors/pluses.svg')]">
         <div className="w-full flex flex-col items-center">
           <div className="w-8/9 flex flex-col md:w-9/10 max-w-7xl">
-            <div className="flex flex-col gap-[91px]">
+            <div className="flex flex-col gap-[91px] md:gap-[52px]">
               <div className="flex flex-col items-center text-center gap-[22px]">
-                <p className="text-[40px]/[48.2px] text-white font-bold">
+                <p className="text-[40px]/[48.2px] md:text-[32px] md:leading-tight text-white font-bold md:max-w-[294.71px]">
                   Explore our Apps & Services
                 </p>
-                <p className="text-[20px]/7 text-white max-w-[756.49px]">
+                <p className="text-[20px]/7 md:text-base text-white max-w-[756.49px] md:max-w-[347.38px]">
                   Streamline your operations with reliable, ready-to-use third-party solutions on the Fuse Network.
                   Find and integrate the services your business needs.
                 </p>
               </div>
-              <div className="grid grid-cols-3 md:grid-cols-1 justify-between gap-[30px]">
+              <div className="grid grid-cols-3 md:grid-cols-1 justify-between gap-[30px] md:gap-5">
                 {apps.map((app, i) =>
                   <a
                     key={i}
                     href={app.link}
                     target="_blank"
-                    className="flex flex-col gap-2.5 justify-between min-h-[269px] px-[30px] py-7 md:px-4 md:py-6 bg-white/5 hover:bg-white/10 rounded-[20px]"
+                    className="flex flex-col gap-2.5 justify-between min-h-[269px] px-[30px] py-7 bg-white/5 hover:bg-white/10 rounded-[20px]"
                   >
                     <div className="flex flex-col gap-2.5">
                       <p className="text-2xl text-white font-semibold">
@@ -329,14 +329,14 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <div className="w-full flex flex-col items-center">
+      <div className="w-full flex flex-col items-center md:mb-16">
         <div className="w-8/9 flex flex-col md:w-9/10 max-w-7xl">
           <div className="flex flex-col gap-16">
             <div className="flex flex-col justify-center items-center text-center gap-[13.25px]">
-              <p className="text-3xl text-fuse-black font-semibold">
+              <p className="text-5xl md:text-[32px] md:leading-tight text-fuse-black font-bold">
                 Plans & Pricing
               </p>
-              <p className="text-[20px]/7 leading-[21.69px] text-text-dark-gray">
+              <p className="text-[20px]/7 md:text-base leading-[21.69px] text-text-dark-gray">
                 Here is the list of the Fuse products and solutions
               </p>
             </div>
@@ -407,7 +407,7 @@ const Home = () => {
                 </div>
                 <Button
                   text="Get Started"
-                  className="transition ease-in-out text-lg text-white font-semibold bg-black rounded-full hover:bg-white hover:text-black"
+                  className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black rounded-full hover:bg-white hover:text-black"
                   padding="py-4 px-[52px] mt-[25.88px]"
                   onClick={() => createAccount("Get started: Starter")}
                 />
@@ -485,7 +485,7 @@ const Home = () => {
                 </div>
                 <Button
                   text="Get Started"
-                  className="transition ease-in-out text-lg text-white font-semibold bg-black rounded-full hover:bg-success hover:text-black"
+                  className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black rounded-full hover:bg-success hover:text-black"
                   padding="py-4 px-[52px] mt-[25.88px]"
                   onClick={() => createAccount("Get started: Pro")}
                 />
@@ -553,7 +553,7 @@ const Home = () => {
                 </div>
                 <Button
                   text="Coming soon"
-                  className="text-lg text-white font-semibold bg-iron rounded-full"
+                  className="text-lg text-white leading-none font-semibold bg-iron rounded-full"
                   padding="py-4 px-[52px] mt-[25.88px]"
                 />
               </div>
@@ -561,14 +561,14 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <div className="w-full flex flex-col items-center mt-[169.47px] mb-[187px]">
+      <div className="w-full flex flex-col items-center mt-[169.47px] mb-[187px] md:hidden">
         <div className="w-8/9 flex flex-col justify-center items-center text-center gap-[43.53px] mt-[30.84px] md:w-9/10 max-w-7xl">
           <p className="text-5xl leading-normal font-bold">
             Ready to start your project?
           </p>
           <Button
             text="Create an account"
-            className="transition ease-in-out text-lg font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
+            className="transition ease-in-out text-lg leading-none font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
             padding="py-4 px-[52px]"
             onClick={() => createAccount("Build-Welcome: Create project - bottom")}
           />
