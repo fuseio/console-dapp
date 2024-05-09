@@ -37,7 +37,7 @@ const Home = () => {
             />
           }
         </div>
-        <div className="transition-all ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] md:min-h-[514px] px-[83.31px] pt-[60.36px] pb-[67px] md:px-4 md:py-6 mt-[99.5px] mb-10 md:mt-[78px] md:mb-5 bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-bottom">
+        <div className="transition-all ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] md:min-h-[514px] px-[83.31px] pt-[60.36px] pb-[67px] md:px-[31px] md:py-[30px] mt-[99.5px] mb-10 md:mt-[78px] md:mb-5 bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-bottom">
           <p className="text-[40px] md:text-[32px] leading-tight text-fuse-black font-semibold max-w-[414.86px]">
             Build your Web3 project with Fuse
           </p>
@@ -47,7 +47,7 @@ const Home = () => {
           </p>
           <Link
             href="/build"
-            className="transition ease-in-out md:block md:text-center text-lg text-white hover:text-black font-semibold bg-black hover:bg-white rounded-full py-4 px-[52px] md:px-2 md:w-9/12"
+            className="transition ease-in-out md:block md:text-center text-lg leading-none text-white hover:text-black font-semibold bg-black hover:bg-white rounded-full py-4 px-[52px] md:px-2 md:w-11/12 md:max-w-[270px]"
             onClick={() => amplitude.track("Home: Create project")}
           >
             Create your project
