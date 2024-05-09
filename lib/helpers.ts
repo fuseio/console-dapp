@@ -91,3 +91,5 @@ export const splitSecretKey = (secretKey: string) => {
 }
 
 export const evmDecimals = 18;
+
+export const screenMediumWidth = 768;

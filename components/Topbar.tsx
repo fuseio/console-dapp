@@ -43,7 +43,7 @@ const Topbar = () => {
   }, [isAuthenticated]);
 
   return (
-    <nav className={`w-full h-20 sticky top-0 bg-light-gray/60 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-pastel-gray ${isTransfiModalOpen ? "z-0" : "z-40"}`}>
+    <nav className={`w-full h-20 sticky top-0 bg-light-gray/60 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-pastel-gray md:border-0 ${isTransfiModalOpen ? "z-0" : "z-40"}`}>
       <div className="flex justify-between h-full items-center w-8/9 md:w-9/10 max-w-7xl relative">
         <span>
           <a href="/">
@@ -63,7 +63,7 @@ const Topbar = () => {
             />
           </a>
         </span>
-        <NavMenu menuItems={menuItems} isOpen={isOpen} selected={selected} />
+        <NavMenu menuItems={menuItems} isOpen={isOpen} selected={selected} isResponsive />
         <NavButton isOpen={isOpen} setOpen={setOpen} />
       </div>
     </nav>
