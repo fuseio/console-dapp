@@ -493,7 +493,7 @@ const Home = () => {
               <div className="flex flex-col gap-[30px] rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
                 <div className="h-[194px] md:h-auto">
                   <p className="text-3xl text-fuse-black font-semibold">
-                    Advanced plan
+                    Premium Plan
                   </p>
                   <p className="text-night opacity-60 mt-[18.82px] mb-[30.7px]">
                     Maximize your business&apos;s potential with the Premium Plan
