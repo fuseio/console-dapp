@@ -340,7 +340,6 @@ const Withdraw = ({
               setDisplayButton(false);
               setIsDisabledChain(true);
             } else {
-              dispatch(setChain(appConfig.wrappedBridge.chains[item]));
               dispatch(
                 estimateWrappedFee({
                   contractAddress: appConfig.wrappedBridge.fuse.wrapped,

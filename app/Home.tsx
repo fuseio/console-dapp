@@ -37,7 +37,7 @@ const Home = () => {
             />
           }
         </div>
-        <div className="transition-all ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] md:min-h-[514px] px-[83.31px] pt-[60.36px] pb-[67px] md:px-4 md:py-6 mt-[99.5px] mb-10 md:mt-[78px] md:mb-5 bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-bottom">
+        <div className="transition-all ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] md:min-h-[514px] px-[83.31px] pt-[60.36px] pb-[67px] md:px-[31px] md:py-[30px] mt-[99.5px] mb-10 md:mt-[78px] md:mb-5 bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-bottom">
           <p className="text-[40px] md:text-[32px] leading-tight text-fuse-black font-semibold max-w-[414.86px]">
             Build your Web3 project with Fuse
           </p>
@@ -47,16 +47,16 @@ const Home = () => {
           </p>
           <Link
             href="/build"
-            className="transition ease-in-out md:block md:text-center text-lg text-white hover:text-black font-semibold bg-black hover:bg-white rounded-full py-4 px-[52px] md:px-2 md:w-9/12"
+            className="transition ease-in-out md:block md:text-center text-lg leading-none text-white hover:text-black font-semibold bg-black hover:bg-white rounded-full py-4 px-[52px] md:px-2 md:w-11/12 md:max-w-[270px]"
             onClick={() => amplitude.track("Home: Create project")}
           >
             Create your project
           </Link>
         </div>
-        <div className="grid grid-cols-3 lg:grid-cols-1 gap-[31px]">
+        <div className="grid grid-cols-3 lg:grid-cols-1 gap-[31px] md:gap-5">
           <Link
             href={path.STAKING}
-            className="transition-all ease-in-out flex flex-col gap-[17.43px] bg-lightest-gray hover:bg-success rounded-[20px] pt-[42.36px] pr-[15px] pl-[46.8px] md:px-4 md:pt-6 min-h-[420px] md:min-h-[400px] bg-[url('/vectors/stake.svg')] hover:bg-[url('/vectors/stake-green.svg')] bg-no-repeat bg-bottom"
+            className="transition-all ease-in-out flex flex-col gap-[17.43px] bg-lightest-gray hover:bg-success rounded-[20px] pt-[42.36px] pr-[15px] pl-[46.8px] md:pl-9 md:pt-[33px] md:pr-[30px] md:pb-4 min-h-[420px] bg-[url('/vectors/stake.svg')] hover:bg-[url('/vectors/stake-green.svg')] bg-no-repeat bg-bottom md:bg-[center_bottom_-10%]"
             onClick={() => amplitude.track("Go to Staking")}
           >
             <p className="text-2xl leading-tight text-fuse-black font-bold max-w-[204.2px]">
@@ -68,7 +68,7 @@ const Home = () => {
           </Link>
           <Link
             href={path.BRIDGE}
-            className="transition-all ease-in-out flex flex-col gap-[17.43px] bg-lightest-gray hover:bg-success rounded-[20px] pt-[42.36px] pr-[15px] pl-[46.8px] md:px-4 md:pt-6 min-h-[420px] md:min-h-[400px] bg-[url('/vectors/bridge.svg')] hover:bg-[url('/vectors/bridge-green.svg')] bg-no-repeat bg-bottom"
+            className="transition-all ease-in-out flex flex-col gap-[17.43px] bg-lightest-gray hover:bg-success rounded-[20px] pt-[42.36px] pr-[15px] pl-[46.8px] md:pl-9 md:pt-[33px] md:pr-[30px] md:pb-4 md:px-4 md:pt-6 min-h-[420px] bg-[url('/vectors/bridge.svg')] hover:bg-[url('/vectors/bridge-green.svg')] bg-no-repeat bg-bottom md:bg-[center_bottom_-10%]"
             onClick={() => amplitude.track("Go to Bridge")}
           >
             <p className="text-2xl leading-tight text-fuse-black font-bold max-w-[204.2px]">
@@ -80,7 +80,7 @@ const Home = () => {
           </Link>
           <Link
             href={path.WALLET}
-            className="transition-all ease-in-out flex flex-col gap-[17.43px] bg-lightest-gray hover:bg-success rounded-[20px] pt-[42.36px] pr-[15px] pl-[46.8px] md:px-4 md:pt-6 min-h-[420px] md:min-h-[400px] bg-[url('/vectors/check-balance.svg')] hover:bg-[url('/vectors/check-balance-green.svg')] bg-no-repeat bg-bottom"
+            className="transition-all ease-in-out flex flex-col gap-[17.43px] bg-lightest-gray hover:bg-success rounded-[20px] pt-[42.36px] pr-[15px] pl-[46.8px] md:pl-9 md:pt-[33px] md:pr-[30px] md:pb-4 md:px-4 md:pt-6 min-h-[420px] bg-[url('/vectors/check-balance.svg')] hover:bg-[url('/vectors/check-balance-green.svg')] bg-no-repeat bg-bottom"
           >
             <p className="text-2xl leading-tight text-fuse-black font-bold max-w-[204.2px]">
               Wallet
