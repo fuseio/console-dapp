@@ -5,6 +5,7 @@ import weth from "@/assets/weth.svg";
 import usdt from "@/assets/usdt-logo.svg";
 import eth from "@/public/eth.png";
 import fdm from "@/assets/fdm.svg";
+import bnb from "@/assets/bnb.svg";
 
 export const coins: CoinConfigLike[] = [
   {
@@ -47,6 +48,13 @@ export const coins: CoinConfigLike[] = [
     symbol: "FDM",
     decimals: 18,
     icon: fdm,
-    coinGeckoId: "",
+    coinGeckoId: "fdm",
+  },
+  {
+    name: "BNB",
+    symbol: "BNB",
+    decimals: 18,
+    icon: bnb,
+    coinGeckoId: "binancecoin",
   },
 ];
