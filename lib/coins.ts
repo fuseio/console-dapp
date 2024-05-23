@@ -34,7 +34,7 @@ export const coins: CoinConfigLike[] = [
     symbol: "WETH",
     decimals: 18,
     icon: weth,
-    coinGeckoId: "weth",
+    coinGeckoId: "ethereum",
   },
   {
     name: "Ethereum",
