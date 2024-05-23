@@ -46,7 +46,9 @@ const Transaction = ({
           </span>
         </div>
         <span className="col-span-3 md:col-span-2 md:text-right text-center">
-          {parseFloat(transactionHashes.amount).toFixed(5)}
+          {parseFloat(transactionHashes.amount.split(" ")[0]).toFixed(5) +
+            " " +
+            transactionHashes.amount.split(" ")[1]}
         </span>
         <span className="col-span-3 md:text-left md:col-span-4 text-center">
           {new Date(transactionHashes.timestamp).toLocaleDateString()}
