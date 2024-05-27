@@ -73,6 +73,7 @@ const Home = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExchange, setIsExchange] = useState(false);
   const [isDisabledChain, setIsDisabledChain] = useState(false);
+  const [isThirdPartyChain, setIsThirdPartyChain] = useState(false);
   const [pendingPromise, setPendingPromise] = React.useState<any>();
   const { address, connector, isConnected } = useAccount();
   const config = useConfig();
@@ -509,8 +510,12 @@ const Home = () => {
                           if (withdrawSelectedChainSection === 1) {
                             setIsDisabledChain(true);
                             return;
+                          } else if (withdrawSelectedChainSection === 2) {
+                            setIsThirdPartyChain(true);
+                            return;
                           } else {
                             setIsDisabledChain(false);
+                            setIsThirdPartyChain(false);
                           }
                           dispatch(
                             setChain({
@@ -539,8 +544,12 @@ const Home = () => {
                           if (depositSelectedChainSection === 1) {
                             setIsDisabledChain(true);
                             return;
+                          } else if (depositSelectedChainSection === 2) {
+                            setIsThirdPartyChain(true);
+                            return;
                           } else {
                             setIsDisabledChain(false);
+                            setIsThirdPartyChain(false);
                           }
                           dispatch(
                             setChain(
@@ -608,6 +617,8 @@ const Home = () => {
                   setIsExchange={setIsExchange}
                   isDisabledChain={isDisabledChain}
                   setIsDisabledChain={setIsDisabledChain}
+                  isThirdPartyChain={isThirdPartyChain}
+                  setIsThirdPartyChain={setIsThirdPartyChain}
                   pendingPromise={pendingPromise}
                   setPendingPromise={setPendingPromise}
                 />
@@ -639,6 +650,8 @@ const Home = () => {
                   setAmount={setAmount}
                   isDisabledChain={isDisabledChain}
                   setIsDisabledChain={setIsDisabledChain}
+                  isThirdPartyChain={isThirdPartyChain}
+                  setIsThirdPartyChain={setIsThirdPartyChain}
                   setDisplayButton={setDisplayButton}
                   pendingPromise={pendingPromise}
                   setPendingPromise={setPendingPromise}
@@ -827,7 +840,7 @@ const Home = () => {
                 </span>
                 {feeSlice.isGasFeeLoading ? (
                   <span className="px-14 rounded-md animate-pulse bg-fuse-black/10"></span>
-                ) : !(isExchange || isDisabledChain) ? (
+                ) : !(isExchange || isDisabledChain || isThirdPartyChain) ? (
                   <span>
                     {(feeSlice.destGasFee + feeSlice.sourceGasFee).toFixed(5)}{" "}
                     {

@@ -47,6 +47,8 @@ type WithdrawProps = {
   setAmount: (amount: string) => void;
   isDisabledChain: boolean;
   setIsDisabledChain: (isDisabledChain: boolean) => void;
+  isThirdPartyChain: boolean;
+  setIsThirdPartyChain: (isThirdPartyChain: boolean) => void;
   setDisplayButton: (displayButton: boolean) => void;
   pendingPromise: any;
   setPendingPromise: (pendingPromise: any) => void;
@@ -66,6 +68,8 @@ const Withdraw = ({
   setAmount,
   isDisabledChain,
   setIsDisabledChain,
+  isThirdPartyChain,
+  setIsThirdPartyChain,
   setDisplayButton,
   pendingPromise,
   setPendingPromise,
@@ -133,18 +137,18 @@ const Withdraw = ({
         (!tokenAddress || tokenAddress === hex) && chain?.id === fuse.id
           ? dispatch(setNativeBalanceThunk(nativeBalance.toString()))
           : dispatch(
-              fetchBalance({
-                address: address,
-                contractAddress:
-                  appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
-                    .address,
-                decimals:
-                  appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
-                    .decimals,
-                bridge: appConfig.wrappedBridge.fuse.wrapped,
-                rpc: "https://rpc.fuse.io",
-              })
-            );
+            fetchBalance({
+              address: address,
+              contractAddress:
+                appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
+                  .address,
+              decimals:
+                appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
+                  .decimals,
+              bridge: appConfig.wrappedBridge.fuse.wrapped,
+              rpc: "https://rpc.fuse.io",
+            })
+          );
       setPendingPromise(promise);
     }
   }, [
@@ -214,7 +218,7 @@ const Withdraw = ({
   }, [chainSlice.chainId]);
   return (
     <>
-      {!isDisabledChain && (
+      {!(isDisabledChain || isThirdPartyChain) && (
         <>
           <div className="flex bg-modal-bg rounded-md p-4 mt-3 w-full flex-col">
             <span className="font-medium text-xs">
@@ -278,8 +282,8 @@ const Withdraw = ({
             <span className="mt-3 text-xs font-medium">
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
-              balanceSlice.isApprovalLoading ||
-              chain?.id !== fuse.id ? (
+                balanceSlice.isApprovalLoading ||
+                chain?.id !== fuse.id ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : (
                 balanceSlice.balance
@@ -329,6 +333,15 @@ const Withdraw = ({
                 };
               }),
             },
+            {
+              items: appConfig.wrappedBridge.thirdPartyChains.map((chain, i) => {
+                return {
+                  item: chain.chainName,
+                  icon: chain.icon,
+                  id: i,
+                };
+              }),
+            },
           ]}
           selectedSection={selectedChainSection}
           selectedItem={selectedChainItem}
@@ -339,6 +352,11 @@ const Withdraw = ({
             if (section === 1) {
               setDisplayButton(false);
               setIsDisabledChain(true);
+              setIsThirdPartyChain(false);
+            } else if (section === 2) {
+              setDisplayButton(false);
+              setIsDisabledChain(false);
+              setIsThirdPartyChain(true);
             } else {
               dispatch(
                 estimateWrappedFee({
@@ -350,58 +368,61 @@ const Withdraw = ({
               );
               setDisplayButton(true);
               setIsDisabledChain(false);
+              setIsThirdPartyChain(false);
             }
           }}
         />
-        <span className="text-black/50 font-medium mt-3 text-sm flex items-center justify-between">
-          <span>
-            You will receive: <br />
-            <span className="text-black font-medium">
-              {" "}
-              {amount && !isNaN(parseFloat(amount))
-                ? parseFloat(amount)
-                : 0}{" "}
-              <span className="font-bold">
-                {
-                  appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                    selectedTokenItem
-                  ].symbol
-                }
+        {!(isDisabledChain || isThirdPartyChain) &&
+          <span className="text-black/50 font-medium mt-3 text-sm flex items-center justify-between">
+            <span>
+              You will receive: <br />
+              <span className="text-black font-medium">
+                {" "}
+                {amount && !isNaN(parseFloat(amount))
+                  ? parseFloat(amount)
+                  : 0}{" "}
+                <span className="font-bold">
+                  {
+                    appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                      selectedTokenItem
+                    ].symbol
+                  }
+                </span>
               </span>
             </span>
-          </span>
-          <div
-            className="flex px-[10px] py-2 bg-white rounded-lg cursor-pointer text-xs font-medium items-center text-black"
-            onClick={() => {
-              // @ts-ignore
-              window.ethereum.request({
-                method: "wallet_watchAsset",
-                params: {
-                  type: "ERC20",
-                  options: {
-                    address:
-                      appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                        selectedTokenItem
-                      ].address,
-                    symbol:
-                      appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                        selectedTokenItem
-                      ].symbol,
-                    decimals:
-                      appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                        selectedTokenItem
-                      ].decimals,
-                    chainId:
-                      appConfig.wrappedBridge.chains[selectedChainItem].chainId,
+            <div
+              className="flex px-[10px] py-2 bg-white rounded-lg cursor-pointer text-xs font-medium items-center text-black"
+              onClick={() => {
+                // @ts-ignore
+                window.ethereum.request({
+                  method: "wallet_watchAsset",
+                  params: {
+                    type: "ERC20",
+                    options: {
+                      address:
+                        appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                          selectedTokenItem
+                        ].address,
+                      symbol:
+                        appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                          selectedTokenItem
+                        ].symbol,
+                      decimals:
+                        appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                          selectedTokenItem
+                        ].decimals,
+                      chainId:
+                        appConfig.wrappedBridge.chains[selectedChainItem].chainId,
+                    },
                   },
-                },
-              });
-            }}
-          >
-            <Image src={metamask} alt="metamask" className="h-5 mr-1" />
-            Add Token
-          </div>
-        </span>
+                });
+              }}
+            >
+              <Image src={metamask} alt="metamask" className="h-5 mr-1" />
+              Add Token
+            </div>
+          </span>
+        }
       </div>
       {isDisabledChain && (
         <>
@@ -461,6 +482,70 @@ const Withdraw = ({
                   {
                     appConfig.wrappedBridge.disabledChains[selectedChainItem]
                       .appURL
+                  }
+                </p>
+              </div>
+              <Image src={visit} alt="go" className="ml-auto" />
+            </div>
+          </a>
+        </>
+      )}
+      {isThirdPartyChain && (
+        <>
+          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex md:flex-col">
+            <div className="flex p-2 w-[15%] items-start md:p-0">
+              <Image src={alert} alt="warning" className="h-5" />
+            </div>
+            <div className="flex flex-col font-medium text-sm md:text-xs md:mt-2">
+              <p>
+                To move tokens from{" "}
+                {appConfig.wrappedBridge.thirdPartyChains[selectedChainItem]
+                  .chainName} to Fuse you
+                can use one of the following third-party bridges.
+              </p>
+              <p className="mt-2">
+                Please note that these are independent service providers that
+                Fuse is linking to for your convenience - Fuse has no
+                responsibility for their operation.
+              </p>
+            </div>
+          </div>
+          <a
+            href={
+              appConfig.wrappedBridge.thirdPartyChains[selectedChainItem].appWithdrawURL
+            }
+            target="_blank"
+            rel="noreferrer"
+            className="cursor-pointer"
+            onClick={() => {
+              amplitude.track("External Provider", {
+                provider:
+                  appConfig.wrappedBridge.thirdPartyChains[selectedChainItem]
+                    .appName,
+                walletType: connector ? walletType[connector.id] : undefined,
+                walletAddress: address,
+              });
+            }}
+          >
+            <div className="flex mt-2 bg-modal-bg py-4 px-5 rounded-md items-center cursor-pointer md:py-2 md:px-3">
+              <Image
+                src={
+                  appConfig.wrappedBridge.thirdPartyChains[selectedChainItem]
+                    .appLogo
+                }
+                alt="icon"
+              />
+              <div className="flex flex-col ml-3">
+                <p className="font-semibold text-base md:text-sm">
+                  {
+                    appConfig.wrappedBridge.thirdPartyChains[selectedChainItem]
+                      .appName
+                  }
+                </p>
+                <p className="font-medium text-[#898888] text-sm md:text-[10px]">
+                  {
+                    appConfig.wrappedBridge.thirdPartyChains[selectedChainItem]
+                      .appWithdrawURL
                   }
                 </p>
               </div>
