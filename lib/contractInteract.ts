@@ -145,7 +145,8 @@ export const delegate = async (amount: string, validator: Address) => {
       functionName: "delegate",
       args: [validator],
       value: parseEther(amount),
-      connector
+      connector,
+      __mode: "prepared",
     });
     try {
       await waitForTransactionReceipt(config, {
@@ -170,7 +171,8 @@ export const withdraw = async (amount: string, validator: Address) => {
       account,
       functionName: "withdraw",
       args: [validator, parseEther(amount)],
-      connector
+      connector,
+      __mode: "prepared",
     });
     try {
       await waitForTransactionReceipt(config, {
