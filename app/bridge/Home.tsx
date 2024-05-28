@@ -44,6 +44,7 @@ import {
 } from "@/store/selectedChainSlice";
 import { formatUnits } from "viem";
 import Image from "next/image";
+import { getTokenOnFuse } from "@/lib/helper-bridge";
 
 const Home = () => {
   const selectedChainSlice = useAppSelector(selectSelectedChainSlice);
@@ -81,13 +82,6 @@ const Home = () => {
   const { data: balance, refetch } = useBalance({
     address,
   });
-  const getTokenOnFuse = (tokenId: string) => {
-    for (let token of appConfig.wrappedBridge.fuse.tokens) {
-      if (token.coinGeckoId === tokenId) {
-        return token;
-      }
-    }
-  };
 
   useEffect(() => {
     setAmount("");

@@ -24,6 +24,7 @@ import AddToken from "@/components/bridge/AddToken";
 import { getAccount } from "wagmi/actions";
 import { formatUnits } from "viem";
 import Image from "next/image";
+import { getTokenOnFuse } from "@/lib/helper-bridge";
 
 type DepositProps = {
   selectedChainSection: number;
@@ -84,15 +85,14 @@ const Deposit = ({
     setSelectedTokenItem(0);
     setSelectedChainSection(section);
     setSelectedChainItem(item);
-  }
+  };
 
   const handleDropdownSection = (item: number) => {
     setIsExchange(false);
     dispatch(setChain(appConfig.wrappedBridge.chains[item]));
     dispatch(
       estimateOriginalFee({
-        contractAddress:
-          appConfig.wrappedBridge.chains[item].original,
+        contractAddress: appConfig.wrappedBridge.chains[item].original,
         rpcUrl: appConfig.wrappedBridge.chains[item].rpcUrl,
         tokenId:
           appConfig.wrappedBridge.chains[item].gasTokenId ||
@@ -101,7 +101,7 @@ const Deposit = ({
     );
     setDisplayButton(true);
     setIsDisabledChain(false);
-  }
+  };
 
   useEffect(() => {
     async function updateBalance() {
@@ -180,13 +180,13 @@ const Deposit = ({
   useEffect(() => {
     const section = 0;
     let item = -1;
-    
+
     appConfig.wrappedBridge.chains.map((wrappedBridgeChain, index) => {
       if (wrappedBridgeChain.chainId !== chain?.id) {
         return;
       }
       item = index;
-    })
+    });
 
     if (item === -1) {
       return;
@@ -301,9 +301,9 @@ const Deposit = ({
             <span className="mt-3 text-xs font-medium">
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
-                chain?.id !==
+              chain?.id !==
                 appConfig.wrappedBridge.chains[selectedChainItem].chainId ||
-                balanceSlice.isApprovalLoading ? (
+              balanceSlice.isApprovalLoading ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : (
                 balanceSlice.balance
@@ -489,21 +489,20 @@ const Deposit = ({
               <div
                 className="flex px-[10px] py-2 bg-white rounded-lg cursor-pointer text-xs font-medium items-center"
                 onClick={() => {
+                  const token = getTokenOnFuse(
+                    appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                      selectedTokenItem
+                    ].coinGeckoId
+                  );
                   // @ts-ignore
                   window.ethereum.request({
                     method: "wallet_watchAsset",
                     params: {
                       type: "ERC20",
                       options: {
-                        address:
-                          appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
-                            .address,
-                        symbol:
-                          appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
-                            .symbol,
-                        decimals:
-                          appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
-                            .decimals,
+                        address: token?.address as string,
+                        symbol: token?.symbol as string,
+                        decimals: token?.decimals,
                         chainId: 122,
                       },
                     },
