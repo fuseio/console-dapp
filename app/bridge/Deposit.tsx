@@ -499,8 +499,8 @@ const Deposit = ({
                     params: {
                       type: "ERC20",
                       options: {
-                        address: token?.address,
-                        symbol: token?.symbol,
+                        address: token?.address as string,
+                        symbol: token?.symbol as string,
                         decimals: token?.decimals,
                         chainId: 122,
                       },
