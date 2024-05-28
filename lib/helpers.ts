@@ -48,6 +48,7 @@ export const IS_SERVER = typeof window === "undefined";
 
 export const walletType: WalletType = {
   "injected": "MetaMask",
+  "metaMaskSDK": "MetaMaskSDK",
   "walletConnect": "WalletConnect",
   "coinbaseWallet": "Coinbase",
   "google": "Google",
@@ -59,7 +60,17 @@ export const walletType: WalletType = {
   "email_passwordless": "Email"
 }
 
-export const isIos = !IS_SERVER && /iPad|iPhone|iPod/.test(navigator.userAgent);
+export const detectDevice = () => {
+  if (IS_SERVER) {
+    return { isIos: null, isAndroid: null, isMobile: null };
+  }
+
+  const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isAndroid = /Android/.test(navigator.userAgent);
+  const isMobile = isIos || isAndroid;
+
+  return { isIos, isAndroid, isMobile };
+}
 
 export const signDataMessage = 'Verify your wallet ownership to create an Operator account';
 
