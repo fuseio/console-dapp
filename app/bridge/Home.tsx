@@ -33,7 +33,7 @@ import Pill from "@/components/bridge/Pill";
 import { useAccount, useBalance, useConfig } from "wagmi";
 import { fuse } from "viem/chains";
 import { getAccount, switchChain } from "wagmi/actions";
-import { getTokenOnFuse, hex, walletType } from "@/lib/helpers";
+import { hex, walletType } from "@/lib/helpers";
 import FAQ from "@/components/bridge/FAQ";
 import "@/styles/bridge.css";
 import Airdrop from "@/components/bridge/Airdrop";
@@ -44,6 +44,7 @@ import {
 } from "@/store/selectedChainSlice";
 import { formatUnits } from "viem";
 import Image from "next/image";
+import { getTokenOnFuse } from "@/lib/helper-bridge";
 
 const Home = () => {
   const selectedChainSlice = useAppSelector(selectSelectedChainSlice);

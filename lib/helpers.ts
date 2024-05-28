@@ -91,14 +91,6 @@ export const splitSecretKey = (secretKey: string) => {
   }
 }
 
-export const getTokenOnFuse = (tokenId: string) => {
-  for (let token of appConfig.wrappedBridge.fuse.tokens) {
-    if (token.coinGeckoId === tokenId) {
-      return token;
-    }
-  }
-};
-
 export const evmDecimals = 18;
 
 export const screenMediumWidth = 768;
