@@ -35,7 +35,11 @@ export const config = createConfig({
   chains,
   connectors: [
     injected(),
-    metaMask(),
+    metaMask({
+      dappMetadata: {
+        name: "wagmi",
+      }
+    }),
     walletConnect({
       projectId: NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
       showQrModal: true,
