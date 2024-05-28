@@ -1,6 +1,5 @@
 import { TransactionType } from "@/store/transactionsSlice";
 import { WalletType } from "./types";
-import { appConfig } from "./config";
 
 export const eclipseAddress = (address: string): string => {
   return (
@@ -90,14 +89,6 @@ export const splitSecretKey = (secretKey: string) => {
     secretLastFourChars: secretKey.slice(secretKey.length - 4, secretKey.length)
   }
 }
-
-export const getTokenOnFuse = (tokenId: string) => {
-  for (let token of appConfig.wrappedBridge.fuse.tokens) {
-    if (token.coinGeckoId === tokenId) {
-      return token;
-    }
-  }
-};
 
 export const evmDecimals = 18;
 

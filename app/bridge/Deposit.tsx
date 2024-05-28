@@ -18,12 +18,13 @@ import sFuse from "@/assets/sFuse.svg";
 import { estimateOriginalFee } from "@/store/feeSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { useAccount, useConfig } from "wagmi";
-import { evmDecimals, getTokenOnFuse, walletType } from "@/lib/helpers";
+import { evmDecimals, walletType } from "@/lib/helpers";
 import { getBalance } from "wagmi/actions";
 import AddToken from "@/components/bridge/AddToken";
 import { getAccount } from "wagmi/actions";
 import { formatUnits } from "viem";
 import Image from "next/image";
+import { getTokenOnFuse } from "@/lib/helper-bridge";
 
 type DepositProps = {
   selectedChainSection: number;
