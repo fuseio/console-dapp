@@ -34,12 +34,13 @@ const chains: readonly [Chain, ...Chain[]] = [
 export const config = createConfig({
   chains,
   connectors: [
-    injected(),
-    metaMask({
-      dappMetadata: {
-        name: "wagmi",
-      }
-    }),
+    detectDevice().isMobile ?
+      metaMask({
+        dappMetadata: {
+          name: "wagmi",
+        }
+      }) :
+      injected(),
     walletConnect({
       projectId: NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
       showQrModal: true,
