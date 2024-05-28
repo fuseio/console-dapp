@@ -1,6 +1,5 @@
 import { TransactionType } from "@/store/transactionsSlice";
 import { WalletType } from "./types";
-import { appConfig } from "./config";
 
 export const eclipseAddress = (address: string): string => {
   return (
