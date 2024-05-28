@@ -33,7 +33,7 @@ import Pill from "@/components/bridge/Pill";
 import { useAccount, useBalance, useConfig } from "wagmi";
 import { fuse } from "viem/chains";
 import { getAccount, switchChain } from "wagmi/actions";
-import { hex, walletType } from "@/lib/helpers";
+import { getTokenOnFuse, hex, walletType } from "@/lib/helpers";
 import FAQ from "@/components/bridge/FAQ";
 import "@/styles/bridge.css";
 import Airdrop from "@/components/bridge/Airdrop";
@@ -81,13 +81,6 @@ const Home = () => {
   const { data: balance, refetch } = useBalance({
     address,
   });
-  const getTokenOnFuse = (tokenId: string) => {
-    for (let token of appConfig.wrappedBridge.fuse.tokens) {
-      if (token.coinGeckoId === tokenId) {
-        return token;
-      }
-    }
-  };
 
   useEffect(() => {
     setAmount("");
