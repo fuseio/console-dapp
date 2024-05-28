@@ -81,10 +81,12 @@ const LastTransactionToast = () => {
                 ) < 0.00001
                   ? "< 0.00001"
                   : parseFloat(
-                      transactionsSlice.transactionHashes[0].amount.split(
-                        " "
-                      )[0]
-                    ).toFixed(5)) +
+                      parseFloat(
+                        transactionsSlice.transactionHashes[0].amount.split(
+                          " "
+                        )[0]
+                      ).toFixed(5)
+                    )) +
                   " " +
                   transactionsSlice.transactionHashes[0].amount.split(" ")[1]}
               </p>
