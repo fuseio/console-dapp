@@ -17,7 +17,8 @@ import { arbitrum, polygon, fuse, optimism, mainnet, bsc, Chain } from "wagmi/ch
 import { coinbaseWallet } from '@wagmi/connectors';
 import { injected } from '@wagmi/connectors';
 import { walletConnect } from '@wagmi/connectors';
-import { hex, isIos } from "./helpers";
+import { metaMask } from 'wagmi/connectors';
+import { hex, detectDevice } from "./helpers";
 import { Web3AuthSocialConnector } from "./connectors/social";
 import { Web3AuthEmailConnector } from "./connectors/email";
 
@@ -33,7 +34,13 @@ const chains: readonly [Chain, ...Chain[]] = [
 export const config = createConfig({
   chains,
   connectors: [
-    injected(),
+    detectDevice().isMobile ?
+      metaMask({
+        dappMetadata: {
+          name: "wagmi",
+        }
+      }) :
+      injected(),
     walletConnect({
       projectId: NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
       showQrModal: true,
@@ -97,7 +104,7 @@ export default function Web3AuthConnectorInstance(
   const openloginAdapterInstance = new OpenloginAdapter({
     adapterSettings: {
       // see https://web3auth.io/community/t/iphone-safari-social-logins-dont-work/5662
-      uxMode: isIos ? UX_MODE.REDIRECT : UX_MODE.POPUP
+      uxMode: detectDevice().isIos ? UX_MODE.REDIRECT : UX_MODE.POPUP
     }
   });
   web3AuthInstance.configureAdapter(openloginAdapterInstance);

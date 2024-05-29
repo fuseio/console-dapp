@@ -55,8 +55,8 @@
     "typescript": "^5.4.3",
     "use-deep-compare-effect": "^1.8.1",
     "usehooks-ts": "^3.0.2",
-    "viem": "^2.9.9",
-    "wagmi": "^2.5.18",
+    "viem": "^2.13.1",
+    "wagmi": "^2.9.7",
     "yup": "^1.4.0"
   },
   "devDependencies": {

@@ -22,7 +22,7 @@ import ReactGA from "react-ga4";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
-import { path, signDataMessage, walletType } from "@/lib/helpers";
+import { detectDevice, path, signDataMessage, walletType } from "@/lib/helpers";
 import { checkIsActivated, checkOperator, fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setIsValidated, setLogout, setRedirect, validateOperator } from "@/store/operatorSlice";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import { usePathname, useRouter } from "next/navigation";
@@ -83,7 +83,7 @@ const WalletModal = (): JSX.Element => {
       toggleModal(false);
     }
   }, [isConnected, toggleModal])
-  
+
   useEffect(() => {
     if(!address) {
       return;
@@ -253,7 +253,7 @@ const WalletModal = (): JSX.Element => {
                   className="w-[35px]"
                   id="injected"
                   connectingWalletId={connectingWalletId}
-                  onClick={() => connectWallet("injected")}
+                  onClick={() => connectWallet(detectDevice().isMobile ? "metaMaskSDK" : "injected")}
                 />
                 <WalletButton
                   icon={wc}
