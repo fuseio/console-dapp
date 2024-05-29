@@ -6,6 +6,7 @@ import usdt from "@/assets/usdt-logo.svg";
 import eth from "@/public/eth.png";
 import fdm from "@/assets/fdm.svg";
 import bnb from "@/assets/bnb.svg";
+import matic from "@/assets/matic-token.svg";
 
 export const coins: CoinConfigLike[] = [
   {
@@ -56,5 +57,12 @@ export const coins: CoinConfigLike[] = [
     decimals: 18,
     icon: bnb,
     coinGeckoId: "binancecoin",
+  },
+  {
+    name: "Matic Token",
+    symbol: "MATIC",
+    decimals: 18,
+    icon: matic,
+    coinGeckoId: "matic-network",
   },
 ];

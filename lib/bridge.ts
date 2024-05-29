@@ -372,6 +372,44 @@ export const bridgeConfig: BridgeConfigLike = {
         isNative: true,
         address: "0x",
       },
+    ],
+    [
+      {
+        chainId: 138,
+        decimals: 18,
+        symbol: "MATIC",
+        name: "Matic Token",
+        isBridged: true,
+        isNative: false,
+        address: "0x861bf3d382593ed848972cadfacba9749adce101"
+      },
+      {
+        chainId: 101,
+        decimals: 18,
+        symbol: "MATIC",
+        name: "Matic Token",
+        isBridged: false,
+        isNative: false,
+        address: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0"
+      },
+      {
+        chainId: 102,
+        decimals: 18,
+        symbol: "MATIC",
+        name: "Matic Token",
+        isBridged: false,
+        isNative: false,
+        address: "0xCC42724C6683B7E57334c4E856f4c9965ED682bD"
+      },
+      {
+        chainId: 109,
+        decimals: 18,
+        symbol: "MATIC",
+        name: "Matic Token",
+        isBridged: false,
+        isNative: true,
+        address: "0x"
+      },
     ]
   ],
 };
