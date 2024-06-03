@@ -7,6 +7,7 @@ import { motion, Variants } from "framer-motion";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import down from "@/assets/down-arrow.svg";
 import {
+  Connection,
   useAccount,
   useBalance,
   useBlockNumber,
@@ -34,6 +35,7 @@ import { usePathname } from "next/navigation";
 import switchNetworkIcon from "@/assets/switch-network.svg";
 import Copy from "./ui/Copy";
 import { formatUnits } from "viem";
+import { config } from "@/lib/web3Auth";
 
 const menu: Variants = {
   closed: (isCenter) => ({
@@ -103,7 +105,20 @@ const ConnectWallet = ({
   const { address, connector, isConnected, chain } = useAccount();
   const { chains } = useConfig();
   const { switchChain } = useSwitchChain();
-  const { disconnect } = useDisconnect();
+  const { disconnect } = useDisconnect({
+    mutation: {
+      onSuccess() {
+        // Multiple connections are created, possibly due to multiInjectedProviderDiscovery.
+        // After disconnecting, only one connection is terminated, while the others remain active.
+        // Reset the config connections state to allow reconnection.
+        config.setState((x) => ({
+          ...x,
+          connections: new Map<string, Connection>(),
+          current: "",
+        }))
+      }
+    }
+  });
   const { data: blockNumber } = useBlockNumber({ watch: true });
   const { data: balance, refetch } = useBalance({
     address,
