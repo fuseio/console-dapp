@@ -46,6 +46,8 @@ export const hex = "0x";
 
 export const IS_SERVER = typeof window === "undefined";
 
+export const IS_ETHEREUM_OBJECT_DETECTED = typeof window !== "undefined" && typeof window.ethereum !== "undefined";
+
 export const walletType: WalletType = {
   "injected": "MetaMask",
   "metaMaskSDK": "MetaMaskSDK",
