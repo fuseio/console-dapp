@@ -18,7 +18,7 @@ import { coinbaseWallet } from '@wagmi/connectors';
 import { injected } from '@wagmi/connectors';
 import { walletConnect } from '@wagmi/connectors';
 import { metaMask } from 'wagmi/connectors';
-import { hex, detectDevice } from "./helpers";
+import { hex, detectDevice, IS_ETHEREUM_OBJECT_DETECTED } from "./helpers";
 import { Web3AuthSocialConnector } from "./connectors/social";
 import { Web3AuthEmailConnector } from "./connectors/email";
 
@@ -34,13 +34,14 @@ const chains: readonly [Chain, ...Chain[]] = [
 export const config = createConfig({
   chains,
   connectors: [
-    detectDevice().isMobile ?
+    IS_ETHEREUM_OBJECT_DETECTED ?
+      injected() :
       metaMask({
         dappMetadata: {
-          name: "wagmi",
+          url: "https://console.fuse.io/",
+          name: "Fuse Console",
         }
-      }) :
-      injected(),
+      }),
     walletConnect({
       projectId: NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
       showQrModal: true,
