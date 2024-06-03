@@ -38,7 +38,8 @@ export const config = createConfig({
       injected() :
       metaMask({
         dappMetadata: {
-          name: "wagmi",
+          url: "https://console.fuse.io/",
+          name: "Fuse Console",
         }
       }),
     walletConnect({
