@@ -250,6 +250,7 @@ const Deposit = ({
           selectedSection={selectedChainSection}
           selectedItem={selectedChainItem}
           className="w-full"
+          isHighlight={true}
           onClick={(section, item) => {
             handleDropdownSelectedItem(section, item);
             if (section === 1) {
@@ -335,23 +336,6 @@ const Deposit = ({
       </div>
       {isExchange ? (
         <>
-          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm md:text-xs md:flex-col">
-            <div className="flex p-2 w-[15%] items-start md:p-0">
-              <Image src={alert} alt="warning" className="h-5" />
-            </div>
-            <div className="flex flex-col font-medium md:mt-2">
-              <p>
-                To move tokens from{" "}
-                {exchangeConfig.exchanges[selectedChainItem].name} to Fuse you
-                can use one of the following third-party bridges.
-              </p>
-              <p className="mt-2">
-                Please note that these are independent service providers that
-                Fuse is linking to for your convenience - Fuse has no
-                responsibility for their operation.
-              </p>
-            </div>
-          </div>
           {exchangeConfig.exchanges[selectedChainItem].bridges.map(
             (bridge, i) => {
               return (
@@ -390,29 +374,20 @@ const Deposit = ({
               );
             }
           )}
-        </>
-      ) : isDisabledChain ? (
-        <>
-          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm md:text-xs">
-            <div className="flex p-2 w-[10%] items-start">
+          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm md:text-xs md:flex-col">
+            <div className="flex p-2 w-[15%] items-start md:p-0">
               <Image src={alert} alt="warning" className="h-5" />
             </div>
-            <div className="flex flex-col font-medium">
+            <div className="flex flex-col font-medium md:mt-2">
               <p>
-                To move tokens from{" "}
-                {
-                  appConfig.wrappedBridge.disabledChains[selectedChainItem]
-                    .chainName
-                }{" "}
-                to Fuse please use{" "}
-                {
-                  appConfig.wrappedBridge.disabledChains[selectedChainItem]
-                    .appName
-                }{" "}
-                dApp.
+                Remember that using 3rd party application carries risks.
+                Fuse does not control the code or content of these websites.
               </p>
             </div>
           </div>
+        </>
+      ) : isDisabledChain ? (
+        <>
           <a
             href={
               appConfig.wrappedBridge.disabledChains[selectedChainItem].appURL
@@ -455,27 +430,20 @@ const Deposit = ({
               <Image src={visit} alt="go" className="ml-auto" />
             </div>
           </a>
-        </>
-      ) : isThirdPartyChain ? (
-        <>
           <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm md:text-xs">
-            <div className="flex p-2 w-[15%] items-start">
+            <div className="flex p-2 w-[10%] items-start">
               <Image src={alert} alt="warning" className="h-5" />
             </div>
             <div className="flex flex-col font-medium">
               <p>
-                To move tokens from{" "}
-                {appConfig.wrappedBridge.thirdPartyChains[selectedChainItem]
-                    .chainName} to Fuse you
-                can use one of the following third-party bridges.
-              </p>
-              <p className="mt-2">
-                Please note that these are independent service providers that
-                Fuse is linking to for your convenience - Fuse has no
-                responsibility for their operation.
+                Remember that using 3rd party application carries risks.
+                Fuse does not control the code or content of these websites.
               </p>
             </div>
           </div>
+        </>
+      ) : isThirdPartyChain ? (
+        <>
           <a
             href={
               appConfig.wrappedBridge.thirdPartyChains[selectedChainItem].appDepositURL
@@ -518,6 +486,17 @@ const Deposit = ({
               <Image src={visit} alt="go" className="ml-auto" />
             </div>
           </a>
+          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm md:text-xs">
+            <div className="flex p-2 w-[15%] items-start">
+              <Image src={alert} alt="warning" className="h-5" />
+            </div>
+            <div className="flex flex-col font-medium">
+              <p>
+                Remember that using 3rd party application carries risks.
+                Fuse does not control the code or content of these websites.
+              </p>
+            </div>
+          </div>
         </>
       ) : (
         <>
