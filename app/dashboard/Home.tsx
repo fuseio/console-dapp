@@ -311,7 +311,7 @@ const Home = () => {
                 className="underline font-bold"
                 onClick={() => {
                   amplitude.track("Contact us - Operators");
-                  window.open("https://meetings-eu1.hubspot.com/omri-haik/meet-with-omri", "_blank");
+                  window.open("https://calendly.com/magali-fuse", "_blank");
                 }}
               >
                 Contact Us

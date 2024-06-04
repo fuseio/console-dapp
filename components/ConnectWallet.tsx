@@ -34,6 +34,7 @@ import { usePathname } from "next/navigation";
 import switchNetworkIcon from "@/assets/switch-network.svg";
 import Copy from "./ui/Copy";
 import { formatUnits } from "viem";
+import { resetConnection } from "@/lib/web3Auth";
 
 const menu: Variants = {
   closed: (isCenter) => ({
@@ -103,7 +104,13 @@ const ConnectWallet = ({
   const { address, connector, isConnected, chain } = useAccount();
   const { chains } = useConfig();
   const { switchChain } = useSwitchChain();
-  const { disconnect } = useDisconnect();
+  const { disconnect } = useDisconnect({
+    mutation: {
+      onSuccess() {
+        resetConnection();
+      }
+    }
+  });
   const { data: blockNumber } = useBlockNumber({ watch: true });
   const { data: balance, refetch } = useBalance({
     address,

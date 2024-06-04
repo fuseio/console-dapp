@@ -131,24 +131,26 @@ const Withdraw = ({
       if (pendingPromise) {
         pendingPromise.abort();
       }
-      const tokenAddress =
-        appConfig.wrappedBridge.fuse.tokens[selectedTokenItem].address;
+      const tokenChain =
+        appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+          selectedTokenItem
+        ].coinGeckoId;
+      const tokenFuse = appConfig.wrappedBridge.fuse.tokens.find(
+        (token) => token.coinGeckoId === tokenChain
+      );
       const promise =
-        (!tokenAddress || tokenAddress === hex) && chain?.id === fuse.id
+        (!tokenFuse?.address || tokenFuse.address === hex) &&
+        chain?.id === fuse.id
           ? dispatch(setNativeBalanceThunk(nativeBalance.toString()))
           : dispatch(
-            fetchBalance({
-              address: address,
-              contractAddress:
-                appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
-                  .address,
-              decimals:
-                appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
-                  .decimals,
-              bridge: appConfig.wrappedBridge.fuse.wrapped,
-              rpc: "https://rpc.fuse.io",
-            })
-          );
+              fetchBalance({
+                address: address,
+                contractAddress: tokenFuse?.address as `0x${string}`,
+                decimals: tokenFuse?.decimals as number,
+                bridge: appConfig.wrappedBridge.fuse.wrapped,
+                rpc: "https://rpc.fuse.io",
+              })
+            );
       setPendingPromise(promise);
     }
   }, [

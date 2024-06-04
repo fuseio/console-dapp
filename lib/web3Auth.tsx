@@ -8,7 +8,7 @@ import {
 } from "@web3auth/openlogin-adapter";
 import { WalletServicesPlugin } from "@web3auth/wallet-services-plugin";
 import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
-import { createConfig, http } from "wagmi";
+import { Connection, createConfig, http } from "wagmi";
 import {
   NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
   NEXT_PUBLIC_WEB3AUTH_CLIENT_ID,
@@ -17,7 +17,8 @@ import { arbitrum, polygon, fuse, optimism, mainnet, bsc, Chain } from "wagmi/ch
 import { coinbaseWallet } from '@wagmi/connectors';
 import { injected } from '@wagmi/connectors';
 import { walletConnect } from '@wagmi/connectors';
-import { hex, isIos } from "./helpers";
+import { metaMask } from 'wagmi/connectors';
+import { hex, detectDevice, IS_ETHEREUM_OBJECT_DETECTED } from "./helpers";
 import { Web3AuthSocialConnector } from "./connectors/social";
 import { Web3AuthEmailConnector } from "./connectors/email";
 
@@ -33,7 +34,14 @@ const chains: readonly [Chain, ...Chain[]] = [
 export const config = createConfig({
   chains,
   connectors: [
-    injected(),
+    IS_ETHEREUM_OBJECT_DETECTED ?
+      injected() :
+      metaMask({
+        dappMetadata: {
+          url: "https://console.fuse.io/",
+          name: "Fuse Console",
+        }
+      }),
     walletConnect({
       projectId: NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
       showQrModal: true,
@@ -58,6 +66,17 @@ export const config = createConfig({
     [bsc.id]: http(),
   },
 })
+
+// Multiple connections are created, possibly due to multiInjectedProviderDiscovery.
+// After disconnecting, only one connection is terminated, while the others remain active.
+// Reset the config connections state to allow reconnection.
+export const resetConnection = () => {
+  config.setState((x) => ({
+    ...x,
+    connections: new Map<string, Connection>(),
+    current: "",
+  }))
+}
 
 export default function Web3AuthConnectorInstance(
   LoginConnector: any,
@@ -97,7 +116,7 @@ export default function Web3AuthConnectorInstance(
   const openloginAdapterInstance = new OpenloginAdapter({
     adapterSettings: {
       // see https://web3auth.io/community/t/iphone-safari-social-logins-dont-work/5662
-      uxMode: isIos ? UX_MODE.REDIRECT : UX_MODE.POPUP
+      uxMode: detectDevice().isIos ? UX_MODE.REDIRECT : UX_MODE.POPUP
     }
   });
   web3AuthInstance.configureAdapter(openloginAdapterInstance);

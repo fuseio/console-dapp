@@ -30,7 +30,7 @@ import { getNativeCurrency } from "@layerzerolabs/ui-core";
 import { getChainKey } from "@layerzerolabs/lz-sdk";
 import ToastPane from "@/components/bridge/ToastPane";
 import Pill from "@/components/bridge/Pill";
-import { useAccount, useBalance, useConfig } from "wagmi";
+import { useAccount, useBalance, useBlockNumber, useConfig } from "wagmi";
 import { fuse } from "viem/chains";
 import { getAccount, switchChain } from "wagmi/actions";
 import { hex, walletType } from "@/lib/helpers";
@@ -44,6 +44,7 @@ import {
 } from "@/store/selectedChainSlice";
 import { formatUnits } from "viem";
 import Image from "next/image";
+import { getTokenOnFuse } from "@/lib/helper-bridge";
 
 const Home = () => {
   const selectedChainSlice = useAppSelector(selectSelectedChainSlice);
@@ -81,6 +82,9 @@ const Home = () => {
   const chain = config.chains.find((chain) => chain.id === chainId);
   const { data: balance, refetch } = useBalance({
     address,
+  });
+  const { failureCount } = useBlockNumber({
+    watch: true
   });
 
   useEffect(() => {
@@ -143,30 +147,28 @@ const Home = () => {
           walletType: connector ? walletType[connector.id] : undefined,
         })
       );
-    else if (res && selected === 1)
+    else if (res && selected === 1) {
+      const token = getTokenOnFuse(
+        appConfig.wrappedBridge.chains[
+          selectedChainSlice.withdrawSelectedChainItem
+        ].tokens[withdrawSelectedTokenItem].coinGeckoId
+      );
       dispatch(
         increaseERC20Allowance({
-          contractAddress:
-            appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
-              .address,
+          contractAddress: token?.address as `0x${string}`,
           amount: amount,
           bridge: appConfig.wrappedBridge.fuse.wrapped,
-          decimals:
-            appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
-              .decimals,
+          decimals: token?.decimals as number,
           address: address ?? hex,
           type: 1,
           network: "Fuse",
-          token:
-            appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
-              .symbol,
-          tokenId:
-            appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
-              .coinGeckoId,
+          token: token?.symbol as string,
+          tokenId: token?.coinGeckoId as string,
           selectedChainId,
           walletType: connector ? walletType[connector.id] : undefined,
         })
       );
+    }
   };
   const handleIncreaseAllowance = () => {
     const selectedChainId =
@@ -374,55 +376,51 @@ const Home = () => {
           selectedChainSlice.withdrawSelectedChainItem
         ].tokens[withdrawSelectedTokenItem].isBridged
       ) {
+        const token = getTokenOnFuse(
+          appConfig.wrappedBridge.chains[
+            selectedChainSlice.withdrawSelectedChainItem
+          ].tokens[withdrawSelectedTokenItem].coinGeckoId
+        );
         dispatch(
           bridgeAndUnwrap({
             address: address ?? hex,
             amount: amount,
             bridge: appConfig.wrappedBridge.fuse.wrapped,
-            contractAddress:
-              appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
-                .address,
-            decimals:
-              appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
-                .decimals,
+            contractAddress: token?.address as `0x${string}`,
+            decimals: token?.decimals as number,
             chainId:
               appConfig.wrappedBridge.chains[
                 selectedChainSlice.withdrawSelectedChainItem
               ].lzChainId,
-            symbol:
-              appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
-                .symbol,
+            symbol: token?.symbol as string,
             srcChainId: 138,
             network:
               appConfig.wrappedBridge.chains[
                 selectedChainSlice.withdrawSelectedChainItem
               ].name,
-            tokenId:
-              appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
-                .coinGeckoId,
+            tokenId: token?.coinGeckoId as string,
             walletType: connector ? walletType[connector.id] : undefined,
             selectedChainId: fuse.id,
           })
         );
       } else {
+        const token = getTokenOnFuse(
+          appConfig.wrappedBridge.chains[
+            selectedChainSlice.withdrawSelectedChainItem
+          ].tokens[withdrawSelectedTokenItem].coinGeckoId
+        );
         dispatch(
           bridgeWrappedTokens({
             address: address ?? hex,
             amount: amount,
             bridge: appConfig.wrappedBridge.fuse.wrapped,
-            contractAddress:
-              appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
-                .address,
-            decimals:
-              appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
-                .decimals,
+            contractAddress: token?.address as `0x${string}`,
+            decimals: token?.decimals as number,
             chainId:
               appConfig.wrappedBridge.chains[
                 selectedChainSlice.withdrawSelectedChainItem
               ].lzChainId,
-            symbol:
-              appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
-                .symbol,
+            symbol: token?.symbol as string,
             srcChainId: 138,
             network:
               appConfig.wrappedBridge.chains[
@@ -659,6 +657,12 @@ const Home = () => {
               )}
               {!isConnected && displayButton ? (
                 <ConnectWallet className="transition ease-in-out mt-6 py-4 w-full hover:bg-success hover:text-black" />
+              ) : failureCount > 0 ? (
+                <Button
+                  className="bg-[#FFEBE9] text-[#FD0F0F] px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
+                  disabled
+                  text="Sorry, RPC is too busy. Please come back later."
+                />
               ) : displayButton &&
                 (selected === 0
                   ? chain?.id !==

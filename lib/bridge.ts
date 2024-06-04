@@ -344,5 +344,72 @@ export const bridgeConfig: BridgeConfigLike = {
         address: "0x60d91f6D394c5004A782E0D175E2b839e078FB83",
       },
     ],
+    [
+      {
+        chainId: 138,
+        decimals: 18,
+        symbol: "BNB",
+        name: "Binance Coin",
+        isBridged: true,
+        isNative: false,
+        address: "0x117C0419352DDB6FE575A67FAa70315BDc4a93f3"
+      },
+      {
+        chainId: 101,
+        decimals: 18,
+        symbol: "BNB",
+        name: "Binance Coin",
+        isBridged: false,
+        isNative: false,
+        address: "0xB8c77482e45F1F44dE1745F52C74426C631bDD52",
+      },
+      {
+        chainId: 102,
+        decimals: 18,
+        symbol: "BNB",
+        name: "Binance Coin",
+        isBridged: false,
+        isNative: true,
+        address: "0x",
+      },
+    ],
+    [
+      {
+        chainId: 138,
+        decimals: 18,
+        symbol: "MATIC",
+        name: "Matic Token",
+        isBridged: true,
+        isNative: false,
+        address: "0x861bf3d382593ed848972cadfacba9749adce101"
+      },
+      {
+        chainId: 101,
+        decimals: 18,
+        symbol: "MATIC",
+        name: "Matic Token",
+        isBridged: false,
+        isNative: false,
+        address: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0"
+      },
+      {
+        chainId: 102,
+        decimals: 18,
+        symbol: "MATIC",
+        name: "Matic Token",
+        isBridged: false,
+        isNative: false,
+        address: "0xCC42724C6683B7E57334c4E856f4c9965ED682bD"
+      },
+      {
+        chainId: 109,
+        decimals: 18,
+        symbol: "MATIC",
+        name: "Matic Token",
+        isBridged: false,
+        isNative: true,
+        address: "0x"
+      },
+    ]
   ],
 };

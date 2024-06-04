@@ -5,6 +5,8 @@ import weth from "@/assets/weth.svg";
 import usdt from "@/assets/usdt-logo.svg";
 import eth from "@/public/eth.png";
 import fdm from "@/assets/fdm.svg";
+import bnb from "@/assets/bnb.svg";
+import matic from "@/assets/matic-token.svg";
 
 export const coins: CoinConfigLike[] = [
   {
@@ -33,7 +35,7 @@ export const coins: CoinConfigLike[] = [
     symbol: "WETH",
     decimals: 18,
     icon: weth,
-    coinGeckoId: "weth",
+    coinGeckoId: "ethereum",
   },
   {
     name: "Ethereum",
@@ -47,6 +49,20 @@ export const coins: CoinConfigLike[] = [
     symbol: "FDM",
     decimals: 18,
     icon: fdm,
-    coinGeckoId: "",
+    coinGeckoId: "fdm",
+  },
+  {
+    name: "BNB",
+    symbol: "BNB",
+    decimals: 18,
+    icon: bnb,
+    coinGeckoId: "binancecoin",
+  },
+  {
+    name: "Matic Token",
+    symbol: "MATIC",
+    decimals: 18,
+    icon: matic,
+    coinGeckoId: "matic-network",
   },
 ];
