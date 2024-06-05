@@ -64,6 +64,7 @@ export const chains: ChainConfigLike[] = [
     chainId: 8453,
     rpc: `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_BASE_API_KEY}`,
     logo: "",
-    tokenId: "base"
+    tokenId: "base",
+    inactive: true
   },
 ];

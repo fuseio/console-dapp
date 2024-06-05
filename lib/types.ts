@@ -11,6 +11,7 @@ export interface ChainConfigLike {
   logo: string;
   tokenId: string;
   gasTokenId?: string;
+  inactive?: boolean;
 }
 
 export interface DisabledChainConfigLike {
@@ -137,6 +138,7 @@ interface WrappedBridgeConfig {
     rpcUrl: string;
     tokenId: string;
     gasTokenId?: string;
+    inactive?: boolean;
     tokens: {
       decimals: number;
       symbol: string;
@@ -253,6 +255,7 @@ export const createAppConfig = (
           rpcUrl: chain.rpc,
           tokenId: chain.tokenId,
           gasTokenId: chain.gasTokenId,
+          inactive: chain.inactive,
         };
       }),
     },

@@ -15,6 +15,7 @@ type DropdownItemsType = {
   id: number;
   item: string;
   icon: StaticImageData;
+  inactive?: boolean;
 };
 
 type DropdownSectionType = {
@@ -95,6 +96,9 @@ const Dropdown = ({
                 <div
                   className="flex items-center py-2 md:py-[6px]"
                   onClick={() => {
+                    if (item.inactive) {
+                      return;
+                    }
                     onClick(index, i);
                   }}
                   key={i}

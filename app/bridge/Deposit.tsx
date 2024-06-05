@@ -210,6 +210,7 @@ const Deposit = ({
                   item: chain.name,
                   icon: chain.icon,
                   id: chain.lzChainId,
+                  inactive: chain.inactive,
                 };
               }),
             },

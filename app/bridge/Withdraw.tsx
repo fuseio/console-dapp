@@ -319,6 +319,7 @@ const Withdraw = ({
                   item: chain.name,
                   icon: chain.icon,
                   id: chain.lzChainId,
+                  inactive: chain.inactive,
                 };
               }),
             },
