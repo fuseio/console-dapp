@@ -32,6 +32,10 @@ export const bridgeConfig: BridgeConfigLike = {
       address: "0x081dF5af5d022D4A4a4520D4D0D336B8432fDBBb",
       chainId: 102,
     },
+    {
+      address: "0x",
+      chainId: 184,
+    },
   ],
   wrapped: [
     {
@@ -58,6 +62,10 @@ export const bridgeConfig: BridgeConfigLike = {
       address: "0xADef29442A11ad9308aC5D012965c887Cf2A53D3",
       chainId: 102,
     },
+    {
+      address: "0x",
+      chainId: 184,
+    },
   ],
   originalFuse: [
     {
@@ -83,6 +91,10 @@ export const bridgeConfig: BridgeConfigLike = {
     {
       address: "0x6bd341B6C7d6123D28d3DDee6A65d441DbAC1E90",
       chainId: 102,
+    },
+    {
+      address: "0x",
+      chainId: 184,
     },
   ],
   tokens: [
@@ -140,6 +152,15 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+      },
+      {
+        chainId: 184,
+        decimals: 18,
+        symbol: "USDC",
+        name: "USDC Coin",
+        isBridged: false,
+        isNative: false,
+        address: "0x",
       },
     ],
     [
