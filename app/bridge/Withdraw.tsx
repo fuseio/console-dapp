@@ -347,6 +347,7 @@ const Withdraw = ({
           ]}
           selectedSection={selectedChainSection}
           selectedItem={selectedChainItem}
+          isHighlight={true}
           onClick={(section, item) => {
             setSelectedTokenItem(0);
             setSelectedChainSection(section);
