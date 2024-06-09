@@ -33,7 +33,7 @@ export const bridgeConfig: BridgeConfigLike = {
       chainId: 102,
     },
     {
-      address: "0x",
+      address: "0xe453d6649643F1F460C371dC3D1da98F7922fe51",
       chainId: 184,
     },
   ],
@@ -63,7 +63,7 @@ export const bridgeConfig: BridgeConfigLike = {
       chainId: 102,
     },
     {
-      address: "0x",
+      address: "0x6041d22c7458A974Cb6E752D75D03D74dcCFf522",
       chainId: 184,
     },
   ],
@@ -93,7 +93,7 @@ export const bridgeConfig: BridgeConfigLike = {
       chainId: 102,
     },
     {
-      address: "0x",
+      address: "0x691118FBDa4B78747B4C1B883ae4396Dac885651",
       chainId: 184,
     },
   ],
@@ -155,12 +155,12 @@ export const bridgeConfig: BridgeConfigLike = {
       },
       {
         chainId: 184,
-        decimals: 18,
+        decimals: 6,
         symbol: "USDC",
         name: "USDC Coin",
         isBridged: false,
         isNative: false,
-        address: "0x",
+        address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       },
     ],
     [
@@ -217,6 +217,15 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: true,
         isNative: true,
         address: "0x5857c96DaE9cF8511B08Cb07f85753C472D36Ea3",
+      },
+      {
+        chainId: 184,
+        decimals: 18,
+        symbol: "FUSE",
+        name: "FUSE",
+        isBridged: true,
+        isNative: true,
+        address: "0x01facC69EC7360640AA5898E852326752801674A",
       },
     ],
     [
@@ -339,6 +348,19 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: true,
         address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        receiveToken: {
+          name: "Wrapped Ether",
+          symbol: "WETH",
+        },
+      },
+      {
+        chainId: 184,
+        decimals: 18,
+        symbol: "ETH",
+        name: "Ether",
+        isBridged: false,
+        isNative: true,
+        address: "0x4200000000000000000000000000000000000006",
         receiveToken: {
           name: "Wrapped Ether",
           symbol: "WETH",
