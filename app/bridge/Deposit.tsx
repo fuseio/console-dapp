@@ -479,7 +479,7 @@ const Deposit = ({
                 <p className="font-medium text-[#898888] text-sm md:text-xs">
                   {
                     appConfig.wrappedBridge.thirdPartyChains[selectedChainItem]
-                      .appDepositURL
+                      .domain
                   }
                 </p>
               </div>

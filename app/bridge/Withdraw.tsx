@@ -521,7 +521,7 @@ const Withdraw = ({
                 <p className="font-medium text-[#898888] text-sm md:text-[10px]">
                   {
                     appConfig.wrappedBridge.thirdPartyChains[selectedChainItem]
-                      .appWithdrawURL
+                      .domain
                   }
                 </p>
               </div>

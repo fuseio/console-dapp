@@ -27,6 +27,7 @@ export interface ThirdPartyChainConfigLike {
   icon: StaticImageData;
   appName: string;
   appLogo: StaticImageData;
+  domain: string;
   appDepositURL: string;
   appWithdrawURL: string;
 }

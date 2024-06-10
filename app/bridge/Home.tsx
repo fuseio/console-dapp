@@ -116,15 +116,15 @@ const Home = () => {
             appConfig.wrappedBridge.chains[
               selectedChainSlice.depositSelectedChainItem
             ].tokens[depositSelectedTokenItem].isNative &&
-            appConfig.wrappedBridge.chains[
-              selectedChainSlice.depositSelectedChainItem
-            ].tokens[depositSelectedTokenItem].isBridged
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].tokens[depositSelectedTokenItem].isBridged
               ? appConfig.wrappedBridge.chains[
-                  selectedChainSlice.depositSelectedChainItem
-                ].wrapped
+                selectedChainSlice.depositSelectedChainItem
+              ].wrapped
               : appConfig.wrappedBridge.chains[
-                  selectedChainSlice.depositSelectedChainItem
-                ].original,
+                selectedChainSlice.depositSelectedChainItem
+              ].original,
           decimals:
             appConfig.wrappedBridge.chains[
               selectedChainSlice.depositSelectedChainItem
@@ -174,8 +174,8 @@ const Home = () => {
     const selectedChainId =
       selected === 0
         ? appConfig.wrappedBridge.chains[
-            selectedChainSlice.depositSelectedChainItem
-          ].chainId
+          selectedChainSlice.depositSelectedChainItem
+        ].chainId
         : fuse.id;
     if (selectedChainId == chain?.id) {
       increaseAllowance(true, selectedChainId);
@@ -463,8 +463,8 @@ const Home = () => {
     <>
       <Transactions isOpen={isOpen} onToggle={setIsOpen} />
       <div className="flex flex-col main w-8/9 md:w-9/10 max-w-7xl md:flex-col">
-        <div className="flex relative xl:flex-col">
-          <div className="flex flex-col pt-16 w-2/3 me-[100px] md:w-full">
+        <div className="flex justify-between relative xl:flex-col">
+          <div className="flex flex-col pt-16 max-w-[550px] me-[100px] md:w-full">
             <span className="flex items-center">
               <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-[32px]">
                 Bridge
@@ -481,7 +481,7 @@ const Home = () => {
             </p>
             <ToastPane className="xl:hidden" />
           </div>
-          <div className="flex-col items-center flex gap-2 pt-16 md:w-full md:pt-0 md:mt-3">
+          <div className="flex-col items-center flex gap-2 pt-16 md:w-full md:pt-0 md:mt-3 max-w-[457px] xl:mx-auto">
             <span
               className="flex bg-white ms-auto px-2 items-center rounded-md cursor-pointer"
               onClick={() => {
@@ -552,7 +552,7 @@ const Home = () => {
                           dispatch(
                             setChain(
                               appConfig.wrappedBridge.chains[
-                                selectedChainSlice.depositSelectedChainItem
+                              selectedChainSlice.depositSelectedChainItem
                               ]
                             )
                           );
@@ -666,18 +666,18 @@ const Home = () => {
               ) : displayButton &&
                 (selected === 0
                   ? chain?.id !==
-                    appConfig.wrappedBridge.chains[
-                      selectedChainSlice.depositSelectedChainItem
-                    ].chainId
+                  appConfig.wrappedBridge.chains[
+                    selectedChainSlice.depositSelectedChainItem
+                  ].chainId
                   : chain?.id !== fuse.id) ? (
                 <Button
                   className="bg-fuse-black text-white px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
                   text={
                     selected === 0
                       ? "Switch to " +
-                        appConfig.wrappedBridge.chains[
-                          selectedChainSlice.depositSelectedChainItem
-                        ].name
+                      appConfig.wrappedBridge.chains[
+                        selectedChainSlice.depositSelectedChainItem
+                      ].name
                       : "Switch to Fuse"
                   }
                   onClick={() => {
@@ -707,7 +707,7 @@ const Home = () => {
                   text="No Liquidity"
                 />
               ) : (displayButton &&
-                  parseFloat(amount) > parseFloat(balanceSlice.balance)) ||
+                parseFloat(amount) > parseFloat(balanceSlice.balance)) ||
                 (!checkBalance() && parseFloat(amount) > 0) ? (
                 // || parseFloat(amount) > 10000
                 // || parseFloat(amount) < 0.5
@@ -718,20 +718,20 @@ const Home = () => {
                     parseFloat(amount) > parseFloat(balanceSlice.balance)
                       ? `Insufficient ${
                           appConfig.wrappedBridge.chains[
-                            selected
-                              ? selectedChainSlice.withdrawSelectedChainItem
-                              : selectedChainSlice.depositSelectedChainItem
-                          ].tokens[
-                            selected
-                              ? withdrawSelectedTokenItem
-                              : depositSelectedTokenItem
-                          ].symbol
-                        } Balance`
+                        selected
+                          ? selectedChainSlice.withdrawSelectedChainItem
+                          : selectedChainSlice.depositSelectedChainItem
+                      ].tokens[
+                        selected
+                          ? withdrawSelectedTokenItem
+                          : depositSelectedTokenItem
+                      ].symbol
+                      } Balance`
                       : !checkBalance()
-                      ? `Insufficient ${balance?.symbol} for gas fee`
-                      : parseFloat(amount) > 10000
-                      ? "Exceeds Daily Limit"
-                      : "Minimum 0.5"
+                        ? `Insufficient ${balance?.symbol} for gas fee`
+                        : parseFloat(amount) > 10000
+                          ? "Exceeds Daily Limit"
+                          : "Minimum 0.5"
                   }
                 />
               ) : (
@@ -785,12 +785,12 @@ const Home = () => {
                     }
                     text={
                       contractSlice.isBridgeLoading ||
-                      contractSlice.isApprovalLoading
+                        contractSlice.isApprovalLoading
                         ? "Loading..."
                         : (selected === 1 &&
-                            appConfig.wrappedBridge.chains[
-                              selectedChainSlice.withdrawSelectedChainItem
-                            ].tokens[withdrawSelectedTokenItem].isNative) ||
+                          appConfig.wrappedBridge.chains[
+                            selectedChainSlice.withdrawSelectedChainItem
+                          ].tokens[withdrawSelectedTokenItem].isNative) ||
                           (selected === 0 &&
                             appConfig.wrappedBridge.chains[
                               selectedChainSlice.depositSelectedChainItem
@@ -798,82 +798,84 @@ const Home = () => {
                             !appConfig.wrappedBridge.chains[
                               selectedChainSlice.depositSelectedChainItem
                             ].tokens[depositSelectedTokenItem].isBridged)
-                        ? "Bridge"
-                        : parseFloat(balanceSlice.approval) < parseFloat(amount)
-                        ? "Approve"
-                        : "Bridge"
+                          ? "Bridge"
+                          : parseFloat(balanceSlice.approval) < parseFloat(amount)
+                            ? "Approve"
+                            : "Bridge"
                     }
                     disabledClassName="bg-fuse-black/20 text-black px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
                   />
                 )
               )}
             </motion.div>
-            <motion.div className="flex bg-white w-[525px] rounded-lg px-8 py-5 flex-col font-medium text-sm max-w-full md:text-xs">
-              <div className="flex justify-between">
-                <span className="text-black/50">Bridge Fee</span>
-                <span>Free</span>
-              </div>
-              <div className="flex justify-between mt-2">
-                <span className="text-black/50 flex relative">
-                  Gas Estimation{" "}
-                  <div className="peer cursor-pointer h-4 w-4 bg-lightest-gray rounded-full flex justify-center ml-1 text-black">
-                    ?
-                  </div>
-                  <div className="tooltip-text hidden bottom-8 -left-[30px] absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg peer-hover:block text-black text-sm font-medium">
-                    <p className="mb-5">
-                      The Gas fee covers the source and destination blockchains
-                      transaction fees paid by Layer Zero.
-                    </p>
-                    <p>
-                      Source Gas fee:{" "}
-                      <span className="font-bold">
-                        $
-                        {(feeSlice.sourceGasFee * feeSlice.tokenPrice).toFixed(
-                          5
-                        )}
-                      </span>
-                    </p>
-                    <p>
-                      Destination Gas fee:{" "}
-                      <span className="font-bold">
-                        $
-                        {(feeSlice.destGasFee * feeSlice.tokenPrice).toFixed(5)}
-                      </span>
-                    </p>
-                  </div>
-                </span>
-                {feeSlice.isGasFeeLoading ? (
-                  <span className="px-14 rounded-md animate-pulse bg-fuse-black/10"></span>
-                ) : !(isExchange || isDisabledChain || isThirdPartyChain) ? (
-                  <span>
-                    {(feeSlice.destGasFee + feeSlice.sourceGasFee).toFixed(5)}{" "}
-                    {
-                      getNativeCurrency(
-                        getChainKey(
-                          selected === 0
-                            ? appConfig.wrappedBridge.chains[
+            {!(isExchange || isDisabledChain || isThirdPartyChain) &&
+              <motion.div className="flex bg-white w-[525px] rounded-lg px-8 py-5 flex-col font-medium text-sm max-w-full md:text-xs">
+                <div className="flex justify-between">
+                  <span className="text-black/50">Bridge Fee</span>
+                  <span>Free</span>
+                </div>
+                <div className="flex justify-between mt-2">
+                  <span className="text-black/50 flex relative">
+                    Gas Estimation{" "}
+                    <div className="peer cursor-pointer h-4 w-4 bg-lightest-gray rounded-full flex justify-center ml-1 text-black">
+                      ?
+                    </div>
+                    <div className="tooltip-text hidden bottom-8 -left-[30px] absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg peer-hover:block text-black text-sm font-medium">
+                      <p className="mb-5">
+                        The Gas fee covers the source and destination blockchains
+                        transaction fees paid by Layer Zero.
+                      </p>
+                      <p>
+                        Source Gas fee:{" "}
+                        <span className="font-bold">
+                          $
+                          {(feeSlice.sourceGasFee * feeSlice.tokenPrice).toFixed(
+                            5
+                          )}
+                        </span>
+                      </p>
+                      <p>
+                        Destination Gas fee:{" "}
+                        <span className="font-bold">
+                          $
+                          {(feeSlice.destGasFee * feeSlice.tokenPrice).toFixed(5)}
+                        </span>
+                      </p>
+                    </div>
+                  </span>
+                  {feeSlice.isGasFeeLoading ? (
+                    <span className="px-14 rounded-md animate-pulse bg-fuse-black/10"></span>
+                  ) : !(isExchange || isDisabledChain || isThirdPartyChain) ? (
+                    <span>
+                      {(feeSlice.destGasFee + feeSlice.sourceGasFee).toFixed(5)}{" "}
+                      {
+                        getNativeCurrency(
+                          getChainKey(
+                            selected === 0
+                              ? appConfig.wrappedBridge.chains[
                                 selectedChainSlice.depositSelectedChainItem
                               ].lzChainId
-                            : 138
-                        )
-                      ).symbol
-                    }
-                    {" (~$" +
-                      (
-                        (feeSlice.destGasFee + feeSlice.sourceGasFee) *
-                        feeSlice.tokenPrice
-                      ).toFixed(5) +
-                      ")"}
-                  </span>
-                ) : (
-                  <></>
-                )}
-              </div>
-              {/* <div className="flex justify-between mt-2">
+                              : 138
+                          )
+                        ).symbol
+                      }
+                      {" (~$" +
+                        (
+                          (feeSlice.destGasFee + feeSlice.sourceGasFee) *
+                          feeSlice.tokenPrice
+                        ).toFixed(5) +
+                        ")"}
+                    </span>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+                {/* <div className="flex justify-between mt-2">
               <span className="text-black/50">Daily Limits</span>
               <span>0.5 Min - 10,000 max</span>
             </div> */}
-            </motion.div>
+              </motion.div>
+            }
             <ToastPane className="hidden xl:flex" />
             <Airdrop />
             <FAQ />

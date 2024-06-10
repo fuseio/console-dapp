@@ -8,6 +8,7 @@ export const thirdPartyChains: ThirdPartyChainConfigLike[] = [
     icon: solana,
     appLogo: allbridge,
     appName: "Allbridge Classic",
+    domain: "app.allbridge.io",
     appDepositURL: "https://app.allbridge.io/bridge?from=SOL&to=FUSE&asset=USDC",
     appWithdrawURL: "https://app.allbridge.io/bridge?from=FUSE&to=SOL&asset=asUSDC",
   },
