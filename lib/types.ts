@@ -1,6 +1,7 @@
 import { Address } from "abitype";
 import { disabledChains } from "./disabledChains";
 import { StaticImageData } from "next/image";
+import { thirdPartyChains } from "./thirdPartyChains";
 
 export interface ChainConfigLike {
   lzChainId: number;
@@ -19,6 +20,16 @@ export interface DisabledChainConfigLike {
   appName: string;
   appLogo: string;
   appURL: string;
+}
+
+export interface ThirdPartyChainConfigLike {
+  chainName: string;
+  icon: StaticImageData;
+  appName: string;
+  appLogo: StaticImageData;
+  domain: string;
+  appDepositURL: string;
+  appWithdrawURL: string;
 }
 
 export interface ChainConfig {
@@ -126,6 +137,7 @@ interface WrappedBridgeConfig {
     }[];
   };
   disabledChains: DisabledChainConfigLike[];
+  thirdPartyChains: ThirdPartyChainConfigLike[];
   chains: {
     lzChainId: number;
     chainId: number;
@@ -200,6 +212,7 @@ export const createAppConfig = (
         tokens: wrappedTokens,
       },
       disabledChains: disabledChains,
+      thirdPartyChains: thirdPartyChains,
       chains: chainConfig.chains.map((chain) => {
         let tokens: {
           decimals: number;

@@ -48,6 +48,8 @@ type DepositProps = {
   setIsExchange: (isExchange: boolean) => void;
   isDisabledChain: boolean;
   setIsDisabledChain: (isDisabledChain: boolean) => void;
+  isThirdPartyChain: boolean;
+  setIsThirdPartyChain: (isThirdPartyChain: boolean) => void;
   pendingPromise: any;
   setPendingPromise: (pendingPromise: any) => void;
 };
@@ -69,6 +71,8 @@ const Deposit = ({
   setIsExchange,
   isDisabledChain,
   setIsDisabledChain,
+  isThirdPartyChain,
+  setIsThirdPartyChain,
   pendingPromise,
   setPendingPromise,
 }: DepositProps) => {
@@ -101,6 +105,7 @@ const Deposit = ({
     );
     setDisplayButton(true);
     setIsDisabledChain(false);
+    setIsThirdPartyChain(false);
   };
 
   useEffect(() => {
@@ -223,6 +228,15 @@ const Deposit = ({
               }),
             },
             {
+              items: appConfig.wrappedBridge.thirdPartyChains.map((chain, i) => {
+                return {
+                  item: chain.chainName,
+                  icon: chain.icon,
+                  id: i,
+                };
+              }),
+            },
+            {
               heading: "Centralized Exchanges",
               items: exchangeConfig.exchanges.map((exchange, i) => {
                 return {
@@ -236,22 +250,30 @@ const Deposit = ({
           selectedSection={selectedChainSection}
           selectedItem={selectedChainItem}
           className="w-full"
+          isHighlight={true}
           onClick={(section, item) => {
             handleDropdownSelectedItem(section, item);
             if (section === 1) {
               setIsExchange(false);
               setDisplayButton(false);
               setIsDisabledChain(true);
+              setIsThirdPartyChain(false);
             } else if (section === 2) {
+              setIsExchange(false);
+              setDisplayButton(false);
+              setIsDisabledChain(false);
+              setIsThirdPartyChain(true);
+            } else if (section === 3) {
               setIsExchange(true);
               setDisplayButton(false);
               setIsDisabledChain(false);
+              setIsThirdPartyChain(false);
             } else {
               handleDropdownSection(item);
             }
           }}
         />
-        {!(isExchange || isDisabledChain) && (
+        {!(isExchange || isDisabledChain || isThirdPartyChain) && (
           <>
             <span className="font-medium mt-2 text-xs">Amount</span>
             <div className="flex w-full items-center mt-2">
@@ -314,23 +336,6 @@ const Deposit = ({
       </div>
       {isExchange ? (
         <>
-          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm md:text-xs md:flex-col">
-            <div className="flex p-2 w-[15%] items-start md:p-0">
-              <Image src={alert} alt="warning" className="h-5" />
-            </div>
-            <div className="flex flex-col font-medium md:mt-2">
-              <p>
-                To move tokens from{" "}
-                {exchangeConfig.exchanges[selectedChainItem].name} to Fuse you
-                can use one of the following third-party bridges.
-              </p>
-              <p className="mt-2">
-                Please note that these are independent service providers that
-                Fuse is linking to for your convenience - Fuse has no
-                responsibility for their operation.
-              </p>
-            </div>
-          </div>
           {exchangeConfig.exchanges[selectedChainItem].bridges.map(
             (bridge, i) => {
               return (
@@ -369,29 +374,20 @@ const Deposit = ({
               );
             }
           )}
-        </>
-      ) : isDisabledChain ? (
-        <>
-          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm md:text-xs">
-            <div className="flex p-2 w-[10%] items-start">
+          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm md:text-xs md:flex-col">
+            <div className="flex p-2 w-[15%] items-start md:p-0">
               <Image src={alert} alt="warning" className="h-5" />
             </div>
-            <div className="flex flex-col font-medium">
+            <div className="flex flex-col font-medium md:mt-2">
               <p>
-                To move tokens from{" "}
-                {
-                  appConfig.wrappedBridge.disabledChains[selectedChainItem]
-                    .chainName
-                }{" "}
-                to Fuse please use{" "}
-                {
-                  appConfig.wrappedBridge.disabledChains[selectedChainItem]
-                    .appName
-                }{" "}
-                dApp.
+                Remember that using 3rd party application carries risks.
+                Fuse does not control the code or content of these websites.
               </p>
             </div>
           </div>
+        </>
+      ) : isDisabledChain ? (
+        <>
           <a
             href={
               appConfig.wrappedBridge.disabledChains[selectedChainItem].appURL
@@ -434,6 +430,73 @@ const Deposit = ({
               <Image src={visit} alt="go" className="ml-auto" />
             </div>
           </a>
+          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm md:text-xs">
+            <div className="flex p-2 w-[10%] items-start">
+              <Image src={alert} alt="warning" className="h-5" />
+            </div>
+            <div className="flex flex-col font-medium">
+              <p>
+                Remember that using 3rd party application carries risks.
+                Fuse does not control the code or content of these websites.
+              </p>
+            </div>
+          </div>
+        </>
+      ) : isThirdPartyChain ? (
+        <>
+          <a
+            href={
+              appConfig.wrappedBridge.thirdPartyChains[selectedChainItem].appDepositURL
+            }
+            target="_blank"
+            rel="noreferrer"
+            className="cursor-pointer"
+            onClick={() => {
+              amplitude.track("External Provider", {
+                provider:
+                  appConfig.wrappedBridge.thirdPartyChains[selectedChainItem]
+                    .appName,
+                walletType: connector ? walletType[connector.id] : undefined,
+                walletAddress: address,
+              });
+            }}
+          >
+            <div className="flex mt-2 bg-modal-bg py-4 px-5 rounded-md items-center cursor-pointer">
+              <Image
+                src={
+                  appConfig.wrappedBridge.thirdPartyChains[selectedChainItem]
+                    .appLogo
+                }
+                alt="icon"
+              />
+              <div className="flex flex-col ml-3">
+                <p className="font-semibold text-base">
+                  {
+                    appConfig.wrappedBridge.thirdPartyChains[selectedChainItem]
+                      .appName
+                  }
+                </p>
+                <p className="font-medium text-[#898888] text-sm md:text-xs">
+                  {
+                    appConfig.wrappedBridge.thirdPartyChains[selectedChainItem]
+                      .domain
+                  }
+                </p>
+              </div>
+              <Image src={visit} alt="go" className="ml-auto" />
+            </div>
+          </a>
+          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm md:text-xs">
+            <div className="flex p-2 w-[15%] items-start">
+              <Image src={alert} alt="warning" className="h-5" />
+            </div>
+            <div className="flex flex-col font-medium">
+              <p>
+                Remember that using 3rd party application carries risks.
+                Fuse does not control the code or content of these websites.
+              </p>
+            </div>
+          </div>
         </>
       ) : (
         <>

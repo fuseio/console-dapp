@@ -10,6 +10,7 @@ type DropdownProps = {
   items: DropdownSectionType[];
   selectedSection: number;
   selectedItem: number;
+  isHighlight?: boolean;
 };
 type DropdownItemsType = {
   id: number;
@@ -47,6 +48,7 @@ const Dropdown = ({
   items,
   selectedSection,
   selectedItem,
+  isHighlight = false,
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const ref = useOutsideClick(() => {
@@ -54,6 +56,19 @@ const Dropdown = ({
       setIsOpen(false);
     }
   });
+
+  const highlight = (currentSection: number, currentItem: number) => {
+    if(!isHighlight) {
+      return false;
+    }
+
+    if(!(currentSection === selectedSection && currentItem === selectedItem)) {
+      return false;
+    }
+
+    return true;
+  }
+
   return (
     <div
       className={
@@ -81,19 +96,19 @@ const Dropdown = ({
         initial="closed"
         exit="closed"
         variants={menu}
-        className="absolute top-[120%] left-0 bg-white rounded-md shadow-xl px-4 pb-3 w-full z-50 max-h-[360px] overflow-y-auto md:text-xs"
+        className="absolute top-[120%] left-0 bg-white rounded-md shadow-xl pb-3 w-full z-50 max-h-[360px] overflow-y-auto md:text-xs"
       >
         {items.map((section, index) => (
           <div className="w-full" key={index}>
             {section.heading && (
-              <p className="font-semibold cursor-default py-3">
+              <p className="font-semibold cursor-default px-4 py-3">
                 {section.heading}
               </p>
             )}
             {items[index].items.map((item, i) => {
               return (
                 <div
-                  className="flex items-center py-2 md:py-[6px]"
+                  className={`flex items-center px-4 py-2 md:py-[6px] ${highlight(index, i) ? "bg-modal-bg" : ""}`}
                   onClick={() => {
                     onClick(index, i);
                   }}
