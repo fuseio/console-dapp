@@ -27,7 +27,7 @@ const AddToken = () => {
 
   const getTokenDetails = (token: string) => {
     const tokenDetails = appConfig.wrappedBridge.fuse.tokens.find(
-      (t) => t.symbol === token
+      (t) => t.symbol === token || t.receiveToken?.symbol === token
     );
     return tokenDetails;
   };
