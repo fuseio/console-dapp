@@ -7,6 +7,8 @@ import { Address } from "abitype";
 import { createPublicClient, http } from "viem";
 import { fetchTokenPrice } from "@/lib/api";
 
+let nativePricePromise: any;
+
 export interface FeeStateType {
   isGasFeeLoading: boolean;
   isSourceGasFeeLoading: boolean;
@@ -41,7 +43,10 @@ export const estimateOriginalFee = createAsyncThunk(
   ) => {
     return new Promise<any>(async (resolve, reject) => {
       thunkAPI.dispatch(estimateSourceFee(rpcUrl));
-      thunkAPI.dispatch(fetchNativePrice(tokenId));
+      if (nativePricePromise) {
+        nativePricePromise.abort();
+      }
+      nativePricePromise = thunkAPI.dispatch(fetchNativePrice(tokenId));
       estimateOriginalNativeFee(contractAddress, rpcUrl)
         .then((fee) => {
           let feeFloat = parseFloat(ethers.utils.formatEther(fee));
@@ -72,7 +77,10 @@ export const estimateWrappedFee = createAsyncThunk(
   ) => {
     return new Promise<any>(async (resolve, reject) => {
       thunkAPI.dispatch(estimateSourceFee(rpcUrl));
-      thunkAPI.dispatch(fetchNativePrice(tokenId));
+      if (nativePricePromise) {
+        nativePricePromise.abort();
+      }
+      nativePricePromise = thunkAPI.dispatch(fetchNativePrice(tokenId));
       estimateWrappedNativeFee(contractAddress, lzChainId, rpcUrl)
         .then((fee) => {
           let feeFloat = parseFloat(ethers.utils.formatEther(fee));
