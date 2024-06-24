@@ -161,7 +161,7 @@ export const bridgeOriginalTokens = createAsyncThunk(
             dstChainId,
           });
           thunkAPI.dispatch(
-            checkandToggleAddTokenToast(symbol)
+            checkandToggleAddTokenToast(tokenId)
           )
           thunkAPI.dispatch(
             updateTransactions({

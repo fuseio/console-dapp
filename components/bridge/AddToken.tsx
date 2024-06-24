@@ -26,8 +26,9 @@ const AddToken = () => {
   }, [tokenSlice.token]);
 
   const getTokenDetails = (token: string) => {
+    console.log(appConfig.wrappedBridge.fuse.tokens);
     const tokenDetails = appConfig.wrappedBridge.fuse.tokens.find(
-      (t) => t.symbol === token
+      (t) => t.coinGeckoId === token
     );
     return tokenDetails;
   };
@@ -73,12 +74,12 @@ const AddToken = () => {
               </span>
               <div className="px-10 py-5 rounded-[14px] border-[1px] w-full border-[#D2D5D8] mt-6 flex items-center justify-between">
                 <Image
-                  src={getTokenDetails(tokenSlice.token as string)?.icon ?? ''}
+                  src={getTokenDetails(tokenSlice.token as string)?.icon ?? ""}
                   alt="token"
                   className="w-[10%]"
                 />
                 <span className="text-sm font-semibold ml-2 w-[20%]">
-                  {tokenSlice.token}
+                  {getTokenDetails(tokenSlice.token as string)?.symbol}
                 </span>
                 <span className="text-base text-[#666] w-[60%] break-all">
                   {getTokenDetails(tokenSlice.token as string)?.address}
