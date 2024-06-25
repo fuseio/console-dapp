@@ -26,7 +26,6 @@ const AddToken = () => {
   }, [tokenSlice.token]);
 
   const getTokenDetails = (token: string) => {
-    console.log(appConfig.wrappedBridge.fuse.tokens);
     const tokenDetails = appConfig.wrappedBridge.fuse.tokens.find(
       (t) => t.coinGeckoId === token
     );
