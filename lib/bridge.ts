@@ -32,6 +32,10 @@ export const bridgeConfig: BridgeConfigLike = {
       address: "0x081dF5af5d022D4A4a4520D4D0D336B8432fDBBb",
       chainId: 102,
     },
+    {
+      address: "0xe453d6649643F1F460C371dC3D1da98F7922fe51",
+      chainId: 184,
+    },
   ],
   wrapped: [
     {
@@ -58,6 +62,10 @@ export const bridgeConfig: BridgeConfigLike = {
       address: "0xADef29442A11ad9308aC5D012965c887Cf2A53D3",
       chainId: 102,
     },
+    {
+      address: "0x6041d22c7458A974Cb6E752D75D03D74dcCFf522",
+      chainId: 184,
+    },
   ],
   originalFuse: [
     {
@@ -83,6 +91,10 @@ export const bridgeConfig: BridgeConfigLike = {
     {
       address: "0x6bd341B6C7d6123D28d3DDee6A65d441DbAC1E90",
       chainId: 102,
+    },
+    {
+      address: "0x691118FBDa4B78747B4C1B883ae4396Dac885651",
+      chainId: 184,
     },
   ],
   tokens: [
@@ -141,6 +153,15 @@ export const bridgeConfig: BridgeConfigLike = {
         isNative: false,
         address: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
       },
+      {
+        chainId: 184,
+        decimals: 6,
+        symbol: "USDC",
+        name: "USDC Coin",
+        isBridged: false,
+        isNative: false,
+        address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      },
     ],
     [
       {
@@ -196,6 +217,15 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: true,
         isNative: true,
         address: "0x5857c96DaE9cF8511B08Cb07f85753C472D36Ea3",
+      },
+      {
+        chainId: 184,
+        decimals: 18,
+        symbol: "FUSE",
+        name: "FUSE",
+        isBridged: true,
+        isNative: true,
+        address: "0x01facC69EC7360640AA5898E852326752801674A",
       },
     ],
     [
@@ -322,6 +352,19 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+        receiveToken: {
+          name: "Wrapped Ether",
+          symbol: "WETH",
+        },
+      },
+      {
+        chainId: 184,
+        decimals: 18,
+        symbol: "ETH",
+        name: "Ether",
+        isBridged: false,
+        isNative: true,
+        address: "0x4200000000000000000000000000000000000006",
         receiveToken: {
           name: "Wrapped Ether",
           symbol: "WETH",
