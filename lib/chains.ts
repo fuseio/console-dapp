@@ -7,6 +7,7 @@ import arbiLogo from "@/assets/arbi";
 import optimismLogo from "@/assets/optimism";
 import eth from "@/public/eth.png";
 import bnb from "@/public/bnb.png";
+import base from "@/assets/base.svg";
 
 export const chains: ChainConfigLike[] = [
   {
@@ -55,5 +56,15 @@ export const chains: ChainConfigLike[] = [
     rpc: "https://weathered-side-brook.bsc.quiknode.pro/f11b337cb3411c96e514504308b95f17288330f4/",
     logo: "",
     tokenId: "binancecoin"
+  },
+  {
+    chainName: "Base",
+    lzChainId: 184,
+    icon: base,
+    chainId: 8453,
+    rpc: `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_BASE_API_KEY}`,
+    logo: "",
+    tokenId: "base",
+    gasTokenId: "ethereum"
   },
 ];

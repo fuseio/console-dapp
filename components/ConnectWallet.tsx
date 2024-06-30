@@ -16,13 +16,14 @@ import {
 } from "wagmi";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import { eclipseAddress, evmDecimals, path, screenMediumWidth } from "@/lib/helpers";
-import { arbitrum, polygon, fuse, optimism, bsc, mainnet } from "wagmi/chains";
+import { arbitrum, polygon, fuse, optimism, bsc, mainnet, base } from "wagmi/chains";
 import fuseIcon from "@/assets/fuse-icon.svg";
 import polygonIcon from "@/assets/polygon-icon.svg";
 import optimismIcon from "@/assets/optimism-icon.svg";
 import arbitrumIcon from "@/assets/arbitrum-icon.svg";
 import bscLogo from "@/assets/bnb-icon.svg";
 import ethLogo from "@/assets/ethereum-icon.svg";
+import baseIcon from "@/assets/base.svg";
 import { useMediaQuery } from "usehooks-ts";
 import qr from "@/assets/qr.svg";
 import disconnectIcon from "@/assets/disconnect.svg";
@@ -72,6 +73,7 @@ const icons: Icons = {
   [arbitrum.id]: arbitrumIcon,
   [mainnet.id]: ethLogo,
   [bsc.id]: bscLogo,
+  [base.id]: baseIcon,
 };
 
 type UsdTokens = {
@@ -85,6 +87,7 @@ const usdTokens: UsdTokens = {
   [arbitrum.id]: "arbitrum",
   [mainnet.id]: "ethereum",
   [bsc.id]: "binancecoin",
+  [base.id]: "base",
 };
 
 const ConnectWallet = ({
