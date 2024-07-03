@@ -302,5 +302,15 @@
   },
   "0x54A4Bf1bE4D1CF94F23487665Ac0bC31F17418EA": {
     "name": "0x54A4Bf1bE4D1CF94F23487665Ac0bC31F17418EA"
+  },
+  "0x257a376074bca088499cddefb1fed3edd68f85f9": {
+    "name": "Voltage Finance IV",
+    "image": "logos/Voltage Finance.jpg",
+    "website": "https://voltage.finance/"
+  },
+  "0xf3d88300db5a6b471e1d925e48423d1b72ed2f42": {
+    "name": "Voltage Finance V",
+    "image": "logos/Voltage Finance.jpg",
+    "website": "https://voltage.finance/"
   }
 }
