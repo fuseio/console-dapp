@@ -457,6 +457,66 @@ export const bridgeConfig: BridgeConfigLike = {
         isNative: true,
         address: "0x"
       },
+    ],
+    [
+      {
+        chainId: 138,
+        decimals: 18,
+        symbol: "MKR",
+        name: "Maker",
+        isBridged: true,
+        isNative: false,
+        address: "0xd1b300AEc14c5DDB934C5BBcBA4E9f7463b9e3CA"
+      },
+      {
+        chainId: 101,
+        decimals: 18,
+        symbol: "MKR",
+        name: "Maker",
+        isBridged: false,
+        isNative: false,
+        address: "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2"
+      },
+    ],
+    [
+      {
+        chainId: 138,
+        decimals: 18,
+        symbol: "DAI",
+        name: "Dai Stablecoin",
+        isBridged: true,
+        isNative: false,
+        address: "0x440B63C0e7b21a57A3784D8AB8E819B9dA383FDf"
+      },
+      {
+        chainId: 101,
+        decimals: 18,
+        symbol: "DAI",
+        name: "Dai Stablecoin",
+        isBridged: false,
+        isNative: false,
+        address: "0x6b175474e89094c44da98b954eedeac495271d0f"
+      },
+    ],
+    [
+      {
+        chainId: 138,
+        decimals: 18,
+        symbol: "stETH",
+        name: "stETH",
+        isBridged: true,
+        isNative: false,
+        address: "0x3c5DD992D72D082B44c7505015E09fdb1e975eC2"
+      },
+      {
+        chainId: 101,
+        decimals: 18,
+        symbol: "stETH",
+        name: "stETH",
+        isBridged: false,
+        isNative: false,
+        address: "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"
+      },
     ]
   ],
 };
