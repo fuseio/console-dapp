@@ -7,6 +7,9 @@ import eth from "@/public/eth.png";
 import fdm from "@/assets/fdm.svg";
 import bnb from "@/assets/bnb.svg";
 import matic from "@/assets/matic-token.svg";
+import maker from "@/assets/maker-token.svg";
+import dai from "@/assets/dai-logo.svg";
+import steth from "@/assets/steth-logo.svg";
 
 export const coins: CoinConfigLike[] = [
   {
@@ -64,5 +67,26 @@ export const coins: CoinConfigLike[] = [
     decimals: 18,
     icon: matic,
     coinGeckoId: "matic-network",
+  },
+  {
+    name: "Maker",
+    symbol: "MKR",
+    decimals: 18,
+    icon: maker,
+    coinGeckoId: "maker",
+  },
+  {
+    name: "Dai Stablecoin",
+    symbol: "DAI",
+    decimals: 18,
+    icon: dai,
+    coinGeckoId: "dai",
+  },
+  {
+    name: "stETH",
+    symbol: "stETH",
+    decimals: 18,
+    icon: steth,
+    coinGeckoId: "staked-ether",
   },
 ];
