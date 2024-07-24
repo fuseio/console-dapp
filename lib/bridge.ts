@@ -466,7 +466,7 @@ export const bridgeConfig: BridgeConfigLike = {
         name: "Maker",
         isBridged: true,
         isNative: false,
-        address: "0xd1b300AEc14c5DDB934C5BBcBA4E9f7463b9e3CA"
+        address: "0x303CC3f27034C4E3933DaB8E601178eD3d2A1E3c"
       },
       {
         chainId: 101,
