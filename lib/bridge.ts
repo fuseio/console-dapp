@@ -486,7 +486,7 @@ export const bridgeConfig: BridgeConfigLike = {
         name: "Dai Stablecoin",
         isBridged: true,
         isNative: false,
-        address: "0x440B63C0e7b21a57A3784D8AB8E819B9dA383FDf"
+        address: "0x2502F488D481Df4F5054330C71b95d93D41625C2"
       },
       {
         chainId: 101,
@@ -506,7 +506,7 @@ export const bridgeConfig: BridgeConfigLike = {
         name: "stETH",
         isBridged: true,
         isNative: false,
-        address: "0x3c5DD992D72D082B44c7505015E09fdb1e975eC2"
+        address: "0x587983b895dB50dDaBC0Aac8aDC592b29bB30D80"
       },
       {
         chainId: 101,
