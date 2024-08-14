@@ -344,10 +344,10 @@ const Home = () => {
               <div className="flex flex-col gap-[30px] rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
                 <div className="h-[194px] md:h-auto">
                   <p className="text-3xl text-fuse-black font-semibold">
-                    Starter plan
+                    Starter Plan
                   </p>
                   <p className="text-night opacity-60 mt-[18.82px] mb-[30.7px] max-w-[300px]">
-                    Unleash the power of your buissiness with the starter plan
+                    Unleash the power of your buissiness with the Starter Plan
                   </p>
                   <div className="flex items-baseline gap-[10.63px]">
                     <p className="text-[50px]/[60.25px] font-semibold">
@@ -416,7 +416,7 @@ const Home = () => {
                 <div className="h-[194px] md:h-auto">
                   <div className="flex items-center gap-[13.46px]">
                     <p className="text-3xl text-fuse-black font-semibold">
-                      Pro plan
+                      Pro Plan
                     </p>
                     <div className="border border-2 rounded-full px-3 py-1.5">
                       <p className="text-base leading-none font-semibold">
@@ -429,7 +429,7 @@ const Home = () => {
                   </p>
                   <div className="flex items-baseline gap-[10.63px]">
                     <p className="text-[50px]/[60.25px] font-semibold">
-                      $10
+                      $100
                     </p>
                     <p className="text-night opacity-60">
                       Per month
@@ -493,10 +493,10 @@ const Home = () => {
               <div className="flex flex-col gap-[30px] rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
                 <div className="h-[194px] md:h-auto">
                   <p className="text-3xl text-fuse-black font-semibold">
-                    Premium Plan
+                    Enterprise Plan
                   </p>
                   <p className="text-night opacity-60 mt-[18.82px] mb-[30.7px]">
-                    Maximize your business&apos;s potential with the Premium Plan
+                    Maximize your business&apos;s potential with the Enterprise Plan
                   </p>
                   <div className="flex items-baseline gap-[10.63px]">
                     <p className="text-3xl text-ghost font-semibold">
@@ -525,7 +525,7 @@ const Home = () => {
                       height={10.5}
                     />
                     <p>
-                      Unlimited transactions and RPC
+                      Dedicated support
                     </p>
                   </div>
                   <div className="flex items-center gap-[13.98px]">
@@ -536,18 +536,7 @@ const Home = () => {
                       height={10.5}
                     />
                     <p>
-                      1M API RPC calls
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-[13.98px]">
-                    <Image
-                      src={checkmark}
-                      alt="checkmark"
-                      width={15.64}
-                      height={10.5}
-                    />
-                    <p>
-                      1M API calls
+                      Early access to upcoming features
                     </p>
                   </div>
                 </div>
