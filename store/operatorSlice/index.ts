@@ -9,8 +9,7 @@ import { RootState } from "../store";
 import { Address } from "abitype";
 import { parseEther, parseUnits } from "ethers/lib/utils";
 import { CONFIG, NEXT_PUBLIC_FUSE_API_BASE_URL } from "@/lib/config";
-import { PaymasterAbi } from "@/lib/abi/Paymaster";
-import { getSponsorIdBalance } from "@/lib/contractInteract";
+import { depositPaymaster, getSponsorIdBalance, withdrawFunds } from "@/lib/contractInteract";
 import * as amplitude from "@amplitude/analytics-browser";
 import { getERC20Balance } from "@/lib/erc20";
 import { ERC20ABI } from "@/lib/abi/ERC20";
@@ -67,6 +66,7 @@ export interface OperatorStateType {
   isTopupAccountModalOpen: boolean;
   isWithdrawModalOpen: boolean;
   isTopupPaymasterModalOpen: boolean;
+  isWithdrawPaymasterModalOpen: boolean;
   isGeneratingSecretApiKey: boolean;
   isYourSecretKeyModalOpen: boolean;
   isRollSecretKeyModalOpen: boolean;
@@ -74,6 +74,7 @@ export interface OperatorStateType {
   isFetchingErc20Balance: boolean;
   isCreatingPaymaster: boolean;
   isFundingPaymaster: boolean;
+  isWithdrawingPaymaster: boolean;
   isWithdrawing: boolean;
   isCheckingActivation: boolean;
   isFetchingSponsoredTransactions: boolean;
@@ -108,6 +109,7 @@ const INIT_STATE: OperatorStateType = {
   isTopupAccountModalOpen: false,
   isWithdrawModalOpen: false,
   isTopupPaymasterModalOpen: false,
+  isWithdrawPaymasterModalOpen: false,
   isGeneratingSecretApiKey: false,
   isYourSecretKeyModalOpen: false,
   isRollSecretKeyModalOpen: false,
@@ -115,6 +117,7 @@ const INIT_STATE: OperatorStateType = {
   isFetchingErc20Balance: false,
   isCreatingPaymaster: false,
   isFundingPaymaster: false,
+  isWithdrawingPaymaster: false,
   isWithdrawing: false,
   isCheckingActivation: false,
   isFetchingSponsoredTransactions: false,
@@ -353,19 +356,16 @@ export const createPaymaster = createAsyncThunk<
 export const fundPaymaster = createAsyncThunk<
   any,
   {
-    signer: Signer;
-    amount: string;
+    amount: number;
   },
   { state: RootState }
 >(
   "OPERATOR/FUND_PAYMASTER",
   async (
     {
-      signer,
       amount,
     }: {
-      signer: Signer;
-      amount: string;
+      amount: number;
     },
     thunkAPI
   ) => {
@@ -373,28 +373,45 @@ export const fundPaymaster = createAsyncThunk<
       try {
         const state = thunkAPI.getState();
         const operatorState: OperatorStateType = state.operator;
-        const paymasterContract = new ethers.Contract(CONFIG.paymasterAddress, PaymasterAbi);
-        const value = parseEther(amount);
-        const data = ethers.utils.arrayify(paymasterContract.interface.encodeFunctionData(
-          "depositFor",
-          [operatorState.operator.project.sponsorId]
-        ));
-
-        const fuseSDK = await FuseSDK.init(
-          operatorState.operator.project.publicKey,
-          signer,
-          {
-            baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
-            jwtToken: operatorState.accessToken,
-            signature: operatorState.signature
-          }
-        );
-        const userOp = await fuseSDK.callContract(CONFIG.paymasterAddress, value, data);
-        const result = await userOp?.wait();
-        const transactionHash = result?.transactionHash;
+        const transactionHash = await depositPaymaster(amount.toString(), operatorState.operator.project.sponsorId)
 
         if (transactionHash) {
-          amplitude.track("Paymaster Balance Funded", { amount: parseFloat(amount) });
+          amplitude.track("Paymaster Balance Funded", { amount });
+          resolve(transactionHash);
+        } else {
+          reject();
+        }
+      } catch (error) {
+        console.log(error);
+        reject(error);
+      }
+    });
+  }
+);
+
+export const withdrawPaymaster = createAsyncThunk<
+  any,
+  {
+    amount: number;
+  },
+  { state: RootState }
+>(
+  "OPERATOR/WITHDRAW_PAYMASTER",
+  async (
+    {
+      amount,
+    }: {
+      amount: number;
+    },
+    thunkAPI
+  ) => {
+    return new Promise<any>(async (resolve, reject) => {
+      try {
+        const state = thunkAPI.getState();
+        const operatorState: OperatorStateType = state.operator;
+        const transactionHash = await withdrawFunds(amount.toString(), operatorState.operator.project.sponsorId)
+
+        if (transactionHash) {
           resolve(transactionHash);
         } else {
           reject();
@@ -609,6 +626,9 @@ const operatorSlice = createSlice({
     setIsTopupPaymasterModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isTopupPaymasterModalOpen = action.payload
     },
+    setIsWithdrawPaymasterModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isWithdrawPaymasterModalOpen = action.payload
+    },
     setIsYourSecretKeyModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isYourSecretKeyModalOpen = action.payload
     },
@@ -784,6 +804,17 @@ const operatorSlice = createSlice({
         state.isFundingPaymaster = false;
         state.isTopupPaymasterModalOpen = false;
       })
+      .addCase(withdrawPaymaster.pending, (state) => {
+        state.isWithdrawingPaymaster = true;
+      })
+      .addCase(withdrawPaymaster.fulfilled, (state) => {
+        state.isWithdrawingPaymaster = false;
+        state.isWithdrawPaymasterModalOpen = false;
+      })
+      .addCase(withdrawPaymaster.rejected, (state) => {
+        state.isWithdrawingPaymaster = false;
+        state.isWithdrawPaymasterModalOpen = false;
+      })
       .addCase(fetchErc20Balance.pending, (state) => {
         state.isFetchingErc20Balance = true;
       })
@@ -845,6 +876,7 @@ export const {
   setIsTopupAccountModalOpen,
   setIsWithdrawModalOpen,
   setIsTopupPaymasterModalOpen,
+  setIsWithdrawPaymasterModalOpen,
   setIsYourSecretKeyModalOpen,
   setIsRollSecretKeyModalOpen,
   setRedirect,

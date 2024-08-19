@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import Button from "@/components/ui/Button";
-import rightArrow from "@/assets/right-arrow.svg"
 import { buildSubMenuItems, evmDecimals, signDataMessage } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useBlockNumber, useSignMessage } from "wagmi";
 import { fuse } from "wagmi/chains";
-import { checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, validateOperator } from "@/store/operatorSlice";
+import { OperatorStateType, checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsTopupPaymasterModalOpen, setIsWithdrawPaymasterModalOpen, validateOperator } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
@@ -32,6 +31,7 @@ import hide from "@/assets/hide.svg";
 import { formatUnits } from "viem";
 import { SignMessageVariables } from "wagmi/query";
 import contactSupport from "@/assets/contact-support.svg";
+import WithdrawPaymasterModal from "@/components/dashboard/WithdrawPaymasterModal";
 
 type CreateOperatorWalletProps = {
   accessToken: string;
@@ -48,8 +48,7 @@ type ConnectOperatorWalletProps = {
 type OperatorAccountBalanceProps = {
   chain: any;
   balanceSlice: BalanceStateType;
-  balance: any;
-  isActivated: boolean;
+  operatorSlice: OperatorStateType;
   dispatch: ThunkDispatch<any, undefined, AnyAction> & Dispatch<AnyAction>;
 }
 
@@ -126,12 +125,12 @@ const ConnectEoaWallet = () => {
   )
 }
 
-const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dispatch }: OperatorAccountBalanceProps) => {
+const OperatorAccountBalance = ({ chain, balanceSlice, operatorSlice, dispatch }: OperatorAccountBalanceProps) => {
   useEffect(() => {
     const fiveSecondInMillisecond = 5000;
 
     const intervalId = setInterval(() => {
-      if (isActivated) {
+      if (operatorSlice.isActivated) {
         dispatch(fetchSponsoredTransactions());
       } else {
         dispatch(checkIsActivated());
@@ -141,18 +140,18 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
     return () => {
       clearInterval(intervalId);
     }
-  }, [dispatch, isActivated])
+  }, [dispatch, operatorSlice.isActivated])
 
   return (
     <div className="flex flex-col justify-between items-start">
       <div className="flex flex-col gap-[18px] md:mb-4">
         <div className="flex items-center gap-3.5 text-lg text-text-dark-gray">
-          Operator account balance
+          Paymaster balance
           <div className="group relative cursor-pointer w-4 h-4 bg-black rounded-full flex justify-center items-center text-xs leading-none text-white">
             ?
             <div className="tooltip-text hidden bottom-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg group-hover:block text-black text-sm font-medium">
               <p className="mb-1">
-                The operator account balance is needed in order to be able to use Paymaster and later pay for Premium subscriptions.
+                Paymaster balance is needed in order to be able to use Paymaster and later pay for Enterprise subscriptions.
               </p>
               <p>
                 You can freely deposit and withdraw any tokens available on the Fuse Network.
@@ -162,20 +161,18 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
         </div>
         <div className="flex items-end md:flex-wrap gap-x-[30px] md:gap-x-4">
           <h1 className="font-bold text-5xl leading-none whitespace-nowrap">
-            {(chain && chain.id === fuse.id) ?
-              new Intl.NumberFormat().format(
-                parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0")
-              ) :
-              0
+            {operatorSlice.isFetchingSponsorIdBalance ?
+              <span className="px-3 py-1 mr-1 rounded-md animate-pulse bg-white/30"></span> :
+              (chain && chain.id === fuse.id) ?
+                new Intl.NumberFormat().format(parseFloat(operatorSlice.sponsorIdBalance)) :
+                0
             } FUSE
           </h1>
           {balanceSlice.isUsdPriceLoading ?
             <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
             <p className="text-[20px]/7 font-medium">
               ${(chain && chain.id === fuse.id) ?
-                new Intl.NumberFormat().format(
-                  parseFloat((parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0.00") * balanceSlice.price).toString())
-                ) :
+                new Intl.NumberFormat().format(parseFloat(operatorSlice.sponsorIdBalance) * balanceSlice.price) :
                 "0.00"
               }
             </p>
@@ -188,7 +185,7 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
           className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black rounded-full hover:text-black hover:bg-success"
           padding="py-[18.5px] px-[29.5px]"
           onClick={() => {
-            dispatch(setIsTopupAccountModalOpen(true));
+            dispatch(setIsTopupPaymasterModalOpen(true));
           }}
         />
         <Button
@@ -196,7 +193,7 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
           className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black rounded-full hover:text-black hover:bg-success"
           padding="py-[18.5px] px-[29.5px]"
           onClick={() => {
-            dispatch(setIsWithdrawModalOpen(true));
+            dispatch(setIsWithdrawPaymasterModalOpen(true));
           }}
         />
       </div>
@@ -287,6 +284,7 @@ const Home = () => {
       <TopupAccountModal />
       <WithdrawModal balance={formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0"} />
       <TopupPaymasterModal balance={formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0"} />
+      <WithdrawPaymasterModal balance={operatorSlice.sponsorIdBalance} />
       <YourSecretKeyModal />
       <RollSecretKeyModal />
       {operatorSlice.isContactDetailsModalOpen && <ContactDetailsModal />}
@@ -350,8 +348,7 @@ const Home = () => {
                 <OperatorAccountBalance
                   chain={chain}
                   balanceSlice={balanceSlice}
-                  balance={balance}
-                  isActivated={operatorSlice.isActivated}
+                  operatorSlice={operatorSlice}
                   dispatch={dispatch}
                 /> :
                 operatorSlice.isOperatorExist ?

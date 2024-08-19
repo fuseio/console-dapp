@@ -224,3 +224,59 @@ export const getSponsorIdBalance = async (sponsorId: string) => {
   });
   return formatEther(balance as bigint);
 };
+
+export const depositPaymaster = async (amount: string, sponsorId: string) => {
+  const walletClient = await getWalletClient(config, { chainId: fuse.id });
+  const { connector } = getAccount(config);
+  if (walletClient) {
+    const accounts = await walletClient.getAddresses();
+    const account = accounts[0];
+    const tx = await writeContract(config, {
+      ...paymasterContractProperties,
+      account,
+      functionName: "depositFor",
+      value: parseEther(amount),
+      args: [sponsorId],
+      connector,
+      __mode: "prepared",
+    });
+    try {
+      await waitForTransactionReceipt(config, {
+        chainId: fuse.id,
+        hash: tx,
+      });
+    } catch (e) {
+      console.log(e);
+    } finally {
+      return tx;
+    }
+  }
+};
+
+
+export const withdrawFunds = async (amount: string, sponsorId: string) => {
+  const walletClient = await getWalletClient(config, { chainId: fuse.id });
+  const { connector } = getAccount(config);
+  if (walletClient) {
+    const accounts = await walletClient.getAddresses();
+    const account = accounts[0];
+    const tx = await writeContract(config, {
+      ...paymasterContractProperties,
+      account,
+      functionName: "withdrawFunds",
+      args: [sponsorId, parseEther(amount)],
+      connector,
+      __mode: "prepared",
+    });
+    try {
+      await waitForTransactionReceipt(config, {
+        chainId: fuse.id,
+        hash: tx,
+      });
+    } catch (e) {
+      console.log(e);
+    } finally {
+      return tx;
+    }
+  }
+};

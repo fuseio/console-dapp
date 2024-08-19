@@ -23,3 +23,15 @@
   border-style: solid;
   border-color: transparent transparent black transparent;
 }
+
+/* Chrome, Safari, Edge, Opera */
+.paymaster-modal-amount::-webkit-outer-spin-button,
+.paymaster-modal-amount::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.paymaster-modal-amount[type=number] {
+  -moz-appearance: textfield;
+}
