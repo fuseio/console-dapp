@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.6.1",
-    "@fuseio/fusebox-web-sdk": "^0.3.4",
+    "@fuseio/fusebox-web-sdk": "^0.3.8",
     "@layerzerolabs/scan-client": "^0.0.8",
     "@layerzerolabs/ui-core": "^0.2.63",
     "@layerzerolabs/ui-erc20-sdk": "^1.0.2",
