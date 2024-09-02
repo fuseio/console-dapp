@@ -64,7 +64,7 @@ const Home = () => {
     <div className="w-full bg-light-gray">
       <div className="w-full flex flex-col items-center">
         <div className="w-8/9 flex flex-col mt-[30.84px] md:mt-12 md:w-9/10 max-w-7xl">
-          <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="welcome" className="md:flex md:justify-center" liClassName="w-28" />
+          <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="welcome" className="md:flex md:justify-center" />
         </div>
       </div>
       <div className="w-full flex flex-col items-center">

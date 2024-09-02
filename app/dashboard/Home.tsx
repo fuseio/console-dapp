@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useBlockNumber, useSignMessage } from "wagmi";
 import { fuse } from "wagmi/chains";
-import { checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, validateOperator } from "@/store/operatorSlice";
+import { OperatorStateType, checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, fetchTokenBalances, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, validateOperator } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
@@ -49,7 +49,7 @@ type OperatorAccountBalanceProps = {
   chain: any;
   balanceSlice: BalanceStateType;
   balance: any;
-  isActivated: boolean;
+  operatorSlice: OperatorStateType;
   dispatch: ThunkDispatch<any, undefined, AnyAction> & Dispatch<AnyAction>;
 }
 
@@ -126,12 +126,12 @@ const ConnectEoaWallet = () => {
   )
 }
 
-const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dispatch }: OperatorAccountBalanceProps) => {
+const OperatorAccountBalance = ({ chain, balanceSlice, balance, operatorSlice, dispatch }: OperatorAccountBalanceProps) => {
   useEffect(() => {
     const fiveSecondInMillisecond = 5000;
 
     const intervalId = setInterval(() => {
-      if (isActivated) {
+      if (operatorSlice.isActivated) {
         dispatch(fetchSponsoredTransactions());
       } else {
         dispatch(checkIsActivated());
@@ -141,7 +141,13 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
     return () => {
       clearInterval(intervalId);
     }
-  }, [dispatch, isActivated])
+  }, [dispatch, operatorSlice.isActivated])
+
+  useEffect(() => {
+    if (operatorSlice.operator.user.smartContractAccountAddress) {
+      dispatch(fetchTokenBalances({ address: operatorSlice.operator.user.smartContractAccountAddress }));
+    }
+  }, [dispatch, operatorSlice.operator.user.smartContractAccountAddress])
 
   return (
     <div className="flex flex-col justify-between items-start">
@@ -161,24 +167,15 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
           </div>
         </div>
         <div className="flex items-end md:flex-wrap gap-x-[30px] md:gap-x-4">
-          <h1 className="font-bold text-5xl leading-none whitespace-nowrap">
-            {(chain && chain.id === fuse.id) ?
-              new Intl.NumberFormat().format(
-                parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0")
-              ) :
-              0
-            } FUSE
-          </h1>
-          {balanceSlice.isUsdPriceLoading ?
-            <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
-            <p className="text-[20px]/7 font-medium">
+          {operatorSlice.isFetchingTokenBalances || balanceSlice.isUsdPriceLoading ?
+            <span className="w-20 h-10 rounded-md animate-pulse bg-white/80"></span> :
+            <h1 className="font-bold text-5xl leading-none whitespace-nowrap">
               ${(chain && chain.id === fuse.id) ?
-                new Intl.NumberFormat().format(
-                  parseFloat((parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0.00") * balanceSlice.price).toString())
-                ) :
-                "0.00"
-              }
-            </p>
+              new Intl.NumberFormat().format(
+                (parseFloat(balance?.formatted ?? "0") * balanceSlice.price) + operatorSlice.totalTokenBalance
+              ) :
+              "0.00"}
+            </h1>
           }
         </div>
       </div>
@@ -293,7 +290,7 @@ const Home = () => {
       {operatorSlice.isAccountCreationModalOpen && <AccountCreationModal />}
       {operatorSlice.isCongratulationModalOpen && <CongratulationModal />}
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
-        <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="md:flex md:justify-center" liClassName="w-28" />
+        <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="md:flex md:justify-center" />
         <div className={`flex justify-between md:flex-col gap-2 mt-[66.29px] md:mt-14 ${operatorSlice.isActivated ? "mb-[70px]" : "mb-[42px]"} md:mb-[50px]`}>
           <h1 className="text-5xl md:text-[32px] text-fuse-black font-semibold leading-none md:leading-tight md:text-center">
             Operator Dashboard
@@ -351,7 +348,7 @@ const Home = () => {
                   chain={chain}
                   balanceSlice={balanceSlice}
                   balance={balance}
-                  isActivated={operatorSlice.isActivated}
+                  operatorSlice={operatorSlice}
                   dispatch={dispatch}
                 /> :
                 operatorSlice.isOperatorExist ?

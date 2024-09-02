@@ -14,7 +14,6 @@ type NavMenuProps = {
   selected?: string;
   isResponsive?: boolean;
   className?: string;
-  liClassName?: string;
 };
 
 type OpenMenuItemEvent = {
@@ -32,7 +31,6 @@ const NavMenu = ({
   selected = "",
   isResponsive = false,
   className = `items-center justify-between w-auto order-1 absolute left-[50%] -translate-x-[50%] rounded-md ${isResponsive ? "md:w-full md:translate-y-8 md:top-1/2 md:bg-black" : ""}`,
-  liClassName = "w-20",
 }: NavMenuProps) => {
   const matches = useMediaQuery("(min-width: 768px)");
   const { address, connector } = useAccount();
@@ -47,7 +45,7 @@ const NavMenu = ({
               <Link
                 href={isAuthenticated && path.BUILD.includes(item.title.toLowerCase()) ? path.DASHBOARD : item.link}
                 key={index}
-                className={`flex justify-center items-center rounded-full h-9 px-4 hover:bg-lightest-gray ${isResponsive ? "md:w-full md:justify-start" : ""} ${liClassName} ${(item.title.toLowerCase() === selected ? `bg-lightest-gray py-2.5 pointer-events-none ${isResponsive ? "md:text-white" : ""}` : `cursor-pointer group ${isResponsive ? "md:text-gray" : ""}`)}`}
+                className={`flex justify-center items-center rounded-full h-9 px-4 hover:bg-lightest-gray min-w-20 ${isResponsive ? "md:w-full md:justify-start" : ""} ${(item.title.toLowerCase() === selected ? `bg-lightest-gray py-2.5 pointer-events-none ${isResponsive ? "md:text-white" : ""}` : `cursor-pointer group ${isResponsive ? "md:text-gray" : ""}`)}`}
                 aria-current={
                   item.title.toLowerCase() === selected
                     ? "page"

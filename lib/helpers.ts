@@ -94,6 +94,10 @@ export const buildSubMenuItems = [
     title: "Dashboard",
     link: "/dashboard",
   },
+  {
+    title: "Billing & Plan",
+    link: "#",
+  },
 ];
 
 export const splitSecretKey = (secretKey: string) => {
