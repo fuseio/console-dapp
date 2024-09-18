@@ -590,8 +590,13 @@ export const fetchTokenBalances = createAsyncThunk(
     try {
       const tokenBalances = await fetchAddressTokenBalances(address);
       let totalTokenBalance = 0;
-      tokenBalances.map((tokenBalance) => {
-        totalTokenBalance += parseFloat(formatUnits(BigInt(tokenBalance.value), parseFloat(tokenBalance.token.decimals))) * parseFloat(tokenBalance.token.exchange_rate);
+      tokenBalances.forEach((tokenBalance) => {
+        const value = parseFloat(tokenBalance.value) || 0;
+        const decimals = parseInt(tokenBalance.token.decimals) || 18;
+        const exchangeRate = parseFloat(tokenBalance.token.exchange_rate) || 0;
+
+        const tokenValue = value / Math.pow(10, decimals);
+        totalTokenBalance += tokenValue * exchangeRate;
       });
       return totalTokenBalance;
     } catch (error) {
