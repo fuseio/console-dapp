@@ -16,6 +16,7 @@ import { formatUnits } from "viem";
 import { evmDecimals } from "@/lib/helpers";
 import Image from "next/image";
 import { ValidatorType } from "@/lib/types";
+import { getInflation } from "@/lib/contractInteract";
 
 type StakeCardProps = {
   validator: ValidatorType | undefined;
@@ -45,6 +46,7 @@ const StakeCard = ({
   const [balance, setBalance] = React.useState<string>("0.0");
   const config = useConfig();
   const validatorSlice = useAppSelector(selectValidatorSlice);
+  const [inflation, setInflation] = React.useState(0.03);
 
   useEffect(() => {
     if (closed) {
@@ -76,13 +78,13 @@ const StakeCard = ({
     if (validator) {
       const reward =
         validatorSlice.fuseTokenTotalSupply *
-        0.05 *
+        inflation *
         (amt / parseFloat(validatorSlice.totalStakeAmount)) *
         (1 - parseFloat(validator.fee) / 100);
       return reward;
     }
     return 0;
-  }, [validator, validatorSlice.fuseTokenTotalSupply, validatorSlice.totalStakeAmount]);
+  }, [inflation, validator, validatorSlice.fuseTokenTotalSupply, validatorSlice.totalStakeAmount]);
 
   const getAmount = useCallback(() => {
     if (isNaN(parseFloat(amount as string))) return 0;
@@ -103,12 +105,12 @@ const StakeCard = ({
       const reward =
         (validatorSlice.fuseTokenTotalSupply /
           parseFloat(validatorSlice.totalStakeAmount)) *
-        0.05 *
+        inflation *
         (1 - parseFloat(validator.fee) / 100);
       return reward;
     }
     return 0;
-  }, [validator, validatorSlice.fuseTokenTotalSupply, validatorSlice.totalStakeAmount]);
+  }, [inflation, validator, validatorSlice.fuseTokenTotalSupply, validatorSlice.totalStakeAmount]);
 
   const [reward, setReward] = React.useState<number>(0.0);
 
@@ -131,6 +133,12 @@ const StakeCard = ({
       else setReward(getPredictedReward(getAmount()));
     }
   }, [amount, cardMode, getAmount, getPredictedReward, validator]);
+
+  useEffect(() => {
+    (async () => {
+      setInflation(await getInflation());
+    })()
+  }, [])
 
   return (
     <div className="w-full bg-white rounded-xl p-6 flex flex-col">

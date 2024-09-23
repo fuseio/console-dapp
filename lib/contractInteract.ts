@@ -16,6 +16,7 @@ import { PaymasterAbi } from "./abi/Paymaster";
 import { config } from "./web3Auth";
 import { Contract, providers } from "ethers";
 import { Interface } from "ethers/lib/utils";
+import { BlockReward } from "./abi/BlockReward";
 
 const provider = new providers.JsonRpcProvider(CONFIG.fuseRPC);
 
@@ -25,6 +26,11 @@ export const multicallContract = new Contract(CONFIG.multiCallAddress, MULTICALL
 const contractProperties = {
   address: CONFIG.consensusAddress,
   abi: Consensus,
+};
+
+const blockRewardContractProperties = {
+  address: CONFIG.blockRewardAddress,
+  abi: BlockReward,
 };
 
 const paymasterContractProperties = {
@@ -223,4 +229,14 @@ export const getSponsorIdBalance = async (sponsorId: string) => {
     args: [sponsorId],
   });
   return formatEther(balance as bigint);
+};
+
+export const getInflation = async () => {
+  const getInflation = await publicClient().readContract({
+    ...blockRewardContractProperties,
+    functionName: "getInflation",
+    args: []
+  });
+  const divisor = 10000
+  return Number(getInflation) / divisor;
 };
