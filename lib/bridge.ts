@@ -735,7 +735,7 @@ export const bridgeConfig: BridgeConfigLike = {
         name: "mETH",
         isBridged: false,
         isNative: false,
-        address: "0x8CdF550C04Bc9B9F10938368349C9c8051A772b6",
+        address: "0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa",
       },
     ],
   ],
