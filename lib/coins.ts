@@ -12,7 +12,7 @@ import dai from "@/assets/dai-logo.svg";
 import steth from "@/assets/steth-logo.svg";
 import eeth from "@/assets/eeth.webp";
 import ezeth from "@/assets/ezeth.webp";
-import mETH from "@/assets/meth.svg";
+import mETH from "@/assets/meth.png";
 import pzeth from "@/assets/pzeth.webp";
 import reth from "@/assets/reth.svg";
 import stader from "@/assets/stader.webp";
