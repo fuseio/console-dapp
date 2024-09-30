@@ -738,5 +738,25 @@ export const bridgeConfig: BridgeConfigLike = {
         address: "0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa",
       },
     ],
+    [
+      {
+        chainId: 138,
+        decimals: 18,
+        symbol: "ETHx",
+        name: "ETHx",
+        isBridged: true,
+        isNative: false,
+        address: "0xf59db2e001aC129d0F173Bb6Bf320aC2cF7d8b70",
+      },
+      {
+        chainId: 101,
+        decimals: 18,
+        symbol: "ETHx",
+        name: "ETHx",
+        isBridged: false,
+        isNative: false,
+        address: "0xa35b1b31ce002fbf2058d22f30f95d405200a15b",
+      },
+    ],
   ],
 };

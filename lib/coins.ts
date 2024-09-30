@@ -19,6 +19,7 @@ import stader from "@/assets/stader.webp";
 import ultraeths from "@/assets/ultraeths.webp";
 import wbeth from "@/assets/wbeth.webp";
 import weeth from "@/assets/weeth.webp";
+import ethx from "@/assets/ethx.png";
 
 export const coins: CoinConfigLike[] = [
   {
@@ -167,5 +168,12 @@ export const coins: CoinConfigLike[] = [
     decimals: 18,
     icon: weeth,
     coinGeckoId: "weeth",
+  },
+  {
+    name: "ETHx",
+    symbol: "ETHx",
+    decimals: 18,
+    icon: ethx,
+    coinGeckoId: "ethx",
   },
 ];
