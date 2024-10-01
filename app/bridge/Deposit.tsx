@@ -169,16 +169,6 @@ const Deposit = ({
   useEffect(() => {
     if (chainSlice.chainId === 0 && selectedChainSection === 0) {
       dispatch(setChain(appConfig.wrappedBridge.chains[selectedChainItem]));
-      dispatch(
-        estimateOriginalFee({
-          contractAddress:
-            appConfig.wrappedBridge.chains[selectedChainItem].original,
-          rpcUrl: appConfig.wrappedBridge.chains[selectedChainItem].rpcUrl,
-          tokenId:
-            appConfig.wrappedBridge.chains[selectedChainItem].gasTokenId ||
-            appConfig.wrappedBridge.chains[selectedChainItem].tokenId,
-        })
-      );
     }
   }, [chainSlice.chainId, selectedChainSection]);
 
