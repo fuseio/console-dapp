@@ -20,7 +20,7 @@ const initOperator: Operator = {
     name: "",
     email: "",
     auth0Id: "",
-    smartContractAccountAddress: hex,
+    smartWalletAddress: hex,
   },
   project: {
     id: "",
@@ -81,7 +81,6 @@ export interface OperatorStateType {
   sponsorIdBalance: string;
   erc20Balance: string;
   redirect: string;
-  signature: string;
   accessToken: string;
   withdraw: Withdraw;
   operatorContactDetail: OperatorContactDetail;
@@ -122,7 +121,6 @@ const INIT_STATE: OperatorStateType = {
   sponsorIdBalance: "",
   erc20Balance: "",
   redirect: "",
-  signature: "",
   accessToken: "",
   withdraw: initWithdraw,
   operatorContactDetail: initOperatorContactDetail,
@@ -162,7 +160,7 @@ export const validateOperator = createAsyncThunk(
     return new Promise<any>(async (resolve, reject) => {
       const accessToken = await postValidateOperator(signData);
       if (accessToken) {
-        resolve({ accessToken, signature: signData.signature });
+        resolve({ accessToken });
       } else {
         reject();
       }
@@ -172,18 +170,12 @@ export const validateOperator = createAsyncThunk(
 
 export const fetchOperator = createAsyncThunk<
   any,
-  {
-    signer: Signer;
-  },
+  undefined,
   { state: RootState }
 >(
   "OPERATOR/FETCH_OPERATOR",
   async (
-    {
-      signer,
-    }: {
-      signer: Signer;
-    },
+    _,
     thunkAPI
   ) => {
     return new Promise<any>(async (resolve, reject) => {
@@ -191,18 +183,8 @@ export const fetchOperator = createAsyncThunk<
         const state = thunkAPI.getState();
         const operatorState: OperatorStateType = state.operator;
         const operator = await fetchCurrentOperator(operatorState.accessToken)
-        const fuseSDK = await FuseSDK.init(
-          operator.project.publicKey,
-          signer,
-          {
-            baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
-            jwtToken: operatorState.accessToken,
-            signature: operatorState.signature
-          }
-        );
-        const smartContractAccountAddress = fuseSDK.wallet.getSender() as Address;
         if (operator) {
-          resolve({ operator, smartContractAccountAddress });
+          resolve({ operator });
         } else {
           reject();
         }
@@ -217,7 +199,6 @@ export const fetchOperator = createAsyncThunk<
 export const createOperator = createAsyncThunk<
   any,
   {
-    signer: Signer;
     operatorContactDetail: OperatorContactDetail;
   },
   { state: RootState }
@@ -225,10 +206,8 @@ export const createOperator = createAsyncThunk<
   "OPERATOR/CREATE_OPERATOR",
   async (
     {
-      signer,
       operatorContactDetail,
     }: {
-      signer: Signer;
       operatorContactDetail: OperatorContactDetail;
     },
     thunkAPI
@@ -237,19 +216,8 @@ export const createOperator = createAsyncThunk<
       const state = thunkAPI.getState();
       const operatorState: OperatorStateType = state.operator;
       const operator = await postCreateOperator(operatorContactDetail, operatorState.accessToken)
-      const fuseSDK = await FuseSDK.init(
-        operator.project.publicKey,
-        signer,
-        {
-          baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
-          jwtToken: operatorState.accessToken,
-          signature: operatorState.signature
-        }
-      );
-      const smartContractAccountAddress = fuseSDK.wallet.getSender() as Address;
-
       if (operator) {
-        resolve({ operator, smartContractAccountAddress });
+        resolve({ operator });
       } else {
         reject();
       }
@@ -354,6 +322,7 @@ export const fundPaymaster = createAsyncThunk<
   any,
   {
     signer: Signer;
+    signature: string;
     amount: string;
   },
   { state: RootState }
@@ -362,9 +331,11 @@ export const fundPaymaster = createAsyncThunk<
   async (
     {
       signer,
+      signature,
       amount,
     }: {
       signer: Signer;
+      signature: string;
       amount: string;
     },
     thunkAPI
@@ -386,7 +357,7 @@ export const fundPaymaster = createAsyncThunk<
           {
             baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
             jwtToken: operatorState.accessToken,
-            signature: operatorState.signature
+            signature
           }
         );
         const userOp = await fuseSDK.callContract(CONFIG.paymasterAddress, value, data);
@@ -435,6 +406,7 @@ export const withdraw = createAsyncThunk<
   any,
   {
     signer: Signer;
+    signature: string;
     amount: string;
     to: string;
     decimals: number;
@@ -448,6 +420,7 @@ export const withdraw = createAsyncThunk<
   async (
     {
       signer,
+      signature,
       amount,
       to,
       decimals,
@@ -456,6 +429,7 @@ export const withdraw = createAsyncThunk<
       contractAddress,
     }: {
       signer: Signer;
+      signature: string;
       amount: string;
       to: string;
       decimals: number;
@@ -496,7 +470,7 @@ export const withdraw = createAsyncThunk<
             withPaymaster,
             baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
             jwtToken: operatorState.accessToken,
-            signature: operatorState.signature
+            signature
           }
         );
 
@@ -631,7 +605,6 @@ const operatorSlice = createSlice({
       state.isOperatorExist = false;
       state.accessToken = "";
       state.operator = initOperator;
-      state.signature = "";
       state.isAuthenticated = false;
       state.operatorContactDetail = initOperatorContactDetail;
       state.isActivated = false;
@@ -639,7 +612,6 @@ const operatorSlice = createSlice({
       localStorage.removeItem("Fuse-isOperatorExist");
       localStorage.removeItem("Fuse-operatorAccessToken");
       localStorage.removeItem("Fuse-operator");
-      localStorage.removeItem("Fuse-operatorEoaSignature");
       localStorage.removeItem("Fuse-isOperatorAuthenticated");
       localStorage.removeItem("Fuse-isLoginError");
       localStorage.removeItem("Fuse-connectedWalletType");
@@ -650,14 +622,12 @@ const operatorSlice = createSlice({
       const isOperatorExist = localStorage.getItem("Fuse-isOperatorExist");
       const accessToken = localStorage.getItem("Fuse-operatorAccessToken");
       const operator = localStorage.getItem("Fuse-operator");
-      const signature = localStorage.getItem("Fuse-operatorEoaSignature");
       const isAuthenticated = localStorage.getItem("Fuse-isOperatorAuthenticated");
       const operatorContactDetail = localStorage.getItem("Fuse-operatorContactDetail");
       const isActivated = localStorage.getItem("Fuse-isActivated");
       state.isOperatorExist = isOperatorExist ? JSON.parse(isOperatorExist) : false;
       state.accessToken = accessToken ?? "";
       state.operator = operator ? JSON.parse(operator) : initOperator;
-      state.signature = signature ?? "";
       state.isAuthenticated = isAuthenticated ? JSON.parse(isAuthenticated) : false;
       state.operatorContactDetail = operatorContactDetail ? JSON.parse(operatorContactDetail) : initOperatorContactDetail;
       state.isActivated = isActivated ? JSON.parse(isActivated) : false;
@@ -683,10 +653,8 @@ const operatorSlice = createSlice({
       .addCase(validateOperator.fulfilled, (state, action) => {
         state.isValidatingOperator = false;
         state.accessToken = action.payload.accessToken;
-        state.signature = action.payload.signature;
         state.isValidated = true;
         localStorage.setItem("Fuse-operatorAccessToken", action.payload.accessToken);
-        localStorage.setItem("Fuse-operatorEoaSignature", action.payload.signature);
       })
       .addCase(validateOperator.rejected, (state) => {
         state.isValidatingOperator = false;
@@ -697,7 +665,6 @@ const operatorSlice = createSlice({
       .addCase(fetchOperator.fulfilled, (state, action) => {
         state.isFetchingOperator = false;
         state.operator = action.payload.operator;
-        state.operator.user.smartContractAccountAddress = action.payload.smartContractAccountAddress;
         state.isLoggedIn = true;
         state.isAuthenticated = true;
         localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
@@ -714,7 +681,6 @@ const operatorSlice = createSlice({
       })
       .addCase(createOperator.fulfilled, (state, action) => {
         state.operator = action.payload.operator;
-        state.operator.user.smartContractAccountAddress = action.payload.smartContractAccountAddress;
         state.isAuthenticated = true;
         state.isAccountCreationModalOpen = false;
         state.isCongratulationModalOpen = true;

@@ -214,7 +214,7 @@ const Home = () => {
   const signer = useEthersSigner();
   const { data: blockNumber } = useBlockNumber({ watch: true });
   const { data: balance, refetch } = useBalance({
-    address: operatorSlice.operator.user.smartContractAccountAddress,
+    address: operatorSlice.operator.user.smartWalletAddress,
     chainId: fuse.id,
   });
   const totalTransaction = 1000;
