@@ -82,7 +82,7 @@ type UsdTokens = {
 
 const usdTokens: UsdTokens = {
   [fuse.id]: "fuse-network-token",
-  [polygon.id]: "matic-network",
+  [polygon.id]: "pol-network",
   [optimism.id]: "optimism",
   [arbitrum.id]: "arbitrum",
   [mainnet.id]: "ethereum",
