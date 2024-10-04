@@ -267,7 +267,7 @@ const Deposit = ({
           <>
             <span className="font-medium mt-2 text-xs">Amount</span>
             <div className="flex w-full items-center mt-2">
-              <div className="bg-white px-4 py-3 md:p-2 rounded-s-md border-[1px] border-border-gray w-2/3 md:w-3/5 flex">
+              <div className="bg-white px-4 py-3 md:p-2 rounded-s-md border-[1px] border-border-gray w-[60%] md:w-3/5 flex">
                 <input
                   type="text"
                   className="w-full bg-transparent focus:outline-none text-sm md:text-xs"
@@ -303,7 +303,7 @@ const Deposit = ({
                 ]}
                 selectedSection={selectedTokenSection}
                 selectedItem={selectedTokenItem}
-                className="rounded-e-md rounded-s-none border-s-0 w-1/3 md:w-2/5"
+                className="rounded-e-md rounded-s-none border-s-0 w-[40%] md:w-2/5"
                 onClick={(section, item) => {
                   setSelectedTokenSection(section);
                   setSelectedTokenItem(item);
