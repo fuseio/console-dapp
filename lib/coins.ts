@@ -10,6 +10,16 @@ import matic from "@/assets/matic-token.svg";
 import maker from "@/assets/maker-token.svg";
 import dai from "@/assets/dai-logo.svg";
 import steth from "@/assets/steth-logo.svg";
+import eeth from "@/assets/eeth.webp";
+import ezeth from "@/assets/ezeth.webp";
+import mETH from "@/assets/meth.png";
+import pzeth from "@/assets/pzeth.webp";
+import reth from "@/assets/reth.svg";
+import stader from "@/assets/stader.webp";
+import ultraeths from "@/assets/ultraeths.webp";
+import wbeth from "@/assets/wbeth.webp";
+import weeth from "@/assets/weeth.webp";
+import ethx from "@/assets/ethx.png";
 
 export const coins: CoinConfigLike[] = [
   {
@@ -88,5 +98,82 @@ export const coins: CoinConfigLike[] = [
     decimals: 18,
     icon: steth,
     coinGeckoId: "staked-ether",
+  },
+  {
+    name: "eETH",
+    symbol: "eETH",
+    decimals: 18,
+    icon: eeth,
+    coinGeckoId: "eeth",
+  },
+  {
+    name: "ezETH",
+    symbol: "ezETH",
+    decimals: 18,
+    icon: ezeth,
+    coinGeckoId: "ezeth",
+  },
+  {
+    name: "mETH",
+    symbol: "mETH",
+    decimals: 18,
+    icon: mETH,
+    coinGeckoId: "meth",
+  },
+  {
+    name: "pzETH",
+    symbol: "pzETH",
+    decimals: 18,
+    icon: pzeth,
+    coinGeckoId: "pzeth",
+  },
+  {
+    name: "rETH",
+    symbol: "rETH",
+    decimals: 18,
+    icon: reth,
+    coinGeckoId: "reth",
+  },
+  {
+    name: "Stader",
+    symbol: "SD",
+    decimals: 18,
+    icon: stader,
+    coinGeckoId: "stader",
+  },
+  {
+    name: "ultraETH",
+    symbol: "ultraETH",
+    decimals: 18,
+    icon: ultraeths,
+    coinGeckoId: "ultraeth",
+  },
+  {
+    name: "ultraETHs",
+    symbol: "ultraETHs",
+    decimals: 18,
+    icon: ultraeths,
+    coinGeckoId: "ultraeths",
+  },
+  {
+    name: "wBETH",
+    symbol: "wBETH",
+    decimals: 18,
+    icon: wbeth,
+    coinGeckoId: "weth",
+  },
+  {
+    name: "weETH",
+    symbol: "weETH",
+    decimals: 18,
+    icon: weeth,
+    coinGeckoId: "weeth",
+  },
+  {
+    name: "ETHx",
+    symbol: "ETHx",
+    decimals: 18,
+    icon: ethx,
+    coinGeckoId: "ethx",
   },
 ];
