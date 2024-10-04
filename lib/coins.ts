@@ -6,7 +6,7 @@ import usdt from "@/assets/usdt-logo.svg";
 import eth from "@/public/eth.png";
 import fdm from "@/assets/fdm.svg";
 import bnb from "@/assets/bnb.svg";
-import matic from "@/assets/matic-token.svg";
+import pol from "@/assets/pol-token.svg";
 import maker from "@/assets/maker-token.svg";
 import dai from "@/assets/dai-logo.svg";
 import steth from "@/assets/steth-logo.svg";
@@ -72,11 +72,11 @@ export const coins: CoinConfigLike[] = [
     coinGeckoId: "binancecoin",
   },
   {
-    name: "Matic Token",
-    symbol: "MATIC",
+    name: "Pol Token",
+    symbol: "POL",
     decimals: 18,
-    icon: matic,
-    coinGeckoId: "matic-network",
+    icon: pol,
+    coinGeckoId: "pol-network",
   },
   {
     name: "Maker",

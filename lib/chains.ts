@@ -1,8 +1,8 @@
 import { ChainConfigLike } from "./types";
-import matic from "@/public/matic.png";
+import pol from "@/public/pol.png";
 import arbi from "@/public/arbi.png";
 import optimism from "@/public/optimism.png";
-import maticLogo from "@/assets/matic";
+import polLogo from "@/assets/pol";
 import arbiLogo from "@/assets/arbi";
 import optimismLogo from "@/assets/optimism";
 import eth from "@/public/eth.png";
@@ -13,11 +13,11 @@ export const chains: ChainConfigLike[] = [
   {
     chainName: "Polygon",
     lzChainId: 109,
-    icon: matic,
+    icon: pol,
     rpc: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`,
     chainId: 137,
-    logo: maticLogo,
-    tokenId: "matic-network"
+    logo: polLogo,
+    tokenId: "pol-network"
   },
   {
     chainName: "Arbitrum",
