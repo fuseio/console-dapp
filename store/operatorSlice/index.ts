@@ -81,7 +81,6 @@ export interface OperatorStateType {
   sponsorIdBalance: string;
   erc20Balance: string;
   redirect: string;
-  accessToken: string;
   withdraw: Withdraw;
   operatorContactDetail: OperatorContactDetail;
   operator: Operator;
@@ -121,7 +120,6 @@ const INIT_STATE: OperatorStateType = {
   sponsorIdBalance: "",
   erc20Balance: "",
   redirect: "",
-  accessToken: "",
   withdraw: initWithdraw,
   operatorContactDetail: initOperatorContactDetail,
   operator: initOperator,
@@ -157,32 +155,22 @@ export const validateOperator = createAsyncThunk(
   }: {
     signData: SignData;
   }) => {
-    return new Promise<any>(async (resolve, reject) => {
-      const accessToken = await postValidateOperator(signData);
-      if (accessToken) {
-        resolve({ accessToken });
-      } else {
-        reject();
-      }
-    });
+    try {
+      await postValidateOperator(signData);
+      return true;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 );
 
-export const fetchOperator = createAsyncThunk<
-  any,
-  undefined,
-  { state: RootState }
->(
+export const fetchOperator = createAsyncThunk(
   "OPERATOR/FETCH_OPERATOR",
-  async (
-    _,
-    thunkAPI
-  ) => {
+  async () => {
     return new Promise<any>(async (resolve, reject) => {
       try {
-        const state = thunkAPI.getState();
-        const operatorState: OperatorStateType = state.operator;
-        const operator = await fetchCurrentOperator(operatorState.accessToken)
+        const operator = await fetchCurrentOperator()
         if (operator) {
           resolve({ operator });
         } else {
@@ -200,8 +188,7 @@ export const createOperator = createAsyncThunk<
   any,
   {
     operatorContactDetail: OperatorContactDetail;
-  },
-  { state: RootState }
+  }
 >(
   "OPERATOR/CREATE_OPERATOR",
   async (
@@ -210,15 +197,17 @@ export const createOperator = createAsyncThunk<
     }: {
       operatorContactDetail: OperatorContactDetail;
     },
-    thunkAPI
   ) => {
     return new Promise<any>(async (resolve, reject) => {
-      const state = thunkAPI.getState();
-      const operatorState: OperatorStateType = state.operator;
-      const operator = await postCreateOperator(operatorContactDetail, operatorState.accessToken)
-      if (operator) {
-        resolve({ operator });
-      } else {
+      try {
+        const operator = await postCreateOperator(operatorContactDetail)
+        if (operator) {
+          resolve({ operator });
+        } else {
+          reject();
+        }
+      } catch (error) {
+        console.log(error);
         reject();
       }
     });
@@ -238,7 +227,7 @@ export const generateSecretApiKey = createAsyncThunk<
     return new Promise<any>(async (resolve, reject) => {
       const state = thunkAPI.getState();
       const operatorState: OperatorStateType = state.operator;
-      const { secretKey } = await postCreateApiSecretKey(operatorState.operator.project.id, operatorState.accessToken);
+      const { secretKey } = await postCreateApiSecretKey(operatorState.operator.project.id);
       if (secretKey) {
         resolve(secretKey);
       } else {
@@ -261,7 +250,7 @@ export const regenerateSecretApiKey = createAsyncThunk<
     return new Promise<any>(async (resolve, reject) => {
       const state = thunkAPI.getState();
       const operatorState: OperatorStateType = state.operator;
-      const { secretKey } = await updateApiSecretKey(operatorState.operator.project.id, operatorState.accessToken);
+      const { secretKey } = await updateApiSecretKey(operatorState.operator.project.id);
       if (secretKey) {
         resolve(secretKey);
       } else {
@@ -308,7 +297,7 @@ export const createPaymaster = createAsyncThunk<
     return new Promise<any>(async (resolve, reject) => {
       const state = thunkAPI.getState();
       const operatorState: OperatorStateType = state.operator;
-      const paymasters = await postCreatePaymaster(operatorState.operator.project.id, operatorState.accessToken)
+      const paymasters = await postCreatePaymaster(operatorState.operator.project.id)
       if (paymasters?.[0]?.sponsorId) {
         resolve(paymasters[0].sponsorId);
       } else {
@@ -356,7 +345,6 @@ export const fundPaymaster = createAsyncThunk<
           signer,
           {
             baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
-            jwtToken: operatorState.accessToken,
             signature
           }
         );
@@ -469,7 +457,6 @@ export const withdraw = createAsyncThunk<
           {
             withPaymaster,
             baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
-            jwtToken: operatorState.accessToken,
             signature
           }
         );
@@ -495,18 +482,12 @@ export const withdraw = createAsyncThunk<
   }
 );
 
-export const checkIsActivated = createAsyncThunk<
-  any,
-  undefined,
-  { state: RootState }
->(
+export const checkIsActivated = createAsyncThunk(
   "OPERATOR/IS_ACTIVATED",
-  async (_, thunkAPI) => {
+  async () => {
     return new Promise<any>(async (resolve, reject) => {
       try {
-        const state = thunkAPI.getState();
-        const operatorState: OperatorStateType = state.operator;
-        const operator = await checkActivated(operatorState.accessToken);
+        const operator = await checkActivated();
         if (operator.status === 200) {
           resolve("activated");
         } else {
@@ -525,21 +506,12 @@ export const checkIsActivated = createAsyncThunk<
   }
 );
 
-export const fetchSponsoredTransactions = createAsyncThunk<
-  any,
-  undefined,
-  { state: RootState }
->(
+export const fetchSponsoredTransactions = createAsyncThunk(
   "OPERATOR/FETCH_SPONSORED_TRANSACTIONS",
-  async (
-    _,
-    thunkAPI
-  ) => {
+  async () => {
     return new Promise<any>(async (resolve, reject) => {
       try {
-        const state = thunkAPI.getState();
-        const operatorState: OperatorStateType = state.operator;
-        const sponsoredTransactionCount = await fetchSponsoredTransactionCount(operatorState.accessToken)
+        const sponsoredTransactionCount = await fetchSponsoredTransactionCount()
         resolve(sponsoredTransactionCount.sponsoredTransactions);
       } catch (error) {
         console.log(error);
@@ -564,6 +536,7 @@ const operatorSlice = createSlice({
     },
     setIsValidated: (state, action: PayloadAction<boolean>) => {
       state.isValidated = action.payload
+      localStorage.setItem("Fuse-isValidated", JSON.stringify(action.payload));
     },
     setIsContactDetailsModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isContactDetailsModalOpen = action.payload
@@ -603,14 +576,14 @@ const operatorSlice = createSlice({
     },
     setLogout: (state) => {
       state.isOperatorExist = false;
-      state.accessToken = "";
+      state.isValidated = false;
       state.operator = initOperator;
       state.isAuthenticated = false;
       state.operatorContactDetail = initOperatorContactDetail;
       state.isActivated = false;
       state.sponsoredTransactions = 0;
       localStorage.removeItem("Fuse-isOperatorExist");
-      localStorage.removeItem("Fuse-operatorAccessToken");
+      localStorage.removeItem("Fuse-isValidated");
       localStorage.removeItem("Fuse-operator");
       localStorage.removeItem("Fuse-isOperatorAuthenticated");
       localStorage.removeItem("Fuse-isLoginError");
@@ -620,13 +593,13 @@ const operatorSlice = createSlice({
     },
     setHydrate: (state) => {
       const isOperatorExist = localStorage.getItem("Fuse-isOperatorExist");
-      const accessToken = localStorage.getItem("Fuse-operatorAccessToken");
+      const isValidated = localStorage.getItem("Fuse-isValidated");
       const operator = localStorage.getItem("Fuse-operator");
       const isAuthenticated = localStorage.getItem("Fuse-isOperatorAuthenticated");
       const operatorContactDetail = localStorage.getItem("Fuse-operatorContactDetail");
       const isActivated = localStorage.getItem("Fuse-isActivated");
       state.isOperatorExist = isOperatorExist ? JSON.parse(isOperatorExist) : false;
-      state.accessToken = accessToken ?? "";
+      state.isValidated = isValidated ? JSON.parse(isValidated) : false;
       state.operator = operator ? JSON.parse(operator) : initOperator;
       state.isAuthenticated = isAuthenticated ? JSON.parse(isAuthenticated) : false;
       state.operatorContactDetail = operatorContactDetail ? JSON.parse(operatorContactDetail) : initOperatorContactDetail;
@@ -650,11 +623,10 @@ const operatorSlice = createSlice({
       .addCase(validateOperator.pending, (state) => {
         state.isValidatingOperator = true;
       })
-      .addCase(validateOperator.fulfilled, (state, action) => {
+      .addCase(validateOperator.fulfilled, (state) => {
         state.isValidatingOperator = false;
-        state.accessToken = action.payload.accessToken;
         state.isValidated = true;
-        localStorage.setItem("Fuse-operatorAccessToken", action.payload.accessToken);
+        localStorage.setItem("Fuse-isValidated", JSON.stringify(true));
       })
       .addCase(validateOperator.rejected, (state) => {
         state.isValidatingOperator = false;

@@ -40,7 +40,7 @@ const WalletModal = (): JSX.Element => {
   const signer = useEthersSigner();
   const router = useRouter();
   const { switchChain } = useSwitchChain();
-  const { isLogin, isValidated, isLoggedIn, isLoginError, isAuthenticated, isOperatorWalletModalOpen, redirect, accessToken, operatorContactDetail } = useAppSelector(selectOperatorSlice);
+  const { isLogin, isValidated, isLoggedIn, isLoginError, isAuthenticated, isOperatorWalletModalOpen, redirect, operatorContactDetail } = useAppSelector(selectOperatorSlice);
   const pathname = usePathname();
 
   const toggleModal = useCallback((isModal: boolean) => {
@@ -104,13 +104,13 @@ const WalletModal = (): JSX.Element => {
   }, [isConnectedWallet, address, dispatch])
 
   useEffect(() => {
-    if (isConnected && isOperatorWalletModalOpen && chain && !accessToken) {
+    if (isConnected && isOperatorWalletModalOpen && chain && !isValidated) {
       if (chain.id !== fuse.id) {
         switchChain({ chainId: fuse.id })
       }
       signMessage({ message: signDataMessage });
     }
-  }, [isConnected, isOperatorWalletModalOpen, chain, accessToken, signMessage, switchChain])
+  }, [isConnected, isOperatorWalletModalOpen, chain, isValidated, signMessage, switchChain])
 
   useEffect(() => {
     if (isValidated) {
