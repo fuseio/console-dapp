@@ -15,7 +15,6 @@ import ezeth from "@/assets/ezeth.webp";
 import mETH from "@/assets/meth.png";
 import pzeth from "@/assets/pzeth.webp";
 import reth from "@/assets/reth.svg";
-import stader from "@/assets/stader.webp";
 import ultraeths from "@/assets/ultraeths.webp";
 import wbeth from "@/assets/wbeth.webp";
 import weeth from "@/assets/weeth.webp";
@@ -133,13 +132,6 @@ export const coins: CoinConfigLike[] = [
     decimals: 18,
     icon: reth,
     coinGeckoId: "reth",
-  },
-  {
-    name: "Stader",
-    symbol: "SD",
-    decimals: 18,
-    icon: stader,
-    coinGeckoId: "stader",
   },
   {
     name: "ultraETH",
