@@ -29,7 +29,7 @@ type FaqQuestionProps = {
 const FaqQuestion = ({
   question,
   answer,
-  className = "",
+  // className = "",
 }: FaqQuestionProps) => {
   const [isAnswerVisible, setIsAnswerVisible] = React.useState(false);
   return (

@@ -181,7 +181,7 @@ const validatorSlice = createSlice({
             .addCase(fetchDelegatedAmounts.fulfilled, (state, { payload }) => {
                 const validatorIndex = state.validatorMetadata.findIndex((validator) => validator.address === payload.address)
                 if (validatorIndex !== -1) {
-                    let validator = state.validatorMetadata[validatorIndex]
+                    const validator = state.validatorMetadata[validatorIndex]
                     validator.delegators = payload.delegatedAmounts.sort((a, b) => parseInt(b[1]) - parseInt(a[1]))
                     state.validatorMetadata[validatorIndex] = validator
                 }

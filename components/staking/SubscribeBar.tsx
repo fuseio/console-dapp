@@ -8,7 +8,7 @@ type SubscribeBarProps = {
 
 const SubscribeBar = ({
   className = "",
-  onClick = () => {},
+  // onClick = () => {},
 }: SubscribeBarProps) => {
   return (
     <div

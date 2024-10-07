@@ -1,7 +1,7 @@
 import { DisabledChainConfigLike } from "./types";
-import eth from "@/public/eth.png";
-import bnb from "@/public/bnb.png";
-import voltage from "@/assets/voltage.svg";
+// import eth from "@/public/eth.png";
+// import bnb from "@/public/bnb.png";
+// import voltage from "@/assets/voltage.svg";
 
 export const disabledChains: DisabledChainConfigLike[] = [
   // {

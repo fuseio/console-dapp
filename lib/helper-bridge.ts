@@ -1,9 +1,5 @@
+import { find } from 'lodash';
 import { appConfig } from "./config";
 
-export const getTokenOnFuse = (tokenId: string) => {
-    for (let token of appConfig.wrappedBridge.fuse.tokens) {
-        if (token.coinGeckoId === tokenId) {
-            return token;
-        }
-    }
-};
+export const getTokenOnFuse = (tokenId: string) =>
+    find(appConfig.wrappedBridge.fuse.tokens, { coinGeckoId: tokenId });

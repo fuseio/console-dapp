@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import Button from "@/components/ui/Button";
-import rightArrow from "@/assets/right-arrow.svg"
 import { buildSubMenuItems, evmDecimals, signDataMessage } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";

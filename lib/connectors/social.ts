@@ -1,10 +1,11 @@
-import { ChainNotConfiguredError, createConnector, normalizeChainId } from "@wagmi/core";
+import { ChainNotConfiguredError, createConnector } from "@wagmi/core";
 import type { IWeb3Auth } from "@web3auth/base";
 import * as pkg from "@web3auth/base";
 import type { IWeb3AuthModal } from "@web3auth/modal";
 import { Chain, getAddress, SwitchChainError, UserRejectedRequestError } from "viem";
 
 import type { Provider, Web3AuthConnectorParams } from "@web3auth/web3auth-wagmi-connector";
+import { compact, map } from "lodash";
 
 const { ADAPTER_STATUS, CHAIN_NAMESPACES, WALLET_ADAPTERS, log } = pkg;
 
@@ -43,7 +44,7 @@ export function Web3AuthSocialConnector(parameters: Web3AuthConnectorParams, id:
           }
         }
 
-        let currentChainId: any = await this.getChainId();
+        let currentChainId: number = await this.getChainId();
         if (chainId && currentChainId !== chainId) {
           const chain = await this.switchChain!({ chainId }).catch((error) => {
             if (error.code === UserRejectedRequestError.code) throw error;
@@ -63,19 +64,19 @@ export function Web3AuthSocialConnector(parameters: Web3AuthConnectorParams, id:
     },
     async getAccounts() {
       const provider = await this.getProvider();
-      const accounts: any = await provider.request<unknown, string[]>({
+      const accounts: pkg.Maybe<string[]> = await provider.request<unknown, string[]>({
         method: "eth_accounts",
       });
       if (accounts) {
-        return accounts.filter((x: string | undefined): x is string => !!x).map((x: string) => getAddress(x));
+        return map(compact(accounts), getAddress);
       } else {
         return [];
       }
     },
     async getChainId() {
       const provider = await this.getProvider();
-      const chainId = await provider.request<unknown, number>({ method: "eth_chainId" });
-      return normalizeChainId(chainId);
+      const chainId: pkg.Maybe<number> = await provider.request<unknown, number>({ method: "eth_chainId" });
+      return Number(chainId);
     },
     async getProvider(): Promise<Provider> {
       const selectedConnectorId = localStorage.getItem('Fuse-selectedConnectorId');
@@ -153,7 +154,7 @@ export function Web3AuthSocialConnector(parameters: Web3AuthConnectorParams, id:
         });
     },
     onChainChanged(chain) {
-      const chainId = normalizeChainId(chain);
+      const chainId = Number(chain);
       config.emitter.emit("change", { chainId });
     },
     onDisconnect(): void {

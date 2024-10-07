@@ -61,7 +61,7 @@ const TopupAccountModal = (): JSX.Element => {
                 <div className="flex justify-center">
                   <QRCode
                     size={220}
-                    value={String(operatorSlice.operator.user.smartWalletAddress)}
+                    value={operatorSlice.operator.user.smartWalletAddress}
                   />
                 </div>
               </div> :
@@ -90,7 +90,7 @@ const TopupAccountModal = (): JSX.Element => {
                   <div className="flex justify-between w-full max-w-[55px]">
                     <Copy
                       src={copy}
-                      text={String(operatorSlice.operator.user.smartWalletAddress)}
+                      text={operatorSlice.operator.user.smartWalletAddress}
                       alt="copy smart contract account address"
                       width={18.97}
                       height={18.81}

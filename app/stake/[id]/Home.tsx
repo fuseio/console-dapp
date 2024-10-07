@@ -29,7 +29,6 @@ import leftArrow from "@/assets/left-arrow.svg";
 import Link from "next/link";
 import { fetchTokenPrice } from "@/lib/api";
 import Copy from "@/components/ui/Copy";
-import { Address } from "abitype";
 import { useParams } from "next/navigation";
 import { ValidatorType } from "@/lib/types";
 
@@ -353,10 +352,7 @@ const Stake = () => {
                 icon={expandArrow}
                 onClick={() => {
                   setIsOpen(true);
-                  let delegatorsFilter: Address[] = [];
-                  validator?.delegators.forEach((delegator) => {
-                    delegatorsFilter.push(delegator[0]);
-                  });
+                  const delegatorsFilter = validator?.delegators.map(([delegator]) => delegator) ?? [];
                   dispatch(
                     fetchDelegatedAmounts({
                       address: validator?.address ?? hex,

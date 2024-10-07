@@ -714,7 +714,7 @@ const operatorSlice = createSlice({
       .addCase(fundPaymaster.pending, (state) => {
         state.isFundingPaymaster = true;
       })
-      .addCase(fundPaymaster.fulfilled, (state, action) => {
+      .addCase(fundPaymaster.fulfilled, (state) => {
         state.isFundingPaymaster = false;
         state.isTopupPaymasterModalOpen = false;
       })

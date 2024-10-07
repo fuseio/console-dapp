@@ -3,7 +3,7 @@ import React from "react";
 type SearchBarProps = {
   className?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  value:any;
+  value: string;
 };
 
 const SearchBar = ({ className = "", onChange = () => {},value }: SearchBarProps) => {
