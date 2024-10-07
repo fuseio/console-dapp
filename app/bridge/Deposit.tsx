@@ -547,7 +547,6 @@ const Deposit = ({
                       selectedTokenItem
                     ].coinGeckoId
                   );
-                  // @ts-ignore
                   window.ethereum.request({
                     method: "wallet_watchAsset",
                     params: {

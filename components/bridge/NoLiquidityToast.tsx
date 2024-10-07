@@ -1,7 +1,7 @@
 import React from "react";
 import stop from "@/assets/stop.svg";
 import dismiss from "@/assets/dismiss.svg";
-import { useAppDispatch, useAppSelector } from "@/store/store";
+import { useAppDispatch } from "@/store/store";
 import { toggleLiquidityToast } from "@/store/toastSlice";
 import Image from "next/image";
 

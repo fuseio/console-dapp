@@ -7,14 +7,14 @@ import Image from "next/image";
 
 type BreadcrumbProps = {
   className?: string;
-  onClick?: (index: number, element: string) => void;
+  // onClick?: (index: number, element: string) => void;
   states: string[];
   links: string[];
 };
 
 const Breadcrumb = ({
   className = "",
-  onClick = (index: number, element: string) => {},
+  // onClick = (index: number, element: string) => {},
   states,
   links,
 }: BreadcrumbProps) => {

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import piggybank from "@/assets/piggybank.svg";
 import FAQ from "@/components/FAQ";
 import FilterBar from "@/components/staking/FilterBar";
@@ -23,133 +23,85 @@ import SortBar from "@/components/staking/SortBar";
 import { useAccount } from "wagmi";
 import { hex } from "@/lib/helpers";
 import Image from "next/image";
-import useDeepCompareEffect, { useDeepCompareEffectNoCheck } from "use-deep-compare-effect";
-import { ValidatorType } from "@/lib/types";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 const Home = () => {
   const validatorSlice = useAppSelector(selectValidatorSlice);
-  const SearchSlice = useAppSelector(selectSearchSlice);
+  const searchSlice = useAppSelector(selectSearchSlice);
   const { address } = useAccount();
-
   const dispatch = useAppDispatch();
+
   useEffect(() => {
     dispatch(fetchValidators());
   }, [dispatch]);
 
-  const [validatorsToDisplay, setValidatorsToDisplay] = useState<
-    Array<ValidatorType>
-  >([]);
-
   useDeepCompareEffect(() => {
-    setValidatorsToDisplay(validatorSlice.validatorMetadata);
-  }, [validatorSlice.validatorMetadata]);
-
-  useDeepCompareEffectNoCheck(() => {
-    if (address && validatorSlice.validatorMetadata.length > 0) {
+    if (validatorSlice.validatorMetadata.length > 0) {
       dispatch(
         fetchSelfStake({
-          address: address,
-          validators: validatorSlice.validators,
-        })
-      );
-    } else if (!address && validatorSlice.validatorMetadata.length > 0) {
-      dispatch(
-        fetchSelfStake({
-          address: hex,
+          address: address || hex,
           validators: validatorSlice.validators,
         })
       );
     }
-  }, [address, validatorSlice.validatorMetadata.length]);
-
-  const [filter, setFilter] = useState(SearchSlice);
+  }, [address, validatorSlice.validatorMetadata.length, dispatch]);
 
   const setSearch = useCallback((search: string) => {
-    let oldFilter = JSON.parse(JSON.stringify(filter));
-    oldFilter.search = search;
-    setFilter(oldFilter);
-    dispatch(setReduxSearch(oldFilter.search))
-  }, [dispatch, filter]);
+    dispatch(setReduxSearch(search));
+  }, [dispatch]);
 
   const setStateFilter = useCallback((stateFilter: number) => {
-    let oldFilter = JSON.parse(JSON.stringify(filter));
-    oldFilter.stateFilter = stateFilter;
-    setFilter(oldFilter);
-    dispatch(setReduxStateFilter(oldFilter.stateFilter))
-  }, [dispatch, filter]);
+    dispatch(setReduxStateFilter(stateFilter));
+  }, [dispatch]);
 
   const setStatusFilter = useCallback((statusFilter: number) => {
-    let oldFilter = JSON.parse(JSON.stringify(filter));
-    oldFilter.statusFilter = statusFilter;
-    setFilter(oldFilter);
-    dispatch(setReduxStatusFilter(oldFilter.statusFilter))
-  }, [dispatch, filter]);
+    dispatch(setReduxStatusFilter(statusFilter));
+  }, [dispatch]);
 
   const setMyStakeFilter = useCallback((myStakeFilter: number) => {
-    let oldFilter = JSON.parse(JSON.stringify(filter));
-    oldFilter.myStakeFilter = myStakeFilter;
-    setFilter(oldFilter);
-    dispatch(setReduxMyStakeFilter(oldFilter.myStakeFilter))
-  }, [dispatch, filter]);
+    dispatch(setReduxMyStakeFilter(myStakeFilter));
+  }, [dispatch]);
 
   const setSort = useCallback((sort: number) => {
-    let oldFilter = JSON.parse(JSON.stringify(filter));
-    oldFilter.sort = sort;
-    setFilter(oldFilter);
-    dispatch(setReduxSort(oldFilter.sort))
-  }, [dispatch, filter])
+    dispatch(setReduxSort(sort));
+  }, [dispatch]);
 
-  const filterValidators = useCallback(() => {
-    if (validatorSlice.validatorMetadata.length === 0) return;
-    const filteredValidators = validatorSlice.validatorMetadata.filter(
-      (validator) => {
+  const filteredValidators = useMemo(() => {
+    if (validatorSlice.validatorMetadata.length === 0) return [];
+
+    return validatorSlice.validatorMetadata
+      .filter((validator) => {
+        const { search, stateFilter, statusFilter, myStakeFilter } = searchSlice;
         return (
-          (validator.name
-            ?.toLowerCase()
-            .includes(filter.search.toLowerCase()) ||
-            validator.address
-              ?.toLowerCase()
-              .includes(filter.search.toLowerCase())) &&
-          (filter.stateFilter === 0 ||
-            (filter.stateFilter === 1 && validator.forDelegation) ||
-            (filter.stateFilter === 2 && !validator.forDelegation)) &&
-          (filter.statusFilter === 0 ||
-            (filter.statusFilter === 1 && validator.status === "active") ||
-            (filter.statusFilter === 2 && validator.status === "inactive")) &&
-          (filter.myStakeFilter === 0 ||
-            (filter.myStakeFilter === 1 &&
+          (validator.name?.toLowerCase().includes(search.toLowerCase()) ||
+            validator.address?.toLowerCase().includes(search.toLowerCase())) &&
+          (stateFilter === 0 ||
+            (stateFilter === 1 && validator.forDelegation) ||
+            (stateFilter === 2 && !validator.forDelegation)) &&
+          (statusFilter === 0 ||
+            (statusFilter === 1 && validator.status === "active") ||
+            (statusFilter === 2 && validator.status === "inactive")) &&
+          (myStakeFilter === 0 ||
+            (myStakeFilter === 1 &&
               validator?.selfStakeAmount &&
               parseFloat(validator.selfStakeAmount) > 0))
         );
-      }
-    );
-    if (filter.sort === 0) {
-      filteredValidators.sort((a, b) => {
-        return parseFloat(b.stakeAmount) - parseFloat(a.stakeAmount);
+      })
+      .sort((a, b) => {
+        switch (searchSlice.sort) {
+          case 0:
+            return parseFloat(b.stakeAmount) - parseFloat(a.stakeAmount);
+          case 1:
+            return parseFloat(b.delegatorsLength) - parseFloat(a.delegatorsLength);
+          case 2:
+            return (b.uptime ?? 0) - (a.uptime ?? 0) || parseFloat(b.stakeAmount) - parseFloat(a.stakeAmount);
+          case 3:
+            return (parseInt(a.firstSeen ?? '0') - parseInt(b.firstSeen ?? '0'));
+          default:
+            return 0;
+        }
       });
-    } else if (filter.sort === 1) {
-      filteredValidators.sort((a, b) => {
-        return parseFloat(b.delegatorsLength) - parseFloat(a.delegatorsLength);
-      });
-    } else if (filter.sort === 2) {
-      filteredValidators.sort((a, b) => {
-        return (b.uptime ? b.uptime : 0) - (a.uptime ? a.uptime : 0) || parseFloat(b.stakeAmount) - parseFloat(a.stakeAmount);
-      });
-    } else if (filter.sort === 3) {
-      filteredValidators.sort((a, b) => {
-        return (
-          (a.firstSeen ? parseInt(a.firstSeen) : 0) -
-          (b.firstSeen ? parseInt(b.firstSeen) : 0)
-        );
-      });
-    }
-
-    setValidatorsToDisplay(filteredValidators);
-  }, [filter, validatorSlice.validatorMetadata]);
-
-  useDeepCompareEffect(() => {
-    filterValidators();
-  }, [filter, validatorSlice.validatorMetadata]);
+  }, [validatorSlice.validatorMetadata, searchSlice]);
 
   const faqs = [
     "What is the Fuse Staking Dapp?",
@@ -318,7 +270,7 @@ const Home = () => {
                 onChange={(e) => {
                   setSearch(e.target.value);
                 }}
-                value={filter.search}
+                value={searchSlice.search}
               />
               <SortBar
                 className="w-[180px] md:w-full md:mt-4"
@@ -328,10 +280,8 @@ const Home = () => {
                   "Highest Uptime",
                   "Earliest Validation Start Date",
                 ]}
-                selected={filter.sort}
-                onChange={(i) => {
-                  setSort(i);
-                }}
+                selected={searchSlice.sort}
+                onChange={setSort}
               />
             </div>
             <div className="flex gap-12 md:gap-4 w-full md:flex-col md:justify-start md:items-start">
@@ -341,10 +291,8 @@ const Home = () => {
                 states={["All", "Open", "Closed"]}
                 background={["#DDF5FF", "#E0FFDD", "#EBEBEB"]}
                 text={["#003D75", "#success-dark", "#000000"]}
-                onClick={(i, _) => {
-                  setStateFilter(i);
-                }}
-                select={filter.stateFilter}
+                onClick={setStateFilter}
+                select={searchSlice.stateFilter}
                 tooltip={`Validators can be "open" or "closed" for delegation. You can only delegate tokens to open validators. If a validator you've delegated to becomes closed, you can still unstake your tokens anytime.`}
               />
               <FilterBar
@@ -353,26 +301,19 @@ const Home = () => {
                 states={["All", "Active", "Inactive"]}
                 background={["#DDF5FF", "#E0FFDD", "#FFDDDD"]}
                 text={["#003D75", "#success-dark", "#750000"]}
-                onClick={(i, _) => {
-                  setStatusFilter(i);
-                }}
-                select={filter.statusFilter}
+                onClick={setStatusFilter}
+                select={searchSlice.statusFilter}
                 tooltip={`Validators can be "active" or "inactive". Active validators are currently validating blocks, while inactive validators are not, due to maintenance or being jailed.`}
               />
             </div>
           </div>
         </div>
         <ValidatorsPane
-          isLoading={
-            validatorSlice.validatorMetadata.length === 0 &&
-            validatorSlice.isLoading
-          }
-          validators={validatorsToDisplay}
+          isLoading={validatorSlice.validatorMetadata.length === 0 && validatorSlice.isLoading}
+          validators={filteredValidators}
           filters={["All", "My Staked"]}
-          selected={filter.myStakeFilter}
-          onClick={(i) => {
-            setMyStakeFilter(i);
-          }}
+          selected={searchSlice.myStakeFilter}
+          onClick={setMyStakeFilter}
         />
         <FAQ className="mt-[106px] mb-16" questions={faqs} answers={faqAnswers} />
       </div>

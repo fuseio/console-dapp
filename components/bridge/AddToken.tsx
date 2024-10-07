@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import airdrop from "@/assets/airdrop.svg";
+// import airdrop from "@/assets/airdrop.svg";
 import { AnimatePresence, motion } from "framer-motion";
 import cross from "@/assets/cross.svg";
 import copy from "@/assets/copy.svg";
@@ -98,7 +98,6 @@ const AddToken = () => {
                 <button
                   className="bg-success rounded-full py-4 text-base font-bold w-full"
                   onClick={() => {
-                    // @ts-ignore
                     window.ethereum.request({
                       method: "wallet_watchAsset",
                       params: {
@@ -124,7 +123,7 @@ const AddToken = () => {
                   onClick={() => {
                     const tokensAdded = localStorage.getItem("tokensAdded");
                     if (checked) {
-                      let tokens = JSON.parse(tokensAdded as string);
+                      const tokens = JSON.parse(tokensAdded as string);
                       tokens.pop();
                       localStorage.setItem(
                         "tokensAdded",
