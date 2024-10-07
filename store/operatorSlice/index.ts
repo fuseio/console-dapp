@@ -4,7 +4,7 @@ import { Signer, ethers } from "ethers";
 import { FuseSDK } from "@fuseio/fusebox-web-sdk";
 import { hex, splitSecretKey } from "@/lib/helpers";
 import { Operator, OperatorContactDetail, SignData, Withdraw } from "@/lib/types";
-import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, updateApiSecretKey } from "@/lib/api";
+import { checkActivated, checkOperatorExist, fetchAddressTokenBalances, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
 import { parseEther, parseUnits } from "ethers/lib/utils";
@@ -14,6 +14,7 @@ import { getSponsorIdBalance } from "@/lib/contractInteract";
 import * as amplitude from "@amplitude/analytics-browser";
 import { getERC20Balance } from "@/lib/erc20";
 import { ERC20ABI } from "@/lib/abi/ERC20";
+import { formatUnits } from "viem";
 
 const initOperator: Operator = {
   user: {
@@ -84,6 +85,8 @@ export interface OperatorStateType {
   withdraw: Withdraw;
   operatorContactDetail: OperatorContactDetail;
   operator: Operator;
+  isFetchingTokenBalances: boolean;
+  totalTokenBalance: number;
 }
 
 const INIT_STATE: OperatorStateType = {
@@ -123,6 +126,8 @@ const INIT_STATE: OperatorStateType = {
   withdraw: initWithdraw,
   operatorContactDetail: initOperatorContactDetail,
   operator: initOperator,
+  isFetchingTokenBalances: false,
+  totalTokenBalance: 0,
 };
 
 export const checkOperator = createAsyncThunk(
@@ -521,6 +526,32 @@ export const fetchSponsoredTransactions = createAsyncThunk(
   }
 );
 
+export const fetchTokenBalances = createAsyncThunk(
+  "OPERATOR/FETCH_TOKEN_BALANCES",
+  async ({
+    address,
+  }: {
+    address: Address,
+  }) => {
+    try {
+      const tokenBalances = await fetchAddressTokenBalances(address);
+      let totalTokenBalance = 0;
+      tokenBalances.forEach((tokenBalance) => {
+        const value = parseFloat(tokenBalance.value) || 0;
+        const decimals = parseInt(tokenBalance.token.decimals) || 18;
+        const exchangeRate = parseFloat(tokenBalance.token.exchange_rate) || 0;
+
+        const tokenValue = value / Math.pow(10, decimals);
+        totalTokenBalance += tokenValue * exchangeRate;
+      });
+      return totalTokenBalance;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
 const operatorSlice = createSlice({
   name: "OPERATOR_STATE",
   initialState: INIT_STATE,
@@ -765,6 +796,16 @@ const operatorSlice = createSlice({
       })
       .addCase(fetchSponsoredTransactions.rejected, (state) => {
         state.isFetchingSponsoredTransactions = false;
+      })
+      .addCase(fetchTokenBalances.pending, (state) => {
+        state.isFetchingTokenBalances = true;
+      })
+      .addCase(fetchTokenBalances.fulfilled, (state, action) => {
+        state.isFetchingTokenBalances = false;
+        state.totalTokenBalance = action.payload;
+      })
+      .addCase(fetchTokenBalances.rejected, (state) => {
+        state.isFetchingTokenBalances = false;
       })
   },
 });
