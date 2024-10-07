@@ -80,7 +80,7 @@ const Home = () => {
   const config = useConfig();
   const { chainId } = getAccount(config);
   const chain = config.chains.find((chain) => chain.id === chainId);
-  const { data: balance, refetch } = useBalance({
+  const { data: balance } = useBalance({
     address,
   });
   const { failureCount } = useBlockNumber({
@@ -331,7 +331,7 @@ const Home = () => {
     });
   };
 
-  const withdraw = (res: any, selectedChainId: number) => {
+  const withdraw = (res: any) => {
     if (res) {
       if (
         appConfig.wrappedBridge.chains[
@@ -438,14 +438,14 @@ const Home = () => {
 
   const handleWithdraw = () => {
     if (chain?.id === fuse.id) {
-      withdraw(true, fuse.id);
+      withdraw(true);
       return;
     }
     switchChain(config, {
       chainId: fuse.id,
     }).then((res) => {
       if (res) {
-        withdraw(res, fuse.id);
+        withdraw(res);
       }
     });
   };

@@ -45,7 +45,7 @@ const YourSecretKeyModal = (): JSX.Element => {
                 </p>
                 <Copy
                   src={copy}
-                  text={String(operatorSlice.operator.project.secretKey)}
+                  text={operatorSlice.operator.project.secretKey}
                   alt="copy API secret key"
                   width={18.97}
                   height={18.81}

@@ -12,7 +12,7 @@ import weth from "@/assets/weth.svg";
 import usdt from "@/assets/usdt-logo.svg";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import { Address } from "viem";
-import { hex } from "@/lib/helpers";
+// import { hex } from "@/lib/helpers";
 import gasIcon from "@/assets/gas.svg";
 import { ethers } from "ethers";
 import { useSignMessage } from "wagmi";
