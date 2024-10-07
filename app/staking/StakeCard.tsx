@@ -49,6 +49,14 @@ const StakeCard: React.FC<StakeCardProps> = ({
   const { address, isConnected } = useAccount();
   const config = useConfig();
 
+  useEffect(() => {
+    if (closed) {
+      setCardMode(1);
+    } else {
+      setCardMode(0);
+    }
+  }, [closed]);
+
   const setMode = useCallback((mode: number) => {
     if (!closed) setCardMode(mode);
   }, [closed]);
