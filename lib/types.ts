@@ -306,7 +306,7 @@ export interface User {
   name: string;
   email: string;
   auth0Id: string;
-  smartContractAccountAddress: Address;
+  smartWalletAddress: Address;
 }
 
 export interface Project {

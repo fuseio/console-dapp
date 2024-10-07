@@ -15,6 +15,7 @@ import { Address } from "viem";
 import { hex } from "@/lib/helpers";
 import gasIcon from "@/assets/gas.svg";
 import { ethers } from "ethers";
+import { useSignMessage } from "wagmi";
 
 type WithdrawModalProps = {
   balance: string;
@@ -79,6 +80,25 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
   const [isCoinDropdownOpen, setIsCoinDropdownOpen] = useState(false);
   const [gasEstimateGwei, setGasEstimateGwei] = useState(ethers.utils.formatUnits(gas.NATIVE, "gwei"));
   const [gasEstimate, setGasEstimate] = useState(ethers.utils.formatEther(gas.NATIVE));
+  const { signMessage } = useSignMessage({
+    mutation: {
+      onSuccess(data) {
+        if(!signer || !toAddress) {
+          return;
+        }
+        dispatch(withdraw({
+          signer,
+          signature: data,
+          amount,
+          to: toAddress,
+          decimals: coins[selectedCoin].decimals,
+          token: selectedCoin,
+          coinGeckoId: coins[selectedCoin].coinGeckoId,
+          contractAddress: coins[selectedCoin].address
+        }));
+      }
+    }
+  })
 
   const coinDropdownRef = useOutsideClick<HTMLButtonElement>(() => {
     if (isCoinDropdownOpen) {
@@ -179,7 +199,7 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
                             if (!coins[key].isNative) {
                               dispatch(fetchErc20Balance({
                                 contractAddress: coins[key].address!,
-                                address: operatorSlice.operator.user.smartContractAccountAddress,
+                                address: operatorSlice.operator.user.smartWalletAddress,
                                 decimals: coins[key].decimals,
                               }))
                               setGasEstimateGwei(ethers.utils.formatUnits(gas.CONTRACT, "gwei"));
@@ -245,15 +265,7 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
                     parseFloat(amount) > 0 &&
                     toAddress
                   ) {
-                    dispatch(withdraw({
-                      signer,
-                      amount,
-                      to: toAddress,
-                      decimals: coins[selectedCoin].decimals,
-                      token: selectedCoin,
-                      coinGeckoId: coins[selectedCoin].coinGeckoId,
-                      contractAddress: coins[selectedCoin].address
-                    }));
+                    signMessage({ message: "Verify your wallet ownership to withdraw" });
                   }
                 }}
               >

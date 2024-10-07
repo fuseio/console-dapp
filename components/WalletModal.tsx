@@ -40,7 +40,7 @@ const WalletModal = (): JSX.Element => {
   const signer = useEthersSigner();
   const router = useRouter();
   const { switchChain } = useSwitchChain();
-  const { isLogin, isValidated, isLoggedIn, isLoginError, isAuthenticated, isOperatorWalletModalOpen, redirect, signature, operatorContactDetail } = useAppSelector(selectOperatorSlice);
+  const { isLogin, isValidated, isLoggedIn, isLoginError, isAuthenticated, isOperatorWalletModalOpen, redirect, operatorContactDetail } = useAppSelector(selectOperatorSlice);
   const pathname = usePathname();
 
   const toggleModal = useCallback((isModal: boolean) => {
@@ -104,20 +104,20 @@ const WalletModal = (): JSX.Element => {
   }, [isConnectedWallet, address, dispatch])
 
   useEffect(() => {
-    if (isConnected && isOperatorWalletModalOpen && chain && !signature) {
+    if (isConnected && isOperatorWalletModalOpen && chain && !isValidated) {
       if (chain.id !== fuse.id) {
         switchChain({ chainId: fuse.id })
       }
       signMessage({ message: signDataMessage });
     }
-  }, [isConnected, isOperatorWalletModalOpen, chain, signature, signMessage, switchChain])
+  }, [isConnected, isOperatorWalletModalOpen, chain, isValidated, signMessage, switchChain])
 
   useEffect(() => {
-    if (isValidated && signer) {
+    if (isValidated) {
       dispatch(setIsValidated(false));
-      dispatch(fetchOperator({ signer }));
+      dispatch(fetchOperator());
     }
-  }, [dispatch, isValidated, signer])
+  }, [dispatch, isValidated])
 
   useEffect(() => {
     if (isLoggedIn) {
