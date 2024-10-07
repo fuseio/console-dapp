@@ -522,26 +522,6 @@ export const bridgeConfig: BridgeConfigLike = {
       {
         chainId: 138,
         decimals: 18,
-        symbol: "SD",
-        name: "Stader",
-        isBridged: true,
-        isNative: false,
-        address: "0x878394c39d7fA611Db3741F958f8a916E29744e4",
-      },
-      {
-        chainId: 101,
-        decimals: 18,
-        symbol: "SD",
-        name: "Stader",
-        isBridged: false,
-        isNative: false,
-        address: "0x30d20208d987713f46dfd34ef128bb16c404d10f",
-      },
-    ],
-    [
-      {
-        chainId: 138,
-        decimals: 18,
         symbol: "ultraETH",
         name: "ultraETH",
         isBridged: true,

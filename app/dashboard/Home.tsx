@@ -34,7 +34,7 @@ import { SignMessageVariables } from "wagmi/query";
 import contactSupport from "@/assets/contact-support.svg";
 
 type CreateOperatorWalletProps = {
-  accessToken: string;
+  isValidated: boolean;
   signMessage: (variables: SignMessageVariables) => void;
   loading: () => boolean;
   dispatch: any;
@@ -53,7 +53,7 @@ type OperatorAccountBalanceProps = {
   dispatch: ThunkDispatch<any, undefined, AnyAction> & Dispatch<AnyAction>;
 }
 
-const CreateOperatorWallet = ({ accessToken, signMessage, loading, dispatch }: CreateOperatorWalletProps) => {
+const CreateOperatorWallet = ({ isValidated, signMessage, loading, dispatch }: CreateOperatorWalletProps) => {
   return (
     <div className="flex flex-col justify-between items-start md:gap-4">
       <div>
@@ -70,7 +70,7 @@ const CreateOperatorWallet = ({ accessToken, signMessage, loading, dispatch }: C
         className="transition ease-in-out flex justify-between items-center gap-2 bg-black text-lg leading-none text-white font-semibold rounded-full hover:bg-success hover:text-black"
         padding="py-[18.5px] px-[38px]"
         onClick={() => {
-          if (accessToken) {
+          if (isValidated) {
             return dispatch(setIsContactDetailsModalOpen(true))
           }
           signMessage({ message: signDataMessage });
@@ -214,7 +214,7 @@ const Home = () => {
   const signer = useEthersSigner();
   const { data: blockNumber } = useBlockNumber({ watch: true });
   const { data: balance, refetch } = useBalance({
-    address: operatorSlice.operator.user.smartContractAccountAddress,
+    address: operatorSlice.operator.user.smartWalletAddress,
     chainId: fuse.id,
   });
   const totalTransaction = 1000;
@@ -360,7 +360,7 @@ const Home = () => {
                     loading={loading}
                   /> :
                   <CreateOperatorWallet
-                    accessToken={operatorSlice.accessToken}
+                    isValidated={operatorSlice.isValidated}
                     signMessage={signMessage}
                     loading={loading}
                     dispatch={dispatch}
