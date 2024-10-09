@@ -53,7 +53,7 @@ export const bridgeWrapped = async (
       ],
     })
   )[0];
-  const increasedNativeFee = BigInt((Number(nativeFee) * 1.2).toFixed(0)); // 20% increase
+  const increasedNativeFee = (BigInt(nativeFee) * BigInt(12)) / BigInt(10); // 20% increase
   const callParams = {
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
@@ -79,7 +79,7 @@ export const bridgeWrapped = async (
         serializeAdapterParams(adapterParams) as Address,
       ],
       value: increasedNativeFee,
-      connector
+      connector,
     });
   }
   try {
@@ -126,7 +126,9 @@ export const bridgeAndUnwrapNative = async (
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const walletClient = await getWalletClient(config, { chainId: selectedChainId });
+  const walletClient = await getWalletClient(config, {
+    chainId: selectedChainId,
+  });
   let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
