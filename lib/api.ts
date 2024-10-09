@@ -55,6 +55,16 @@ export const postValidateOperator = (signData: SignData) => {
     )
 }
 
+export const refreshOperatorToken = () => {
+    return axios.post(
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/refresh-token`,
+        {},
+        {
+            withCredentials: true
+        }
+    )
+}
+
 export const fetchCurrentOperator = async (): Promise<Operator> => {
     const response = await axios.get(
         `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/account`,
