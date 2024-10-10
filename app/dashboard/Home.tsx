@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useBlockNumber, useSignMessage } from "wagmi";
 import { fuse } from "wagmi/chains";
-import { checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, validateOperator } from "@/store/operatorSlice";
+import { checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, validateOperator, withRefreshToken } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
@@ -131,9 +131,9 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
 
     const intervalId = setInterval(() => {
       if (isActivated) {
-        dispatch(fetchSponsoredTransactions());
+        dispatch(withRefreshToken(() => dispatch(fetchSponsoredTransactions())));
       } else {
-        dispatch(checkIsActivated());
+        dispatch(withRefreshToken(() => dispatch(checkIsActivated())));
       }
     }, fiveSecondInMillisecond);
 
@@ -522,7 +522,7 @@ const Home = () => {
                     className="transition ease-in-out flex justify-between items-center gap-2 font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
                     padding="py-4 px-6"
                     onClick={() => {
-                      dispatch(generateSecretApiKey());
+                      dispatch(withRefreshToken(() => dispatch(generateSecretApiKey())));
                     }}
                   >
                     {operatorSlice.isGeneratingSecretApiKey && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}

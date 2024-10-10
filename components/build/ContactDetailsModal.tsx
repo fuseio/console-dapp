@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppDispatch } from "@/store/store";
-import { createOperator, setIsContactDetailsModalOpen, setOperatorContactDetail } from "@/store/operatorSlice";
+import { createOperator, setIsContactDetailsModalOpen, setOperatorContactDetail, withRefreshToken } from "@/store/operatorSlice";
 import Button from "../ui/Button";
 import Image from "next/image";
 import close from "@/assets/close.svg";
@@ -73,9 +73,11 @@ const ContactDetailsModal = (): JSX.Element => {
       dispatch(setOperatorContactDetail(values));
       localStorage.setItem("Fuse-operatorContactDetail", JSON.stringify(values));
 
-      dispatch(createOperator({
-        operatorContactDetail: values,
-      }));
+      dispatch(withRefreshToken(() =>
+        dispatch(createOperator({
+          operatorContactDetail: values,
+        }))
+      ))
     },
   });
 

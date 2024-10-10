@@ -21,7 +21,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { IS_ETHEREUM_OBJECT_DETECTED, path, signDataMessage, walletType } from "@/lib/helpers";
-import { checkIsActivated, checkOperator, fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setIsValidated, setLogout, setRedirect, validateOperator } from "@/store/operatorSlice";
+import { checkIsActivated, checkOperator, fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setIsValidated, setLogout, setRedirect, validateOperator, withRefreshToken } from "@/store/operatorSlice";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import { usePathname, useRouter } from "next/navigation";
 import { fuse } from "viem/chains";
@@ -113,7 +113,7 @@ const WalletModal = (): JSX.Element => {
   useEffect(() => {
     if (isValidated) {
       dispatch(setIsValidated(false));
-      dispatch(fetchOperator());
+      dispatch(withRefreshToken(() => dispatch(fetchOperator())));
     }
   }, [dispatch, isValidated])
 
@@ -138,8 +138,8 @@ const WalletModal = (): JSX.Element => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      dispatch(fetchSponsoredTransactions());
-      dispatch(checkIsActivated());
+      dispatch(withRefreshToken(() => dispatch(fetchSponsoredTransactions())));
+      dispatch(withRefreshToken(() => dispatch(checkIsActivated())));
     }
   }, [dispatch, isAuthenticated])
 
