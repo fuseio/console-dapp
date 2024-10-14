@@ -4,7 +4,7 @@ import { Signer, ethers } from "ethers";
 import { FuseSDK } from "@fuseio/fusebox-web-sdk";
 import { hex, splitSecretKey } from "@/lib/helpers";
 import { Operator, OperatorContactDetail, SignData, Withdraw } from "@/lib/types";
-import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, updateApiSecretKey } from "@/lib/api";
+import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
 import { parseEther, parseUnits } from "ethers/lib/utils";
@@ -20,7 +20,7 @@ const initOperator: Operator = {
     name: "",
     email: "",
     auth0Id: "",
-    smartContractAccountAddress: hex,
+    smartWalletAddress: hex,
   },
   project: {
     id: "",
@@ -81,8 +81,6 @@ export interface OperatorStateType {
   sponsorIdBalance: string;
   erc20Balance: string;
   redirect: string;
-  signature: string;
-  accessToken: string;
   withdraw: Withdraw;
   operatorContactDetail: OperatorContactDetail;
   operator: Operator;
@@ -122,8 +120,6 @@ const INIT_STATE: OperatorStateType = {
   sponsorIdBalance: "",
   erc20Balance: "",
   redirect: "",
-  signature: "",
-  accessToken: "",
   withdraw: initWithdraw,
   operatorContactDetail: initOperatorContactDetail,
   operator: initOperator,
@@ -136,19 +132,17 @@ export const checkOperator = createAsyncThunk(
   }: {
     address: Address;
   }) => {
-    return new Promise<any>(async (resolve, reject) => {
-      try {
-        const operator = await checkOperatorExist(address);
-        if (operator.status === 200) {
-          resolve("exists");
-        } else {
-          reject();
-        }
-      } catch (error) {
-        console.error(error);
-        reject();
+    try {
+      const operator = await checkOperatorExist(address);
+      if (operator.status === 200) {
+        return "exists";
+      } else {
+        throw new Error("Operator not found");
       }
-    });
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 );
 
@@ -159,101 +153,87 @@ export const validateOperator = createAsyncThunk(
   }: {
     signData: SignData;
   }) => {
-    return new Promise<any>(async (resolve, reject) => {
-      const accessToken = await postValidateOperator(signData);
-      if (accessToken) {
-        resolve({ accessToken, signature: signData.signature });
-      } else {
-        reject();
-      }
-    });
+    try {
+      await postValidateOperator(signData);
+      return true;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 );
 
-export const fetchOperator = createAsyncThunk<
+export const withRefreshToken = createAsyncThunk<
   any,
-  {
-    signer: Signer;
-  },
+  () => Promise<any>,
   { state: RootState }
 >(
-  "OPERATOR/FETCH_OPERATOR",
+  "OPERATOR/WITH_REFRESH_TOKEN",
   async (
-    {
-      signer,
-    }: {
-      signer: Signer;
-    },
+    callback,
     thunkAPI
   ) => {
-    return new Promise<any>(async (resolve, reject) => {
-      try {
-        const state = thunkAPI.getState();
-        const operatorState: OperatorStateType = state.operator;
-        const operator = await fetchCurrentOperator(operatorState.accessToken)
-        const fuseSDK = await FuseSDK.init(
-          operator.project.publicKey,
-          signer,
-          {
-            baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
-            jwtToken: operatorState.accessToken,
-            signature: operatorState.signature
-          }
-        );
-        const smartContractAccountAddress = fuseSDK.wallet.getSender() as Address;
-        if (operator) {
-          resolve({ operator, smartContractAccountAddress });
-        } else {
-          reject();
-        }
-      } catch (error) {
-        console.log(error);
-        reject();
+    try {
+      const result = await callback();
+      if (!result?.error?.message?.includes("401")) {
+        return result;
       }
-    });
+      try {
+        await refreshOperatorToken();
+        return await callback();
+      } catch (refreshTokenError) {
+        thunkAPI.dispatch(setLogout());
+        throw refreshTokenError;
+      }
+    } catch (error: any) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
+export const fetchOperator = createAsyncThunk(
+  "OPERATOR/FETCH_OPERATOR",
+  async () => {
+    try {
+      const operator = await fetchCurrentOperator()
+      if (operator) {
+        return operator;
+      } else {
+        throw new Error("Operator not found");
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 );
 
 export const createOperator = createAsyncThunk<
   any,
   {
-    signer: Signer;
     operatorContactDetail: OperatorContactDetail;
-  },
-  { state: RootState }
+  }
 >(
   "OPERATOR/CREATE_OPERATOR",
   async (
     {
-      signer,
       operatorContactDetail,
     }: {
-      signer: Signer;
       operatorContactDetail: OperatorContactDetail;
     },
-    thunkAPI
   ) => {
-    return new Promise<any>(async (resolve, reject) => {
-      const state = thunkAPI.getState();
-      const operatorState: OperatorStateType = state.operator;
-      const operator = await postCreateOperator(operatorContactDetail, operatorState.accessToken)
-      const fuseSDK = await FuseSDK.init(
-        operator.project.publicKey,
-        signer,
-        {
-          baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
-          jwtToken: operatorState.accessToken,
-          signature: operatorState.signature
-        }
-      );
-      const smartContractAccountAddress = fuseSDK.wallet.getSender() as Address;
-
+    try {
+      const operator = await postCreateOperator(operatorContactDetail)
       if (operator) {
-        resolve({ operator, smartContractAccountAddress });
+        return operator;
       } else {
-        reject();
+        throw new Error("Operator not found");
       }
-    });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 );
 
@@ -267,16 +247,19 @@ export const generateSecretApiKey = createAsyncThunk<
     _,
     thunkAPI
   ) => {
-    return new Promise<any>(async (resolve, reject) => {
+    try {
       const state = thunkAPI.getState();
       const operatorState: OperatorStateType = state.operator;
-      const { secretKey } = await postCreateApiSecretKey(operatorState.operator.project.id, operatorState.accessToken);
+      const { secretKey } = await postCreateApiSecretKey(operatorState.operator.project.id);
       if (secretKey) {
-        resolve(secretKey);
+        return secretKey;
       } else {
-        reject();
+        throw new Error("Secret key not found");
       }
-    });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 );
 
@@ -290,16 +273,19 @@ export const regenerateSecretApiKey = createAsyncThunk<
     _,
     thunkAPI
   ) => {
-    return new Promise<any>(async (resolve, reject) => {
+    try {
       const state = thunkAPI.getState();
       const operatorState: OperatorStateType = state.operator;
-      const { secretKey } = await updateApiSecretKey(operatorState.operator.project.id, operatorState.accessToken);
+      const { secretKey } = await updateApiSecretKey(operatorState.operator.project.id);
       if (secretKey) {
-        resolve(secretKey);
+        return secretKey;
       } else {
-        reject();
+        throw new Error("Secret key not found");
       }
-    });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 );
 
@@ -313,17 +299,15 @@ export const fetchSponsorIdBalance = createAsyncThunk<
     _,
     thunkAPI
   ) => {
-    return new Promise<any>(async (resolve, reject) => {
-      try {
-        const state = thunkAPI.getState();
-        const operatorState: OperatorStateType = state.operator;
-        const balance = await getSponsorIdBalance(operatorState.operator.project.sponsorId)
-        resolve(balance);
-      } catch (error) {
-        console.log(error);
-        reject(error);
-      }
-    });
+    try {
+      const state = thunkAPI.getState();
+      const operatorState: OperatorStateType = state.operator;
+      const balance = await getSponsorIdBalance(operatorState.operator.project.sponsorId)
+      return balance;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 );
 
@@ -337,16 +321,19 @@ export const createPaymaster = createAsyncThunk<
     _,
     thunkAPI
   ) => {
-    return new Promise<any>(async (resolve, reject) => {
+    try {
       const state = thunkAPI.getState();
       const operatorState: OperatorStateType = state.operator;
-      const paymasters = await postCreatePaymaster(operatorState.operator.project.id, operatorState.accessToken)
+      const paymasters = await postCreatePaymaster(operatorState.operator.project.id)
       if (paymasters?.[0]?.sponsorId) {
-        resolve(paymasters[0].sponsorId);
+        return paymasters[0].sponsorId;
       } else {
-        reject();
+        throw new Error("Paymaster not found");
       }
-    });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 );
 
@@ -354,6 +341,7 @@ export const fundPaymaster = createAsyncThunk<
   any,
   {
     signer: Signer;
+    signature: string;
     amount: string;
   },
   { state: RootState }
@@ -362,48 +350,47 @@ export const fundPaymaster = createAsyncThunk<
   async (
     {
       signer,
+      signature,
       amount,
     }: {
       signer: Signer;
+      signature: string;
       amount: string;
     },
     thunkAPI
   ) => {
-    return new Promise<any>(async (resolve, reject) => {
-      try {
-        const state = thunkAPI.getState();
-        const operatorState: OperatorStateType = state.operator;
-        const paymasterContract = new ethers.Contract(CONFIG.paymasterAddress, PaymasterAbi);
-        const value = parseEther(amount);
-        const data = ethers.utils.arrayify(paymasterContract.interface.encodeFunctionData(
-          "depositFor",
-          [operatorState.operator.project.sponsorId]
-        ));
+    try {
+      const state = thunkAPI.getState();
+      const operatorState: OperatorStateType = state.operator;
+      const paymasterContract = new ethers.Contract(CONFIG.paymasterAddress, PaymasterAbi);
+      const value = parseEther(amount);
+      const data = ethers.utils.arrayify(paymasterContract.interface.encodeFunctionData(
+        "depositFor",
+        [operatorState.operator.project.sponsorId]
+      ));
 
-        const fuseSDK = await FuseSDK.init(
-          operatorState.operator.project.publicKey,
-          signer,
-          {
-            baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
-            jwtToken: operatorState.accessToken,
-            signature: operatorState.signature
-          }
-        );
-        const userOp = await fuseSDK.callContract(CONFIG.paymasterAddress, value, data);
-        const result = await userOp?.wait();
-        const transactionHash = result?.transactionHash;
-
-        if (transactionHash) {
-          amplitude.track("Paymaster Balance Funded", { amount: parseFloat(amount) });
-          resolve(transactionHash);
-        } else {
-          reject();
+      const fuseSDK = await FuseSDK.init(
+        operatorState.operator.project.publicKey,
+        signer,
+        {
+          baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
+          signature
         }
-      } catch (error) {
-        console.log(error);
-        reject(error);
+      );
+      const userOp = await fuseSDK.callContract(CONFIG.paymasterAddress, value, data);
+      const result = await userOp?.wait();
+      const transactionHash = result?.transactionHash;
+
+      if (transactionHash) {
+        amplitude.track("Paymaster Balance Funded", { amount: parseFloat(amount) });
+        return transactionHash;
+      } else {
+        throw new Error("Transaction failed");
       }
-    });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 );
 
@@ -418,16 +405,14 @@ export const fetchErc20Balance = createAsyncThunk(
     address: Address,
     decimals: number,
   }) => {
-    return new Promise<any>(async (resolve, reject) => {
-      try {
-        const balance = await getERC20Balance(contractAddress, address, CONFIG.fuseRPC)
-        const formattedBalance = ethers.utils.formatUnits(balance, decimals);
-        resolve(formattedBalance);
-      } catch (error) {
-        console.log(error);
-        reject(error);
-      }
-    });
+    try {
+      const balance = await getERC20Balance(contractAddress, address, CONFIG.fuseRPC)
+      const formattedBalance = ethers.utils.formatUnits(balance, decimals);
+      return formattedBalance;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 );
 
@@ -435,6 +420,7 @@ export const withdraw = createAsyncThunk<
   any,
   {
     signer: Signer;
+    signature: string;
     amount: string;
     to: string;
     decimals: number;
@@ -448,6 +434,7 @@ export const withdraw = createAsyncThunk<
   async (
     {
       signer,
+      signature,
       amount,
       to,
       decimals,
@@ -456,6 +443,7 @@ export const withdraw = createAsyncThunk<
       contractAddress,
     }: {
       signer: Signer;
+      signature: string;
       amount: string;
       to: string;
       decimals: number;
@@ -465,113 +453,91 @@ export const withdraw = createAsyncThunk<
     },
     thunkAPI
   ) => {
-    return new Promise<any>(async (resolve, reject) => {
-      try {
-        const state = thunkAPI.getState();
-        const operatorState: OperatorStateType = state.operator;
+    try {
+      const state = thunkAPI.getState();
+      const operatorState: OperatorStateType = state.operator;
 
-        let recipient = to;
-        let value = parseEther(amount);
-        let data = Uint8Array.from([]);
-        let withPaymaster = false;
+      let recipient = to;
+      let value = parseEther(amount);
+      let data = Uint8Array.from([]);
+      let withPaymaster = false;
 
-        if (contractAddress) {
-          const erc20Contract = new ethers.Contract(contractAddress as string, ERC20ABI);
-          recipient = contractAddress;
-          value = parseEther("0");
-          data = ethers.utils.arrayify(erc20Contract.interface.encodeFunctionData(
-            "transfer",
-            [to, parseUnits(amount, decimals)]
-          ));
-        }
-
-        if (operatorState.isActivated) {
-          withPaymaster = true;
-        }
-
-        const fuseSDK = await FuseSDK.init(
-          operatorState.operator.project.publicKey,
-          signer,
-          {
-            withPaymaster,
-            baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
-            jwtToken: operatorState.accessToken,
-            signature: operatorState.signature
-          }
-        );
-
-        const userOp = await fuseSDK.callContract(
-          recipient,
-          value,
-          data
-        );
-        const result = await userOp?.wait();
-        const transactionHash = result?.transactionHash;
-
-        if (transactionHash) {
-          resolve({ amount, token, coinGeckoId });
-        } else {
-          reject();
-        }
-      } catch (error) {
-        console.log(error);
-        reject(error);
+      if (contractAddress) {
+        const erc20Contract = new ethers.Contract(contractAddress as string, ERC20ABI);
+        recipient = contractAddress;
+        value = parseEther("0");
+        data = ethers.utils.arrayify(erc20Contract.interface.encodeFunctionData(
+          "transfer",
+          [to, parseUnits(amount, decimals)]
+        ));
       }
-    });
+
+      if (operatorState.isActivated) {
+        withPaymaster = true;
+      }
+
+      const fuseSDK = await FuseSDK.init(
+        operatorState.operator.project.publicKey,
+        signer,
+        {
+          withPaymaster,
+          baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
+          signature
+        }
+      );
+
+      const userOp = await fuseSDK.callContract(
+        recipient,
+        value,
+        data
+      );
+      const result = await userOp?.wait();
+      const transactionHash = result?.transactionHash;
+
+      if (transactionHash) {
+        return { amount, token, coinGeckoId };
+      } else {
+        throw new Error("Transaction failed");
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 );
 
-export const checkIsActivated = createAsyncThunk<
-  any,
-  undefined,
-  { state: RootState }
->(
+export const checkIsActivated = createAsyncThunk(
   "OPERATOR/IS_ACTIVATED",
-  async (_, thunkAPI) => {
-    return new Promise<any>(async (resolve, reject) => {
-      try {
-        const state = thunkAPI.getState();
-        const operatorState: OperatorStateType = state.operator;
-        const operator = await checkActivated(operatorState.accessToken);
-        if (operator.status === 200) {
-          resolve("activated");
-        } else {
-          reject();
-        }
-      } catch (error: any) {
-        if (error?.response?.status === 404) {
-          const DEPOSIT_REQUIRED = 10;
-          console.log(`Error 404: Operator Wallet is not activated, deposit ${DEPOSIT_REQUIRED} FUSE to activate.`)
-        } else {
-          console.error(error);
-        }
-        reject();
+  async () => {
+    try {
+      const operator = await checkActivated();
+      if (operator.status === 200) {
+        return "activated";
+      } else {
+        throw new Error("Operator not found");
       }
-    });
+    } catch (error: any) {
+      if (error?.response?.status === 404) {
+        const DEPOSIT_REQUIRED = 10;
+        console.log(`Error 404: Operator Wallet is not activated, deposit ${DEPOSIT_REQUIRED} FUSE to activate.`);
+      } else {
+        console.error(error);
+      }
+      throw error;
+    }
   }
 );
 
-export const fetchSponsoredTransactions = createAsyncThunk<
-  any,
-  undefined,
-  { state: RootState }
->(
+export const fetchSponsoredTransactions = createAsyncThunk(
   "OPERATOR/FETCH_SPONSORED_TRANSACTIONS",
-  async (
-    _,
-    thunkAPI
-  ) => {
-    return new Promise<any>(async (resolve, reject) => {
-      try {
-        const state = thunkAPI.getState();
-        const operatorState: OperatorStateType = state.operator;
-        const sponsoredTransactionCount = await fetchSponsoredTransactionCount(operatorState.accessToken)
-        resolve(sponsoredTransactionCount.sponsoredTransactions);
-      } catch (error) {
-        console.log(error);
-        reject(error);
-      }
-    });
+  async () => {
+    try {
+      const sponsoredTransactionCount = await fetchSponsoredTransactionCount()
+      return sponsoredTransactionCount.sponsoredTransactions;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 );
 
@@ -590,6 +556,7 @@ const operatorSlice = createSlice({
     },
     setIsValidated: (state, action: PayloadAction<boolean>) => {
       state.isValidated = action.payload
+      localStorage.setItem("Fuse-isValidated", JSON.stringify(action.payload));
     },
     setIsContactDetailsModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isContactDetailsModalOpen = action.payload
@@ -629,17 +596,15 @@ const operatorSlice = createSlice({
     },
     setLogout: (state) => {
       state.isOperatorExist = false;
-      state.accessToken = "";
+      state.isValidated = false;
       state.operator = initOperator;
-      state.signature = "";
       state.isAuthenticated = false;
       state.operatorContactDetail = initOperatorContactDetail;
       state.isActivated = false;
       state.sponsoredTransactions = 0;
       localStorage.removeItem("Fuse-isOperatorExist");
-      localStorage.removeItem("Fuse-operatorAccessToken");
+      localStorage.removeItem("Fuse-isValidated");
       localStorage.removeItem("Fuse-operator");
-      localStorage.removeItem("Fuse-operatorEoaSignature");
       localStorage.removeItem("Fuse-isOperatorAuthenticated");
       localStorage.removeItem("Fuse-isLoginError");
       localStorage.removeItem("Fuse-connectedWalletType");
@@ -648,16 +613,14 @@ const operatorSlice = createSlice({
     },
     setHydrate: (state) => {
       const isOperatorExist = localStorage.getItem("Fuse-isOperatorExist");
-      const accessToken = localStorage.getItem("Fuse-operatorAccessToken");
+      const isValidated = localStorage.getItem("Fuse-isValidated");
       const operator = localStorage.getItem("Fuse-operator");
-      const signature = localStorage.getItem("Fuse-operatorEoaSignature");
       const isAuthenticated = localStorage.getItem("Fuse-isOperatorAuthenticated");
       const operatorContactDetail = localStorage.getItem("Fuse-operatorContactDetail");
       const isActivated = localStorage.getItem("Fuse-isActivated");
       state.isOperatorExist = isOperatorExist ? JSON.parse(isOperatorExist) : false;
-      state.accessToken = accessToken ?? "";
+      state.isValidated = isValidated ? JSON.parse(isValidated) : false;
       state.operator = operator ? JSON.parse(operator) : initOperator;
-      state.signature = signature ?? "";
       state.isAuthenticated = isAuthenticated ? JSON.parse(isAuthenticated) : false;
       state.operatorContactDetail = operatorContactDetail ? JSON.parse(operatorContactDetail) : initOperatorContactDetail;
       state.isActivated = isActivated ? JSON.parse(isActivated) : false;
@@ -680,13 +643,10 @@ const operatorSlice = createSlice({
       .addCase(validateOperator.pending, (state) => {
         state.isValidatingOperator = true;
       })
-      .addCase(validateOperator.fulfilled, (state, action) => {
+      .addCase(validateOperator.fulfilled, (state) => {
         state.isValidatingOperator = false;
-        state.accessToken = action.payload.accessToken;
-        state.signature = action.payload.signature;
         state.isValidated = true;
-        localStorage.setItem("Fuse-operatorAccessToken", action.payload.accessToken);
-        localStorage.setItem("Fuse-operatorEoaSignature", action.payload.signature);
+        localStorage.setItem("Fuse-isValidated", JSON.stringify(true));
       })
       .addCase(validateOperator.rejected, (state) => {
         state.isValidatingOperator = false;
@@ -696,8 +656,7 @@ const operatorSlice = createSlice({
       })
       .addCase(fetchOperator.fulfilled, (state, action) => {
         state.isFetchingOperator = false;
-        state.operator = action.payload.operator;
-        state.operator.user.smartContractAccountAddress = action.payload.smartContractAccountAddress;
+        state.operator = action.payload;
         state.isLoggedIn = true;
         state.isAuthenticated = true;
         localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
@@ -713,12 +672,11 @@ const operatorSlice = createSlice({
         state.isAccountCreationModalOpen = true;
       })
       .addCase(createOperator.fulfilled, (state, action) => {
-        state.operator = action.payload.operator;
-        state.operator.user.smartContractAccountAddress = action.payload.smartContractAccountAddress;
+        state.operator = action.payload;
         state.isAuthenticated = true;
         state.isAccountCreationModalOpen = false;
         state.isCongratulationModalOpen = true;
-        const { secretPrefix, secretLastFourChars } = splitSecretKey(action.payload.operator.project.secretKey);
+        const { secretPrefix, secretLastFourChars } = splitSecretKey(action.payload.project.secretKey);
         state.operator.project.secretPrefix = secretPrefix;
         state.operator.project.secretLastFourChars = secretLastFourChars;
         localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
@@ -776,7 +734,7 @@ const operatorSlice = createSlice({
       .addCase(fundPaymaster.pending, (state) => {
         state.isFundingPaymaster = true;
       })
-      .addCase(fundPaymaster.fulfilled, (state, action) => {
+      .addCase(fundPaymaster.fulfilled, (state) => {
         state.isFundingPaymaster = false;
         state.isTopupPaymasterModalOpen = false;
       })

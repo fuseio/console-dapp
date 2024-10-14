@@ -52,11 +52,11 @@ const Home = () => {
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TransfiModal />
-      {isQrModalOpen && <QrModal value={String(address)} size={200} setIsQrModalOpen={setIsQrModalOpen} />}
+      {isQrModalOpen && <QrModal value={address ? address : ''} size={200} setIsQrModalOpen={setIsQrModalOpen} />}
       <div className="w-8/9 flex flex-col gap-y-[32.98px] mt-16 mb-[187px] md:w-9/10 max-w-7xl">
         <div>
           <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
-            Hello{isConnected ? `, ${eclipseAddress(String(address))}` : ""}
+            Hello{isConnected ? `, ${address ? eclipseAddress(address) : ''}` : ""}
           </h1>
           <p className="text-[20px]/7 font-normal mt-4 text-text-dark-gray md:text-base">
             The one-stop-shop for all Fuse token holders.
@@ -166,11 +166,11 @@ const Home = () => {
                     height={45}
                   />
                   <p className="text-[40px] leading-none text-white font-bold ml-[19.02px] mr-[24.12px]">
-                    {eclipseAddress(String(address))}
+                    {address ? eclipseAddress(address) : ''}
                   </p>
                   <Copy
                     src={copy}
-                    text={String(address)}
+                    text={address ? address : ''}
                     alt="Copy"
                     width={19}
                     height={19}

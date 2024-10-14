@@ -11,4 +11,10 @@ Console dapp combines Staking and Bridge dapps.
 2. Run development server:
   ```bash
   npm run dev
+  # or
+  yarn dev
+  # or
+  pnpm dev
+  # or
+  bun dev
   ```

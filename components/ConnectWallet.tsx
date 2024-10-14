@@ -315,11 +315,11 @@ const ConnectWallet = ({
               Connected account
             </p>
             <div className="flex justify-between">
-              <p className="font-bold">{eclipseAddress(String(address))}</p>
+              <p className="font-bold"> {address ? eclipseAddress(address) : ''}</p>
               <div className="flex gap-[19.02px]">
                 <Copy
                   src={copy}
-                  text={String(address)}
+                  text={address ? address : ''}
                   width={18.97}
                   height={18.81}
                 />
@@ -346,7 +346,7 @@ const ConnectWallet = ({
                   alt={chain?.name ?? "Fuse"}
                   width={40}
                   height={40}
-                  className="border border-[0.5px] border-gray-alpha-40 rounded-full"
+                  className="border-[0.5px] border-gray-alpha-40 rounded-full"
                 />
                 <div className="flex flex-col justify-between gap-[3.68px]">
                   <p>{chain?.name} Token</p>

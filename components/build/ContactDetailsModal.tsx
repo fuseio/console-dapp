@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppDispatch } from "@/store/store";
-import { createOperator, setIsContactDetailsModalOpen, setOperatorContactDetail } from "@/store/operatorSlice";
-import { useEthersSigner } from "@/lib/ethersAdapters/signer";
+import { createOperator, setIsContactDetailsModalOpen, setOperatorContactDetail, withRefreshToken } from "@/store/operatorSlice";
 import Button from "../ui/Button";
 import Image from "next/image";
 import close from "@/assets/close.svg";
@@ -44,8 +43,6 @@ const Error = ({ touched, error }: ErrorProps) => {
 
 const ContactDetailsModal = (): JSX.Element => {
   const dispatch = useAppDispatch();
-  const signer = useEthersSigner();
-  const [isSignerError, setIsSignerError] = useState(false);
 
   useEffect(() => {
     window.addEventListener("click", (e) => {
@@ -73,17 +70,14 @@ const ContactDetailsModal = (): JSX.Element => {
       email: Yup.string().email('Invalid email address').required('Required'),
     }),
     onSubmit: values => {
-      if (!signer) {
-        return setIsSignerError(true);
-      }
-
       dispatch(setOperatorContactDetail(values));
       localStorage.setItem("Fuse-operatorContactDetail", JSON.stringify(values));
 
-      dispatch(createOperator({
-        signer,
-        operatorContactDetail: values,
-      }));
+      dispatch(withRefreshToken(() =>
+        dispatch(createOperator({
+          operatorContactDetail: values,
+        }))
+      ))
     },
   });
 
@@ -192,7 +186,6 @@ const ContactDetailsModal = (): JSX.Element => {
                 className="transition ease-in-out bg-success font-bold leading-none w-full h-14 rounded-full hover:bg-black hover:text-white"
                 type="submit"
               />
-              <Error touched={isSignerError} error={"Wallet connection issue. Please reconnect wallet."} />
             </div>
           </form>
         </motion.div>

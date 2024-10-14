@@ -3,9 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import close from "@/assets/close.svg";
 import metamask from "@/public/metamask.png";
 import wc from "@/assets/wc.svg";
-import volt from "@/assets/volt.svg";
 import coinbase from "@/assets/coinbase.svg";
-import trezor from "@/public/trezor.png";
 import fb from "@/assets/fb.svg";
 import twitter2 from "@/assets/twitter2.svg";
 import discord2 from "@/assets/discord2.svg";
@@ -23,7 +21,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { IS_ETHEREUM_OBJECT_DETECTED, path, signDataMessage, walletType } from "@/lib/helpers";
-import { checkIsActivated, checkOperator, fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setIsValidated, setLogout, setRedirect, validateOperator } from "@/store/operatorSlice";
+import { checkIsActivated, checkOperator, fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setIsValidated, setLogout, setRedirect, validateOperator, withRefreshToken } from "@/store/operatorSlice";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import { usePathname, useRouter } from "next/navigation";
 import { fuse } from "viem/chains";
@@ -40,7 +38,7 @@ const WalletModal = (): JSX.Element => {
   const signer = useEthersSigner();
   const router = useRouter();
   const { switchChain } = useSwitchChain();
-  const { isLogin, isValidated, isLoggedIn, isLoginError, isAuthenticated, isOperatorWalletModalOpen, redirect, signature, operatorContactDetail } = useAppSelector(selectOperatorSlice);
+  const { isLogin, isValidated, isLoggedIn, isLoginError, isAuthenticated, isOperatorWalletModalOpen, redirect, operatorContactDetail } = useAppSelector(selectOperatorSlice);
   const pathname = usePathname();
 
   const toggleModal = useCallback((isModal: boolean) => {
@@ -104,20 +102,20 @@ const WalletModal = (): JSX.Element => {
   }, [isConnectedWallet, address, dispatch])
 
   useEffect(() => {
-    if (isConnected && isOperatorWalletModalOpen && chain && !signature) {
+    if (isConnected && isOperatorWalletModalOpen && chain && !isValidated) {
       if (chain.id !== fuse.id) {
         switchChain({ chainId: fuse.id })
       }
       signMessage({ message: signDataMessage });
     }
-  }, [isConnected, isOperatorWalletModalOpen, chain, signature, signMessage, switchChain])
+  }, [isConnected, isOperatorWalletModalOpen, chain, isValidated, signMessage, switchChain])
 
   useEffect(() => {
-    if (isValidated && signer) {
+    if (isValidated) {
       dispatch(setIsValidated(false));
-      dispatch(fetchOperator({ signer }));
+      dispatch(withRefreshToken(() => dispatch(fetchOperator())));
     }
-  }, [dispatch, isValidated, signer])
+  }, [dispatch, isValidated])
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -140,8 +138,8 @@ const WalletModal = (): JSX.Element => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      dispatch(fetchSponsoredTransactions());
-      dispatch(checkIsActivated());
+      dispatch(withRefreshToken(() => dispatch(fetchSponsoredTransactions())));
+      dispatch(withRefreshToken(() => dispatch(checkIsActivated())));
     }
   }, [dispatch, isAuthenticated])
 
