@@ -15,8 +15,21 @@ import {
   useSwitchChain,
 } from "wagmi";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
-import { eclipseAddress, evmDecimals, path, screenMediumWidth } from "@/lib/helpers";
-import { arbitrum, polygon, fuse, optimism, bsc, mainnet, base } from "wagmi/chains";
+import {
+  eclipseAddress,
+  evmDecimals,
+  path,
+  screenMediumWidth,
+} from "@/lib/helpers";
+import {
+  arbitrum,
+  polygon,
+  fuse,
+  optimism,
+  bsc,
+  mainnet,
+  base,
+} from "wagmi/chains";
 import fuseIcon from "@/assets/fuse-icon.svg";
 import polygonIcon from "@/assets/polygon-icon.svg";
 import optimismIcon from "@/assets/optimism-icon.svg";
@@ -30,7 +43,10 @@ import disconnectIcon from "@/assets/disconnect.svg";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import leftArrow from "@/assets/left-arrow.svg";
 import QRCode from "react-qr-code";
-import { setIsLogin, setIsOperatorWalletModalOpen } from "@/store/operatorSlice";
+import {
+  setIsLogin,
+  setIsOperatorWalletModalOpen,
+} from "@/store/operatorSlice";
 import { usePathname } from "next/navigation";
 import switchNetworkIcon from "@/assets/switch-network.svg";
 import Copy from "./ui/Copy";
@@ -82,7 +98,7 @@ type UsdTokens = {
 
 const usdTokens: UsdTokens = {
   [fuse.id]: "fuse-network-token",
-  [polygon.id]: "pol-network",
+  [polygon.id]: "matic-network",
   [optimism.id]: "optimism",
   [arbitrum.id]: "arbitrum",
   [mainnet.id]: "ethereum",
@@ -111,8 +127,8 @@ const ConnectWallet = ({
     mutation: {
       onSuccess() {
         resetConnection();
-      }
-    }
+      },
+    },
   });
   const { data: blockNumber } = useBlockNumber({ watch: true });
   const { data: balance, refetch } = useBalance({
@@ -164,7 +180,7 @@ const ConnectWallet = ({
 
   useEffect(() => {
     refetch();
-  }, [blockNumber, refetch])
+  }, [blockNumber, refetch]);
 
   return !isConnected ? (
     <div className={"flex justify-end " + containerClassName}>
@@ -175,7 +191,7 @@ const ConnectWallet = ({
             dispatch(setIsOperatorWalletModalOpen(true));
             dispatch(setIsLogin(true));
           }
-          dispatch(setIsWalletModalOpen(true))
+          dispatch(setIsWalletModalOpen(true));
         }}
       >
         Connect Wallet
@@ -196,9 +212,7 @@ const ConnectWallet = ({
           width={matches ? 25 : 18}
           height={matches ? 25 : 18}
         />
-        <p className="ms-[8.52px]">
-          {eclipseAddress(String(address))}
-        </p>
+        <p className="ms-[8.52px]">{eclipseAddress(String(address))}</p>
         <Image
           src={down}
           alt="down"
@@ -277,9 +291,7 @@ const ConnectWallet = ({
             width={matches ? 25 : 18}
             height={matches ? 25 : 18}
           />
-          <p className="ms-[8.52px]">
-            {eclipseAddress(String(address))}
-          </p>
+          <p className="ms-[8.52px]">{eclipseAddress(String(address))}</p>
           <Image
             src={down}
             alt="down"
@@ -294,7 +306,9 @@ const ConnectWallet = ({
           initial="closed"
           exit="closed"
           variants={menu}
-          className={`absolute top-[120%] right-0 bg-white rounded-[20px] cursor-auto shadow-xl py-[25.5px] z-50 w-[268.22px] ${pathname === "/dashboard" ? "md:left-1/2" : ""}`}
+          className={`absolute top-[120%] right-0 bg-white rounded-[20px] cursor-auto shadow-xl py-[25.5px] z-50 w-[268.22px] ${
+            pathname === "/dashboard" ? "md:left-1/2" : ""
+          }`}
         >
           <div className="flex flex-col gap-[8.35px] px-[22px]">
             <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">
@@ -342,7 +356,14 @@ const ConnectWallet = ({
                 </div>
               </div>
               <div className="flex flex-col justify-between gap-[3.68px] h-10">
-                <p>{parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) || "0").toFixed(4)}</p>
+                <p>
+                  {parseFloat(
+                    formatUnits(
+                      balance?.value ?? BigInt(0),
+                      balance?.decimals ?? evmDecimals
+                    ) || "0"
+                  ).toFixed(4)}
+                </p>
                 {balanceSlice.isUsdPriceLoading ? (
                   <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span>
                 ) : (
@@ -350,13 +371,17 @@ const ConnectWallet = ({
                     $
                     {chain && chain.id === fuse.id
                       ? new Intl.NumberFormat().format(
-                        parseFloat(
-                          (
-                            parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0") *
-                            balanceSlice.price
-                          ).toString()
+                          parseFloat(
+                            (
+                              parseFloat(
+                                formatUnits(
+                                  balance?.value ?? BigInt(0),
+                                  balance?.decimals ?? evmDecimals
+                                ) ?? "0"
+                              ) * balanceSlice.price
+                            ).toString()
+                          )
                         )
-                      )
                       : 0}
                   </p>
                 )}
@@ -414,10 +439,7 @@ const ConnectWallet = ({
               Back
             </button>
             <div className="flex justify-center">
-              <QRCode
-                size={150}
-                value={String(address)}
-              />
+              <QRCode size={150} value={String(address)} />
             </div>
           </div>
         </motion.div>
@@ -490,7 +512,7 @@ const ConnectWallet = ({
         </div>
       </motion.div>
     </div>
-  )
+  );
 };
 
 export default ConnectWallet;

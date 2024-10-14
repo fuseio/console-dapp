@@ -66,7 +66,7 @@ export const coins: CoinConfigLike[] = [
     symbol: "POL",
     decimals: 18,
     icon: pol,
-    coinGeckoId: "pol-network",
+    coinGeckoId: "matic-network",
   },
   {
     name: "Maker",
