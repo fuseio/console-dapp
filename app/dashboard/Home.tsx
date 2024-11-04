@@ -418,7 +418,7 @@ const Home = () => {
                 className={`transition ease-in-out text-black leading-none font-semibold bg-modal-bg rounded-full px-7 py-4 ${operatorSlice.isActivated ? "hover:bg-success" : "border border-black/40 hover:bg-black hover:text-white hover:border-black"}`}
                 onClick={() => {
                   amplitude.track("Go to Tutorials");
-                  window.open("https://docs.fuse.io/fuse-box/tutorials/send-your-first-gasless-transaction", "_blank");
+                  window.open("https://docs.fuse.io/developers/tutorials/send-your-first-gasless-transaction", "_blank");
                 }}
               >
                 Start tutorial
