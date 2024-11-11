@@ -19,7 +19,7 @@ import ultraeths from "@/assets/ultraeths.webp";
 import wbeth from "@/assets/wbeth.webp";
 import weeth from "@/assets/weeth.webp";
 import ethx from "@/assets/ethx.png";
-import wstETH from "@assets/wstETH.png";
+import wstETH from "@/assets/wstETH.png";
 
 export const coins: CoinConfigLike[] = [
   {
