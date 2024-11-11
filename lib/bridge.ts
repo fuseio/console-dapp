@@ -738,5 +738,25 @@ export const bridgeConfig: BridgeConfigLike = {
         address: "0xa35b1b31ce002fbf2058d22f30f95d405200a15b",
       },
     ],
+    [
+      {
+        chainId: 138,
+        decimals: 18,
+        symbol: "wstETH",
+        name: "Wrapped liquid staked Ether 2.0",
+        isBridged: true,
+        isNative: false,
+        address: "0x2931B47c2cEE4fEBAd348ba3d322cb4A17662C34",
+      },
+      {
+        chainId: 101,
+        decimals: 18,
+        symbol: "wstETH",
+        name: "Wrapped liquid staked Ether 2.0",
+        isBridged: false,
+        isNative: false,
+        address: "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+      },
+    ],
   ],
 };
