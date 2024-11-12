@@ -218,13 +218,15 @@ const Deposit = ({
               }),
             },
             {
-              items: appConfig.wrappedBridge.thirdPartyChains.map((chain, i) => {
-                return {
-                  item: chain.chainName,
-                  icon: chain.icon,
-                  id: i,
-                };
-              }),
+              items: appConfig.wrappedBridge.thirdPartyChains.map(
+                (chain, i) => {
+                  return {
+                    item: chain.chainName,
+                    icon: chain.icon,
+                    id: i,
+                  };
+                }
+              ),
             },
             {
               heading: "Centralized Exchanges",
@@ -292,13 +294,15 @@ const Deposit = ({
                     heading: "Tokens",
                     items: appConfig.wrappedBridge.chains[
                       selectedChainItem
-                    ].tokens.map((coin, i) => {
-                      return {
-                        icon: coin.icon,
-                        id: i,
-                        item: coin.symbol,
-                      };
-                    }),
+                    ].tokens
+                      .filter((coin) => !coin.isDepositPaused)
+                      .map((coin, i) => {
+                        return {
+                          icon: coin.icon,
+                          id: i,
+                          item: coin.symbol,
+                        };
+                      }),
                   },
                 ]}
                 selectedSection={selectedTokenSection}
@@ -370,8 +374,8 @@ const Deposit = ({
             </div>
             <div className="flex flex-col font-medium md:mt-2">
               <p>
-                Remember that using 3rd party application carries risks.
-                Fuse does not control the code or content of these websites.
+                Remember that using 3rd party application carries risks. Fuse
+                does not control the code or content of these websites.
               </p>
             </div>
           </div>
@@ -426,8 +430,8 @@ const Deposit = ({
             </div>
             <div className="flex flex-col font-medium">
               <p>
-                Remember that using 3rd party application carries risks.
-                Fuse does not control the code or content of these websites.
+                Remember that using 3rd party application carries risks. Fuse
+                does not control the code or content of these websites.
               </p>
             </div>
           </div>
@@ -436,7 +440,8 @@ const Deposit = ({
         <>
           <a
             href={
-              appConfig.wrappedBridge.thirdPartyChains[selectedChainItem].appDepositURL
+              appConfig.wrappedBridge.thirdPartyChains[selectedChainItem]
+                .appDepositURL
             }
             target="_blank"
             rel="noreferrer"
@@ -482,8 +487,8 @@ const Deposit = ({
             </div>
             <div className="flex flex-col font-medium">
               <p>
-                Remember that using 3rd party application carries risks.
-                Fuse does not control the code or content of these websites.
+                Remember that using 3rd party application carries risks. Fuse
+                does not control the code or content of these websites.
               </p>
             </div>
           </div>

@@ -507,6 +507,7 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: true,
         isNative: false,
         address: "0x587983b895dB50dDaBC0Aac8aDC592b29bB30D80",
+        isDepositPaused: true,
       },
       {
         chainId: 101,
@@ -516,6 +517,7 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
+        isDepositPaused: true,
       },
     ],
     [
