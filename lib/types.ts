@@ -115,6 +115,7 @@ interface TokenStateType {
     symbol: string;
     name: string;
   };
+  isDepositPaused?: boolean;
 }
 interface WrappedBridgeConfig {
   version: number;
@@ -162,6 +163,7 @@ interface WrappedBridgeConfig {
         symbol: string;
         name: string;
       };
+      isDepositPaused?: boolean;
     }[];
   }[];
 }
@@ -227,6 +229,7 @@ export const createAppConfig = (
             symbol: string;
             name: string;
           };
+          isDepositPaused?: boolean;
         }[] = [];
         if (bridgeConfig.tokens.length > 0) {
           tokenConfig.coins.forEach((coin) => {
@@ -244,6 +247,7 @@ export const createAppConfig = (
                 isBridged: token.isBridged,
                 coinGeckoId: coin.coinGeckoId,
                 receiveToken: token.receiveToken,
+                isDepositPaused: token.isDepositPaused,
               });
             }
           });
