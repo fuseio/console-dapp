@@ -19,6 +19,7 @@ import ultraeths from "@/assets/ultraeths.webp";
 import wbeth from "@/assets/wbeth.webp";
 import weeth from "@/assets/weeth.webp";
 import ethx from "@/assets/ethx.png";
+import wstETH from "@/assets/wstETH.png";
 
 export const coins: CoinConfigLike[] = [
   {
@@ -47,7 +48,7 @@ export const coins: CoinConfigLike[] = [
     symbol: "WETH",
     decimals: 18,
     icon: weth,
-    coinGeckoId: "ethereum",
+    coinGeckoId: "weth",
   },
   {
     name: "Ethereum",
@@ -61,7 +62,7 @@ export const coins: CoinConfigLike[] = [
     symbol: "FDM",
     decimals: 18,
     icon: fdm,
-    coinGeckoId: "fdm",
+    coinGeckoId: "freedom-coin",
   },
   {
     name: "BNB",
@@ -75,7 +76,7 @@ export const coins: CoinConfigLike[] = [
     symbol: "POL",
     decimals: 18,
     icon: pol,
-    coinGeckoId: "matic-network",
+    coinGeckoId: "polygon-ecosystem-token",
   },
   {
     name: "Maker",
@@ -103,69 +104,76 @@ export const coins: CoinConfigLike[] = [
     symbol: "eETH",
     decimals: 18,
     icon: eeth,
-    coinGeckoId: "eeth",
+    coinGeckoId: "ether-fi-staked-eth",
   },
   {
     name: "ezETH",
     symbol: "ezETH",
     decimals: 18,
     icon: ezeth,
-    coinGeckoId: "ezeth",
+    coinGeckoId: "renzo-restaked-eth",
   },
   {
     name: "mETH",
     symbol: "mETH",
     decimals: 18,
     icon: mETH,
-    coinGeckoId: "meth",
+    coinGeckoId: "mantle-staked-ether",
   },
   {
     name: "pzETH",
     symbol: "pzETH",
     decimals: 18,
     icon: pzeth,
-    coinGeckoId: "pzeth",
+    coinGeckoId: "renzo-restaked-lst",
   },
   {
     name: "rETH",
     symbol: "rETH",
     decimals: 18,
     icon: reth,
-    coinGeckoId: "reth",
+    coinGeckoId: "rocket-pool-eth",
   },
   {
     name: "ultraETH",
     symbol: "ultraETH",
     decimals: 18,
     icon: ultraeths,
-    coinGeckoId: "ultraeth",
+    coinGeckoId: "affine-ultraeths-2-0",
   },
   {
     name: "ultraETHs",
     symbol: "ultraETHs",
     decimals: 18,
     icon: ultraeths,
-    coinGeckoId: "ultraeths",
+    coinGeckoId: "affine-ultraeths-2-0",
   },
   {
     name: "wBETH",
     symbol: "wBETH",
     decimals: 18,
     icon: wbeth,
-    coinGeckoId: "weth",
+    coinGeckoId: "wrapped-beacon-eth",
   },
   {
     name: "weETH",
     symbol: "weETH",
     decimals: 18,
     icon: weeth,
-    coinGeckoId: "weeth",
+    coinGeckoId: "wrapped-eeth",
   },
   {
     name: "ETHx",
     symbol: "ETHx",
     decimals: 18,
     icon: ethx,
-    coinGeckoId: "ethx",
+    coinGeckoId: "stader-ethx",
+  },
+  {
+    name: "Wrapped liquid staked Ether 2.0",
+    symbol: "wstETH",
+    decimals: 18,
+    icon: wstETH,
+    coinGeckoId: "wrapped-steth",
   },
 ];
