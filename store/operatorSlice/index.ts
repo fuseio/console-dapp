@@ -14,7 +14,6 @@ import { getSponsorIdBalance } from "@/lib/contractInteract";
 import * as amplitude from "@amplitude/analytics-browser";
 import { getERC20Balance } from "@/lib/erc20";
 import { ERC20ABI } from "@/lib/abi/ERC20";
-import { formatUnits } from "viem";
 
 const initOperator: Operator = {
   user: {

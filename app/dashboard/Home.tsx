@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useBlockNumber, useSignMessage } from "wagmi";
 import { fuse } from "wagmi/chains";
-import { OperatorStateType, checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, fetchTokenBalances, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, validateOperator } from "@/store/operatorSlice";
+import { OperatorStateType, checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, fetchTokenBalances, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, validateOperator, withRefreshToken } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
@@ -144,10 +144,10 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, operatorSlice, d
   }, [dispatch, operatorSlice.isActivated])
 
   useEffect(() => {
-    if (operatorSlice.operator.user.smartContractAccountAddress) {
-      dispatch(fetchTokenBalances({ address: operatorSlice.operator.user.smartContractAccountAddress }));
+    if (operatorSlice.operator.user.smartWalletAddress) {
+      dispatch(fetchTokenBalances({ address: operatorSlice.operator.user.smartWalletAddress }));
     }
-  }, [dispatch, operatorSlice.operator.user.smartContractAccountAddress])
+  }, [dispatch, operatorSlice.operator.user.smartWalletAddress])
 
   return (
     <div className="flex flex-col justify-between items-start">
