@@ -84,7 +84,7 @@ const Home = () => {
     address,
   });
   const { failureCount } = useBlockNumber({
-    watch: true
+    watch: true,
   });
 
   useEffect(() => {
@@ -116,15 +116,15 @@ const Home = () => {
             appConfig.wrappedBridge.chains[
               selectedChainSlice.depositSelectedChainItem
             ].tokens[depositSelectedTokenItem].isNative &&
-              appConfig.wrappedBridge.chains[
-                selectedChainSlice.depositSelectedChainItem
-              ].tokens[depositSelectedTokenItem].isBridged
+            appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens[depositSelectedTokenItem].isBridged
               ? appConfig.wrappedBridge.chains[
-                selectedChainSlice.depositSelectedChainItem
-              ].wrapped
+                  selectedChainSlice.depositSelectedChainItem
+                ].wrapped
               : appConfig.wrappedBridge.chains[
-                selectedChainSlice.depositSelectedChainItem
-              ].original,
+                  selectedChainSlice.depositSelectedChainItem
+                ].original,
           decimals:
             appConfig.wrappedBridge.chains[
               selectedChainSlice.depositSelectedChainItem
@@ -174,8 +174,8 @@ const Home = () => {
     const selectedChainId =
       selected === 0
         ? appConfig.wrappedBridge.chains[
-          selectedChainSlice.depositSelectedChainItem
-        ].chainId
+            selectedChainSlice.depositSelectedChainItem
+          ].chainId
         : fuse.id;
     if (selectedChainId == chain?.id) {
       increaseAllowance(true, selectedChainId);
@@ -552,7 +552,7 @@ const Home = () => {
                           dispatch(
                             setChain(
                               appConfig.wrappedBridge.chains[
-                              selectedChainSlice.depositSelectedChainItem
+                                selectedChainSlice.depositSelectedChainItem
                               ]
                             )
                           );
@@ -666,18 +666,18 @@ const Home = () => {
               ) : displayButton &&
                 (selected === 0
                   ? chain?.id !==
-                  appConfig.wrappedBridge.chains[
-                    selectedChainSlice.depositSelectedChainItem
-                  ].chainId
+                    appConfig.wrappedBridge.chains[
+                      selectedChainSlice.depositSelectedChainItem
+                    ].chainId
                   : chain?.id !== fuse.id) ? (
                 <Button
                   className="bg-fuse-black text-white px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
                   text={
                     selected === 0
                       ? "Switch to " +
-                      appConfig.wrappedBridge.chains[
-                        selectedChainSlice.depositSelectedChainItem
-                      ].name
+                        appConfig.wrappedBridge.chains[
+                          selectedChainSlice.depositSelectedChainItem
+                        ].name
                       : "Switch to Fuse"
                   }
                   onClick={() => {
@@ -707,7 +707,7 @@ const Home = () => {
                   text="No Liquidity"
                 />
               ) : (displayButton &&
-                parseFloat(amount) > parseFloat(balanceSlice.balance)) ||
+                  parseFloat(amount) > parseFloat(balanceSlice.balance)) ||
                 (!checkBalance() && parseFloat(amount) > 0) ? (
                 // || parseFloat(amount) > 10000
                 // || parseFloat(amount) < 0.5
@@ -718,20 +718,20 @@ const Home = () => {
                     parseFloat(amount) > parseFloat(balanceSlice.balance)
                       ? `Insufficient ${
                           appConfig.wrappedBridge.chains[
-                        selected
-                          ? selectedChainSlice.withdrawSelectedChainItem
-                          : selectedChainSlice.depositSelectedChainItem
-                      ].tokens[
-                        selected
-                          ? withdrawSelectedTokenItem
-                          : depositSelectedTokenItem
-                      ].symbol
-                      } Balance`
+                            selected
+                              ? selectedChainSlice.withdrawSelectedChainItem
+                              : selectedChainSlice.depositSelectedChainItem
+                          ].tokens[
+                            selected
+                              ? withdrawSelectedTokenItem
+                              : depositSelectedTokenItem
+                          ].symbol
+                        } Balance`
                       : !checkBalance()
-                        ? `Insufficient ${balance?.symbol} for gas fee`
-                        : parseFloat(amount) > 10000
-                          ? "Exceeds Daily Limit"
-                          : "Minimum 0.5"
+                      ? `Insufficient ${balance?.symbol} for gas fee`
+                      : parseFloat(amount) > 10000
+                      ? "Exceeds Daily Limit"
+                      : "Minimum 0.5"
                   }
                 />
               ) : (
@@ -775,6 +775,10 @@ const Home = () => {
                       }
                     }}
                     disabled={
+                      (selected === 0 &&
+                        appConfig.wrappedBridge.chains[
+                          selectedChainSlice.depositSelectedChainItem
+                        ].tokens[depositSelectedTokenItem].isDepositPaused) ||
                       balanceSlice.isApprovalLoading ||
                       contractSlice.isBridgeLoading ||
                       contractSlice.isApprovalLoading ||
@@ -785,12 +789,12 @@ const Home = () => {
                     }
                     text={
                       contractSlice.isBridgeLoading ||
-                        contractSlice.isApprovalLoading
+                      contractSlice.isApprovalLoading
                         ? "Loading..."
                         : (selected === 1 &&
-                          appConfig.wrappedBridge.chains[
-                            selectedChainSlice.withdrawSelectedChainItem
-                          ].tokens[withdrawSelectedTokenItem].isNative) ||
+                            appConfig.wrappedBridge.chains[
+                              selectedChainSlice.withdrawSelectedChainItem
+                            ].tokens[withdrawSelectedTokenItem].isNative) ||
                           (selected === 0 &&
                             appConfig.wrappedBridge.chains[
                               selectedChainSlice.depositSelectedChainItem
@@ -798,17 +802,17 @@ const Home = () => {
                             !appConfig.wrappedBridge.chains[
                               selectedChainSlice.depositSelectedChainItem
                             ].tokens[depositSelectedTokenItem].isBridged)
-                          ? "Bridge"
-                          : parseFloat(balanceSlice.approval) < parseFloat(amount)
-                            ? "Approve"
-                            : "Bridge"
+                        ? "Bridge"
+                        : parseFloat(balanceSlice.approval) < parseFloat(amount)
+                        ? "Approve"
+                        : "Bridge"
                     }
                     disabledClassName="bg-fuse-black/20 text-black px-4 mt-6 py-4 rounded-full font-medium md:text-sm "
                   />
                 )
               )}
             </motion.div>
-            {!(isExchange || isDisabledChain || isThirdPartyChain) &&
+            {!(isExchange || isDisabledChain || isThirdPartyChain) && (
               <motion.div className="flex bg-white w-[525px] rounded-lg px-8 py-5 flex-col font-medium text-sm max-w-full md:text-xs">
                 <div className="flex justify-between">
                   <span className="text-black/50">Bridge Fee</span>
@@ -822,23 +826,25 @@ const Home = () => {
                     </div>
                     <div className="tooltip-text hidden bottom-8 -left-[30px] absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg peer-hover:block text-black text-sm font-medium">
                       <p className="mb-5">
-                        The Gas fee covers the source and destination blockchains
-                        transaction fees paid by Layer Zero.
+                        The Gas fee covers the source and destination
+                        blockchains transaction fees paid by Layer Zero.
                       </p>
                       <p>
                         Source Gas fee:{" "}
                         <span className="font-bold">
                           $
-                          {(feeSlice.sourceGasFee * feeSlice.tokenPrice).toFixed(
-                            5
-                          )}
+                          {(
+                            feeSlice.sourceGasFee * feeSlice.tokenPrice
+                          ).toFixed(5)}
                         </span>
                       </p>
                       <p>
                         Destination Gas fee:{" "}
                         <span className="font-bold">
                           $
-                          {(feeSlice.destGasFee * feeSlice.tokenPrice).toFixed(5)}
+                          {(feeSlice.destGasFee * feeSlice.tokenPrice).toFixed(
+                            5
+                          )}
                         </span>
                       </p>
                     </div>
@@ -853,8 +859,8 @@ const Home = () => {
                           getChainKey(
                             selected === 0
                               ? appConfig.wrappedBridge.chains[
-                                selectedChainSlice.depositSelectedChainItem
-                              ].lzChainId
+                                  selectedChainSlice.depositSelectedChainItem
+                                ].lzChainId
                               : 138
                           )
                         ).symbol
@@ -875,7 +881,7 @@ const Home = () => {
               <span>0.5 Min - 10,000 max</span>
             </div> */}
               </motion.div>
-            }
+            )}
             <ToastPane className="hidden xl:flex" />
             <Airdrop />
             <FAQ />

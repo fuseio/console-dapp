@@ -218,13 +218,15 @@ const Deposit = ({
               }),
             },
             {
-              items: appConfig.wrappedBridge.thirdPartyChains.map((chain, i) => {
-                return {
-                  item: chain.chainName,
-                  icon: chain.icon,
-                  id: i,
-                };
-              }),
+              items: appConfig.wrappedBridge.thirdPartyChains.map(
+                (chain, i) => {
+                  return {
+                    item: chain.chainName,
+                    icon: chain.icon,
+                    id: i,
+                  };
+                }
+              ),
             },
             {
               heading: "Centralized Exchanges",
@@ -370,8 +372,8 @@ const Deposit = ({
             </div>
             <div className="flex flex-col font-medium md:mt-2">
               <p>
-                Remember that using 3rd party application carries risks.
-                Fuse does not control the code or content of these websites.
+                Remember that using 3rd party application carries risks. Fuse
+                does not control the code or content of these websites.
               </p>
             </div>
           </div>
@@ -426,8 +428,8 @@ const Deposit = ({
             </div>
             <div className="flex flex-col font-medium">
               <p>
-                Remember that using 3rd party application carries risks.
-                Fuse does not control the code or content of these websites.
+                Remember that using 3rd party application carries risks. Fuse
+                does not control the code or content of these websites.
               </p>
             </div>
           </div>
@@ -436,7 +438,8 @@ const Deposit = ({
         <>
           <a
             href={
-              appConfig.wrappedBridge.thirdPartyChains[selectedChainItem].appDepositURL
+              appConfig.wrappedBridge.thirdPartyChains[selectedChainItem]
+                .appDepositURL
             }
             target="_blank"
             rel="noreferrer"
@@ -482,8 +485,8 @@ const Deposit = ({
             </div>
             <div className="flex flex-col font-medium">
               <p>
-                Remember that using 3rd party application carries risks.
-                Fuse does not control the code or content of these websites.
+                Remember that using 3rd party application carries risks. Fuse
+                does not control the code or content of these websites.
               </p>
             </div>
           </div>
