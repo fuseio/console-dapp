@@ -3,7 +3,7 @@ import { useAppSelector } from "@/store/store";
 
 import { useMediaQuery } from "usehooks-ts";
 import * as amplitude from "@amplitude/analytics-browser";
-import { path, walletType } from "@/lib/helpers";
+import { walletType } from "@/lib/helpers";
 import { useAccount } from "wagmi";
 import { selectOperatorSlice } from "@/store/operatorSlice";
 import Link from "next/link";
@@ -43,7 +43,7 @@ const NavMenu = ({
           <ul className={`flex flex-row items-center gap-2 p-0 mt-0 font-medium text-base/4 ${isResponsive ? "md:flex-col md:items-start md:p-4" : ""}`}>
             {menuItems.map((item, index) => (
               <Link
-                href={isAuthenticated && path.BUILD.includes(item.title.toLowerCase()) ? path.DASHBOARD : item.link}
+                href={isAuthenticated ? item.authenticatedLink || item.link : item.unauthenticatedLink || item.link}
                 key={index}
                 className={`flex justify-center items-center rounded-full h-9 px-4 hover:bg-lightest-gray min-w-20 ${isResponsive ? "md:w-full md:justify-start" : ""} ${(item.title.toLowerCase() === selected ? `bg-lightest-gray py-2.5 pointer-events-none ${isResponsive ? "md:text-white" : ""}` : `cursor-pointer group ${isResponsive ? "md:text-gray" : ""}`)}`}
                 aria-current={

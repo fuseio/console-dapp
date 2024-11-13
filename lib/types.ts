@@ -275,6 +275,8 @@ export const createAppConfig = (
 export type MenuItem = {
   title: string;
   link: string;
+  unauthenticatedLink?: string;
+  authenticatedLink?: string;
 }
 
 export type MenuItems = MenuItem[];

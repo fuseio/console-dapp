@@ -90,7 +90,7 @@ export const buildSubMenuItems = [
   },
   {
     title: "Billing & Plan",
-    link: "#",
+    link: "/billing",
   },
 ];
 

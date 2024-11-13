@@ -31,8 +31,7 @@ import hide from "@/assets/hide.svg";
 import { formatUnits } from "viem";
 import { SignMessageVariables } from "wagmi/query";
 import contactSupport from "@/assets/contact-support.svg";
-import router from "next/router";
-
+import { useRouter } from "next/navigation";
 type CreateOperatorWalletProps = {
   isValidated: boolean;
   signMessage: (variables: SignMessageVariables) => void;
@@ -171,10 +170,10 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, operatorSlice, d
             <span className="w-20 h-10 rounded-md animate-pulse bg-white/80"></span> :
             <h1 className="font-bold text-5xl leading-none whitespace-nowrap">
               ${(chain && chain.id === fuse.id) ?
-              new Intl.NumberFormat().format(
-                (parseFloat(balance?.formatted ?? "0") * balanceSlice.price) + operatorSlice.totalTokenBalance
-              ) :
-              "0.00"}
+                new Intl.NumberFormat().format(
+                  (parseFloat(balance?.formatted ?? "0") * balanceSlice.price) + operatorSlice.totalTokenBalance
+                ) :
+                "0.00"}
             </h1>
           }
         </div>
@@ -207,6 +206,7 @@ const Home = () => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const [showSecretKey, setShowSecretKey] = useState(false);
   const controller = useMemo(() => new AbortController(), []);
+  const router = useRouter();
   const { isConnected, address, chain } = useAccount();
   const signer = useEthersSigner();
   const { data: blockNumber } = useBlockNumber({ watch: true });
@@ -341,11 +341,13 @@ const Home = () => {
         }
         <div className="flex flex-col gap-y-[30px] md:gap-y-[21px] mb-[143.32px] md:mb-[66px]">
           <div className="flex relative flex-row md:flex-col gap-x-4 gap-y-12 bg-lightest-gray justify-between rounded-[20px] p-12 md:p-8 min-h-[297px]">
-        <Button
-              text="Upgrade now"
-              className="absolute top-[34px] right-6 md:right-4 sm:top-[75px] sm:w-[152px] w-[162px] h-[43px] py-[14px] px-5 bg-[#CCFFCC] text-black rounded-full hover:bg-black hover:text-white transition-colors text-base font-bold leading-[15.47px] text-center"
-              onClick={() => router.push("/billing")}
-            />
+            {operatorSlice.isAuthenticated && (
+              <Button
+                text="Upgrade now"
+                className="absolute top-[34px] right-6 md:right-4 sm:top-[75px] sm:w-[152px] w-[162px] h-[43px] py-[14px] px-5 bg-success text-black rounded-full hover:bg-black hover:text-white transition ease-in-out text-base font-bold leading-[15.47px] text-center"
+                onClick={() => router.push("/billing")}
+              />
+            )}
             {(!isConnected || !signer) ?
               <ConnectEoaWallet /> :
               operatorSlice.isAuthenticated ?

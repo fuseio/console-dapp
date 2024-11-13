@@ -21,6 +21,7 @@ const Topbar = () => {
     {
       title: "Build",
       link: "/build",
+      authenticatedLink: "/dashboard",
     },
     {
       title: "Bridge",
