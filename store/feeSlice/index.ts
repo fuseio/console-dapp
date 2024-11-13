@@ -102,7 +102,19 @@ export const estimateSourceFee = createAsyncThunk(
           transport: http(rpcUrl),
         });
         const gasPrice = await client.getGasPrice();
-        resolve(parseFloat(ethers.utils.formatEther(gasPrice)) * 270000);
+        const gasLimits = {
+          137: 300000, // Polygon
+          42161: 710000, // Arbitrum
+          10: 290000, // Optimism
+          56: 2030000, // BNB
+          8453: 16030000, // BASE
+          1: 440000, // Ethereum
+          default: 270000,
+        };
+        const chainId = await client.getChainId();
+        const gasLimit =
+          gasLimits[chainId as keyof typeof gasLimits] || gasLimits.default;
+        resolve(parseFloat(ethers.utils.formatEther(gasPrice)) * gasLimit);
       } catch (err) {
         console.log(err);
         reject(err);
@@ -170,7 +182,7 @@ const feeSlice = createSlice({
       .addCase(fetchNativePrice.rejected, (state) => {
         state.isGasFeeLoading = false;
         state.isError = true;
-      })
+      });
   },
 });
 
