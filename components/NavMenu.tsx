@@ -58,8 +58,11 @@ const NavMenu = ({
                   });
                 }}
               >
-                <div className="block relative">
+                <div className="block relative md:hidden">
                   {item.title}
+                </div>
+                <div className="hidden relative md:block">
+                  {item.title.split(" ")[0]}
                 </div>
               </Link>
             ))}

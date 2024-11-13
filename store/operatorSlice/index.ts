@@ -86,6 +86,7 @@ export interface OperatorStateType {
   operator: Operator;
   isFetchingTokenBalances: boolean;
   totalTokenBalance: number;
+  isPayModalOpen: boolean;
 }
 
 const INIT_STATE: OperatorStateType = {
@@ -127,6 +128,7 @@ const INIT_STATE: OperatorStateType = {
   operator: initOperator,
   isFetchingTokenBalances: false,
   totalTokenBalance: 0,
+  isPayModalOpen: false,
 };
 
 export const checkOperator = createAsyncThunk(
@@ -624,6 +626,9 @@ const operatorSlice = createSlice({
     setOperator: (state, action: PayloadAction<Operator>) => {
       state.operator = action.payload
     },
+    setIsPayModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isPayModalOpen = action.payload
+    },
     setLogout: (state) => {
       state.isOperatorExist = false;
       state.isValidated = false;
@@ -848,6 +853,7 @@ export const {
   setRedirect,
   setOperatorContactDetail,
   setOperator,
+  setIsPayModalOpen,
   setLogout,
   setHydrate
 } = operatorSlice.actions;
