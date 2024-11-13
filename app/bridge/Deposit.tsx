@@ -294,15 +294,13 @@ const Deposit = ({
                     heading: "Tokens",
                     items: appConfig.wrappedBridge.chains[
                       selectedChainItem
-                    ].tokens
-                      .filter((coin) => !coin.isDepositPaused)
-                      .map((coin, i) => {
-                        return {
-                          icon: coin.icon,
-                          id: i,
-                          item: coin.symbol,
-                        };
-                      }),
+                    ].tokens.map((coin, i) => {
+                      return {
+                        icon: coin.icon,
+                        id: i,
+                        item: coin.symbol,
+                      };
+                    }),
                   },
                 ]}
                 selectedSection={selectedTokenSection}
