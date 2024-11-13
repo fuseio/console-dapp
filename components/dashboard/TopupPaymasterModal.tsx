@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fundPaymaster, selectOperatorSlice, setIsTopupPaymasterModalOpen } from "@/store/operatorSlice";
 import Button from "../ui/Button";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
+import { useSignMessage } from "wagmi";
 
 type TopupPaymasterModalProps = {
   balance: string;
@@ -14,6 +15,22 @@ const TopupPaymasterModal = ({ balance }: TopupPaymasterModalProps): JSX.Element
   const dispatch = useAppDispatch();
   const [amount, setAmount] = useState("0.00");
   const signer = useEthersSigner();
+  const { signMessage } = useSignMessage({
+    mutation: {
+      onSuccess(data) {
+        if (!signer) {
+          return;
+        }
+        dispatch(
+          fundPaymaster({
+            signer,
+            signature: data,
+            amount
+          })
+        );
+      }
+    }
+  })
 
   useEffect(() => {
     window.addEventListener("click", (e) => {
@@ -80,7 +97,7 @@ const TopupPaymasterModal = ({ balance }: TopupPaymasterModalProps): JSX.Element
                 padding="px-12 py-4"
                 onClick={() => {
                   if (signer && Number(amount) <= Number(balance) && Number(amount) > 0) {
-                    dispatch(fundPaymaster({ signer, amount }));
+                    signMessage({ message: "Verify your wallet ownership to top up paymaster" });
                   }
                 }}
               >

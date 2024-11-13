@@ -396,7 +396,6 @@ const Withdraw = ({
             <div
               className="flex px-[10px] py-2 bg-white rounded-lg cursor-pointer text-xs font-medium items-center text-black"
               onClick={() => {
-                // @ts-ignore
                 window.ethereum.request({
                   method: "wallet_watchAsset",
                   params: {

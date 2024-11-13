@@ -29,7 +29,6 @@ import leftArrow from "@/assets/left-arrow.svg";
 import Link from "next/link";
 import { fetchTokenPrice } from "@/lib/api";
 import Copy from "@/components/ui/Copy";
-import { Address } from "abitype";
 import { useParams } from "next/navigation";
 import { ValidatorType } from "@/lib/types";
 
@@ -202,10 +201,10 @@ const Stake = () => {
       so if you lack it, it may be better to delegate your tokens. For more
       information on how to become a validator, please refer to{" "}
       <a
-        href="https://docs.fuse.io/validators/how-to-become-a-validator/"
+        href="https://docs.fuse.io/basics/how-fuse-works/how-to-become-validator"
         className="underline"
       >
-        https://docs.fuse.io/validators/how-to-become-a-validator/
+        https://docs.fuse.io/basics/how-fuse-works/how-to-become-validator
       </a>
     </p>,
     <p key="eight">
@@ -218,7 +217,7 @@ const Stake = () => {
     <p key="nine">
       You can find out all the information about Fuse Staking in our{" "}
       <a
-        href="https://docs.fuse.io/validators/participating-in-network-consensus/stake-delegate-and-withdraw"
+        href="https://docs.fuse.io/basics/how-fuse-works/participating-in-network-consensus/stake-delegate-and-withdraw"
         className="underline"
       >
         documentation
@@ -353,10 +352,7 @@ const Stake = () => {
                 icon={expandArrow}
                 onClick={() => {
                   setIsOpen(true);
-                  let delegatorsFilter: Address[] = [];
-                  validator?.delegators.forEach((delegator) => {
-                    delegatorsFilter.push(delegator[0]);
-                  });
+                  const delegatorsFilter = validator?.delegators.map(([delegator]) => delegator) ?? [];
                   dispatch(
                     fetchDelegatedAmounts({
                       address: validator?.address ?? hex,

@@ -28,7 +28,7 @@ export const bridgeOriginal = async (
   selectedChainId: number
 ) => {
   const publicClient = getPublicClient(config, {
-    chainId: selectedChainId
+    chainId: selectedChainId,
   });
   if (!publicClient) {
     return;
@@ -54,7 +54,9 @@ export const bridgeOriginal = async (
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const walletClient = await getWalletClient(config, { chainId: selectedChainId });
+  const walletClient = await getWalletClient(config, {
+    chainId: selectedChainId,
+  });
   let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
@@ -94,7 +96,7 @@ export const bridgeNative = async (
   selectedChainId: number
 ) => {
   const publicClient = getPublicClient(config, {
-    chainId: selectedChainId
+    chainId: selectedChainId,
   });
   if (!publicClient) {
     return;
@@ -114,13 +116,15 @@ export const bridgeNative = async (
       args: [false, serializeAdapterParams(adapterParams) as Address],
     })
   )[0];
-  const increasedNativeFee = BigInt((Number(nativeFee) * 1.2).toFixed(0));
+  const increasedNativeFee = (BigInt(nativeFee) * BigInt(12)) / BigInt(10);
   const amt = parseEther(amount);
   const callParams = {
     refundAddress: address,
     zroPaymentAddress: ethers.constants.AddressZero as Address,
   };
-  const walletClient = await getWalletClient(config, { chainId: selectedChainId });
+  const walletClient = await getWalletClient(config, {
+    chainId: selectedChainId,
+  });
   let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();

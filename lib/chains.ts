@@ -1,8 +1,8 @@
 import { ChainConfigLike } from "./types";
-import matic from "@/public/matic.png";
+import pol from "@/public/pol.png";
 import arbi from "@/public/arbi.png";
 import optimism from "@/public/optimism.png";
-import maticLogo from "@/assets/matic";
+import polLogo from "@/assets/pol";
 import arbiLogo from "@/assets/arbi";
 import optimismLogo from "@/assets/optimism";
 import eth from "@/public/eth.png";
@@ -13,11 +13,11 @@ export const chains: ChainConfigLike[] = [
   {
     chainName: "Polygon",
     lzChainId: 109,
-    icon: matic,
+    icon: pol,
     rpc: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`,
     chainId: 137,
-    logo: maticLogo,
-    tokenId: "matic-network"
+    logo: polLogo,
+    tokenId: "matic-network",
   },
   {
     chainName: "Arbitrum",
@@ -27,7 +27,7 @@ export const chains: ChainConfigLike[] = [
     rpc: `https://arb-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ARBITRUM_API_KEY}`,
     logo: arbiLogo,
     tokenId: "arbitrum",
-    gasTokenId: "ethereum"
+    gasTokenId: "ethereum",
   },
   {
     chainName: "Optimism",
@@ -37,7 +37,7 @@ export const chains: ChainConfigLike[] = [
     chainId: 10,
     logo: optimismLogo,
     tokenId: "optimism",
-    gasTokenId: "ethereum"
+    gasTokenId: "ethereum",
   },
   {
     chainName: "Ethereum",
@@ -46,7 +46,7 @@ export const chains: ChainConfigLike[] = [
     chainId: 1,
     rpc: `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ETHEREUM_API_KEY}`,
     logo: "",
-    tokenId: "ethereum"
+    tokenId: "ethereum",
   },
   {
     chainName: "BNB",
@@ -55,7 +55,7 @@ export const chains: ChainConfigLike[] = [
     chainId: 56,
     rpc: "https://weathered-side-brook.bsc.quiknode.pro/f11b337cb3411c96e514504308b95f17288330f4/",
     logo: "",
-    tokenId: "binancecoin"
+    tokenId: "binancecoin",
   },
   {
     chainName: "Base",
@@ -65,6 +65,6 @@ export const chains: ChainConfigLike[] = [
     rpc: `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_BASE_API_KEY}`,
     logo: "",
     tokenId: "base",
-    gasTokenId: "ethereum"
+    gasTokenId: "ethereum",
   },
 ];

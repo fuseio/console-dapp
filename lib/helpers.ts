@@ -12,34 +12,28 @@ export const eclipseAddress = (address: string): string => {
 export const fetchTransactionsFromLocalStorage = (
   address: string
 ): TransactionType[] => {
-  let transactions = localStorage.getItem("transactions");
-  let transactionsParsed: TransactionType[] = JSON.parse(
-    transactions as string
+  const transactions = localStorage.getItem("transactions");
+  if (!transactions) return [];
+
+  const allTransactions: TransactionType[] = JSON.parse(transactions);
+  return allTransactions.filter(
+    (transaction: TransactionType) => transaction.address === address
   );
-  if (transactionsParsed) {
-    transactionsParsed = transactionsParsed.filter(
-      (transaction: TransactionType) => transaction.address === address
-    );
-  } else {
-    transactionsParsed = [];
-  }
-  return transactionsParsed;
 };
 
-export const fetchAllTransactionsFromLocalStorage = () => {
-  let transactions = localStorage.getItem("transactions");
-  let transactionsParsed: TransactionType[] = JSON.parse(
-    transactions as string
-  );
-  return transactionsParsed || [];
+export const fetchAllTransactionsFromLocalStorage = (): TransactionType[] => {
+  const transactions = localStorage.getItem("transactions");
+  return transactions ? JSON.parse(transactions) : [];
 };
 
 export const insertTransactionToLocalStorage = (
   transaction: TransactionType
-) => {
-  let transactions = fetchAllTransactionsFromLocalStorage();
-  transactions = [transaction, ...transactions];
-  localStorage.setItem("transactions", JSON.stringify(transactions));
+): void => {
+  const transactions = fetchAllTransactionsFromLocalStorage();
+  localStorage.setItem(
+    "transactions",
+    JSON.stringify([transaction, ...transactions])
+  );
 };
 
 export const hex = "0x";

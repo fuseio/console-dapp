@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import Button from "@/components/ui/Button";
-import rightArrow from "@/assets/right-arrow.svg"
 import { buildSubMenuItems, evmDecimals, signDataMessage } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
@@ -35,7 +34,7 @@ import contactSupport from "@/assets/contact-support.svg";
 import router from "next/router";
 
 type CreateOperatorWalletProps = {
-  accessToken: string;
+  isValidated: boolean;
   signMessage: (variables: SignMessageVariables) => void;
   loading: () => boolean;
   dispatch: any;
@@ -54,7 +53,7 @@ type OperatorAccountBalanceProps = {
   dispatch: ThunkDispatch<any, undefined, AnyAction> & Dispatch<AnyAction>;
 }
 
-const CreateOperatorWallet = ({ accessToken, signMessage, loading, dispatch }: CreateOperatorWalletProps) => {
+const CreateOperatorWallet = ({ isValidated, signMessage, loading, dispatch }: CreateOperatorWalletProps) => {
   return (
     <div className="flex flex-col justify-between items-start md:gap-4">
       <div>
@@ -71,7 +70,7 @@ const CreateOperatorWallet = ({ accessToken, signMessage, loading, dispatch }: C
         className="transition ease-in-out flex justify-between items-center gap-2 bg-black text-lg leading-none text-white font-semibold rounded-full hover:bg-success hover:text-black"
         padding="py-[18.5px] px-[38px]"
         onClick={() => {
-          if (accessToken) {
+          if (isValidated) {
             return dispatch(setIsContactDetailsModalOpen(true))
           }
           signMessage({ message: signDataMessage });
@@ -133,9 +132,9 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, operatorSlice, d
 
     const intervalId = setInterval(() => {
       if (operatorSlice.isActivated) {
-        dispatch(fetchSponsoredTransactions());
+        dispatch(withRefreshToken(() => dispatch(fetchSponsoredTransactions())));
       } else {
-        dispatch(checkIsActivated());
+        dispatch(withRefreshToken(() => dispatch(checkIsActivated())));
       }
     }, fiveSecondInMillisecond);
 
@@ -212,7 +211,7 @@ const Home = () => {
   const signer = useEthersSigner();
   const { data: blockNumber } = useBlockNumber({ watch: true });
   const { data: balance, refetch } = useBalance({
-    address: operatorSlice.operator.user.smartContractAccountAddress,
+    address: operatorSlice.operator.user.smartWalletAddress,
     chainId: fuse.id,
   });
   const totalTransaction = 1000;
@@ -363,7 +362,7 @@ const Home = () => {
                     loading={loading}
                   /> :
                   <CreateOperatorWallet
-                    accessToken={operatorSlice.accessToken}
+                    isValidated={operatorSlice.isValidated}
                     signMessage={signMessage}
                     loading={loading}
                     dispatch={dispatch}
@@ -422,7 +421,7 @@ const Home = () => {
                 className={`transition ease-in-out text-black leading-none font-semibold bg-modal-bg rounded-full px-7 py-4 ${operatorSlice.isActivated ? "hover:bg-success" : "border border-black/40 hover:bg-black hover:text-white hover:border-black"}`}
                 onClick={() => {
                   amplitude.track("Go to Tutorials");
-                  window.open("https://docs.fuse.io/fuse-box/tutorials/send-your-first-gasless-transaction", "_blank");
+                  window.open("https://docs.fuse.io/developers/tutorials/send-your-first-gasless-transaction", "_blank");
                 }}
               >
                 Start tutorial
@@ -526,7 +525,7 @@ const Home = () => {
                     className="transition ease-in-out flex justify-between items-center gap-2 font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
                     padding="py-4 px-6"
                     onClick={() => {
-                      dispatch(generateSecretApiKey());
+                      dispatch(withRefreshToken(() => dispatch(generateSecretApiKey())));
                     }}
                   >
                     {operatorSlice.isGeneratingSecretApiKey && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}

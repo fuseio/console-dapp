@@ -1,24 +1,24 @@
-import React, { useCallback, useEffect } from "react";
-import fuseToken from "@/assets/fuseToken.svg";
-import Button from "@/components/ui/Button";
-import {
-  selectMaxStake,
-  selectMinStake,
-  selectValidatorSlice,
-} from "@/store/validatorSlice";
-import { useAppSelector } from "@/store/store";
-import info from "@/assets/info-black.svg";
-import ConnectWallet from "@/components/ConnectWallet";
-import { getBalance } from 'wagmi/actions';
+import React, { useState, useCallback, useMemo, useEffect, memo } from "react";
+import Image from "next/image";
 import { useAccount, useConfig } from "wagmi";
+import { getBalance } from 'wagmi/actions';
 import { fuse } from "viem/chains";
 import { formatUnits } from "viem";
-import { evmDecimals } from "@/lib/helpers";
-import Image from "next/image";
+
+import { useAppSelector } from "@/store/store";
+import { selectMaxStake, selectMinStake, selectValidatorSlice } from "@/store/validatorSlice";
 import { ValidatorType } from "@/lib/types";
+import { evmDecimals } from "@/lib/helpers";
+import { getInflation } from "@/lib/contractInteract";
+
+import Button from "@/components/ui/Button";
+import ConnectWallet from "@/components/ConnectWallet";
+
+import fuseToken from "@/assets/fuseToken.svg";
+import info from "@/assets/info-black.svg";
 
 type StakeCardProps = {
-  validator: ValidatorType | undefined;
+  validator?: ValidatorType;
   closed?: boolean;
   warningToggle?: () => void;
   handleStake: () => void;
@@ -28,23 +28,26 @@ type StakeCardProps = {
   isLoading: boolean;
 };
 
-const StakeCard = ({
+const StakeCard: React.FC<StakeCardProps> = ({
   validator,
   closed = false,
   warningToggle = () => { },
-  handleStake = () => { },
-  handleUnstake = () => { },
+  handleStake,
+  handleUnstake,
   amount,
   setAmount,
   isLoading,
-}: StakeCardProps) => {
-  const [cardMode, setCardMode] = React.useState(closed ? 1 : 0);
+}) => {
+  const [cardMode, setCardMode] = useState(closed ? 1 : 0);
+  const [balance, setBalance] = useState("0.0");
+  const [inflation, setInflation] = useState(0.03);
+
   const maxStake = useAppSelector(selectMaxStake);
   const minStake = useAppSelector(selectMinStake);
-  const { address, isConnected } = useAccount();
-  const [balance, setBalance] = React.useState<string>("0.0");
-  const config = useConfig();
   const validatorSlice = useAppSelector(selectValidatorSlice);
+
+  const { address, isConnected } = useAccount();
+  const config = useConfig();
 
   useEffect(() => {
     if (closed) {
@@ -55,201 +58,151 @@ const StakeCard = ({
   }, [closed]);
 
   const setMode = useCallback((mode: number) => {
-    if (closed) return;
-    setCardMode(mode);
+    if (!closed) setCardMode(mode);
   }, [closed]);
 
-  useEffect(() => {
-    async function updateBalance() {
-      if (address) {
-        const balance = await getBalance(config, {
-          address,
-          chainId: fuse.id,
-        })
-        setBalance(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals))
-      }
+  const updateBalance = useCallback(async () => {
+    if (address) {
+      const balance = await getBalance(config, { address, chainId: fuse.id });
+      setBalance(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals));
     }
-    updateBalance();
   }, [address, config]);
 
-  const getPredictedReward = useCallback((amt: number) => {
-    if (validator) {
-      const reward =
-        validatorSlice.fuseTokenTotalSupply *
-        0.05 *
-        (amt / parseFloat(validatorSlice.totalStakeAmount)) *
-        (1 - parseFloat(validator.fee) / 100);
-      return reward;
-    }
-    return 0;
-  }, [validator, validatorSlice.fuseTokenTotalSupply, validatorSlice.totalStakeAmount]);
+  useEffect(() => {
+    updateBalance();
+    getInflation().then(setInflation);
+  }, [updateBalance]);
 
-  const getAmount = useCallback(() => {
-    if (isNaN(parseFloat(amount as string))) return 0;
-    return parseFloat(amount as string);
+  const getAmount = useMemo(() => {
+    const parsedAmount = parseFloat(amount || "0");
+    return isNaN(parsedAmount) ? 0 : parsedAmount;
   }, [amount]);
 
+  const getPredictedReward = useCallback((amt: number) => {
+    if (!validator) return 0;
+    return validatorSlice.fuseTokenTotalSupply * inflation *
+      (amt / parseFloat(validatorSlice.totalStakeAmount)) *
+      (1 - parseFloat(validator.fee) / 100);
+  }, [inflation, validator, validatorSlice.fuseTokenTotalSupply, validatorSlice.totalStakeAmount]);
+
+  const getPredictedIncrease = useMemo(() => {
+    if (!validator) return 0;
+    return (validatorSlice.fuseTokenTotalSupply / parseFloat(validatorSlice.totalStakeAmount)) *
+      inflation * (1 - parseFloat(validator.fee) / 100);
+  }, [inflation, validator, validatorSlice.fuseTokenTotalSupply, validatorSlice.totalStakeAmount]);
+
   const handleWithdraw = useCallback(() => {
-    if (
-      parseFloat(validator?.stakeAmount as string) - getAmount() <
-      parseFloat(minStake as string)
-    )
+    if (!validator) return;
+    if (parseFloat(validator.stakeAmount) - getAmount < parseFloat(minStake)) {
       warningToggle();
-    else handleUnstake();
+    } else {
+      handleUnstake();
+    }
   }, [getAmount, handleUnstake, minStake, validator, warningToggle]);
 
-  const getPredictedIncrease = useCallback(() => {
-    if (validator) {
-      const reward =
-        (validatorSlice.fuseTokenTotalSupply /
-          parseFloat(validatorSlice.totalStakeAmount)) *
-        0.05 *
-        (1 - parseFloat(validator.fee) / 100);
-      return reward;
-    }
-    return 0;
-  }, [validator, validatorSlice.fuseTokenTotalSupply, validatorSlice.totalStakeAmount]);
+  const reward = useMemo(() => {
+    if (!validator?.selfStakeAmount) return getPredictedReward(getAmount);
+    const baseAmount = parseFloat(validator.selfStakeAmount);
+    return getPredictedReward(cardMode === 0 ? baseAmount + getAmount : baseAmount - getAmount);
+  }, [cardMode, getAmount, getPredictedReward, validator]);
 
-  const [reward, setReward] = React.useState<number>(0.0);
+  const isMaxStakeReached = useMemo(() => {
+    if (!validator) return false;
+    return cardMode === 0 &&
+      parseFloat(validator.stakeAmount) + getAmount > parseFloat(maxStake);
+  }, [cardMode, getAmount, maxStake, validator]);
 
-  useEffect(() => {
-    if (cardMode === 0) {
-      if (validator?.selfStakeAmount)
-        setReward(
-          getPredictedReward(
-            parseFloat(validator.selfStakeAmount) + getAmount()
-          )
-        );
-      else setReward(getPredictedReward(getAmount()));
-    } else {
-      if (validator?.selfStakeAmount)
-        setReward(
-          getPredictedReward(
-            parseFloat(validator.selfStakeAmount) - getAmount()
-          )
-        );
-      else setReward(getPredictedReward(getAmount()));
-    }
-  }, [amount, cardMode, getAmount, getPredictedReward, validator]);
+  const buttonText = useMemo(() => {
+    if (isLoading) return "Loading...";
+    if (isMaxStakeReached) return "Maximum Stake Reached";
+    return cardMode === 0 ? "Stake" : "Unstake";
+  }, [cardMode, isLoading, isMaxStakeReached]);
 
   return (
     <div className="w-full bg-white rounded-xl p-6 flex flex-col">
+      {/* Mode selection */}
       <div className="flex w-full bg-modal-bg rounded-md p-[2px]">
-        <p
-          className={
-            cardMode === 0
-              ? "text-primary font-semibold py-2 rounded-md cursor-pointer w-1/2 bg-white text-center text-sm"
-              : "text-primary font-medium py-2 cursor-pointer w-1/2 text-center text-sm"
-          }
-          onClick={() => {
-            setMode(0);
-            setAmount(null);
-          }}
-        >
-          Stake
-        </p>
-        <p
-          className={
-            cardMode === 1
-              ? "text-primary font-semibold py-2 rounded-md cursor-pointer w-1/2 bg-white text-center text-sm"
-              : "text-primary font-medium py-2 cursor-pointer w-1/2 text-center text-sm"
-          }
-          onClick={() => {
-            setAmount(null);
-            setMode(1);
-          }}
-        >
-          Unstake
-        </p>
-      </div>
-      <div className="flex w-full justify-end mt-6">
-        {cardMode === 0 && (
-          <p className="text-xs text-text-gray">
-            Available Balance:{" "}
-            {isConnected ? new Intl.NumberFormat().format(parseFloat(balance)) : "0"} Fuse
+        {["Stake", "Unstake"].map((mode, index) => (
+          <p
+            key={mode}
+            className={`text-primary font-${cardMode === index ? 'semibold' : 'medium'} py-2 ${cardMode === index ? 'rounded-md bg-white' : ''} cursor-pointer w-1/2 text-center text-sm`}
+            onClick={() => {
+              setMode(index);
+              setAmount(null);
+            }}
+          >
+            {mode}
           </p>
-        )}
+        ))}
       </div>
+
+      {/* Balance display */}
+      {cardMode === 0 && (
+        <div className="flex w-full justify-end mt-6">
+          <p className="text-xs text-text-gray">
+            Available Balance: {isConnected ? new Intl.NumberFormat().format(parseFloat(balance)) : "0"} Fuse
+          </p>
+        </div>
+      )}
+
+      {/* Amount input */}
       <div className="flex w-full">
         <div className="w-full bg-bg-dark-gray rounded-lg flex py-[9px] ps-2 pe-4 mt-2 items-center">
-          <div className="w-1/12">
+        <div className="w-1/12">
             <Image src={fuseToken} alt="Fuse" />
           </div>
           <input
             className="bg-bg-dark-gray ms-2 outline-none h-full w-9/12"
             placeholder="0.0"
-            value={amount ? amount.toString() : ""}
-            onChange={(e) => {
-              setAmount(e.target.value);
+            value={amount ?? ""}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+          <Button
+            text="Max"
+            className="bg-black font-medium text-sm text-white rounded-[4px] w-2/12"
+            padding="px-[8px] py-[6px]"
+            onClick={() => {
+              if (cardMode === 0) {
+                if (parseFloat(balance) < 0.1) return;
+                setAmount((parseFloat(balance) - 0.1).toString());
+              } else {
+                setAmount(validator?.selfStakeAmount as string);
+              }
             }}
           />
-          <div className="w-2/12 flex justify-end">
-            <Button
-              text="Max"
-              className="bg-black font-medium text-sm text-white rounded-[4px]"
-              padding="px-[8px] py-[6px] "
-              onClick={() => {
-                if (cardMode === 0) {
-                  if (parseFloat(balance) < 0.1) return;
-                  setAmount((parseFloat(balance) - 0.1).toString());
-                } else {
-                  setAmount(validator?.selfStakeAmount as string);
-                }
-              }}
-            />
-          </div>
         </div>
       </div>
-      <div className="flex justify-between mt-6">
-        <p className="text-sm font-semibold text-text-gray">Current Stake</p>
-        {validator ? (
-          <p className="text-sm font-semibold text-[#071927]">
-            {validator.selfStakeAmount
-              ? new Intl.NumberFormat().format(
-                parseFloat(validator.selfStakeAmount)
-              )
-              : "0.0"}{" "}
-            FUSE
-          </p>
-        ) : (
-          <span className="ms-2 px-11 py-1 bg-dark-gray rounded-lg animate-pulse" />
-        )}
-      </div>
-      <div className="flex justify-between mt-2">
-        <p className="text-sm font-semibold text-text-gray">
-          {cardMode === 0 ? "Added Stake" : "Removed Stake"}
-        </p>
-        <p className="text-sm font-semibold text-[#071927]">
-          {new Intl.NumberFormat().format(getAmount())} FUSE
-        </p>
-      </div>
-      <hr className="w-full h-[0.5px] border-[#D1D1D1] my-3" />
-      <div className="flex justify-between">
-        <p className="text-sm font-semibold text-text-gray">Total</p>
-        {validator ? (
-          <p className="text-sm font-semibold text-[#071927]">
-            {cardMode === 0
-              ? validator.selfStakeAmount
-                ? new Intl.NumberFormat().format(
-                  getAmount() + parseFloat(validator.selfStakeAmount)
-                )
-                : new Intl.NumberFormat().format(getAmount())
-              : validator.selfStakeAmount
-                ? new Intl.NumberFormat().format(
-                  parseFloat(validator.selfStakeAmount) - getAmount()
-                )
-                : new Intl.NumberFormat().format(getAmount())}{" "}
-            FUSE
-          </p>
-        ) : (
-          <span className="ms-2 px-11 py-1 bg-dark-gray rounded-lg animate-pulse" />
-        )}
-      </div>
+
+      {/* Stake information */}
+      {[
+        { label: "Current Stake", value: validator?.selfStakeAmount },
+        { label: cardMode === 0 ? "Added Stake" : "Removed Stake", value: getAmount.toString() },
+        {
+          label: "Total", value: validator ? (cardMode === 0 ?
+            (parseFloat(validator.selfStakeAmount || "0") + getAmount).toString() :
+            (parseFloat(validator.selfStakeAmount || "0") - getAmount).toString()) : undefined
+        }
+      ].map(({ label, value }, index) => (
+        <React.Fragment key={label}>
+          {index === 2 && <hr className="w-full h-[0.5px] border-[#D1D1D1] my-3" />}
+          <div className="flex justify-between mt-2">
+            <p className="text-sm font-semibold text-text-gray">{label}</p>
+            {value !== undefined ? (
+              <p className="text-sm font-semibold text-[#071927]">
+                {new Intl.NumberFormat().format(parseFloat(value))} FUSE
+              </p>
+            ) : (
+              <span className="ms-2 px-11 py-1 bg-dark-gray rounded-lg animate-pulse" />
+            )}
+          </div>
+        </React.Fragment>
+      ))}
+
+      {/* Projected rewards */}
       <div className="flex justify-between mt-2">
         <div className="flex relative">
           <p className="text-sm font-semibold text-text-gray">
-            Projected
-            <br className="hidden md:block" /> Rewards (1y)
+            Projected<br className="hidden md:block" /> Rewards (1y)
           </p>
           <Image
             src={info}
@@ -269,7 +222,7 @@ const StakeCard = ({
             <br className="hidden md:block" />
             <span className="text-[#66E070]">
               {" (+"}
-              {(getPredictedIncrease() * 100).toFixed(1)}
+              {(getPredictedIncrease * 100).toFixed(1)}
               {"%)"}
             </span>
           </p>
@@ -277,37 +230,18 @@ const StakeCard = ({
           <span className="ms-2 px-11 py-1 bg-dark-gray rounded-lg animate-pulse" />
         )}
       </div>
+
+      {/* Action button */}
       {isConnected ? (
         <Button
-          text={
-            isLoading
-              ? "Loading..."
-              : cardMode === 0 &&
-                parseFloat(validator?.stakeAmount || "0") + getAmount() >
-                parseFloat(maxStake)
-                ? "Maximum Stake Reached"
-                : cardMode === 0
-                  ? "Stake"
-                  : "Unstake"
-          }
+          text={buttonText}
           className="bg-black font-medium text-white mt-6 rounded-full"
           disabledClassName="bg-black/25 font-medium text-white rounded-full w-full mt-6"
-          disabled={
-            getAmount() === 0 ||
-            isLoading ||
-            (cardMode === 0 &&
-              parseFloat(validator?.stakeAmount || "0") + getAmount() >
-              parseFloat(maxStake))
-          }
+          disabled={getAmount === 0 || isLoading || isMaxStakeReached}
           onClick={() => {
-            if (!isConnected) return;
-            if (!validator) return;
-            if (getAmount() === 0) return;
-            if (cardMode === 0) {
-              handleStake();
-            } else {
-              handleWithdraw();
-            }
+            if (!isConnected || !validator || getAmount === 0) return;
+            const handleAction = () => cardMode === 0 ? handleStake() : handleWithdraw();
+            handleAction();
           }}
         />
       ) : (
@@ -317,4 +251,4 @@ const StakeCard = ({
   );
 };
 
-export default StakeCard;
+export default memo(StakeCard);

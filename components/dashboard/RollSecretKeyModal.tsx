@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { regenerateSecretApiKey, selectOperatorSlice, setIsRollSecretKeyModalOpen } from "@/store/operatorSlice";
+import { regenerateSecretApiKey, selectOperatorSlice, setIsRollSecretKeyModalOpen, withRefreshToken } from "@/store/operatorSlice";
 import Button from "../ui/Button";
 
 const RollSecretKeyModal = (): JSX.Element => {
@@ -50,7 +50,7 @@ const RollSecretKeyModal = (): JSX.Element => {
                   className="transition ease-in-out flex justify-between items-center gap-2 text-lg text-white font-semibold bg-red-600 rounded-full hover:bg-black"
                   padding="py-1 px-6"
                   onClick={() => {
-                    dispatch(regenerateSecretApiKey());
+                    dispatch(withRefreshToken(() => dispatch(regenerateSecretApiKey())));
                   }}
                 >
                   {operatorSlice.isGeneratingSecretApiKey && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}

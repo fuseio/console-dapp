@@ -175,7 +175,7 @@ export const createAppConfig = (
   chainConfig: ChainConfig,
   tokenConfig: CoinConfig
 ): BridgeConfig => {
-  let wrappedTokens: {
+  const wrappedTokens: {
     decimals: number;
     symbol: string;
     name: string;
@@ -214,7 +214,7 @@ export const createAppConfig = (
       disabledChains: disabledChains,
       thirdPartyChains: thirdPartyChains,
       chains: chainConfig.chains.map((chain) => {
-        let tokens: {
+        const tokens: {
           decimals: number;
           symbol: string;
           name: string;
@@ -306,7 +306,7 @@ export interface User {
   name: string;
   email: string;
   auth0Id: string;
-  smartContractAccountAddress: Address;
+  smartWalletAddress: Address;
 }
 
 export interface Project {
@@ -356,7 +356,7 @@ export interface ValidatorType {
   delegatorsLength: string
   delegators: [Address, string][]
   selfStakeAmount?: string
-  name?: string
+  name: string
   website?: string
   firstSeen?: string
   status?: string

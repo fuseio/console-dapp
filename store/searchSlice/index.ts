@@ -3,7 +3,7 @@ import { AppState } from '../rootReducer'
 
 
 export interface SearchStateType {
-    search: String,
+    search: string,
     stateFilter: number,
     statusFilter: number,
     myStakeFilter: number,
