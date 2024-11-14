@@ -1,7 +1,7 @@
 import NavMenu from "@/components/NavMenu";
 import Button from "@/components/ui/Button";
 import { buildSubMenuItems } from "@/lib/helpers";
-import { setIsPayModalOpen } from "@/store/operatorSlice";
+import { setIsBillingModalOpen, setIsPayModalOpen } from "@/store/operatorSlice";
 import { useAppDispatch } from "@/store/store";
 
 const planDetails = [
@@ -66,6 +66,7 @@ const Home = () => {
               text="Enter Billing Info"
               className="transition ease-in-out bg-success text-lg leading-none text-black font-semibold rounded-full hover:bg-black hover:text-white"
               padding="py-3 px-9"
+              onClick={() => dispatch(setIsBillingModalOpen(true))}
             />
           </div>
           <div className="flex justify-between items-center gap-4 max-w-[824px] md:flex-col md:items-start">

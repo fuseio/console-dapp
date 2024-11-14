@@ -27,6 +27,7 @@
     "@web3auth/web3auth-wagmi-connector": "^6.0.0",
     "abitype": "^1.0.6",
     "axios": "^1.7.7",
+    "country-list-with-dial-code-and-flag": "^5.0.6",
     "ethers": "^5.7.2",
     "formik": "^2.4.6",
     "framer-motion": "^11.9.0",

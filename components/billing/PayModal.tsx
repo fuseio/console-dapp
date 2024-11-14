@@ -82,7 +82,7 @@ const Token = () => {
           >
             <Image src={coins[selectedToken].icon} alt={coins[selectedToken].name} width={24} height={24} />
             <p>{coins[selectedToken].symbol}</p>
-            <Image src={caretDown} alt="" width={10} height={6} />
+            <Image src={caretDown} alt="caret down" width={10} height={6} />
           </button>
           <AnimatePresence>
             {isOpen && (
