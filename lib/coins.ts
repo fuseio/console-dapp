@@ -20,6 +20,7 @@ import wbeth from "@/assets/wbeth.webp";
 import weeth from "@/assets/weeth.webp";
 import ethx from "@/assets/ethx.png";
 import wstETH from "@/assets/wstETH.png";
+import wbtc from "@/assets/wbtc.png";
 
 export const coins: CoinConfigLike[] = [
   {
@@ -175,5 +176,12 @@ export const coins: CoinConfigLike[] = [
     decimals: 18,
     icon: wstETH,
     coinGeckoId: "wrapped-steth",
+  },
+  {
+    name: "Wrapped BTC",
+    symbol: "WBTC",
+    decimals: 8,
+    icon: wbtc,
+    coinGeckoId: "wrapped-bitcoin",
   },
 ];
