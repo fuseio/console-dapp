@@ -2,7 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
 import { Signer, ethers } from "ethers";
 import { FuseSDK } from "@fuseio/fusebox-web-sdk";
-import { hex, path, splitSecretKey } from "@/lib/helpers";
+import { hex, splitSecretKey } from "@/lib/helpers";
 import { MenuItems, Operator, OperatorContactDetail, SignData, Withdraw } from "@/lib/types";
 import { checkActivated, checkOperatorExist, fetchAddressTokenBalances, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
@@ -597,14 +597,6 @@ export const fetchTokenBalances = createAsyncThunk(
   }
 );
 
-function redirectToLogin() {
-  const currentPath = window.location.pathname;
-  const isAuthenticatedPath = userMenuItems.some(item => item.link === currentPath && item.isAuthenticated);
-  if (isAuthenticatedPath) {
-    window.location.href = path.DASHBOARD;
-  }
-}
-
 const operatorSlice = createSlice({
   name: "OPERATOR_STATE",
   initialState: INIT_STATE,
@@ -681,7 +673,6 @@ const operatorSlice = createSlice({
       localStorage.removeItem("Fuse-connectedWalletType");
       localStorage.removeItem("Fuse-operatorContactDetail");
       localStorage.removeItem("Fuse-isActivated");
-      redirectToLogin();
     },
     setHydrate: (state) => {
       const isOperatorExist = localStorage.getItem("Fuse-isOperatorExist");
