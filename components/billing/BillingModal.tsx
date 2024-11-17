@@ -270,21 +270,21 @@ const BillingModal = (): JSX.Element => {
               You will receive an invoice once your payment is processed
             </p>
             <form
-              className="grid grid-cols-2 gap-4 mt-12"
+              className="grid grid-cols-2 gap-4 md:grid-cols-1 mt-12"
               onSubmit={formik.handleSubmit}
             >
               <Input formik={formik} name="First Name" placeholder="First name" label="firstName" required />
               <Input formik={formik} name="Last Name" placeholder="Last name" label="lastName" required />
-              <TextareaInput formik={formik} name="Address 1" placeholder="Address 1" label="address1" className="col-span-2" required />
-              <TextareaInput formik={formik} name="Address 2 (Optional)" placeholder="Address 2" label="address2" className="col-span-2" />
+              <TextareaInput formik={formik} name="Address 1" placeholder="Address 1" label="address1" className="col-span-2 md:col-span-1" required />
+              <TextareaInput formik={formik} name="Address 2 (Optional)" placeholder="Address 2" label="address2" className="col-span-2 md:col-span-1" />
               <SelectInput formik={formik} name="Country" placeholder="Select Country" label="country" required />
               <Input formik={formik} name="City" placeholder="City" label="city" required />
               <Input formik={formik} name="State" placeholder="State" label="state" required />
               <Input formik={formik} name="Postal Code" placeholder="Postal code" label="postalCode" required />
-              <Input formik={formik} name="Email" placeholder="Email" label="email" type="email" className="col-span-2" required />
+              <Input formik={formik} name="Email" placeholder="Email" label="email" type="email" className="col-span-2 md:col-span-1" required />
               <Button
                 text="Save Now"
-                className="transition ease-in-out col-span-2 bg-success font-bold leading-none w-full h-14 max-w-96 mx-auto rounded-full hover:bg-black hover:text-white"
+                className="transition ease-in-out col-span-2 md:col-span-1 bg-success font-bold leading-none w-full h-14 max-w-96 mx-auto rounded-full hover:bg-black hover:text-white"
                 type="submit"
               />
             </form>
