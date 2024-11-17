@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import Image, { StaticImageData } from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
+import { Address } from "viem";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { selectOperatorSlice, setIsPayModalOpen } from "@/store/operatorSlice";
+import { fetchErc20Balance, selectOperatorSlice, setIsPayModalOpen } from "@/store/operatorSlice";
 import Button from "../ui/Button";
 import usdc from "@/assets/usdc.svg";
 import usdt from "@/assets/usdt-logo.svg";
@@ -11,35 +12,64 @@ import caretDown from "@/assets/caret-down.svg";
 
 type Coin = {
   name: string;
-  symbol: string;
+  decimals: number;
   icon: StaticImageData;
+  address: Address;
 }
 
 type Coins = {
   [k: string]: Coin
 }
 
+type MonthsProps = {
+  setSelectedMonth: (time: number) => void;
+}
+
 type DetailProps = {
   title: string;
   description: string;
+  isLoading?: boolean;
 }
 
 const coins: Coins = {
   "USDC": {
     name: "USD Coin",
-    symbol: "USDC",
+    decimals: 6,
     icon: usdc,
+    address: "0x28C3d1cD466Ba22f6cae51b1a4692a831696391A",
   },
   "USDT": {
     name: "Tether USD",
-    symbol: "USDT",
+    decimals: 6,
     icon: usdt,
+    address: "0x68c9736781E9316ebf5c3d49FE0C1f45D2D104Cd",
   },
 }
 
-const months = [1, 3, 6, 12];
+const months = [
+  {
+    time: 1,
+    price: 100,
+  },
+  {
+    time: 3,
+    price: 300,
+  },
+  {
+    time: 6,
+    price: 600,
+  },
+  {
+    time: 12,
+    price: 1200,
+  },
+];
 
-const Months = () => {
+const Months = ({ setSelectedMonth }: MonthsProps) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedMonth(parseInt(e.target.value));
+  };
+
   return (
     <div className="flex justify-between items-center max-w-sm">
       <p className="font-semibold">
@@ -47,16 +77,17 @@ const Months = () => {
       </p>
       <div className="flex justify-between items-center w-7/12">
         {months.map((month, index) => (
-          <div key={month} className="flex items-center gap-2">
+          <div key={month.time} className="flex items-center gap-2">
             <input
               type="radio"
-              id={month.toString()}
+              id={month.time.toString()}
               name={"month"}
-              value={month.toString()}
+              value={month.time.toString()}
               className="accent-gray checked:accent-black w-4 h-4"
               defaultChecked={index === 1}
+              onChange={handleChange}
             />
-            <label htmlFor={month.toString()}>{month}</label>
+            <label htmlFor={month.time.toString()}>{month.time}</label>
           </div>
         ))}
       </div>
@@ -65,8 +96,18 @@ const Months = () => {
 }
 
 const Token = () => {
+  const dispatch = useAppDispatch();
+  const operatorSlice = useAppSelector(selectOperatorSlice);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedToken, setSelectedToken] = useState("USDT");
+
+  useEffect(() => {
+    dispatch(fetchErc20Balance({
+      contractAddress: coins[selectedToken].address,
+      address: operatorSlice.operator.user.smartWalletAddress,
+      decimals: coins[selectedToken].decimals,
+    }))
+  }, [dispatch, operatorSlice.operator.user.smartWalletAddress, selectedToken])
 
   return (
     <div className="flex justify-between items-center max-w-sm">
@@ -81,7 +122,7 @@ const Token = () => {
             type="button"
           >
             <Image src={coins[selectedToken].icon} alt={coins[selectedToken].name} width={24} height={24} />
-            <p>{coins[selectedToken].symbol}</p>
+            <p>{selectedToken}</p>
             <Image src={caretDown} alt="caret down" width={10} height={6} />
           </button>
           <AnimatePresence>
@@ -97,18 +138,18 @@ const Token = () => {
                     Tokens
                   </p>
                   <div className="flex flex-col gap-3">
-                    {Object.keys(coins).map((coin) => (
+                    {Object.entries(coins).map(([key, coin]) => (
                       <button
-                        key={coin}
+                        key={key}
                         className="flex items-center gap-2"
                         onClick={() => {
-                          setSelectedToken(coin)
+                          setSelectedToken(key)
                           setIsOpen(false)
                         }}
                         type="button"
                       >
-                        <Image src={coins[coin].icon} alt={coins[coin].name} width={24} height={24} />
-                        <p>{coins[coin].symbol}</p>
+                        <Image src={coin.icon} alt={coin.name} width={24} height={24} />
+                        <p>{key}</p>
                       </button>
                     ))}
                   </div>
@@ -122,16 +163,17 @@ const Token = () => {
   )
 }
 
-const Detail = ({ title, description }: DetailProps) => {
+const Detail = ({ title, description, isLoading }: DetailProps) => {
   return (
     <div className="flex justify-between items-center max-w-sm">
       <p className="font-semibold">
         {title}
       </p>
       <div className="flex justify-between items-center w-7/12">
-        <p>
-          {description}
-        </p>
+        {isLoading ?
+          <span className="w-10 h-5 rounded-md animate-pulse bg-fuse-black/10"></span> :
+          <p>{description}</p>
+        }
       </div>
     </div>
   )
@@ -140,6 +182,10 @@ const Detail = ({ title, description }: DetailProps) => {
 const PayModal = (): JSX.Element => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const dispatch = useAppDispatch();
+  const [selectedMonth, setSelectedMonth] = useState(3);
+
+  const amountToPay = months.find((month) => month.time === selectedMonth)?.price;
+  const isInsufficientBalance = parseFloat(operatorSlice.erc20Balance) < (amountToPay ?? 0);
 
   useEffect(() => {
     window.addEventListener("click", (e) => {
@@ -187,13 +233,14 @@ const PayModal = (): JSX.Element => {
               </div>
 
               <form className="flex flex-col gap-9">
-                <Months />
+                <Months setSelectedMonth={setSelectedMonth} />
                 <Token />
-                <Detail title="Amount to pay:" description="$300" />
-                <Detail title="Account Balance:" description="$426" />
+                <Detail title="Amount to pay:" description={`$${amountToPay}`} />
+                <Detail title="Account Balance:" description={`$${operatorSlice.erc20Balance || 0}`} isLoading={operatorSlice.isFetchingErc20Balance} />
                 <Button
                   text="Pay"
-                  className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black hover:text-black hover:bg-success rounded-full w-full max-w-sm mx-auto mt-6"
+                  className={`transition ease-in-out text-lg leading-none font-semibold enabled:hover:text-black enabled:hover:bg-success rounded-full w-full max-w-sm mx-auto mt-6 ${isInsufficientBalance ? "bg-[#FFEBE9] text-[#FD0F0F]" : "bg-black text-white"}`}
+                  disabled={isInsufficientBalance}
                   padding="py-4 px-11"
                 />
               </form>

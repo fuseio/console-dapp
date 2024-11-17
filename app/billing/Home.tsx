@@ -1,8 +1,7 @@
 import NavMenu from "@/components/NavMenu";
 import Button from "@/components/ui/Button";
-import { buildSubMenuItems } from "@/lib/helpers";
-import { setIsBillingModalOpen, setIsPayModalOpen } from "@/store/operatorSlice";
-import { useAppDispatch } from "@/store/store";
+import { selectOperatorSlice, setIsBillingModalOpen, setIsPayModalOpen } from "@/store/operatorSlice";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 
 const planDetails = [
   {
@@ -51,11 +50,12 @@ const invoices = [
 
 const Home = () => {
   const dispatch = useAppDispatch();
+  const operatorSlice = useAppSelector(selectOperatorSlice);
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
-        <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="billing & plan" className="md:flex md:justify-center" />
+        <NavMenu menuItems={operatorSlice.menuItems} isOpen={true} selected="billing & plan" className="md:flex md:justify-center" />
 
         <section className="mt-20 flex flex-col gap-10 max-w-[915px]">
           <div className="flex justify-between items-center gap-4 md:flex-col md:items-start">

@@ -10,8 +10,9 @@ import theGraph from "@/public/the-graph.png"
 import taskOn from "@/public/taskon.png"
 import { useRouter } from "next/navigation";
 import NavMenu from "@/components/NavMenu";
-import { buildSubMenuItems } from "@/lib/helpers";
 import * as amplitude from "@amplitude/analytics-browser";
+import { useAppSelector } from "@/store/store";
+import { selectOperatorSlice } from "@/store/operatorSlice";
 
 const apps = [
   {
@@ -54,6 +55,7 @@ const apps = [
 
 const Home = () => {
   const router = useRouter();
+  const operatorSlice = useAppSelector(selectOperatorSlice);
 
   function createAccount(eventInput: string) {
     amplitude.track(eventInput);
@@ -64,7 +66,7 @@ const Home = () => {
     <div className="w-full bg-light-gray">
       <div className="w-full flex flex-col items-center">
         <div className="w-8/9 flex flex-col mt-[30.84px] md:mt-12 md:w-9/10 max-w-7xl">
-          <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="welcome" className="md:flex md:justify-center" />
+          <NavMenu menuItems={operatorSlice.menuItems} isOpen={true} selected="welcome" className="md:flex md:justify-center" />
         </div>
       </div>
       <div className="w-full flex flex-col items-center">

@@ -2,8 +2,8 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
 import { Signer, ethers } from "ethers";
 import { FuseSDK } from "@fuseio/fusebox-web-sdk";
-import { hex, splitSecretKey } from "@/lib/helpers";
-import { Operator, OperatorContactDetail, SignData, Withdraw } from "@/lib/types";
+import { hex, path, splitSecretKey } from "@/lib/helpers";
+import { MenuItems, Operator, OperatorContactDetail, SignData, Withdraw } from "@/lib/types";
 import { checkActivated, checkOperatorExist, fetchAddressTokenBalances, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
@@ -47,6 +47,26 @@ const initWithdraw: Withdraw = {
   coinGeckoId: "",
 }
 
+const initMenuItems: MenuItems = [
+  {
+    title: "Welcome",
+    link: "/build",
+  },
+  {
+    title: "Dashboard",
+    link: "/dashboard",
+  },
+];
+
+const userMenuItems: MenuItems = [
+  ...initMenuItems,
+  {
+    title: "Billing & Plan",
+    link: "/billing",
+    isAuthenticated: true,
+  },
+];
+
 export interface OperatorStateType {
   isLogin: boolean;
   isLoggedIn: boolean;
@@ -88,6 +108,7 @@ export interface OperatorStateType {
   totalTokenBalance: number;
   isPayModalOpen: boolean;
   isBillingModalOpen: boolean;
+  menuItems: MenuItems;
 }
 
 const INIT_STATE: OperatorStateType = {
@@ -131,6 +152,7 @@ const INIT_STATE: OperatorStateType = {
   totalTokenBalance: 0,
   isPayModalOpen: false,
   isBillingModalOpen: false,
+  menuItems: initMenuItems,
 };
 
 export const checkOperator = createAsyncThunk(
@@ -575,6 +597,14 @@ export const fetchTokenBalances = createAsyncThunk(
   }
 );
 
+function redirectToLogin() {
+  const currentPath = window.location.pathname;
+  const isAuthenticatedPath = userMenuItems.some(item => item.link === currentPath && item.isAuthenticated);
+  if (isAuthenticatedPath) {
+    window.location.href = path.DASHBOARD;
+  }
+}
+
 const operatorSlice = createSlice({
   name: "OPERATOR_STATE",
   initialState: INIT_STATE,
@@ -642,6 +672,7 @@ const operatorSlice = createSlice({
       state.operatorContactDetail = initOperatorContactDetail;
       state.isActivated = false;
       state.sponsoredTransactions = 0;
+      state.menuItems = initMenuItems;
       localStorage.removeItem("Fuse-isOperatorExist");
       localStorage.removeItem("Fuse-isValidated");
       localStorage.removeItem("Fuse-operator");
@@ -650,6 +681,7 @@ const operatorSlice = createSlice({
       localStorage.removeItem("Fuse-connectedWalletType");
       localStorage.removeItem("Fuse-operatorContactDetail");
       localStorage.removeItem("Fuse-isActivated");
+      redirectToLogin();
     },
     setHydrate: (state) => {
       const isOperatorExist = localStorage.getItem("Fuse-isOperatorExist");
@@ -664,6 +696,7 @@ const operatorSlice = createSlice({
       state.isAuthenticated = isAuthenticated ? JSON.parse(isAuthenticated) : false;
       state.operatorContactDetail = operatorContactDetail ? JSON.parse(operatorContactDetail) : initOperatorContactDetail;
       state.isActivated = isActivated ? JSON.parse(isActivated) : false;
+      state.menuItems = isAuthenticated ? userMenuItems : initMenuItems;
       state.isHydrated = true;
     }
   },
@@ -699,6 +732,7 @@ const operatorSlice = createSlice({
         state.operator = action.payload;
         state.isLoggedIn = true;
         state.isAuthenticated = true;
+        state.menuItems = userMenuItems;
         localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
         localStorage.setItem("Fuse-isOperatorAuthenticated", "true");
       })
@@ -719,6 +753,7 @@ const operatorSlice = createSlice({
         const { secretPrefix, secretLastFourChars } = splitSecretKey(action.payload.project.secretKey);
         state.operator.project.secretPrefix = secretPrefix;
         state.operator.project.secretLastFourChars = secretLastFourChars;
+        state.menuItems = userMenuItems;
         localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
         localStorage.setItem("Fuse-isOperatorAuthenticated", "true");
         localStorage.removeItem("Fuse-operatorContactDetail");

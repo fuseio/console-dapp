@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Button from "@/components/ui/Button";
-import { buildSubMenuItems, evmDecimals, signDataMessage } from "@/lib/helpers";
+import { evmDecimals, signDataMessage } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useBlockNumber, useSignMessage } from "wagmi";
@@ -290,7 +290,7 @@ const Home = () => {
       {operatorSlice.isAccountCreationModalOpen && <AccountCreationModal />}
       {operatorSlice.isCongratulationModalOpen && <CongratulationModal />}
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
-        <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="md:flex md:justify-center" />
+        <NavMenu menuItems={operatorSlice.menuItems} isOpen={true} selected="dashboard" className="md:flex md:justify-center" />
         <div className={`flex justify-between md:flex-col gap-2 mt-[66.29px] md:mt-14 ${operatorSlice.isActivated ? "mb-[70px]" : "mb-[42px]"} md:mb-[50px]`}>
           <h1 className="text-5xl md:text-[32px] text-fuse-black font-semibold leading-none md:leading-tight md:text-center">
             Operator Dashboard
