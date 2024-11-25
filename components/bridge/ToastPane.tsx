@@ -14,7 +14,7 @@ const ToastPane = ({ className = "" }: ToastPaneProps) => {
   return (
     <div
       className={
-        "flex flex-col pt-8 justify-start items-center w-full md:pt-0 " + className
+        "flex flex-col pt-8 justify-start items-center w-full md:pt-0 pe-14 " + className
       }
     >
       {toastSlice.isLiquidityToastOpen && <NoLiquidityToast />}

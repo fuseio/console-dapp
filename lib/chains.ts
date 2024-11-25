@@ -68,3 +68,13 @@ export const chains: ChainConfigLike[] = [
     gasTokenId: "ethereum",
   },
 ];
+
+export const fuseChain = {
+  chainName: "Fuse",
+  lzChainId: 184,
+  icon: bnb,
+  chainId: 122,
+  rpc: `https://rpc.fuse.io`,
+  logo: "",
+  tokenId: "fuse-network-token",
+};
