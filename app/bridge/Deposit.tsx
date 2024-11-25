@@ -4,7 +4,6 @@ import { exchangeConfig, appConfig } from "@/lib/config";
 import Dropdown from "@/components/ui/Dropdown";
 import switchImg from "@/assets/switch.svg";
 import fuseToken from "@/assets/tokenLogo.svg";
-import metamask from "@/assets/metamask.svg";
 import { selectChainSlice, setChain } from "@/store/chainSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import {
@@ -22,9 +21,10 @@ import { evmDecimals, walletType } from "@/lib/helpers";
 import { getBalance } from "wagmi/actions";
 import AddToken from "@/components/bridge/AddToken";
 import { getAccount } from "wagmi/actions";
-import { formatUnits } from "viem";
+import { Address, formatUnits } from "viem";
 import Image from "next/image";
-import { getTokenOnFuse } from "@/lib/helper-bridge";
+import { fetchSupportedTokensByChain } from "@/lib/chargeApi";
+import { fetchChargeTokens, selectChargeSlice } from "@/store/chargeSlice";
 
 type DepositProps = {
   selectedChainSection: number;
@@ -80,6 +80,7 @@ const Deposit = ({
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const chainSlice = useAppSelector(selectChainSlice);
+  const chargeSlice = useAppSelector(selectChargeSlice);
   const [nativeBalance, setNativeBalance] = React.useState("0");
   const config = useConfig();
   const { chainId } = getAccount(config);
@@ -94,15 +95,16 @@ const Deposit = ({
   const handleDropdownSection = (item: number) => {
     setIsExchange(false);
     dispatch(setChain(appConfig.wrappedBridge.chains[item]));
-    dispatch(
-      estimateOriginalFee({
-        contractAddress: appConfig.wrappedBridge.chains[item].original,
-        rpcUrl: appConfig.wrappedBridge.chains[item].rpcUrl,
-        tokenId:
-          appConfig.wrappedBridge.chains[item].gasTokenId ||
-          appConfig.wrappedBridge.chains[item].tokenId,
-      })
-    );
+    // dispatch(
+    //   estimateOriginalFee({
+    //     contractAddress: appConfig.wrappedBridge.chains[item].original,
+    //     rpcUrl: appConfig.wrappedBridge.chains[item].rpcUrl,
+    //     tokenId:
+    //       appConfig.wrappedBridge.chains[item].gasTokenId ||
+    //       appConfig.wrappedBridge.chains[item].tokenId,
+    //   })
+    // );
+    dispatch(fetchChargeTokens(appConfig.wrappedBridge.chains[item].chainId));
     setDisplayButton(true);
     setIsDisabledChain(false);
     setIsThirdPartyChain(false);
@@ -127,32 +129,23 @@ const Deposit = ({
   }, [address, selectedChainItem]);
 
   useEffect(() => {
+    if (chargeSlice.isLoading) {
+      return;
+    }
     if (address && selectedChainSection === 0) {
       if (pendingPromise) {
         pendingPromise.abort();
       }
-      if (
-        appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-          selectedTokenItem
-        ].isNative &&
-        !appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-          selectedTokenItem
-        ].isBridged
-      ) {
+      if (chargeSlice.tokens[selectedTokenItem].isNative) {
         dispatch(setNativeBalanceThunk(nativeBalance));
       } else {
         const promise = dispatch(
           fetchBalance({
             address: address,
-            contractAddress:
-              appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                selectedTokenItem
-              ].address,
-            decimals:
-              appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                selectedTokenItem
-              ].decimals,
-            bridge: appConfig.wrappedBridge.chains[selectedChainItem].original,
+            contractAddress: chargeSlice.tokens[selectedTokenItem]
+              .address as Address,
+            decimals: chargeSlice.tokens[selectedTokenItem].decimals,
+            // bridge: appConfig.wrappedBridge.chains[selectedChainItem].original,
           })
         );
         setPendingPromise(promise);
@@ -170,6 +163,11 @@ const Deposit = ({
     if (chainSlice.chainId === 0 && selectedChainSection === 0) {
       dispatch(setChain(appConfig.wrappedBridge.chains[selectedChainItem]));
     }
+    dispatch(
+      fetchChargeTokens(
+        appConfig.wrappedBridge.chains[selectedChainItem].chainId
+      )
+    );
   }, [chainSlice.chainId, selectedChainSection]);
 
   useEffect(() => {
@@ -194,107 +192,108 @@ const Deposit = ({
   return (
     <>
       <AddToken />
-      <div className="flex bg-modal-bg rounded-md p-4 mt-3 w-full flex-col">
-        <span className="font-medium mb-2 text-xs">From Network</span>
-        <Dropdown
-          items={[
-            {
-              heading: "Chains",
-              items: appConfig.wrappedBridge.chains.map((chain) => {
-                return {
-                  item: chain.name,
-                  icon: chain.icon,
-                  id: chain.lzChainId,
-                };
-              }),
-            },
-            {
-              items: appConfig.wrappedBridge.disabledChains.map((chain, i) => {
-                return {
-                  item: chain.chainName,
-                  icon: chain.icon,
-                  id: i,
-                };
-              }),
-            },
-            {
-              items: appConfig.wrappedBridge.thirdPartyChains.map(
-                (chain, i) => {
+      <div className="flex bg-modal-bg rounded-[20px] p-6 mt-[30px] w-full flex-col">
+        <div className="flex items-start">
+          <span className="font-semibold pe-[10px] text-sm">From</span>
+          <Dropdown
+            items={[
+              {
+                heading: "Chains",
+                items: appConfig.wrappedBridge.chains.map((chain) => {
                   return {
-                    item: chain.chainName,
+                    item: chain.name,
                     icon: chain.icon,
+                    id: chain.lzChainId,
+                  };
+                }),
+              },
+              {
+                items: appConfig.wrappedBridge.disabledChains.map(
+                  (chain, i) => {
+                    return {
+                      item: chain.chainName,
+                      icon: chain.icon,
+                      id: i,
+                    };
+                  }
+                ),
+              },
+              {
+                items: appConfig.wrappedBridge.thirdPartyChains.map(
+                  (chain, i) => {
+                    return {
+                      item: chain.chainName,
+                      icon: chain.icon,
+                      id: i,
+                    };
+                  }
+                ),
+              },
+              {
+                heading: "Centralized Exchanges",
+                items: exchangeConfig.exchanges.map((exchange, i) => {
+                  return {
+                    item: exchange.name,
+                    icon: exchange.icon,
                     id: i,
                   };
-                }
-              ),
-            },
-            {
-              heading: "Centralized Exchanges",
-              items: exchangeConfig.exchanges.map((exchange, i) => {
-                return {
-                  item: exchange.name,
-                  icon: exchange.icon,
-                  id: i,
-                };
-              }),
-            },
-          ]}
-          selectedSection={selectedChainSection}
-          selectedItem={selectedChainItem}
-          className="w-full"
-          isHighlight={true}
-          onClick={(section, item) => {
-            handleDropdownSelectedItem(section, item);
-            if (section === 1) {
-              setIsExchange(false);
-              setDisplayButton(false);
-              setIsDisabledChain(true);
-              setIsThirdPartyChain(false);
-            } else if (section === 2) {
-              setIsExchange(false);
-              setDisplayButton(false);
-              setIsDisabledChain(false);
-              setIsThirdPartyChain(true);
-            } else if (section === 3) {
-              setIsExchange(true);
-              setDisplayButton(false);
-              setIsDisabledChain(false);
-              setIsThirdPartyChain(false);
-            } else {
-              handleDropdownSection(item);
-            }
-          }}
-        />
+                }),
+              },
+            ]}
+            selectedSection={selectedChainSection}
+            selectedItem={selectedChainItem}
+            isHighlight={true}
+            onClick={(section, item) => {
+              handleDropdownSelectedItem(section, item);
+              if (section === 1) {
+                setIsExchange(false);
+                setDisplayButton(false);
+                setIsDisabledChain(true);
+                setIsThirdPartyChain(false);
+              } else if (section === 2) {
+                setIsExchange(false);
+                setDisplayButton(false);
+                setIsDisabledChain(false);
+                setIsThirdPartyChain(true);
+              } else if (section === 3) {
+                setIsExchange(true);
+                setDisplayButton(false);
+                setIsDisabledChain(false);
+                setIsThirdPartyChain(false);
+              } else {
+                handleDropdownSection(item);
+              }
+            }}
+            size="sm"
+          />
+        </div>
         {!(isExchange || isDisabledChain || isThirdPartyChain) && (
           <>
-            <span className="font-medium mt-2 text-xs">Amount</span>
             <div className="flex w-full items-center mt-2">
-              <div className="bg-white px-4 py-3 md:p-2 rounded-s-md border-[1px] border-border-gray w-[60%] md:w-3/5 flex">
+              <div className="py-3 pe-4 md:p-2 rounded-s-md w-[70%] flex items-center">
                 <input
                   type="text"
-                  className="w-full bg-transparent focus:outline-none text-sm md:text-xs"
+                  className="w-full bg-modal-bg focus:outline-none text-[34px] font-semibold"
                   placeholder="0.00"
                   value={amount}
                   onChange={(e) => {
                     setAmount(e.target.value);
                   }}
                 />
-                <div
-                  className="text-black font-medium px-3 py-1 bg-lightest-gray rounded-full cursor-pointer"
+                <span
+                  className="text-black px-3 py-1 bg-lightest-gray rounded-full cursor-pointer text-base"
                   onClick={() => {
                     setAmount(balanceSlice.balance);
                   }}
                 >
                   Max
-                </div>
+                </span>
               </div>
               <Dropdown
                 items={[
                   {
                     heading: "Tokens",
-                    items: appConfig.wrappedBridge.chains[
-                      selectedChainItem
-                    ].tokens.map((coin, i) => {
+                    items: chargeSlice.tokens.map((coin, i) => {
                       return {
                         icon: coin.icon,
                         id: i,
@@ -305,14 +304,15 @@ const Deposit = ({
                 ]}
                 selectedSection={selectedTokenSection}
                 selectedItem={selectedTokenItem}
-                className="rounded-e-md rounded-s-none border-s-0 w-[40%] md:w-2/5"
+                className="w-[30%]"
                 onClick={(section, item) => {
                   setSelectedTokenSection(section);
                   setSelectedTokenItem(item);
                 }}
+                isLoading={chargeSlice.isLoading}
               />
             </div>
-            <span className="mt-3 text-xs font-medium">
+            <span className="text-sm font-medium">
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
               chain?.id !==
@@ -519,18 +519,53 @@ const Deposit = ({
               }}
             />
           </div>
-          <div className="flex bg-modal-bg rounded-md px-4 py-[10px] mt-3 w-full justify-between items-center">
-            <div className="flex flex-col">
-              <span className="font-semibold text-base">
+          <div className="flex bg-modal-bg rounded-[20px] p-6 mt-3 w-full justify-between items-center">
+            <div className="flex flex-col w-full">
+              <span className="font-semibold text-sm">
                 To
                 <Image
                   src={sFuse}
                   alt="sFuse"
-                  className="inline-block ml-2 mr-2 h-7"
+                  className="inline-block ml-2 mr-2 h-7 -mt-1"
+                  width={17}
+                  height={17}
                 />
-                Fuse Network
+                FUSE
               </span>
-              <span className="font-medium mt-1 text-sm">
+              <div className="flex w-full items-center mt-2">
+                <div className=" pe-4 md:p-2 rounded-s-md w-[70%] flex items-center">
+                  <div className="w-full bg-modal-bg focus:outline-none text-[34px] font-semibold">
+                    {amount && !isNaN(parseFloat(amount))
+                      ? parseFloat(amount)
+                      : "0.0"}
+                  </div>
+                </div>
+                <Dropdown
+                  items={
+                    chargeSlice.isLoading
+                      ? []
+                      : [
+                          {
+                            heading: "Receive Tokens",
+                            items: chargeSlice.tokens[
+                              selectedTokenItem
+                            ].recieveTokens.map((coin, i) => {
+                              return {
+                                icon: coin.icon,
+                                id: i,
+                                item: coin.symbol,
+                              };
+                            }),
+                          },
+                        ]
+                  }
+                  selectedSection={0}
+                  selectedItem={0}
+                  className="w-[30%]"
+                  isLoading={chargeSlice.isLoading}
+                />
+              </div>
+              {/* <span className="font-medium mt-1 text-sm">
                 You will receive{" "}
                 {amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0}{" "}
                 {appConfig.wrappedBridge.chains[selectedChainItem].tokens[
@@ -539,35 +574,8 @@ const Deposit = ({
                   appConfig.wrappedBridge.chains[selectedChainItem].tokens[
                     selectedTokenItem
                   ].symbol}
-              </span>
+              </span> */}
             </div>
-            {appConfig.wrappedBridge.fuse.tokens[selectedTokenItem].address && (
-              <div
-                className="flex px-[10px] py-2 bg-white rounded-lg cursor-pointer text-xs font-medium items-center"
-                onClick={() => {
-                  const token = getTokenOnFuse(
-                    appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                      selectedTokenItem
-                    ].coinGeckoId
-                  );
-                  window.ethereum.request({
-                    method: "wallet_watchAsset",
-                    params: {
-                      type: "ERC20",
-                      options: {
-                        address: token?.address as string,
-                        symbol: token?.symbol as string,
-                        decimals: token?.decimals,
-                        chainId: 122,
-                      },
-                    },
-                  });
-                }}
-              >
-                <Image src={metamask} alt="metamask" className="h-5 mr-1" />
-                Add Token
-              </div>
-            )}
           </div>
         </>
       )}
