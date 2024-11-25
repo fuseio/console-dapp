@@ -14,7 +14,6 @@ import {
 import alert from "@/assets/alert.svg";
 import visit from "@/assets/visit.svg";
 import sFuse from "@/assets/sFuse.svg";
-import { estimateOriginalFee } from "@/store/feeSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { useAccount, useConfig } from "wagmi";
 import { evmDecimals, walletType } from "@/lib/helpers";
@@ -23,7 +22,6 @@ import AddToken from "@/components/bridge/AddToken";
 import { getAccount } from "wagmi/actions";
 import { Address, formatUnits } from "viem";
 import Image from "next/image";
-import { fetchSupportedTokensByChain } from "@/lib/chargeApi";
 import { fetchChargeTokens, selectChargeSlice } from "@/store/chargeSlice";
 
 type DepositProps = {

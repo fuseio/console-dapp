@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import { appConfig } from "@/lib/config";
 import Dropdown from "@/components/ui/Dropdown";
 import switchImg from "@/assets/switch.svg";
-import metamask from "@/assets/metamask.svg";
 import fuseToken from "@/assets/tokenLogo.svg";
 import Image from "next/image";
 import {
@@ -17,7 +16,6 @@ import { selectChainSlice, setChain } from "@/store/chainSlice";
 import alert from "@/assets/alert.svg";
 import visit from "@/assets/visit.svg";
 import sFuse from "@/assets/sFuse.svg";
-import { estimateWrappedFee } from "@/store/feeSlice";
 import { toggleLiquidityToast } from "@/store/toastSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { useAccount, useConfig } from "wagmi";
@@ -26,7 +24,7 @@ import { fuse } from "viem/chains";
 import { evmDecimals, hex, walletType } from "@/lib/helpers";
 import { getAccount } from "wagmi/actions";
 import { fetchAvailableLiquidityOnChains } from "@/store/liquiditySlice";
-import { formatUnits, size } from "viem";
+import { formatUnits } from "viem";
 
 type WithdrawProps = {
   selectedChainSection: number;
@@ -147,7 +145,6 @@ const Withdraw = ({
                 address: address,
                 contractAddress: tokenFuse?.address as `0x${string}`,
                 decimals: tokenFuse?.decimals as number,
-                bridge: appConfig.wrappedBridge.fuse.wrapped,
                 rpc: "https://rpc.fuse.io",
               })
             );
@@ -550,6 +547,9 @@ const Withdraw = ({
                 setDisplayButton(false);
                 setIsDisabledChain(false);
                 setIsThirdPartyChain(false);
+              } else {
+                setSelectedChainSection(section);
+                setSelectedChainItem(item);
               }
             }}
             size="sm"

@@ -3,12 +3,7 @@ import { AppState } from "../rootReducer";
 import { approveSpend } from "@/lib/erc20";
 import { fetchApproval, fetchBalance } from "../balanceSlice";
 import { bridgeNative, bridgeOriginal } from "@/lib/originalBridge";
-import {
-  bridgeAndUnwrapNative,
-  bridgeWrapped,
-} from "@/lib/wrappedBridge";
-import { insertTransactionToLocalStorage } from "@/lib/helpers";
-import { updateTransactions } from "../transactionsSlice";
+import { bridgeAndUnwrapNative, bridgeWrapped } from "@/lib/wrappedBridge";
 import * as amplitude from "@amplitude/analytics-browser";
 import { fetchTokenPrice } from "@/lib/api";
 import { Address } from "abitype";
@@ -75,7 +70,7 @@ export const increaseERC20Allowance = createAsyncThunk(
                 token: token,
                 amountUSD: price * parseFloat(amount),
                 walletType: walletType ? walletType : undefined,
-                walletAddress: walletType ? address : undefined
+                walletAddress: walletType ? address : undefined,
               });
             });
           else if (type === 1)
@@ -86,7 +81,7 @@ export const increaseERC20Allowance = createAsyncThunk(
                 token: token,
                 amountUSD: price * parseFloat(amount),
                 walletType: walletType ? walletType : undefined,
-                walletAddress: walletType ? address : undefined
+                walletAddress: walletType ? address : undefined,
               });
             });
           resolve(txHash);
@@ -144,7 +139,6 @@ export const bridgeOriginalTokens = createAsyncThunk(
           thunkAPI.dispatch(
             fetchBalance({
               address,
-              bridge,
               contractAddress,
               decimals,
             })
@@ -152,27 +146,7 @@ export const bridgeOriginalTokens = createAsyncThunk(
           if (!txHash) {
             return resolve(undefined);
           }
-          insertTransactionToLocalStorage({
-            hash: txHash,
-            srcChainId,
-            address,
-            amount: amount + " " + symbol,
-            timestamp: Date.now(),
-            dstChainId,
-          });
-          thunkAPI.dispatch(
-            checkandToggleAddTokenToast(tokenId)
-          )
-          thunkAPI.dispatch(
-            updateTransactions({
-              hash: txHash,
-              srcChainId,
-              address,
-              amount: amount + " " + symbol,
-              timestamp: Date.now(),
-              dstChainId,
-            })
-          );
+          thunkAPI.dispatch(checkandToggleAddTokenToast(tokenId));
           fetchTokenPrice(tokenId).then((price) => {
             amplitude.track("Deposit: Successful Bridge", {
               amount: parseFloat(amount),
@@ -180,7 +154,7 @@ export const bridgeOriginalTokens = createAsyncThunk(
               token: symbol,
               amountUSD: price * parseFloat(amount),
               walletType: walletType ? walletType : undefined,
-              walletAddress: walletType ? address : undefined
+              walletAddress: walletType ? address : undefined,
             });
           });
           resolve(txHash);
@@ -207,7 +181,7 @@ export const bridgeNativeTokens = createAsyncThunk(
       tokenId,
       network,
       walletType,
-      selectedChainId
+      selectedChainId,
     }: {
       amount: string;
       bridge: Address;
@@ -224,29 +198,18 @@ export const bridgeNativeTokens = createAsyncThunk(
     thunkAPI
   ) => {
     return new Promise<any>(async (resolve, reject) => {
-      bridgeNative(bridge, address, amount, decimals, dstChainId, selectedChainId)
+      bridgeNative(
+        bridge,
+        address,
+        amount,
+        decimals,
+        dstChainId,
+        selectedChainId
+      )
         .then((txHash) => {
           if (!txHash) {
             return resolve(undefined);
           }
-          insertTransactionToLocalStorage({
-            hash: txHash,
-            srcChainId,
-            address,
-            amount: amount + " " + symbol,
-            timestamp: Date.now(),
-            dstChainId,
-          });
-          thunkAPI.dispatch(
-            updateTransactions({
-              hash: txHash,
-              srcChainId,
-              address,
-              amount: amount + " " + symbol,
-              timestamp: Date.now(),
-              dstChainId,
-            })
-          );
           fetchTokenPrice(tokenId).then((price) => {
             amplitude.track("Withdraw: Successful Bridge", {
               amount: parseFloat(amount),
@@ -254,7 +217,7 @@ export const bridgeNativeTokens = createAsyncThunk(
               token: symbol,
               amountUSD: price * parseFloat(amount),
               walletType: walletType ? walletType : undefined,
-              walletAddress: walletType ? address : undefined
+              walletAddress: walletType ? address : undefined,
             });
           });
           resolve(txHash);
@@ -303,7 +266,6 @@ export const bridgeWrappedTokens = createAsyncThunk(
           thunkAPI.dispatch(
             fetchBalance({
               address,
-              bridge,
               contractAddress,
               decimals,
             })
@@ -311,24 +273,6 @@ export const bridgeWrappedTokens = createAsyncThunk(
           if (!txHash) {
             return resolve(undefined);
           }
-          insertTransactionToLocalStorage({
-            hash: txHash,
-            srcChainId: srcChainId,
-            address,
-            amount: amount + " " + symbol,
-            timestamp: Date.now(),
-            dstChainId: chainId,
-          });
-          thunkAPI.dispatch(
-            updateTransactions({
-              hash: txHash,
-              srcChainId: srcChainId,
-              address,
-              amount: amount + " " + symbol,
-              timestamp: Date.now(),
-              dstChainId: chainId,
-            })
-          );
           fetchTokenPrice(tokenId).then((price) => {
             amplitude.track("Withdraw: Successful Bridge", {
               amount: parseFloat(amount),
@@ -336,7 +280,7 @@ export const bridgeWrappedTokens = createAsyncThunk(
               token: symbol,
               amountUSD: price * parseFloat(amount),
               walletType: walletType ? walletType : undefined,
-              walletAddress: walletType ? address : undefined
+              walletAddress: walletType ? address : undefined,
             });
           });
           resolve(txHash);
@@ -394,7 +338,6 @@ export const bridgeAndUnwrap = createAsyncThunk(
           thunkAPI.dispatch(
             fetchBalance({
               address,
-              bridge,
               contractAddress,
               decimals,
             })
@@ -402,24 +345,6 @@ export const bridgeAndUnwrap = createAsyncThunk(
           if (!txHash) {
             return resolve(undefined);
           }
-          insertTransactionToLocalStorage({
-            hash: txHash,
-            srcChainId: srcChainId,
-            address,
-            amount: amount + " " + symbol,
-            timestamp: Date.now(),
-            dstChainId: chainId,
-          });
-          thunkAPI.dispatch(
-            updateTransactions({
-              hash: txHash,
-              srcChainId: srcChainId,
-              address,
-              amount: amount + " " + symbol,
-              timestamp: Date.now(),
-              dstChainId: chainId,
-            })
-          );
           fetchTokenPrice(tokenId).then((price) => {
             amplitude.track("Deposit: Successful Bridge", {
               amount: parseFloat(amount),
@@ -427,7 +352,7 @@ export const bridgeAndUnwrap = createAsyncThunk(
               token: symbol,
               amountUSD: price * parseFloat(amount),
               walletType: walletType ? walletType : undefined,
-              walletAddress: walletType ? address : undefined
+              walletAddress: walletType ? address : undefined,
             });
           });
           resolve(txHash);
@@ -498,6 +423,7 @@ const contractSlice = createSlice({
   },
 });
 
-export const selectContractSlice = (state: AppState): ContractStateType => state.contract;
+export const selectContractSlice = (state: AppState): ContractStateType =>
+  state.contract;
 
 export default contractSlice.reducer;
