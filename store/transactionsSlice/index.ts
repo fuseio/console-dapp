@@ -98,7 +98,7 @@ export const checkLastTransactionStatus = createAsyncThunk(
     return new Promise<void>(async (resolve, reject) => {
       const interval = setInterval(() => {
         fetchTransactionStatus(id).then((status) => {
-          thunkAPI.dispatch(updateLastTransactionStatus(status.bridgeStatus));
+          thunkAPI.dispatch(updateLastTransactionStatus(status));
           if (status.bridgeStatus === "completed") {
             clearInterval(interval);
             resolve();

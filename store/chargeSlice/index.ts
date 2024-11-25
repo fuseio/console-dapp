@@ -83,14 +83,18 @@ export const initiateBridgeTransaction = createAsyncThunk(
         .then((data) => {
           if (isNative) {
             sendNative(data.walletAddress, amount, chainId).then((txHash) => {
-              thunkAPI.dispatch(
-                setLastTransaction({
-                  id: data.paymentId,
-                  srcChainId: 122,
-                  dstChainId: Number(data.chainId),
-                  amount: `${amount} ${token}`,
-                })
-              );
+              thunkAPI
+                .dispatch(
+                  setLastTransaction({
+                    id: data.paymentId,
+                    srcChainId: 122,
+                    dstChainId: Number(data.chainId),
+                    amount: `${amount} ${token}`,
+                  })
+                )
+                .catch((error) => {
+                  reject(error);
+                });
               resolve(txHash);
             });
           } else {
@@ -100,17 +104,21 @@ export const initiateBridgeTransaction = createAsyncThunk(
               amount,
               data.tokenDecimals,
               chainId
-            ).then((txHash) => {
-              thunkAPI.dispatch(
-                setLastTransaction({
-                  id: data.paymentId,
-                  srcChainId: 122,
-                  dstChainId: Number(data.chainId),
-                  amount: `${amount} ${token}`,
-                })
-              );
-              resolve(txHash);
-            });
+            )
+              .then((txHash) => {
+                thunkAPI.dispatch(
+                  setLastTransaction({
+                    id: data.paymentId,
+                    srcChainId: 122,
+                    dstChainId: Number(data.chainId),
+                    amount: `${amount} ${token}`,
+                  })
+                );
+                resolve(txHash);
+              })
+              .catch((error) => {
+                reject(error);
+              });
           }
         })
         .catch((error) => {
