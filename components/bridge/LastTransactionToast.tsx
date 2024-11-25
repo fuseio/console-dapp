@@ -5,7 +5,6 @@ import right from "@/assets/right.svg";
 import info from "@/assets/info.svg";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectTransactionsSlice } from "@/store/transactionsSlice";
-import { MessageStatus } from "@layerzerolabs/scan-client";
 import {
   getEstimatedTransactionTime,
   getScanLink,
