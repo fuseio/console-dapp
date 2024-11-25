@@ -12,8 +12,8 @@ import { fetchTransactionStatus } from "@/lib/chargeApi";
 
 export type TransactionType = {
   id: string;
-  hash: Address;
-  bridgeHash: Address;
+  transactionHash: Address;
+  bridgeTransactionHash: Address;
   srcChainId: number;
   dstChainId: number;
   address: string;
@@ -49,7 +49,7 @@ export const fetchBridgeTransactions = createAsyncThunk(
         hashes.map(async (hash, i) => {
           const { messages } = await getMessagesBySrcTxHash(
             hash.srcChainId,
-            hash.hash
+            hash.transactionHash
           );
           transactions[i] = messages[0].status;
         })
@@ -82,11 +82,12 @@ export const updateTransactionStatus = createAsyncThunk(
   "TRANSACTIONS/UPDATE_TRANSACTION_STATUS",
   async (transaction: TransactionType, thunkAPI) => {
     return new Promise<any>(async (resolve, reject) => {
-      waitForMessageReceived(transaction.srcChainId, transaction.hash).then(
-        (message) => {
-          resolve({ message: message.status, hash: transaction.hash });
-        }
-      );
+      waitForMessageReceived(
+        transaction.srcChainId,
+        transaction.transactionHash
+      ).then((message) => {
+        resolve({ message: message.status, hash: transaction.transactionHash });
+      });
     });
   }
 );
@@ -187,7 +188,8 @@ const transactionsSlice = createSlice({
         state.isTransactionLoading = false;
         const index = state.transactionHashes.findIndex(
           (transaction) =>
-            transaction.hash.toLowerCase() === action.payload.hash.toLowerCase()
+            transaction.transactionHash.toLowerCase() ===
+            action.payload.hash.toLowerCase()
         );
         if (index !== -1) {
           state.transactions[index] = action.payload.message;
@@ -209,8 +211,10 @@ const transactionsSlice = createSlice({
         if (state.lastTransaction) {
           state.lastTransaction.bridgeStatus = action.payload.bridgeStatus;
           state.lastTransaction.status = action.payload.status;
-          state.lastTransaction.hash = action.payload.hash;
-          state.lastTransaction.bridgeHash = action.payload.bridgeHash;
+          state.lastTransaction.transactionHash =
+            action.payload.transactionHash;
+          state.lastTransaction.bridgeTransactionHash =
+            action.payload.bridgeTransactionHash;
         }
       });
   },
