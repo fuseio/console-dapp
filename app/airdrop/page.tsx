@@ -28,7 +28,7 @@ const Airdrop = () => {
 
   return (
     <div className="w-full font-mona justify-end min-h-screen">
-      <div className="flex-col flex items-center bg-light-gray h-screen bg-[url('/vectors/airdrop-background.png')] bg-cover bg-center bg-no-repeat">
+      <div className="flex-col flex items-center bg-light-gray bg-[url('/vectors/airdrop-background.png')] bg-cover bg-center bg-no-repeat">
         <Topbar />
         <Home />
         <Footer />
