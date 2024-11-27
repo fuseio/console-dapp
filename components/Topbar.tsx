@@ -19,6 +19,20 @@ const Topbar = () => {
       link: "/wallet",
     },
     {
+      title: "Airdrop",
+      link: "/airdrop",
+      submenu: [
+        {
+          title: "Profile",
+          link: "/airdrop/profile",
+        },
+        {
+          title: "Leaderboard",
+          link: "/airdrop/leaderboard",
+        },
+      ],
+    },
+    {
       title: "Build",
       link: "/build",
     },

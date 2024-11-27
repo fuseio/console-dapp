@@ -16,6 +16,7 @@ import operatorReducer from "./operatorSlice";
 import liquidityReducer from "./liquiditySlice";
 import selectedChainReducer from "./selectedChainSlice";
 import chargeReducer from "./chargeSlice";
+import airdropReducer from "./airdropSlice";
 
 const appReducer = combineReducers({
   validator: validatorReducer,
@@ -31,6 +32,7 @@ const appReducer = combineReducers({
   liquidity: liquidityReducer,
   selectedChain: selectedChainReducer,
   charge: chargeReducer,
+  airdrop: airdropReducer,
 });
 
 export type AppState = {
@@ -47,6 +49,7 @@ export type AppState = {
   liquidity: ReturnType<typeof liquidityReducer>;
   selectedChain: ReturnType<typeof selectedChainReducer>;
   charge: ReturnType<typeof chargeReducer>;
+  airdrop: ReturnType<typeof airdropReducer>;
 };
 
 const rootReducer: Reducer = (state: AppState, action: UnknownAction) => {
