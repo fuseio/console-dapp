@@ -22,7 +22,7 @@ import AddToken from "@/components/bridge/AddToken";
 import { getAccount } from "wagmi/actions";
 import { Address, formatUnits } from "viem";
 import Image from "next/image";
-import { fetchChargeTokens, selectChargeSlice } from "@/store/chargeSlice";
+import { fetchChargeBridgeTokens, selectChargeSlice } from "@/store/chargeSlice";
 
 type DepositProps = {
   selectedChainSection: number;
@@ -93,16 +93,7 @@ const Deposit = ({
   const handleDropdownSection = (item: number) => {
     setIsExchange(false);
     dispatch(setChain(appConfig.wrappedBridge.chains[item]));
-    // dispatch(
-    //   estimateOriginalFee({
-    //     contractAddress: appConfig.wrappedBridge.chains[item].original,
-    //     rpcUrl: appConfig.wrappedBridge.chains[item].rpcUrl,
-    //     tokenId:
-    //       appConfig.wrappedBridge.chains[item].gasTokenId ||
-    //       appConfig.wrappedBridge.chains[item].tokenId,
-    //   })
-    // );
-    dispatch(fetchChargeTokens(appConfig.wrappedBridge.chains[item].chainId));
+    dispatch(fetchChargeBridgeTokens(appConfig.wrappedBridge.chains[item].chainId));
     setDisplayButton(true);
     setIsDisabledChain(false);
     setIsThirdPartyChain(false);
@@ -162,7 +153,7 @@ const Deposit = ({
       dispatch(setChain(appConfig.wrappedBridge.chains[selectedChainItem]));
     }
     dispatch(
-      fetchChargeTokens(
+      fetchChargeBridgeTokens(
         appConfig.wrappedBridge.chains[selectedChainItem].chainId
       )
     );
