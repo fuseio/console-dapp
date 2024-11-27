@@ -99,6 +99,7 @@ const config: Config = {
       },
       animation: {
         "fade-in": "fadeIn 0.5s ease-in-out",
+        'blink-underline': 'blink 1s linear infinite',
       },
       transform: ["group-hover"],
       gridTemplateColumns: {

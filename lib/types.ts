@@ -279,6 +279,7 @@ export const createAppConfig = (
 export type MenuItem = {
   title: string;
   link: string;
+  submenu?: MenuItem[];
 }
 
 export type MenuItems = MenuItem[];
@@ -387,3 +388,49 @@ export interface ValidatorResponse {
   pendingValidators: Address[]
   validatorsMetadata: Record<Address, ValidatorTypeResponse>
 }
+
+export interface AirdropUser {
+  id: string,
+  walletAddress: Address,
+  twitterAccountId: string,
+  points: number,
+  referrals: number,
+  referralCode: string,
+  leaderboardPosition: number
+  pointsLastUpdatedAt: string;
+  createdAt: string;
+  walletAgeInDays?: number;
+  seasonOnePoints: number;
+  nextRewardDistributionTime: string;
+}
+
+export type Quest = {
+  id: string;
+  title: string;
+  image?: string | StaticImageData;
+  heading?: string;
+  point?: string;
+  pointModal?: string;
+  unBoostedPoint?: string;
+  description?: string;
+  isActive?: boolean;
+  isHidden?: boolean;
+  isBoosted?: boolean;
+  completed?: boolean;
+  button?: string;
+  link?: string;
+  isFunction?: boolean;
+  isLoading?: boolean;
+  buttonTwo?: string;
+  successButtonTwo?: string
+  linkTwo?: string;
+  isFunctionTwo?: boolean;
+  isDisabledTwo?: boolean;
+  isLoadingTwo?: boolean;
+  endpointTwo?: string;
+  padding?: string;
+  imageHeight?: string;
+  accumulatedPoints?: number;
+}
+
+export type Quests = Quest[];
