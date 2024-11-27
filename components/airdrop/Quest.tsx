@@ -19,12 +19,12 @@ function QuestItem({ quest }: QuestProps) {
 
   return (
     <CardContainer containerClassName="block p-0 h-full" className="block h-full">
-      <CardBody className="bg-white rounded-[20px] w-auto h-full p-8">
+      <CardBody className="bg-white rounded-[20px] w-auto h-full p-8 md:p-6">
         <CardItem
           as="button"
           translateZ="40"
           disabled={quest.completed}
-          className="relative flex flex-col justify-between gap-2 w-full min-h-[346px] xl:min-h-[277px] md:p-[30px]"
+          className="relative flex flex-col justify-between gap-2 w-full min-h-[346px] xl:min-h-[277px]"
           onClick={() => {
             if (quest.completed) {
               return;
@@ -79,8 +79,8 @@ function QuestItem({ quest }: QuestProps) {
               <Image
                 src={quest.completed ? arrowGray : arrow}
                 alt="arrow"
-                width={30}
-                height={30}
+                width={25}
+                height={25}
               />
             </CardItem>
           </div>

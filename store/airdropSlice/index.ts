@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
-import { AirdropUser, Quest } from "@/lib/types";
+import { AirdropUser, LeaderboardUsers, Quest } from "@/lib/types";
 
 const initUser: AirdropUser = {
   id: "",
@@ -17,7 +17,7 @@ const initUser: AirdropUser = {
   nextRewardDistributionTime: "",
 }
 
-export const initQuest: Quest = {
+const initQuest: Quest = {
   id: "",
   title: "",
   point: 0,
@@ -25,11 +25,53 @@ export const initQuest: Quest = {
   frequency: "",
 }
 
+const initLeaderboardUsers: LeaderboardUsers = [
+  {
+    id: "1",
+    walletAddress: "0x61f0595B99239c00D2c699a4B8D05608c55431af",
+    twitterAccountId: "",
+    points: 43235,
+    referralCode: "",
+  },
+  {
+    id: "2",
+    walletAddress: "0x61f0595B99239c00D2c699a4B8D05608c55431af",
+    twitterAccountId: "",
+    points: 43235,
+    referralCode: "",
+  },
+  {
+    id: "3",
+    walletAddress: "0x61f0595B99239c00D2c699a4B8D05608c55431af",
+    twitterAccountId: "",
+    points: 43235,
+    referralCode: "",
+  },
+  {
+    id: "4",
+    walletAddress: "0x61f0595B99239c00D2c699a4B8D05608c55431af",
+    twitterAccountId: "",
+    points: 43235,
+    referralCode: "",
+  },
+  {
+    id: "5",
+    walletAddress: "0x61f0595B99239c00D2c699a4B8D05608c55431af",
+    twitterAccountId: "",
+    points: 43235,
+    referralCode: "",
+  }
+];
+
 export interface AirdropStateType {
   inviteCode: string;
   user: AirdropUser;
   isQuestModalOpen: boolean;
   selectedQuest: Quest;
+  isLeaderboardUsersLoading: boolean;
+  leaderboardUsers: LeaderboardUsers;
+  lastLeaderboardUserId: string;
+  isLeaderboardUsersFinished: boolean;
 }
 
 const INIT_STATE: AirdropStateType = {
@@ -37,6 +79,10 @@ const INIT_STATE: AirdropStateType = {
   user: initUser,
   isQuestModalOpen: false,
   selectedQuest: initQuest,
+  isLeaderboardUsersLoading: false,
+  leaderboardUsers: initLeaderboardUsers,
+  lastLeaderboardUserId: "",
+  isLeaderboardUsersFinished: false,
 }
 
 const airdropSlice = createSlice({

@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Airdrop Profile - Fuse Console',
-  description: 'Join the Fuse Airdrop! Get into the Fuse, connect your wallet and earn Rewards with ease',
+  description: 'Complete quests and invite friends to earn XP',
 }
 
 export default function AirdropProfileLayout({

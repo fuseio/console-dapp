@@ -414,3 +414,14 @@ export type Quest = {
 }
 
 export type Quests = Quest[];
+
+export interface LeaderboardUser {
+  id: string;
+  walletAddress: Address;
+  twitterAccountId: string;
+  points: number;
+  referralCode: string;
+  walletAgeInDays?: number;
+}
+
+export type LeaderboardUsers = LeaderboardUser[];

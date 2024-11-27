@@ -76,7 +76,7 @@ const NavMenu = ({
             {menuItems.map((item, index) => (
               <div
                 key={index}
-                className="relative"
+                className="relative md:w-full"
               >
                 <Link
                   href={isAuthenticated && path.BUILD.includes(item.title.toLowerCase()) ? path.DASHBOARD : item.link}
