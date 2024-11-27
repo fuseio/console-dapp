@@ -8,7 +8,7 @@ const initUser: AirdropUser = {
   twitterAccountId: "",
   points: 1500,
   referrals: 5,
-  referralCode: "",
+  referralCode: "jmaea",
   leaderboardPosition: 130653,
   pointsLastUpdatedAt: "Wednesday, 27 November 2024 00:00:00",
   createdAt: "",
@@ -20,6 +20,9 @@ const initUser: AirdropUser = {
 export const initQuest: Quest = {
   id: "",
   title: "",
+  point: 0,
+  image: "",
+  frequency: "",
 }
 
 export interface AirdropStateType {

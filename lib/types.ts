@@ -407,30 +407,10 @@ export interface AirdropUser {
 export type Quest = {
   id: string;
   title: string;
-  image?: string | StaticImageData;
-  heading?: string;
-  point?: string;
-  pointModal?: string;
-  unBoostedPoint?: string;
-  description?: string;
-  isActive?: boolean;
-  isHidden?: boolean;
-  isBoosted?: boolean;
+  point: number;
+  image: string | StaticImageData;
+  frequency: string;
   completed?: boolean;
-  button?: string;
-  link?: string;
-  isFunction?: boolean;
-  isLoading?: boolean;
-  buttonTwo?: string;
-  successButtonTwo?: string
-  linkTwo?: string;
-  isFunctionTwo?: boolean;
-  isDisabledTwo?: boolean;
-  isLoadingTwo?: boolean;
-  endpointTwo?: string;
-  padding?: string;
-  imageHeight?: string;
-  accumulatedPoints?: number;
 }
 
 export type Quests = Quest[];
