@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useAccount } from "wagmi";
 
 import Copy from "@/components/ui/Copy";
 import { convertTimestampToUTC, eclipseAddress, IS_SERVER, isFloat, path } from "@/lib/helpers";
@@ -25,7 +26,8 @@ import joinTelegram from "@/assets/join-telegram.svg";
 
 const Home = () => {
   const { user } = useAppSelector(selectAirdropSlice);
-
+  const {address} = useAccount();
+  
   const [quests] = useState<Quests>([
     {
       id: "followOnX",
@@ -41,6 +43,7 @@ const Home = () => {
       point: 100,
       frequency: "One-time",
       image: joinWaitlist,
+      isClick: true
     },
     {
       id: "claimFuseOnFaucet",
@@ -53,7 +56,7 @@ const Home = () => {
       id: "rouletteGame",
       title: "Roulette game",
       point: 20,
-      frequency: "One-time",
+      frequency: "Up to 10 times a day",
       image: rouletteGame,
     },
     {
@@ -80,8 +83,8 @@ const Home = () => {
   return (
     <div className="w-8/9 flex flex-col text-fuse-black my-16 xl:my-14 xl:w-9/12 md:w-9/10 max-w-7xl">
       <div className="flex justify-between items-center">
-        <h1 className="text-5xl xl:text-3xl font-semibold md:max-w-[198px] md:break-all">
-          Hey, {eclipseAddress(user.walletAddress)}
+        <h1 className="text-5xl xl:text-3xl font-semibold">
+          Hey, {eclipseAddress(address ?? user.walletAddress)}
         </h1>
       </div>
       <div className="transition-all ease-in-out duration-300 delay-200 flex flex-row lg:flex-col justify-between lg:items-start lg:gap-9 bg-white rounded-[20px] mt-11 mb-[100px] xl:mb-11 p-8">
@@ -194,7 +197,7 @@ const Home = () => {
                 >
                   Multiple
                 </CardItem>
-                <div className="flex items-center gap-2">
+                <div className="flex gap-4">
                   <div className="flex flex-col gap-2">
                     <CardItem
                       as="p"

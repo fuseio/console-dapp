@@ -8,11 +8,24 @@ import { selectNavbarSlice } from "@/store/navbarSlice";
 import { selectOperatorSlice } from "@/store/operatorSlice";
 import { path } from "@/lib/helpers";
 import Image from "next/image";
+import { useAccount } from "wagmi";
+
+const AirdropSubmenu = [
+  {
+    title: "Profile",
+    link: "/airdrop/profile",
+  },
+  {
+    title: "Leaderboard",
+    link: "/airdrop/leaderboard",
+  },
+]
 
 const Topbar = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const { isTransfiModalOpen, selected } = useAppSelector(selectNavbarSlice);
   const { isAuthenticated } = useAppSelector(selectOperatorSlice);
+  const { isConnected } = useAccount();
   const [menuItems, setMenuItems] = useState([
     {
       title: "Wallet",
@@ -21,16 +34,6 @@ const Topbar = () => {
     {
       title: "Airdrop",
       link: "/airdrop",
-      submenu: [
-        {
-          title: "Profile",
-          link: "/airdrop/profile",
-        },
-        {
-          title: "Leaderboard",
-          link: "/airdrop/leaderboard",
-        },
-      ],
     },
     {
       title: "Build",
@@ -48,16 +51,21 @@ const Topbar = () => {
 
   useEffect(() => {
     setMenuItems((oldMenuItems) =>
-      oldMenuItems.map((item) =>
-        item.link === path.BUILD && isAuthenticated ?
-          { ...item, link: "/dashboard" } :
-          item
+      oldMenuItems.map((item) => {
+        if (item.link === path.BUILD && isAuthenticated) {
+          return { ...item, link: path.DASHBOARD }
+        }
+        if (item.link === path.AIRDROP && isConnected) {
+          return { ...item, link: path.AIRDROP_PROFILE, submenu: AirdropSubmenu }
+        }
+        return item
+      }
       )
     );
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isConnected]);
 
   return (
-    <nav className={`w-full h-20 sticky top-0 bg-light-gray/60 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-pastel-gray md:border-0 ${isTransfiModalOpen ? "z-0" : "z-40"}`}>
+    <nav className={`w-full h-20 sticky top-0 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-pastel-gray md:border-0 ${isTransfiModalOpen ? "z-0" : "z-40"}`}>
       <div className="flex justify-between h-full items-center w-8/9 md:w-9/10 max-w-7xl relative">
         <span>
           <a href="/">

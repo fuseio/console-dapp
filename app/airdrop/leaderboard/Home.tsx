@@ -1,7 +1,9 @@
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { useAccount } from "wagmi";
+
 import { useAppSelector } from "@/store/store";
 import { selectAirdropSlice } from "@/store/airdropSlice";
-import { motion } from "framer-motion";
-import Image from "next/image";
 import { daysInYear, eclipseAddress } from "@/lib/helpers";
 import Avatar from "@/components/ui/Avatar";
 
@@ -50,6 +52,7 @@ const positionStars: PositionStars = {
 
 const Home = () => {
   const { leaderboardUsers, user } = useAppSelector(selectAirdropSlice);
+  const {address} = useAccount();
 
   return (
     <div className="w-8/9 flex flex-col text-fuse-black my-16 xl:my-14 xl:w-9/12 md:w-9/10 max-w-7xl">
@@ -76,10 +79,10 @@ const Home = () => {
         </div>
         <div className="grow md:w-8/12">
           <p className="hidden md:block xl:text-sm">
-            {eclipseAddress(user.walletAddress)}
+            {eclipseAddress(address ?? user.walletAddress)}
           </p>
           <p className="md:hidden xl:text-sm">
-            {user.walletAddress}
+            {address ?? user.walletAddress}
           </p>
         </div>
         <div className="flex gap-[7px] xl:gap-1 text-right">

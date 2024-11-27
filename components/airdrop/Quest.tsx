@@ -5,7 +5,7 @@ import React from "react";
 import { CardBody, CardContainer, CardItem } from "../ui/Card3D";
 import { Quest } from "@/lib/types";
 import { useAppDispatch } from "@/store/store";
-import { setIsQuestModalOpen, setSelectedQuest } from "@/store/airdropSlice";
+import { setIsQuestModalOpen, setIsWaitlistModalOpen, setSelectedQuest } from "@/store/airdropSlice";
 import checkmark from "@/assets/checkmark-orange.svg";
 import arrow from "@/assets/arrow-outward.svg";
 import arrowGray from "@/assets/arrow-outward-gray.svg";
@@ -14,8 +14,22 @@ type QuestProps = {
   quest: Quest;
 }
 
+type Quests = {
+  [key: string]: {
+    onClick: () => void;
+  }
+}
+
 function QuestItem({ quest }: QuestProps) {
   const dispatch = useAppDispatch();
+
+  const quests: Quests = {
+    "joinWaitlist": {
+      onClick: () => {
+        dispatch(setIsWaitlistModalOpen(true));
+      }
+    }
+  }
 
   return (
     <CardContainer containerClassName="block p-0 h-full" className="block h-full">
@@ -28,6 +42,9 @@ function QuestItem({ quest }: QuestProps) {
           onClick={() => {
             if (quest.completed) {
               return;
+            }
+            if (quest.isClick) {
+              return quests[quest.id].onClick();
             }
             dispatch(setIsQuestModalOpen(true));
             dispatch(setSelectedQuest(quest));
@@ -48,14 +65,13 @@ function QuestItem({ quest }: QuestProps) {
               />
             </CardItem>
             {quest.completed &&
-              <CardItem translateZ="100" className="absolute -bottom-5 right-10">
-                <Image
-                  src={checkmark}
-                  alt="checkmark"
-                  width={50}
-                  height={50}
-                />
-              </CardItem>
+              <Image
+                src={checkmark}
+                alt="checkmark"
+                width={50}
+                height={50}
+                className="absolute -bottom-5 right-[30%]"
+              />
             }
           </div>
           <div className="flex justify-between items-center w-full">
