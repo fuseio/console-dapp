@@ -111,6 +111,9 @@ const config: Config = {
       },
       boxShadow: {
         'inner-black': 'inset 0px 0px 0px 3px rgba(0,0,0,0.3)',
+      },
+      backgroundImage: {
+        'linear-gradient-orange': "linear-gradient(122deg, rgba(246, 93, 81, 0.20) 5.66%, rgba(246, 93, 81, 0.00) 24.99%)",
       }
     },
   },

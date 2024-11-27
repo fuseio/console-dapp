@@ -72,6 +72,7 @@ export interface AirdropStateType {
   leaderboardUsers: LeaderboardUsers;
   lastLeaderboardUserId: string;
   isLeaderboardUsersFinished: boolean;
+  isWaitlistModalOpen: boolean;
 }
 
 const INIT_STATE: AirdropStateType = {
@@ -83,6 +84,7 @@ const INIT_STATE: AirdropStateType = {
   leaderboardUsers: initLeaderboardUsers,
   lastLeaderboardUserId: "",
   isLeaderboardUsersFinished: false,
+  isWaitlistModalOpen: false,
 }
 
 const airdropSlice = createSlice({
@@ -98,6 +100,9 @@ const airdropSlice = createSlice({
     setSelectedQuest: (state, action: PayloadAction<Quest>) => {
       state.selectedQuest = action.payload
     },
+    setIsWaitlistModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isWaitlistModalOpen = action.payload
+    },
   },
   extraReducers: () => {
   },
@@ -109,6 +114,7 @@ export const {
   setInviteCode,
   setIsQuestModalOpen,
   setSelectedQuest,
+  setIsWaitlistModalOpen,
 } = airdropSlice.actions;
 
 export default airdropSlice.reducer;

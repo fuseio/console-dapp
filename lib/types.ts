@@ -411,6 +411,7 @@ export type Quest = {
   image: string | StaticImageData;
   frequency: string;
   completed?: boolean;
+  isClick?: boolean;
 }
 
 export type Quests = Quest[];
