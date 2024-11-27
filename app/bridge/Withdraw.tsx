@@ -8,7 +8,6 @@ import Image from "next/image";
 import {
   selectBalanceSlice,
   fetchBalance,
-  fetchLiquidity,
   setNativeBalanceThunk,
 } from "@/store/balanceSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
@@ -16,16 +15,14 @@ import { selectChainSlice, setChain } from "@/store/chainSlice";
 import alert from "@/assets/alert.svg";
 import visit from "@/assets/visit.svg";
 import sFuse from "@/assets/sFuse.svg";
-import { toggleLiquidityToast } from "@/store/toastSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { useAccount, useConfig } from "wagmi";
 import { getBalance } from "wagmi/actions";
 import { fuse } from "viem/chains";
-import { evmDecimals, hex, walletType } from "@/lib/helpers";
+import { evmDecimals, walletType } from "@/lib/helpers";
 import { getAccount } from "wagmi/actions";
-import { fetchAvailableLiquidityOnChains } from "@/store/liquiditySlice";
 import { formatUnits } from "viem";
-import chargeSlice, {
+import {
   fetchChargeWithdrawTokens,
   selectChargeSlice,
 } from "@/store/chargeSlice";

@@ -9,12 +9,7 @@ import fuseToken from "@/assets/tokenLogo.svg";
 import { appConfig } from "@/lib/config";
 import { selectBalanceSlice } from "@/store/balanceSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import {
-  bridgeAndUnwrap,
-  bridgeNativeTokens,
-  bridgeWrappedTokens,
-  selectContractSlice,
-} from "@/store/contractSlice";
+import { selectContractSlice } from "@/store/contractSlice";
 import { setChain } from "@/store/chainSlice";
 import Button from "@/components/ui/Button";
 import { fetchBridgeTransactions } from "@/store/transactionsSlice";
@@ -29,7 +24,7 @@ import ToastPane from "@/components/bridge/ToastPane";
 import { useAccount, useBalance, useBlockNumber, useConfig } from "wagmi";
 import { fuse } from "viem/chains";
 import { getAccount, switchChain } from "wagmi/actions";
-import { hex, walletType } from "@/lib/helpers";
+import { hex } from "@/lib/helpers";
 import "@/styles/bridge.css";
 import {
   selectSelectedChainSlice,
@@ -37,7 +32,6 @@ import {
   setWithdrawChainItem,
 } from "@/store/selectedChainSlice";
 import { formatUnits } from "viem";
-import { getTokenOnFuse } from "@/lib/helper-bridge";
 import {
   initiateBridgeTransaction,
   initiateWithdrawTransaction,
@@ -74,7 +68,7 @@ const Home = () => {
   const [isDisabledChain, setIsDisabledChain] = useState(false);
   const [isThirdPartyChain, setIsThirdPartyChain] = useState(false);
   const [pendingPromise, setPendingPromise] = React.useState<any>();
-  const { address, connector, isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
   const config = useConfig();
   const { chainId } = getAccount(config);
   const chain = config.chains.find((chain) => chain.id === chainId);
@@ -134,7 +128,7 @@ const Home = () => {
     });
   };
 
-  const withdraw = (res: any) => {
+  const withdraw = () => {
     dispatch(
       initiateWithdrawTransaction({
         chainId:
@@ -151,14 +145,14 @@ const Home = () => {
 
   const handleWithdraw = () => {
     if (chain?.id === fuse.id) {
-      withdraw(true);
+      withdraw();
       return;
     }
     switchChain(config, {
       chainId: fuse.id,
     }).then((res) => {
       if (res) {
-        withdraw(res);
+        withdraw();
       }
     });
   };
