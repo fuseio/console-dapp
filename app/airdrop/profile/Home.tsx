@@ -26,8 +26,8 @@ import joinTelegram from "@/assets/join-telegram.svg";
 
 const Home = () => {
   const { user } = useAppSelector(selectAirdropSlice);
-  const {address} = useAccount();
-  
+  const { address } = useAccount();
+
   const [quests] = useState<Quests>([
     {
       id: "followOnX",
@@ -87,7 +87,7 @@ const Home = () => {
           Hey, {eclipseAddress(address ?? user.walletAddress)}
         </h1>
       </div>
-      <div className="transition-all ease-in-out duration-300 delay-200 flex flex-row lg:flex-col justify-between lg:items-start lg:gap-9 bg-white rounded-[20px] mt-11 mb-[100px] xl:mb-11 p-8">
+      <div className="transition-all ease-in-out duration-300 delay-200 flex flex-wrap justify-between gap-6 bg-white rounded-[20px] mt-11 mb-[100px] xl:mb-11 p-8">
         <div className="flex flex-row items-center gap-6">
           <div className="relative">
             <Avatar size={80} />
@@ -128,43 +128,43 @@ const Home = () => {
             </div>
           </div>
         </div>
-          <div>
-            <p className="text-lg xl:text-base leading-none text-pale-slate font-medium">
-              Your Rank
-            </p>
-            <p className="text-5xl xl:text-4xl leading-none font-bold mt-6 xl:mt-2 mb-2 lg:m-0">
-              {Intl.NumberFormat('en-US').format(user.leaderboardPosition)}
-            </p>
-            <Link
-              href={path.AIRDROP_LEADERBOARD}
-              className="group flex items-center gap-1 text-sm xl:text-xs leading-none text-pale-slate font-medium"
-            >
-              View Leaderboard
-              <Image
-                src={rightCaret}
-                alt="right caret"
-                width={7}
-                height={13}
-                className="transition ease-in-out group-hover:translate-x-0.5"
-              />
-            </Link>
+        <div>
+          <p className="text-lg xl:text-base leading-none text-pale-slate font-medium">
+            Your Rank
+          </p>
+          <p className="text-5xl xl:text-4xl leading-none font-bold mt-6 xl:mt-2 mb-2 lg:m-0">
+            {Intl.NumberFormat('en-US').format(user.leaderboardPosition)}
+          </p>
+          <Link
+            href={path.AIRDROP_LEADERBOARD}
+            className="group flex items-center gap-1 text-sm xl:text-xs leading-none text-pale-slate font-medium"
+          >
+            View Leaderboard
+            <Image
+              src={rightCaret}
+              alt="right caret"
+              width={7}
+              height={13}
+              className="transition ease-in-out group-hover:translate-x-0.5"
+            />
+          </Link>
+        </div>
+        <div>
+          <p className="text-lg xl:text-base leading-none text-pale-slate font-medium">
+            Number of referrals
+          </p>
+          <p className="text-5xl xl:text-4xl leading-none font-bold mt-6 xl:mt-2 mb-2 lg:m-0">
+            {Intl.NumberFormat('en-US').format(user.referrals)}
+          </p>
+          <div className="flex items-center gap-1 text-sm xl:text-xs leading-none text-pale-slate font-medium">
+            Qualified users
+            <Image
+              src={questionMark}
+              alt="question mark"
+              width={13}
+              height={13}
+            />
           </div>
-          <div>
-            <p className="text-lg xl:text-base leading-none text-pale-slate font-medium">
-              Number of referrals
-            </p>
-            <p className="text-5xl xl:text-4xl leading-none font-bold mt-6 xl:mt-2 mb-2 lg:m-0">
-              {Intl.NumberFormat('en-US').format(user.referrals)}
-            </p>
-            <div className="flex items-center gap-1 text-sm xl:text-xs leading-none text-pale-slate font-medium">
-              Qualified users
-              <Image
-                src={questionMark}
-                alt="question mark"
-                width={13}
-                height={13}
-              />
-            </div>
         </div>
         <div className="flex flex-col gap-2 justify-between">
           <p className="text-lg xl:text-base leading-none text-pale-slate font-medium">
@@ -187,7 +187,7 @@ const Home = () => {
           Invite friends
         </p>
         <div className="transition-all ease-in-out duration-300 delay-200 flex flex-row md:flex-col gap-[30px] xl:gap-5">
-          <CardContainer containerClassName="block p-0 w-1/2 md:w-auto min-h-[283px] xl:min-h-56 md:min-h-[430px]" className="block h-full md:min-h-[430px]">
+          <CardContainer containerClassName="block p-0 w-1/2 xl:w-8/12 md:w-auto min-h-[283px] xl:min-h-56 md:min-h-[430px]" className="block h-full md:min-h-[430px]">
             <CardBody className="bg-white rounded-[20px] flex md:flex-col justify-between p-10 xl:p-[30px] w-auto h-full md:min-h-[430px]">
               <div className="flex flex-col justify-between gap-4">
                 <CardItem
