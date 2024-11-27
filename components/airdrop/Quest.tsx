@@ -4,11 +4,11 @@ import Image from "next/image";
 import React from "react";
 import { CardBody, CardContainer, CardItem } from "../ui/Card3D";
 import { Quest } from "@/lib/types";
-import pointHexagon from "@/assets/point-hexagon.svg";
-import hourglass from "@/assets/hourglass.svg";
 import { useAppDispatch } from "@/store/store";
 import { setIsQuestModalOpen, setSelectedQuest } from "@/store/airdropSlice";
-import checkBackground from "@/assets/check-background.svg";
+import checkmark from "@/assets/checkmark-orange.svg";
+import arrow from "@/assets/arrow-outward.svg";
+import arrowGray from "@/assets/arrow-outward-gray.svg";
 
 type QuestProps = {
   quest: Quest;
@@ -19,75 +19,70 @@ function QuestItem({ quest }: QuestProps) {
 
   return (
     <CardContainer containerClassName="block p-0 h-full" className="block h-full">
-      <CardBody className="bg-oslo-gray/[.22] rounded-[20px] w-auto h-full">
+      <CardBody className="bg-white rounded-[20px] w-auto h-full p-8">
         <CardItem
           as="button"
           translateZ="40"
-          disabled={!quest.isActive || quest.completed}
-          className={`relative flex flex-col justify-between gap-2 w-full min-h-[346px] xl:min-h-[277px] md:p-[30px] ${quest.padding ?? "p-6"}`}
+          disabled={quest.completed}
+          className="relative flex flex-col justify-between gap-2 w-full min-h-[346px] xl:min-h-[277px] md:p-[30px]"
           onClick={() => {
-            if (!quest.isActive || quest.completed) {
+            if (quest.completed) {
               return;
             }
             dispatch(setIsQuestModalOpen(true));
             dispatch(setSelectedQuest(quest));
           }}
         >
-          {quest.image &&
-            <div className="flex justify-center items-center w-full min-h-[260px] xl:min-h-[208px]">
-              <CardItem translateZ="40">
+          <CardItem
+            as="p"
+            translateZ="30"
+            className="border border-black rounded-full px-5 py-2.5 text-sm leading-none font-semibold"
+          >
+            {quest.frequency}
+          </CardItem>
+          <div className="relative flex justify-center items-center w-full">
+            <CardItem translateZ="40">
+              <Image
+                src={quest.image}
+                alt={quest.title}
+              />
+            </CardItem>
+            {quest.completed &&
+              <CardItem translateZ="100" className="absolute -bottom-5 right-10">
                 <Image
-                  src={quest.image}
-                  alt={quest.title}
+                  src={checkmark}
+                  alt="checkmark"
+                  width={50}
+                  height={50}
                 />
               </CardItem>
-            </div>
-          }
-          {quest.completed &&
-            <CardItem translateZ="100" className="absolute top-[22px] right-5">
-              <div className="group relative cursor-pointer flex justify-center items-center">
-                <Image
-                  src={checkBackground}
-                  alt="check"
-                  width={38}
-                  height={38}
-                />
-                <div className="tooltip-text hidden bottom-16 absolute bg-white p-4 rounded-2xl w-[130px] shadow-lg group-hover:block text-black text-sm font-medium">
-                  <p>
-                    Task complete
-                  </p>
-                </div>
-              </div>
-            </CardItem>
-          }
-          <div className="flex flex-col gap-3.5">
-            <CardItem
-              translateZ="50"
-              as="p"
-              className="text-start text-lg xl:text-base md:text-2xl leading-none text-white font-bold"
-            >
-              {quest.title}
-            </CardItem>
-            <div className="flex items-center gap-1">
+            }
+          </div>
+          <div className="flex justify-between items-center w-full">
+            <div className="flex flex-col gap-3.5">
               <CardItem
-                translateZ="30"
-                className="mb-0.5"
-              >
-                <Image
-                  src={quest.isActive ? pointHexagon : hourglass}
-                  alt={quest.isActive ? "point hexagon" : "hourglass"}
-                  width={12}
-                  height={14}
-                />
-              </CardItem>
-              <CardItem
-                translateZ="20"
+                translateZ="50"
                 as="p"
-                className={`text-left text-lg xl:text-base md:text-2xl leading-none ${quest.isActive ? "text-success" : "text-white/50"}`}
+                className="text-start text-base leading-none font-bold"
               >
-                {quest.isActive ? quest.point : "Coming Soon"}
+                {quest.title}
+              </CardItem>
+              <CardItem
+                translateZ="50"
+                as="p"
+                className="text-start text-4xl xl:text-lg leading-none font-bold"
+              >
+                {quest.point} XP
               </CardItem>
             </div>
+            <CardItem translateZ="50">
+              <Image
+                src={quest.completed ? arrowGray : arrow}
+                alt="arrow"
+                width={30}
+                height={30}
+              />
+            </CardItem>
           </div>
         </CardItem>
       </CardBody>
