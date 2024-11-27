@@ -40,7 +40,7 @@ const LastTransactionToast = () => {
               if (!lastTransaction.bridgeTransactionHash) return;
               window.open(
                 getScanLink(
-                  getChain(lastTransaction.dstChainId)?.lzChainId as number,
+                  getChain(lastTransaction.srcChainId)?.lzChainId as number,
                   lastTransaction.bridgeTransactionHash
                 ),
                 "_blank"
@@ -50,10 +50,10 @@ const LastTransactionToast = () => {
             <div className="flex flex-col w-2/5 sm:w-full">
               <p className="text-sm text-secondary-gray">From</p>
               <div className="flex font-medium mt-1 text-black">
-                <span>{getChain(lastTransaction.dstChainId)?.chainName}</span>
+                <span>{getChain(lastTransaction.srcChainId)?.chainName}</span>
                 <Image src={right} alt="right" className="ml-2" />
                 <span className="ml-2">
-                  {getChain(lastTransaction.srcChainId)?.chainName}
+                  {getChain(lastTransaction.dstChainId)?.chainName}
                 </span>
               </div>
             </div>
