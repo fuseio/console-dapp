@@ -125,8 +125,6 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <div className="lg:flex lg:w-full lg:gap-10">
-          <div className="hidden lg:block w-[77px] h-1"></div>
           <div>
             <p className="text-lg xl:text-base leading-none text-pale-slate font-medium">
               Your Rank
@@ -148,9 +146,6 @@ const Home = () => {
               />
             </Link>
           </div>
-        </div>
-        <div className="lg:flex lg:w-full lg:gap-10">
-          <div className="hidden lg:block w-[77px] h-1"></div>
           <div>
             <p className="text-lg xl:text-base leading-none text-pale-slate font-medium">
               Number of referrals
@@ -167,7 +162,6 @@ const Home = () => {
                 height={13}
               />
             </div>
-          </div>
         </div>
         <div className="flex flex-col gap-2 justify-between">
           <p className="text-lg xl:text-base leading-none text-pale-slate font-medium">
@@ -191,8 +185,8 @@ const Home = () => {
         </p>
         <div className="transition-all ease-in-out duration-300 delay-200 flex flex-row md:flex-col gap-[30px] xl:gap-5">
           <CardContainer containerClassName="block p-0 w-1/2 md:w-auto min-h-[283px] xl:min-h-56 md:min-h-[430px]" className="block h-full md:min-h-[430px]">
-            <CardBody className="bg-white rounded-[20px] flex justify-between p-10 xl:p-[30px] w-auto h-full md:min-h-[430px]">
-              <div className="flex flex-col justify-between gap-2">
+            <CardBody className="bg-white rounded-[20px] flex md:flex-col justify-between p-10 xl:p-[30px] w-auto h-full md:min-h-[430px]">
+              <div className="flex flex-col justify-between gap-4">
                 <CardItem
                   as="p"
                   translateZ="30"
