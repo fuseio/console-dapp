@@ -8,7 +8,7 @@ import { selectNavbarSlice } from "@/store/navbarSlice";
 import { selectOperatorSlice } from "@/store/operatorSlice";
 import { path } from "@/lib/helpers";
 import Image from "next/image";
-import { useAccount } from "wagmi";
+import { selectAirdropSlice } from "@/store/airdropSlice";
 
 const AirdropSubmenu = [
   {
@@ -25,7 +25,7 @@ const Topbar = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const { isTransfiModalOpen, selected } = useAppSelector(selectNavbarSlice);
   const { isAuthenticated } = useAppSelector(selectOperatorSlice);
-  const { isConnected } = useAccount();
+  const airdropSlice = useAppSelector(selectAirdropSlice);
   const [menuItems, setMenuItems] = useState([
     {
       title: "Wallet",
@@ -55,14 +55,14 @@ const Topbar = () => {
         if (item.link === path.BUILD && isAuthenticated) {
           return { ...item, link: path.DASHBOARD }
         }
-        if (item.link === path.AIRDROP && isConnected) {
+        if (item.link === path.AIRDROP && airdropSlice.isUser) {
           return { ...item, link: path.AIRDROP_PROFILE, submenu: AirdropSubmenu }
         }
         return item
       }
       )
     );
-  }, [isAuthenticated, isConnected]);
+  }, [isAuthenticated, airdropSlice.isUser]);
 
   return (
     <nav className={`w-full h-20 sticky top-0 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-pastel-gray md:border-0 ${isTransfiModalOpen ? "z-0" : "z-40"}`}>

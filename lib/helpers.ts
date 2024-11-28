@@ -108,8 +108,6 @@ export const screenMediumWidth = 768;
 
 export const defaultReferralCode = "EMBER";
 
-export const daysInYear = 365;
-
 export function convertTimestampToUTC(timestamp: string) {
   const months: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const date = new Date(timestamp);

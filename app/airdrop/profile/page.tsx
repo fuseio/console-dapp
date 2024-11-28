@@ -2,19 +2,19 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAccount } from "wagmi";
 
 import { path } from "@/lib/helpers";
-import { useAppDispatch } from "@/store/store";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 import { setSelectedNavbar } from "@/store/navbarSlice";
 import Home from "./Home";
 import Footer from "@/components/Footer";
 import Topbar from "@/components/Topbar";
 import WaitlistModal from "@/components/airdrop/WaitlistModal";
+import { selectAirdropSlice } from "@/store/airdropSlice";
 
 const AirdropProfile = () => {
   const dispatch = useAppDispatch();
-  const {isConnected} = useAccount();
+  const airdropSlice = useAppSelector(selectAirdropSlice);
   const router = useRouter();
 
   useEffect(() => {
@@ -22,10 +22,10 @@ const AirdropProfile = () => {
   }, [dispatch])
 
   useEffect(() => {
-    if (!isConnected) {
+    if (airdropSlice.isHydrated && !airdropSlice.isUser) {
       router.push(path.AIRDROP)
     }
-  }, [isConnected, router]);
+  }, [airdropSlice.isHydrated, airdropSlice.isUser, router]);
 
   return (
     <div className="w-full font-mona justify-end min-h-screen">

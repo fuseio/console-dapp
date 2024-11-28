@@ -1,6 +1,6 @@
 const Spinner = () => {
   return (
-    <span className="animate-spin border-2 border-gray-200 border-t-2 border-t-gray-600 rounded-full w-4 h-4"></span>
+    <span className="animate-spin border-2 border-gray border-t-2 border-t-dark-gray rounded-full w-4 h-4"></span>
   )
 }
 
