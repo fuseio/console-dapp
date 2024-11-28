@@ -3,7 +3,7 @@
 import Image from "next/image";
 import React from "react";
 import { CardBody, CardContainer, CardItem } from "../ui/Card3D";
-import { Quest } from "@/lib/types";
+import { AirdropQuest } from "@/lib/types";
 import { useAppDispatch } from "@/store/store";
 import { setIsQuestModalOpen, setIsWaitlistModalOpen, setSelectedQuest } from "@/store/airdropSlice";
 import checkmark from "@/assets/checkmark-orange.svg";
@@ -11,7 +11,7 @@ import arrow from "@/assets/arrow-outward.svg";
 import arrowGray from "@/assets/arrow-outward-gray.svg";
 
 type QuestProps = {
-  quest: Quest;
+  quest: AirdropQuest;
 }
 
 type Quests = {
