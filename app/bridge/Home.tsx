@@ -15,6 +15,7 @@ import Button from "@/components/ui/Button";
 import { fetchBridgeTransactions } from "@/store/transactionsSlice";
 import {
   estimateOriginalFee,
+  estimateTransferFee,
   estimateWrappedFee,
   selectFeeSlice,
 } from "@/store/feeSlice";
@@ -96,6 +97,47 @@ const Home = () => {
       setAmount("");
     }
   }, [contractSlice.isBridgeLoading]);
+
+  useEffect(() => {
+    if (chargeSlice.isLoading) return;
+    console.log(
+      appConfig.wrappedBridge.chains[
+        selectedChainSlice.depositSelectedChainItem
+      ]
+    );
+    dispatch(
+      estimateTransferFee({
+        rpcUrl:
+          selected === 0
+            ? appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].rpcUrl
+            : "https://rpc.fuse.io",
+        isNative:
+          chargeSlice.tokens[
+            selected === 0
+              ? depositSelectedTokenItem
+              : withdrawSelectedTokenItem
+          ].isNative,
+        tokenId:
+          selected === 0
+            ? (appConfig.wrappedBridge.chains[
+                selectedChainSlice.depositSelectedChainItem
+              ].tokenId as string)
+            : "fuse-network-token",
+      })
+    );
+  }, [
+    selected,
+    chain,
+    chargeSlice.isLoading,
+    chargeSlice.tokens,
+    selectedChainSlice.depositSelectedChainItem,
+    selectedChainSlice.withdrawSelectedChainItem,
+    depositSelectedTokenItem,
+    withdrawSelectedTokenItem,
+    dispatch,
+  ]);
 
   const deposit = () => {
     dispatch(
@@ -458,7 +500,7 @@ const Home = () => {
                   <div className="flex justify-between mt-2">
                     <span className="text-black/50 flex relative">
                       Gas Estimation{" "}
-                      <div className="peer cursor-pointer h-4 w-4 bg-lightest-gray rounded-full flex justify-center ml-1 text-black">
+                      {/* <div className="peer cursor-pointer h-4 w-4 bg-lightest-gray rounded-full flex justify-center ml-1 text-black">
                         ?
                       </div>
                       <div className="tooltip-text hidden bottom-8 -left-[30px] absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg peer-hover:block text-black text-sm font-medium">
@@ -484,7 +526,7 @@ const Home = () => {
                             ).toFixed(5)}
                           </span>
                         </p>
-                      </div>
+                      </div> */}
                     </span>
                     {feeSlice.isGasFeeLoading ? (
                       <span className="px-14 rounded-md animate-pulse bg-fuse-black/10"></span>
