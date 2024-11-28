@@ -389,6 +389,13 @@ export interface ValidatorResponse {
   validatorsMetadata: Record<Address, ValidatorTypeResponse>
 }
 
+export interface CompletedQuest {
+  type: string;
+  stakingType?: string;
+}
+
+export type CompletedQuests = CompletedQuest[];
+
 export interface AirdropUser {
   id: string,
   walletAddress: Address,
@@ -399,9 +406,19 @@ export interface AirdropUser {
   leaderboardPosition: number
   pointsLastUpdatedAt: string;
   createdAt: string;
+  completedQuests: CompletedQuests;
   walletAgeInDays?: number;
   seasonOnePoints: number;
   nextRewardDistributionTime: string;
+}
+
+export type AirdropButton = {
+  text: string;
+  link?: string;
+  isFunction?: boolean;
+  endpoint?: string;
+  isLoading?: boolean;
+  success?: string;
 }
 
 export type AirdropQuest = {
@@ -410,8 +427,10 @@ export type AirdropQuest = {
   point: number;
   image: string | StaticImageData;
   frequency: string;
+  description?: string;
   completed?: boolean;
-  isClick?: boolean;
+  buttons?: AirdropButton[];
+  comingSoon?: boolean;
 }
 
 export type AirdropQuests = AirdropQuest[];
@@ -432,6 +451,6 @@ export interface AirdropLeaderboard {
 }
 
 export type CreateAirdropUser = {
-  walletAddress: Address,
-  referralCode: string
+  walletAddress: Address;
+  referralCode: string;
 }

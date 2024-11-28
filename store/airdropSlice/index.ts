@@ -16,6 +16,7 @@ const initUser: AirdropUser = {
   leaderboardPosition: 0,
   pointsLastUpdatedAt: "",
   createdAt: "",
+  completedQuests: [],
   walletAgeInDays: 0,
   seasonOnePoints: 0,
   nextRewardDistributionTime: "",
@@ -45,7 +46,6 @@ export interface AirdropStateType {
   leaderboardUsers: AirdropLeaderboardUsers;
   lastLeaderboardUserId: string;
   isLeaderboardUsersFinished: boolean;
-  isGeneratingTwitterAuthUrl: boolean;
   twitterAuthUrl: string;
   isWaitlistModalOpen: boolean;
 }
@@ -66,7 +66,6 @@ const INIT_STATE: AirdropStateType = {
   leaderboardUsers: [],
   lastLeaderboardUserId: "",
   isLeaderboardUsersFinished: false,
-  isGeneratingTwitterAuthUrl: false,
   twitterAuthUrl: "",
   isWaitlistModalOpen: false,
 }
@@ -355,14 +354,36 @@ const airdropSlice = createSlice({
         state.isLeaderboardUsersLoading = false;
       })
       .addCase(generateAirdropTwitterAuthUrl.pending, (state) => {
-        state.isGeneratingTwitterAuthUrl = true;
+        if (!state.selectedQuest.buttons) return;
+        state.selectedQuest.buttons[0].isLoading = true;
       })
       .addCase(generateAirdropTwitterAuthUrl.fulfilled, (state, action) => {
-        state.isGeneratingTwitterAuthUrl = false;
+        if (!state.selectedQuest.buttons) return;
+        state.selectedQuest.buttons[0].isLoading = false;
         state.twitterAuthUrl = action.payload;
       })
       .addCase(generateAirdropTwitterAuthUrl.rejected, (state) => {
-        state.isGeneratingTwitterAuthUrl = false;
+        if (!state.selectedQuest.buttons) return;
+        state.selectedQuest.buttons[0].isLoading = false;
+      })
+      .addCase(verifyAirdropQuest.pending, (state) => {
+        if (!state.selectedQuest.buttons) return;
+        state.selectedQuest.buttons[1].isLoading = true;
+      })
+      .addCase(verifyAirdropQuest.fulfilled, (state) => {
+        if (!state.selectedQuest.buttons) return;
+        state.selectedQuest.buttons[1].isLoading = false;
+        state.selectedQuest.buttons[1].text = state.selectedQuest.buttons[1].success ?? "Verified";
+      })
+      .addCase(verifyAirdropQuest.rejected, (state, action) => {
+        if (!state.selectedQuest.buttons) return;
+        state.selectedQuest.buttons[1].isLoading = false;
+        if (action.error.message === "409") {
+          state.selectedQuest.buttons[1].text = "Already Verified";
+          state.isQuestModalOpen = false;
+        } else {
+          state.selectedQuest.buttons[1].text = "Try Again Later";
+        }
       })
   },
 });
