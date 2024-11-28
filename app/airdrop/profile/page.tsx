@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import Topbar from "@/components/Topbar";
 import WaitlistModal from "@/components/airdrop/WaitlistModal";
 import { selectAirdropSlice } from "@/store/airdropSlice";
+import QuestModal from "@/components/airdrop/QuestModal";
 
 const AirdropProfile = () => {
   const dispatch = useAppDispatch();
@@ -30,6 +31,7 @@ const AirdropProfile = () => {
   return (
     <div className="w-full font-mona justify-end min-h-screen">
       <div className="flex-col flex items-center bg-light-gray h-full">
+        <QuestModal />
         <WaitlistModal />
         <Topbar />
         <Home />

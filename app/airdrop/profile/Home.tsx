@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import Copy from "@/components/ui/Copy";
 import { convertTimestampToUTC, eclipseAddress, IS_SERVER, isFloat, path } from "@/lib/helpers";
-import { useAppSelector } from "@/store/store";
-import { selectAirdropSlice } from "@/store/airdropSlice";
+import { useAppDispatch, useAppSelector } from "@/store/store";
+import { retrieveAirdropUser, selectAirdropSlice } from "@/store/airdropSlice";
 import Avatar from "@/components/ui/Avatar";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/Card3D";
 import Quest from "@/components/airdrop/Quest";
@@ -23,16 +24,45 @@ import verifyDiscord from "@/assets/verify-discord.svg";
 import joinTelegram from "@/assets/join-telegram.svg";
 
 const Home = () => {
-  const { user } = useAppSelector(selectAirdropSlice);
+  const dispatch = useAppDispatch();
+  const { user, twitterAuthUrl } = useAppSelector(selectAirdropSlice);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const twitterConnected = searchParams.get('twitter-connected');
 
-  const [quests] = useState<AirdropQuests>([
+  const [quests, setQuests] = useState<AirdropQuests>([
     {
-      id: "followOnX",
+      id: "followFuseOnTwitter",
       title: "Follow on X",
+      description: "Get 50 point for following an official Fuse Network X account",
       point: 50,
       frequency: "One-time",
       image: followX,
-      completed: true
+      buttons: [
+        {
+          text: "Go to X",
+          isFunction: true,
+        }
+      ]
+    },
+    {
+      id: "joinFuseDiscord",
+      title: "Verify on Discord",
+      description: "Get 50 point for joining an official Fuse network Discord channel  \n**Verify the quest 1 hour after completing it on Layer3**",
+      point: 50,
+      frequency: "One-time",
+      image: verifyDiscord,
+      buttons: [
+        {
+          text: "Go to Quest",
+          link: "https://app.layer3.xyz/quests/join-fuse-discord",
+        },
+        {
+          text: "Verify Quest",
+          isFunction: true,
+          endpoint: "join-fuse-discord",
+        }
+      ]
     },
     {
       id: "joinWaitlist",
@@ -40,7 +70,7 @@ const Home = () => {
       point: 100,
       frequency: "One-time",
       image: joinWaitlist,
-      isClick: true
+      comingSoon: true,
     },
     {
       id: "claimFuseOnFaucet",
@@ -48,6 +78,7 @@ const Home = () => {
       point: 50,
       frequency: "One-time",
       image: fuseFaucet,
+      comingSoon: true,
     },
     {
       id: "rouletteGame",
@@ -55,13 +86,7 @@ const Home = () => {
       point: 20,
       frequency: "Up to 10 times a day",
       image: rouletteGame,
-    },
-    {
-      id: "verifyOnDiscord",
-      title: "Verify on Discord",
-      point: 50,
-      frequency: "One-time",
-      image: verifyDiscord,
+      comingSoon: true,
     },
     {
       id: "joinTelegramChannel",
@@ -69,6 +94,7 @@ const Home = () => {
       point: 50,
       frequency: "One-time",
       image: joinTelegram,
+      comingSoon: true,
     },
   ])
 
@@ -76,6 +102,37 @@ const Home = () => {
     const host = !IS_SERVER ? window?.location?.host : ""
     return `${host}/airdrop?ref=${user.referralCode}`
   }
+
+  useEffect(() => {
+    setQuests((prevQuests) => {
+      const newQuests = [...prevQuests];
+      newQuests.map((newQuest) => {
+        user.completedQuests?.map((completedQuest) => {
+          let completedQuestId = completedQuest.type;
+          if (completedQuest.stakingType) {
+            completedQuestId = `${completedQuest.type}-${completedQuest.stakingType}`;
+          }
+          if (newQuest.id === completedQuestId) {
+            newQuest.completed = true;
+          }
+        })
+        return newQuest;
+      });
+      return newQuests;
+    })
+  }, [user.completedQuests])
+
+  useEffect(() => {
+    if (twitterConnected === "true") {
+      dispatch(retrieveAirdropUser());
+    }
+  }, [dispatch, router, twitterConnected])
+
+  useEffect(() => {
+    if (twitterAuthUrl) {
+      router.push(twitterAuthUrl);
+    }
+  }, [router, twitterAuthUrl])
 
   return (
     <div className="w-8/9 flex flex-col text-fuse-black my-16 xl:my-14 xl:w-9/12 md:w-9/10 max-w-7xl">
@@ -86,7 +143,7 @@ const Home = () => {
       </div>
       <div className="transition-all ease-in-out duration-300 delay-200 flex flex-wrap justify-between gap-6 bg-white rounded-[20px] mt-11 mb-[100px] xl:mb-11 p-8">
         <div className="flex flex-row items-center gap-6">
-        <Avatar size={80} />
+          <Avatar size={80} />
           <div>
             <p className="text-lg leading-none text-pale-slate font-medium">
               Your XP
