@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
-import { CONFIG, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL, NEXT_PUBLIC_FUSE_API_BASE_URL } from './config'
-import { DelegatedAmountsByDelegators, DelegatedAmountsRequest, Operator, OperatorContactDetail, Paymaster, SignData, ValidatorResponse } from "./types";
+import { CONFIG, NEXT_PUBLIC_AIRDROP_API_BASE_URL, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL, NEXT_PUBLIC_FUSE_API_BASE_URL } from './config'
+import { AirdropUser, CreateAirdropUser, DelegatedAmountsByDelegators, DelegatedAmountsRequest, AirdropLeaderboard, Operator, OperatorContactDetail, Paymaster, SignData, ValidatorResponse } from "./types";
 import { Address } from "viem";
 
 export const fetchAllNodes = () =>
@@ -149,6 +149,85 @@ export const postConsensusDelegatedAmounts = async (delegatedAmounts: DelegatedA
     const response = await axios.post(
         `https://${NEXT_PUBLIC_FUSE_API_BASE_URL}/api/v0/consensus/delegated_amounts`,
         delegatedAmounts
+    )
+    return response.data
+}
+
+export const postAuthenticateAirdropUser = async (eoaAddress: Address): Promise<{ jwt: string }> => {
+    const response = await axios.post(
+        `${NEXT_PUBLIC_AIRDROP_API_BASE_URL}/auth`,
+        {
+            eoaAddress
+        }
+    )
+    return response.data
+}
+
+export const postCreateAirdropUser = async (createUserDetail: CreateAirdropUser, token: string): Promise<AirdropUser> => {
+    const response = await axios.post(
+        `${NEXT_PUBLIC_AIRDROP_API_BASE_URL}/user`,
+        createUserDetail,
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    )
+    return response.data
+}
+
+export const fetchAirdropUser = async (token: string): Promise<AirdropUser> => {
+    const response = await axios.get(
+        `${NEXT_PUBLIC_AIRDROP_API_BASE_URL}/user`,
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    )
+    return response.data
+}
+
+
+export const fetchAirdropLeaderboard = async (queryParams: Record<string, string>, token: string): Promise<AirdropLeaderboard> => {
+    const url = new URL(`${NEXT_PUBLIC_AIRDROP_API_BASE_URL}/leaderboard`);
+    const searchParams = new URLSearchParams(queryParams);
+    url.search = searchParams.toString();
+    const endpointUrl = url.toString();
+
+    const response = await axios.get(
+        endpointUrl,
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    )
+    return response.data
+}
+
+export const fetchAirdropTwitterAuthUrl = async (token: string, redirectDomain: string): Promise<{ authUrl: string }> => {
+    const response = await axios.get(
+        `${NEXT_PUBLIC_AIRDROP_API_BASE_URL}/twitter/generate-auth-url`,
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Redirect-Domain": redirectDomain
+            }
+        }
+    )
+    return response.data
+}
+
+export const postVerifyAirdropQuest = async (token: string, endpoint: string): Promise<{ message: string }> => {
+    const response = await axios.post(
+        `${NEXT_PUBLIC_AIRDROP_API_BASE_URL}/${endpoint}`,
+        {},
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
     )
     return response.data
 }

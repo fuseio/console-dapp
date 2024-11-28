@@ -1,13 +1,11 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useAccount } from "wagmi";
 
-import { useAppSelector } from "@/store/store";
-import { selectAirdropSlice } from "@/store/airdropSlice";
-import { daysInYear, eclipseAddress } from "@/lib/helpers";
+import { useAppDispatch, useAppSelector } from "@/store/store";
+import { fetchAirdropLeaderboardUsers, selectAirdropSlice } from "@/store/airdropSlice";
+import { eclipseAddress } from "@/lib/helpers";
 import Avatar from "@/components/ui/Avatar";
 
-import crown from "@/assets/crown.svg";
 import star from "@/assets/star.svg";
 import starGold from "@/assets/star-gold.svg";
 import starSilver from "@/assets/star-silver.svg";
@@ -21,6 +19,8 @@ type PositionStar = {
 type PositionStars = {
   [key: number]: PositionStar
 }
+
+const PAGE_SIZE = "30";
 
 const leaderboardVariants = {
   hidden: {
@@ -51,11 +51,11 @@ const positionStars: PositionStars = {
 }
 
 const Home = () => {
-  const { leaderboardUsers, user } = useAppSelector(selectAirdropSlice);
-  const {address} = useAccount();
+  const dispatch = useAppDispatch();
+  const { isLeaderboardUsersLoading, leaderboardUsers, lastLeaderboardUserId, isLeaderboardUsersFinished, user } = useAppSelector(selectAirdropSlice);
 
   return (
-    <div className="w-8/9 flex flex-col text-fuse-black my-16 xl:my-14 xl:w-9/12 md:w-9/10 max-w-7xl">
+    <div className="w-8/9 grow flex flex-col text-fuse-black my-16 xl:my-14 xl:w-9/12 md:w-9/10 max-w-7xl">
       <h1 className="text-5xl xl:text-3xl font-semibold">
         Leaderboard
       </h1>
@@ -79,10 +79,10 @@ const Home = () => {
         </div>
         <div className="grow md:w-8/12">
           <p className="hidden md:block xl:text-sm">
-            {eclipseAddress(address ?? user.walletAddress)}
+            {eclipseAddress(user.walletAddress)}
           </p>
           <p className="md:hidden xl:text-sm">
-            {address ?? user.walletAddress}
+            {user.walletAddress}
           </p>
         </div>
         <div className="flex gap-[7px] xl:gap-1 text-right">
@@ -132,20 +132,6 @@ const Home = () => {
               <p className="hidden md:block xl:text-sm">
                 {eclipseAddress(leaderboardUser.walletAddress)}
               </p>
-              {(leaderboardUser.walletAgeInDays && leaderboardUser.walletAgeInDays > daysInYear) ?
-                <div className="bg-white/10 md:bg-transparent rounded-full flex gap-2.5 xl:gap-2 px-[13px] py-[5px] xl:px-2.5 xl:py-0.5 md:p-0 md:w-[15px] md:h-5">
-                  <Image
-                    src={crown}
-                    alt="crown"
-                    title="OG!"
-                    width={20}
-                    height={13}
-                  />
-                  <p className="md:hidden xl:text-sm">
-                    OG!
-                  </p>
-                </div>
-                : null}
             </div>
             <div className="flex gap-[7px] xl:gap-1 text-right">
               <Image
@@ -160,6 +146,24 @@ const Home = () => {
             </div>
           </motion.div>
         )}
+        {!isLeaderboardUsersFinished &&
+          <motion.div
+            key={leaderboardUsers.length}
+            viewport={{ once: true, margin: "100px" }}
+            onViewportEnter={() => {
+              dispatch(fetchAirdropLeaderboardUsers({
+                queryParams: {
+                  pageSize: PAGE_SIZE,
+                  userIdToStartAfter: lastLeaderboardUserId
+                }
+              }))
+            }}
+          >
+            {isLeaderboardUsersLoading &&
+              <div className="bg-white/80 animate-pulse rounded-[20px] h-20 xl:h-16"></div>
+            }
+          </motion.div>
+        }
       </div>
     </div>
   )

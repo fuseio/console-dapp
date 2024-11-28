@@ -25,6 +25,7 @@ import { checkIsActivated, checkOperator, fetchOperator, fetchSponsoredTransacti
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import { usePathname, useRouter } from "next/navigation";
 import { fuse } from "viem/chains";
+import { authenticateAirdropUser, setHydrateAirdrop, setLogoutAirdrop } from "@/store/airdropSlice";
 
 const WalletModal = (): JSX.Element => {
   const [selected, setSelected] = useState<"HOME" | "VOLT">("HOME");
@@ -74,6 +75,7 @@ const WalletModal = (): JSX.Element => {
       }
     });
     dispatch(setHydrate());
+    dispatch(setHydrateAirdrop());
   }, [dispatch, toggleModal]);
 
   useEffect(() => {
@@ -90,6 +92,7 @@ const WalletModal = (): JSX.Element => {
     const previousAddress = localStorage.getItem("Fuse-walletAddress");
     if(previousAddress && previousAddress !== address) {
       dispatch(setLogout());
+      dispatch(setLogoutAirdrop());
     }
 
     localStorage.setItem("Fuse-walletAddress", address);
@@ -98,6 +101,7 @@ const WalletModal = (): JSX.Element => {
   useEffect(() => {
     if (isConnectedWallet && address) {
       dispatch(checkOperator({ address }));
+      dispatch(authenticateAirdropUser({ eoaAddress: address }));
     }
   }, [isConnectedWallet, address, dispatch])
 
@@ -146,6 +150,7 @@ const WalletModal = (): JSX.Element => {
   useEffect(() => {
     if (isDisconnected) {
       dispatch(setLogout());
+      dispatch(setLogoutAirdrop());
     }
   }, [dispatch, isDisconnected])
 

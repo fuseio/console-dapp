@@ -404,7 +404,7 @@ export interface AirdropUser {
   nextRewardDistributionTime: string;
 }
 
-export type Quest = {
+export type AirdropQuest = {
   id: string;
   title: string;
   point: number;
@@ -414,9 +414,9 @@ export type Quest = {
   isClick?: boolean;
 }
 
-export type Quests = Quest[];
+export type AirdropQuests = AirdropQuest[];
 
-export interface LeaderboardUser {
+export interface AirdropLeaderboardUser {
   id: string;
   walletAddress: Address;
   twitterAccountId: string;
@@ -425,4 +425,13 @@ export interface LeaderboardUser {
   walletAgeInDays?: number;
 }
 
-export type LeaderboardUsers = LeaderboardUser[];
+export type AirdropLeaderboardUsers = AirdropLeaderboardUser[];
+
+export interface AirdropLeaderboard {
+  users: AirdropLeaderboardUser[];
+}
+
+export type CreateAirdropUser = {
+  walletAddress: Address,
+  referralCode: string
+}

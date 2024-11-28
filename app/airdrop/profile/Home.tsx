@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useAccount } from "wagmi";
 
 import Copy from "@/components/ui/Copy";
 import { convertTimestampToUTC, eclipseAddress, IS_SERVER, isFloat, path } from "@/lib/helpers";
@@ -10,11 +9,10 @@ import { selectAirdropSlice } from "@/store/airdropSlice";
 import Avatar from "@/components/ui/Avatar";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/Card3D";
 import Quest from "@/components/airdrop/Quest";
-import { Quests } from "@/lib/types";
+import { AirdropQuests } from "@/lib/types";
 
 import copyIcon from "@/assets/copy-gray.svg";
 import rightCaret from "@/assets/right-caret-black.svg";
-import crownCircle from "@/assets/crown-circle.svg";
 import questionMark from "@/assets/questionmark-border.svg";
 import ember from "@/assets/ember.svg";
 import followX from "@/assets/twitter-x.svg";
@@ -26,9 +24,8 @@ import joinTelegram from "@/assets/join-telegram.svg";
 
 const Home = () => {
   const { user } = useAppSelector(selectAirdropSlice);
-  const { address } = useAccount();
 
-  const [quests] = useState<Quests>([
+  const [quests] = useState<AirdropQuests>([
     {
       id: "followOnX",
       title: "Follow on X",
@@ -84,27 +81,12 @@ const Home = () => {
     <div className="w-8/9 flex flex-col text-fuse-black my-16 xl:my-14 xl:w-9/12 md:w-9/10 max-w-7xl">
       <div className="flex justify-between items-center">
         <h1 className="text-5xl xl:text-3xl font-semibold">
-          Hey, {eclipseAddress(address ?? user.walletAddress)}
+          Hey, {eclipseAddress(user.walletAddress)}
         </h1>
       </div>
       <div className="transition-all ease-in-out duration-300 delay-200 flex flex-wrap justify-between gap-6 bg-white rounded-[20px] mt-11 mb-[100px] xl:mb-11 p-8">
         <div className="flex flex-row items-center gap-6">
-          <div className="relative">
-            <Avatar size={80} />
-            <div className="absolute -top-2 -right-2">
-              <div className="group relative">
-                <Image
-                  src={crownCircle}
-                  alt="crown circle"
-                />
-                <div className="tooltip-text hidden absolute translate-x-1/2 -translate-y-1/2 top-[calc(-50%-30px)] right-1/2 bg-white p-6 rounded-2xl w-[250px] xl:w-[200px] shadow-lg group-hover:block text-black text-sm font-medium">
-                  <p>
-                    You&apos;re an OG! your wallet is more than 1 year old
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+        <Avatar size={80} />
           <div>
             <p className="text-lg leading-none text-pale-slate font-medium">
               Your XP
@@ -114,18 +96,20 @@ const Home = () => {
                 {isFloat(user.points) ? user.points.toFixed(2) : user.points} XP
               </p>
             </div>
-            <div className="flex md:flex-col items-center md:items-start gap-2">
-              <p className="text-sm text-pale-slate font-medium">
-                Last update {convertTimestampToUTC(user.pointsLastUpdatedAt)}
-              </p>
-              <Image
-                src={questionMark}
-                alt="question mark"
-                width={13}
-                height={13}
-                className="transition ease-in-out group-hover:translate-x-0.5"
-              />
-            </div>
+            {user.pointsLastUpdatedAt ? (
+              <div className="flex md:flex-col items-center md:items-start gap-2">
+                <p className="text-sm text-pale-slate font-medium">
+                  Last update {convertTimestampToUTC(user.pointsLastUpdatedAt)}
+                </p>
+                <Image
+                  src={questionMark}
+                  alt="question mark"
+                  width={13}
+                  height={13}
+                  className="transition ease-in-out group-hover:translate-x-0.5"
+                />
+              </div>
+            ) : <div></div>}
           </div>
         </div>
         <div>
@@ -154,17 +138,9 @@ const Home = () => {
             Number of referrals
           </p>
           <p className="text-5xl xl:text-4xl leading-none font-bold mt-6 xl:mt-2 mb-2 lg:m-0">
-            {Intl.NumberFormat('en-US').format(user.referrals)}
+            {user.referrals ? Intl.NumberFormat('en-US').format(user.referrals) : 0}
           </p>
-          <div className="flex items-center gap-1 text-sm xl:text-xs leading-none text-pale-slate font-medium">
-            Qualified users
-            <Image
-              src={questionMark}
-              alt="question mark"
-              width={13}
-              height={13}
-            />
-          </div>
+          <div></div>
         </div>
         <div className="flex flex-col gap-2 justify-between">
           <p className="text-lg xl:text-base leading-none text-pale-slate font-medium">
@@ -211,7 +187,7 @@ const Home = () => {
                       translateZ="90"
                       className="text-sm leading-none font-medium max-w-52"
                     >
-                      for each referral who made min 10 interactions with quests
+                      for each referral
                     </CardItem>
                   </div>
                   <div className="flex flex-col gap-2">
