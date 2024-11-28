@@ -130,9 +130,13 @@ const Home = () => {
   }, [
     selected,
     chain,
+    chargeSlice.isLoading,
+    chargeSlice.tokens,
+    selectedChainSlice.depositSelectedChainItem,
+    selectedChainSlice.withdrawSelectedChainItem,
     depositSelectedTokenItem,
     withdrawSelectedTokenItem,
-    chargeSlice.isLoading,
+    dispatch,
   ]);
 
   const deposit = () => {
