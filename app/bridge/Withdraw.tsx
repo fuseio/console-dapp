@@ -246,9 +246,15 @@ const Withdraw = ({
                 <div
                   className="text-black font-medium px-3 py-1 bg-lightest-gray rounded-full cursor-pointer"
                   onClick={() => {
+                    const tokenChain =
+                      appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                        selectedTokenItem
+                      ].coinGeckoId;
+                    const tokenFuse = appConfig.wrappedBridge.fuse.tokens.find(
+                      (token) => token.coinGeckoId === tokenChain
+                    );
                     setAmount(
-                      appConfig.wrappedBridge.fuse.tokens[selectedTokenItem]
-                        .isNative && chain?.id === fuse.id
+                      tokenFuse?.isNative && chain?.id === fuse.id
                         ? parseFloat(nativeBalance).toString()
                         : balanceSlice.balance
                     );
@@ -284,8 +290,8 @@ const Withdraw = ({
             <span className="mt-3 text-xs font-medium">
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
-                balanceSlice.isApprovalLoading ||
-                chain?.id !== fuse.id ? (
+              balanceSlice.isApprovalLoading ||
+              chain?.id !== fuse.id ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : (
                 balanceSlice.balance
@@ -336,13 +342,15 @@ const Withdraw = ({
               }),
             },
             {
-              items: appConfig.wrappedBridge.thirdPartyChains.map((chain, i) => {
-                return {
-                  item: chain.chainName,
-                  icon: chain.icon,
-                  id: i,
-                };
-              }),
+              items: appConfig.wrappedBridge.thirdPartyChains.map(
+                (chain, i) => {
+                  return {
+                    item: chain.chainName,
+                    icon: chain.icon,
+                    id: i,
+                  };
+                }
+              ),
             },
           ]}
           selectedSection={selectedChainSection}
@@ -375,7 +383,7 @@ const Withdraw = ({
             }
           }}
         />
-        {!(isDisabledChain || isThirdPartyChain) &&
+        {!(isDisabledChain || isThirdPartyChain) && (
           <span className="text-black/50 font-medium mt-3 text-sm flex items-center justify-between">
             <span>
               You will receive: <br />
@@ -402,19 +410,17 @@ const Withdraw = ({
                     type: "ERC20",
                     options: {
                       address:
-                        appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                          selectedTokenItem
-                        ].address,
+                        appConfig.wrappedBridge.chains[selectedChainItem]
+                          .tokens[selectedTokenItem].address,
                       symbol:
-                        appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                          selectedTokenItem
-                        ].symbol,
+                        appConfig.wrappedBridge.chains[selectedChainItem]
+                          .tokens[selectedTokenItem].symbol,
                       decimals:
-                        appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                          selectedTokenItem
-                        ].decimals,
+                        appConfig.wrappedBridge.chains[selectedChainItem]
+                          .tokens[selectedTokenItem].decimals,
                       chainId:
-                        appConfig.wrappedBridge.chains[selectedChainItem].chainId,
+                        appConfig.wrappedBridge.chains[selectedChainItem]
+                          .chainId,
                     },
                   },
                 });
@@ -424,7 +430,7 @@ const Withdraw = ({
               Add Token
             </div>
           </span>
-        }
+        )}
       </div>
       {isDisabledChain && (
         <>
@@ -476,8 +482,8 @@ const Withdraw = ({
             </div>
             <div className="flex flex-col font-medium text-sm md:text-xs md:mt-2">
               <p>
-                Remember that using 3rd party application carries risks.
-                Fuse does not control the code or content of these websites.
+                Remember that using 3rd party application carries risks. Fuse
+                does not control the code or content of these websites.
               </p>
             </div>
           </div>
@@ -487,7 +493,8 @@ const Withdraw = ({
         <>
           <a
             href={
-              appConfig.wrappedBridge.thirdPartyChains[selectedChainItem].appWithdrawURL
+              appConfig.wrappedBridge.thirdPartyChains[selectedChainItem]
+                .appWithdrawURL
             }
             target="_blank"
             rel="noreferrer"
@@ -533,8 +540,8 @@ const Withdraw = ({
             </div>
             <div className="flex flex-col font-medium text-sm md:text-xs md:mt-2">
               <p>
-                Remember that using 3rd party application carries risks.
-                Fuse does not control the code or content of these websites.
+                Remember that using 3rd party application carries risks. Fuse
+                does not control the code or content of these websites.
               </p>
             </div>
           </div>
