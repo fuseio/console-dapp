@@ -176,7 +176,7 @@ export const initiateWithdrawTransaction = createAsyncThunk(
                   setLastTransaction({
                     id: data.paymentId,
                     srcChainId: 122,
-                    dstChainId: Number(data.chainId),
+                    dstChainId: Number(chainId),
                     amount: `${amount} ${token}`,
                   })
                 )
@@ -198,7 +198,7 @@ export const initiateWithdrawTransaction = createAsyncThunk(
                   setLastTransaction({
                     id: data.paymentId,
                     srcChainId: 122,
-                    dstChainId: Number(data.chainId),
+                    dstChainId: Number(chainId),
                     amount: `${amount} ${token}`,
                   })
                 );
