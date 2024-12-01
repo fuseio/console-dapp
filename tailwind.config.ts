@@ -77,6 +77,8 @@ const config: Config = {
       "gray-goose": "#CFCFCF",
       "dune": "#333333",
       "dove-gray": "#6B6B6B",
+      "bean-red": "#F65D51",
+      "antique-white": "#FFECDA",
     },
     fontFamily: {
       mona: ["var(--font-mona-sans)"],

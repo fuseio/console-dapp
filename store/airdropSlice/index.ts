@@ -211,7 +211,7 @@ export const generateAirdropTwitterAuthUrl = createAsyncThunk<
       const airdropState: AirdropStateType = state.airdrop;
       const generatedTwitterAuthUrl = await fetchAirdropTwitterAuthUrl(
         airdropState.accessToken,
-        window.location.origin
+        window.location.href
       );
       return generatedTwitterAuthUrl.authUrl;
     } catch (error) {
