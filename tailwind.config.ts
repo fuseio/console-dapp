@@ -79,6 +79,7 @@ const config: Config = {
       "dove-gray": "#6B6B6B",
       "bean-red": "#F65D51",
       "antique-white": "#FFECDA",
+      "ash-gray": "#B9B9B9",
     },
     fontFamily: {
       mona: ["var(--font-mona-sans)"],

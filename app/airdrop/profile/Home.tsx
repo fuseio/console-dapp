@@ -15,6 +15,7 @@ import { AirdropQuests } from "@/lib/types";
 import copyIcon from "@/assets/copy-gray.svg";
 import rightCaret from "@/assets/right-caret-black.svg";
 import questionMark from "@/assets/questionmark-border.svg";
+import fire from "@/assets/fire.svg";
 import ember from "@/assets/ember.svg";
 import friends from "@/assets/friends.svg";
 import flashFaucet from "@/assets/flash-faucet.svg";
@@ -40,7 +41,6 @@ const Home = () => {
       point: 50,
       frequency: "One-time",
       image: followX,
-      completed: true,
       buttons: [
         {
           text: "Go to X",
@@ -163,11 +163,17 @@ const Home = () => {
             </div>
             <div className="md:shrink">
               <p className="text-lg leading-none text-text-dark-gray font-medium">
-                Your XP
+                My Ember Points
               </p>
               <div className="flex items-center gap-1.5 mt-6 xl:mt-2 mb-2">
+                <Image
+                  src={fire}
+                  alt="fire"
+                  width={26}
+                  height={32}
+                />
                 <p className="text-5xl xl:text-4xl md:text-3xl leading-none font-bold">
-                  {isFloat(user.points) ? user.points.toFixed(2) : user.points} XP
+                  {isFloat(user.points) ? user.points.toFixed(2) : user.points}
                 </p>
               </div>
               {user.pointsLastUpdatedAt ? (
@@ -227,9 +233,48 @@ const Home = () => {
       </div>
       <div className="flex flex-col gap-8 xl:gap-6">
         <h2 className="text-3xl font-semibold">
-          Start earning points
+          Get started
         </h2>
         <div className="flex flex md:flex-col gap-8 xl:gap-5">
+          <CardContainer containerClassName="block p-0 w-full min-h-[283px] xl:min-h-56 md:min-h-[430px]" className="block h-full md:min-h-[430px]">
+            <CardBody className="bg-fuse-black text-white rounded-[20px] flex md:flex-col justify-between w-auto h-full md:min-h-[430px]">
+              <div className="flex flex-col justify-between gap-4 py-10 pl-10 xl:py-[30px] xl:pl-[30px] md:px-6 md:pt-6 md:pb-0">
+                <div className="flex flex-col gap-4">
+                  <CardItem
+                    as="h3"
+                    translateZ="70"
+                    className="text-2xl leading-none font-bold"
+                  >
+                    Get FUSE on Flash Testnet
+                  </CardItem>
+                  <CardItem
+                    as="p"
+                    translateZ="90"
+                    className="text-lg leading-none text-ash-gray font-medium max-w-[23rem]"
+                  >
+                    Get some $FUSE from our faucet. you can request 210 per week.
+                  </CardItem>
+                </div>
+                <CardItem
+                  translateZ="30"
+                  href="https://faucet.flash.fuse.io/"
+                  target="_blank"
+                  className="transition ease-in-out w-fit bg-white border border-white rounded-full text-black font-semibold text-center px-10 py-4 hover:bg-black hover:text-white"
+                  as="a"
+                >
+                  Claim $FUSE
+                </CardItem>
+              </div>
+              <div className="flex justify-center items-center md:justify-end md:pb-6">
+                <Image
+                  src={flashFaucet}
+                  alt="flash faucet"
+                  width={150}
+                  height={120}
+                />
+              </div>
+            </CardBody>
+          </CardContainer>
           <CardContainer containerClassName="block p-0 w-full min-h-[283px] xl:min-h-56 md:min-h-[430px]" className="block h-full md:min-h-[430px]">
             <CardBody className="bg-white rounded-[20px] flex md:flex-col justify-between w-auto h-full md:min-h-[430px]">
               <div className="flex flex-col justify-between gap-4 py-10 pl-10 xl:py-[30px] xl:pl-[30px] md:px-6 md:pt-6 md:pb-0">
@@ -286,50 +331,11 @@ const Home = () => {
               </div>
             </CardBody>
           </CardContainer>
-          <CardContainer containerClassName="block p-0 w-full min-h-[283px] xl:min-h-56 md:min-h-[430px]" className="block h-full md:min-h-[430px]">
-            <CardBody className="bg-white rounded-[20px] flex md:flex-col justify-between w-auto h-full md:min-h-[430px]">
-              <div className="flex flex-col justify-between gap-4 py-10 pl-10 xl:py-[30px] xl:pl-[30px] md:px-6 md:pt-6 md:pb-0">
-                <div className="flex flex-col gap-4">
-                  <CardItem
-                    as="h3"
-                    translateZ="70"
-                    className="text-2xl leading-none font-bold"
-                  >
-                    Get FUSE on Flash Testnet
-                  </CardItem>
-                  <CardItem
-                    as="p"
-                    translateZ="90"
-                    className="text-lg leading-none text-text-dark-gray font-medium max-w-[23rem]"
-                  >
-                    You can claim your tokens now on faucet!
-                  </CardItem>
-                </div>
-                <CardItem translateZ="30">
-                  <a
-                    href="https://faucet.flash.fuse.io/"
-                    target="_blank"
-                    className="transition ease-in-out w-fit bg-black border border-black rounded-full text-white font-semibold text-center px-8 py-2.5 hover:bg-white hover:text-black"
-                  >
-                    Go to Faucet
-                  </a>
-                </CardItem>
-              </div>
-              <div className="flex justify-center items-center md:justify-end md:pb-6">
-                <Image
-                  src={flashFaucet}
-                  alt="flash faucet"
-                  width={150}
-                  height={120}
-                />
-              </div>
-            </CardBody>
-          </CardContainer>
         </div>
       </div>
       <div className="flex flex-col gap-8 xl:gap-6 mt-24 xl:mt-16">
         <h2 className="text-3xl font-semibold">
-          Complete Tasks
+          Earn ember points
         </h2>
         <div className="grid grid-cols-3 md:grid-cols-1 auto-rows-min gap-[30px] xl:gap-5">
           {quests.map((quest) => (

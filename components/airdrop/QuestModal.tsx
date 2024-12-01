@@ -6,6 +6,7 @@ import Image from "next/image";
 import close from "@/assets/close.svg";
 import Spinner from "../ui/Spinner";
 import Markdown from "react-markdown";
+import fire from "@/assets/fire.svg";
 
 type QuestDescriptions = {
   [key: string]: React.ReactNode;
@@ -84,9 +85,15 @@ const QuestModal = (): JSX.Element => {
                     <Markdown>{selectedQuest.description}</Markdown>
                   }
                 </div>
-                <div className="flex items-center self-start gap-2 text-left mt-12 ml-8 max-w-md xl:max-w-xs">
+                <div className="flex items-end self-start gap-2 text-left mt-12 ml-8 max-w-md xl:max-w-xs">
+                  <Image
+                    src={fire}
+                    alt="fire"
+                    width={22}
+                    height={28}
+                  />
                   <p className="text-2xl xl:text-lg leading-none font-bold">
-                    {selectedQuest.point} XP
+                    {selectedQuest.point} Points
                   </p>
                 </div>
               </div>
