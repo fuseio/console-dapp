@@ -7,8 +7,6 @@ import { AirdropQuest } from "@/lib/types";
 import { useAppDispatch } from "@/store/store";
 import { setIsQuestModalOpen, setSelectedQuest } from "@/store/airdropSlice";
 import checkmark from "@/assets/checkmark-orange.svg";
-import arrow from "@/assets/arrow-outward.svg";
-import arrowGray from "@/assets/arrow-outward-gray.svg";
 
 type QuestProps = {
   quest: AirdropQuest;
@@ -33,15 +31,8 @@ function QuestItem({ quest }: QuestProps) {
             dispatch(setSelectedQuest(quest));
           }}
         >
-          <div className="w-full flex justify-between">
-            <CardItem
-              as="p"
-              translateZ="30"
-              className="border border-black rounded-full px-5 py-2.5 text-sm leading-none font-semibold"
-            >
-              {quest.frequency}
-            </CardItem>
-            {quest.comingSoon && (
+          {quest.comingSoon && (
+            <div className="w-full flex justify-end">
               <CardItem
                 as="p"
                 translateZ="30"
@@ -49,8 +40,8 @@ function QuestItem({ quest }: QuestProps) {
               >
                 Coming soon
               </CardItem>
-            )}
-          </div>
+            </div>
+          )}
           <div className="relative flex justify-center items-center w-full">
             <CardItem translateZ="40">
               <Image
@@ -62,39 +53,35 @@ function QuestItem({ quest }: QuestProps) {
               <Image
                 src={checkmark}
                 alt="checkmark"
-                width={50}
-                height={50}
-                className="absolute -bottom-5 right-[30%]"
+                width={74}
+                height={74}
+                className="absolute bottom-[10%] right-[20%]"
               />
             }
           </div>
-          <div className="flex justify-between items-center w-full">
-            <div className="flex flex-col gap-3.5">
+          <div className="flex flex-col gap-3.5">
+            <CardItem
+              translateZ="50"
+              as="p"
+              className="text-2xl leading-none font-bold"
+            >
+              {quest.title}
+            </CardItem>
+            <div className="flex items-center gap-2">
               <CardItem
                 translateZ="50"
                 as="p"
-                className="text-start text-base leading-none font-bold"
-              >
-                {quest.title}
-              </CardItem>
-              <CardItem
-                translateZ="50"
-                as="p"
-                className="text-start text-4xl xl:text-lg leading-none font-bold"
+                className="text-lg text-bean-red font-bold"
               >
                 {quest.point} XP
               </CardItem>
-            </div>
-            {!quest.comingSoon && (
-              <CardItem translateZ="50">
-                <Image
-                  src={quest.completed ? arrowGray : arrow}
-                  alt="arrow"
-                  width={25}
-                  height={25}
-                />
+              <CardItem
+                translateZ="50"
+                className="bg-antique-white rounded-full px-2.5 py-1.5 text-sm leading-none text-bean-red font-semibold"
+              >
+                {quest.frequency}
               </CardItem>
-            )}
+            </div>
           </div>
         </CardItem>
       </CardBody>

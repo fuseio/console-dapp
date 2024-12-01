@@ -16,6 +16,8 @@ import copyIcon from "@/assets/copy-gray.svg";
 import rightCaret from "@/assets/right-caret-black.svg";
 import questionMark from "@/assets/questionmark-border.svg";
 import ember from "@/assets/ember.svg";
+import friends from "@/assets/friends.svg";
+import flashFaucet from "@/assets/flash-faucet.svg";
 import followX from "@/assets/twitter-x.svg";
 import joinWaitlist from "@/assets/join-waitlist.svg";
 import fuseFaucet from "@/assets/fuse-faucet.svg";
@@ -38,6 +40,7 @@ const Home = () => {
       point: 50,
       frequency: "One-time",
       image: followX,
+      completed: true,
       buttons: [
         {
           text: "Go to X",
@@ -65,6 +68,25 @@ const Home = () => {
       ]
     },
     {
+      id: "telegramSubscription",
+      title: "Join Fuse Telegram",
+      description: "Get 50 point for joining an official Fuse Network Telegram channel  \n**Verify the quest 1 hour after completing it on Layer3**",
+      point: 50,
+      frequency: "One-time",
+      image: joinTelegram,
+      buttons: [
+        {
+          text: "Go to Quest",
+          link: "https://app.layer3.xyz/quests/join-fuse-telegram",
+        },
+        {
+          text: "Verify Quest",
+          isFunction: true,
+          endpoint: "telegram",
+        }
+      ]
+    },
+    {
       id: "joinWaitlist",
       title: "Join Waitlist",
       point: 100,
@@ -86,14 +108,6 @@ const Home = () => {
       point: 20,
       frequency: "Up to 10 times a day",
       image: rouletteGame,
-      comingSoon: true,
-    },
-    {
-      id: "joinTelegramChannel",
-      title: "Join Telegram channel",
-      point: 50,
-      frequency: "One-time",
-      image: joinTelegram,
       comingSoon: true,
     },
   ])
@@ -141,134 +155,105 @@ const Home = () => {
           Hey, {eclipseAddress(user.walletAddress)}
         </h1>
       </div>
-      <div className="transition-all ease-in-out duration-300 delay-200 flex flex-wrap justify-between gap-6 bg-white rounded-[20px] mt-11 mb-[100px] xl:mb-11 p-8">
-        <div className="flex flex-row items-center gap-6">
-          <Avatar size={80} />
-          <div>
-            <p className="text-lg leading-none text-pale-slate font-medium">
-              Your XP
-            </p>
-            <div className="flex items-center gap-1.5 mt-6 xl:mt-2 mb-2">
-              <p className="text-5xl xl:text-4xl md:text-3xl leading-none font-bold">
-                {isFloat(user.points) ? user.points.toFixed(2) : user.points} XP
-              </p>
+      <div className="relative bg-lightest-gray rounded-[20px] mt-11 mb-[100px] xl:mb-11 p-8">
+        <div className="flex flex-wrap justify-between gap-6 max-w-3xl xl:max-w-none">
+          <div className="flex flex-row items-center gap-6">
+            <div>
+              <Avatar size={80} />
             </div>
-            {user.pointsLastUpdatedAt ? (
-              <div className="flex md:flex-col items-center md:items-start gap-2">
-                <p className="text-sm text-pale-slate font-medium">
-                  Last update {convertTimestampToUTC(user.pointsLastUpdatedAt)}
+            <div className="md:shrink">
+              <p className="text-lg leading-none text-text-dark-gray font-medium">
+                Your XP
+              </p>
+              <div className="flex items-center gap-1.5 mt-6 xl:mt-2 mb-2">
+                <p className="text-5xl xl:text-4xl md:text-3xl leading-none font-bold">
+                  {isFloat(user.points) ? user.points.toFixed(2) : user.points} XP
                 </p>
-                <Image
-                  src={questionMark}
-                  alt="question mark"
-                  width={13}
-                  height={13}
-                  className="transition ease-in-out group-hover:translate-x-0.5"
-                />
               </div>
-            ) : <div></div>}
+              {user.pointsLastUpdatedAt ? (
+                <div className="flex md:flex-col items-center md:items-start gap-2">
+                  <p className="text-sm text-text-dark-gray font-medium">
+                    Last update {convertTimestampToUTC(user.pointsLastUpdatedAt)}
+                  </p>
+                  <Image
+                    src={questionMark}
+                    alt="question mark"
+                    width={13}
+                    height={13}
+                    className="transition ease-in-out group-hover:translate-x-0.5"
+                  />
+                </div>
+              ) : <div></div>}
+            </div>
+          </div>
+          <div>
+            <p className="text-lg xl:text-base leading-none text-text-dark-gray font-medium">
+              Your Rank
+            </p>
+            <p className="text-5xl xl:text-4xl leading-none font-bold mt-6 xl:mt-2 mb-2 lg:m-0">
+              {Intl.NumberFormat('en-US').format(user.leaderboardPosition)}
+            </p>
+            <Link
+              href={path.AIRDROP_LEADERBOARD}
+              className="group flex items-center gap-1 text-sm xl:text-xs leading-none text-text-dark-gray font-medium"
+            >
+              View Leaderboard
+              <Image
+                src={rightCaret}
+                alt="right caret"
+                width={7}
+                height={13}
+                className="transition ease-in-out group-hover:translate-x-0.5"
+              />
+            </Link>
+          </div>
+          <div>
+            <p className="text-lg xl:text-base leading-none text-text-dark-gray font-medium">
+              Number of referrals
+            </p>
+            <p className="text-5xl xl:text-4xl leading-none font-bold mt-6 xl:mt-2 mb-2 lg:m-0">
+              {user.referrals ? Intl.NumberFormat('en-US').format(user.referrals) : 0}
+            </p>
+            <div></div>
           </div>
         </div>
-        <div>
-          <p className="text-lg xl:text-base leading-none text-pale-slate font-medium">
-            Your Rank
-          </p>
-          <p className="text-5xl xl:text-4xl leading-none font-bold mt-6 xl:mt-2 mb-2 lg:m-0">
-            {Intl.NumberFormat('en-US').format(user.leaderboardPosition)}
-          </p>
-          <Link
-            href={path.AIRDROP_LEADERBOARD}
-            className="group flex items-center gap-1 text-sm xl:text-xs leading-none text-pale-slate font-medium"
-          >
-            View Leaderboard
-            <Image
-              src={rightCaret}
-              alt="right caret"
-              width={7}
-              height={13}
-              className="transition ease-in-out group-hover:translate-x-0.5"
-            />
-          </Link>
-        </div>
-        <div>
-          <p className="text-lg xl:text-base leading-none text-pale-slate font-medium">
-            Number of referrals
-          </p>
-          <p className="text-5xl xl:text-4xl leading-none font-bold mt-6 xl:mt-2 mb-2 lg:m-0">
-            {user.referrals ? Intl.NumberFormat('en-US').format(user.referrals) : 0}
-          </p>
-          <div></div>
-        </div>
-        <div className="flex flex-col gap-2 justify-between">
-          <p className="text-lg xl:text-base leading-none text-pale-slate font-medium">
-            Get FUSE on Flash Testnet
-          </p>
-          <p className="text-sm leading-none font-medium">
-            You can claim your tokens now on faucet!
-          </p>
-          <a
-            href="https://faucet.flash.fuse.io/"
-            target="_blank"
-            className="transition ease-in-out w-fit bg-black border border-black rounded-full text-white font-semibold text-center px-8 py-2.5 hover:bg-white hover:text-black"
-          >
-            Go to Faucet
-          </a>
-        </div>
+        <Image
+          src={ember}
+          alt="ember"
+          width={220}
+          height={250}
+          className="absolute -top-1/2 right-5 xl:hidden"
+        />
       </div>
       <div className="flex flex-col gap-8 xl:gap-6">
-        <p className="text-3xl font-semibold">
-          Invite friends
-        </p>
-        <div className="transition-all ease-in-out duration-300 delay-200 flex flex-row md:flex-col gap-[30px] xl:gap-5">
-          <CardContainer containerClassName="block p-0 w-1/2 xl:w-8/12 md:w-auto min-h-[283px] xl:min-h-56 md:min-h-[430px]" className="block h-full md:min-h-[430px]">
-            <CardBody className="bg-white rounded-[20px] flex md:flex-col justify-between p-10 xl:p-[30px] w-auto h-full md:min-h-[430px]">
-              <div className="flex flex-col justify-between gap-4">
-                <CardItem
-                  as="p"
-                  translateZ="30"
-                  className="border border-black rounded-full px-5 py-2.5 text-sm leading-none font-semibold"
-                >
-                  Multiple
-                </CardItem>
-                <div className="flex gap-4">
-                  <div className="flex flex-col gap-2">
-                    <CardItem
-                      as="p"
-                      translateZ="70"
-                      className="text-2xl leading-none font-bold"
-                    >
-                      100 XP
-                    </CardItem>
-                    <CardItem
-                      as="p"
-                      translateZ="90"
-                      className="text-sm leading-none font-medium max-w-52"
-                    >
-                      for each referral
-                    </CardItem>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <CardItem
-                      as="p"
-                      translateZ="20"
-                      className="text-2xl leading-none font-bold"
-                    >
-                      15%
-                    </CardItem>
-                    <CardItem
-                      as="p"
-                      translateZ="10"
-                      className="text-sm leading-none font-medium max-w-52"
-                    >
-                      of referrals points
-                    </CardItem>
-                  </div>
+        <h2 className="text-3xl font-semibold">
+          Start earning points
+        </h2>
+        <div className="flex flex md:flex-col gap-8 xl:gap-5">
+          <CardContainer containerClassName="block p-0 w-full min-h-[283px] xl:min-h-56 md:min-h-[430px]" className="block h-full md:min-h-[430px]">
+            <CardBody className="bg-white rounded-[20px] flex md:flex-col justify-between w-auto h-full md:min-h-[430px]">
+              <div className="flex flex-col justify-between gap-4 py-10 pl-10 xl:py-[30px] xl:pl-[30px] md:px-6 md:pt-6 md:pb-0">
+                <div className="flex flex-col gap-4">
+                  <CardItem
+                    as="h3"
+                    translateZ="70"
+                    className="text-2xl leading-none font-bold"
+                  >
+                    Invite friends
+                  </CardItem>
+                  <CardItem
+                    as="p"
+                    translateZ="90"
+                    className="text-lg leading-none text-text-dark-gray font-medium max-w-[23rem]"
+                  >
+                    Receive 100XP for each referral who made min 10 interactions with quests. Also receive 15% of your referrals points
+                  </CardItem>
                 </div>
                 <div className="flex flex-col gap-2.5 xl:gap-2">
                   <CardItem
                     as="p"
                     translateZ="110"
-                    className="text-sm xl:text-xs text-pale-slate font-medium"
+                    className="text-sm xl:text-xs text-text-dark-gray font-medium"
                   >
                     Invite link
                   </CardItem>
@@ -291,20 +276,61 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-              <Image
-                src={ember}
-                alt="ember"
-                width={180}
-                height={212}
-              />
+              <div className="flex justify-center items-center md:justify-end md:pb-6">
+                <Image
+                  src={friends}
+                  alt="friends"
+                  width={150}
+                  height={120}
+                />
+              </div>
+            </CardBody>
+          </CardContainer>
+          <CardContainer containerClassName="block p-0 w-full min-h-[283px] xl:min-h-56 md:min-h-[430px]" className="block h-full md:min-h-[430px]">
+            <CardBody className="bg-white rounded-[20px] flex md:flex-col justify-between w-auto h-full md:min-h-[430px]">
+              <div className="flex flex-col justify-between gap-4 py-10 pl-10 xl:py-[30px] xl:pl-[30px] md:px-6 md:pt-6 md:pb-0">
+                <div className="flex flex-col gap-4">
+                  <CardItem
+                    as="h3"
+                    translateZ="70"
+                    className="text-2xl leading-none font-bold"
+                  >
+                    Get FUSE on Flash Testnet
+                  </CardItem>
+                  <CardItem
+                    as="p"
+                    translateZ="90"
+                    className="text-lg leading-none text-text-dark-gray font-medium max-w-[23rem]"
+                  >
+                    You can claim your tokens now on faucet!
+                  </CardItem>
+                </div>
+                <CardItem translateZ="30">
+                  <a
+                    href="https://faucet.flash.fuse.io/"
+                    target="_blank"
+                    className="transition ease-in-out w-fit bg-black border border-black rounded-full text-white font-semibold text-center px-8 py-2.5 hover:bg-white hover:text-black"
+                  >
+                    Go to Faucet
+                  </a>
+                </CardItem>
+              </div>
+              <div className="flex justify-center items-center md:justify-end md:pb-6">
+                <Image
+                  src={flashFaucet}
+                  alt="flash faucet"
+                  width={150}
+                  height={120}
+                />
+              </div>
             </CardBody>
           </CardContainer>
         </div>
       </div>
       <div className="flex flex-col gap-8 xl:gap-6 mt-24 xl:mt-16">
-        <p className="text-3xl font-semibold">
+        <h2 className="text-3xl font-semibold">
           Complete Tasks
-        </p>
+        </h2>
         <div className="grid grid-cols-3 md:grid-cols-1 auto-rows-min gap-[30px] xl:gap-5">
           {quests.map((quest) => (
             <Quest key={quest.title} quest={quest} />
