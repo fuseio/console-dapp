@@ -23,7 +23,7 @@ import * as amplitude from "@amplitude/analytics-browser";
 import { IS_ETHEREUM_OBJECT_DETECTED, path, signDataMessage, walletType } from "@/lib/helpers";
 import { checkIsActivated, checkOperator, fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setIsValidated, setLogout, setRedirect, validateOperator, withRefreshToken } from "@/store/operatorSlice";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { fuse } from "viem/chains";
 import { authenticateAirdropUser, setHydrateAirdrop, setLogoutAirdrop } from "@/store/airdropSlice";
 
@@ -41,7 +41,9 @@ const WalletModal = (): JSX.Element => {
   const { switchChain } = useSwitchChain();
   const { isLogin, isValidated, isLoggedIn, isLoginError, isAuthenticated, isOperatorWalletModalOpen, redirect, operatorContactDetail } = useAppSelector(selectOperatorSlice);
   const pathname = usePathname();
-
+  const searchParams = useSearchParams();
+  const referralCode = searchParams.get('ref');
+  
   const toggleModal = useCallback((isModal: boolean) => {
     dispatch(setIsWalletModalOpen(isModal));
     dispatch(setIsOperatorWalletModalOpen(isModal));
@@ -101,7 +103,6 @@ const WalletModal = (): JSX.Element => {
   useEffect(() => {
     if (isConnectedWallet && address) {
       dispatch(checkOperator({ address }));
-      dispatch(authenticateAirdropUser({ eoaAddress: address }));
     }
   }, [isConnectedWallet, address, dispatch])
 
@@ -179,6 +180,8 @@ const WalletModal = (): JSX.Element => {
             walletType: walletType[connectorId],
             walletAddress: accountAddress
           });
+
+          dispatch(authenticateAirdropUser({ walletAddress: accountAddress, referralCode }));
 
           localStorage.setItem("Fuse-connectedWalletType", walletType[connectorId]);
         },
