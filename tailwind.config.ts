@@ -116,6 +116,7 @@ const config: Config = {
       },
       backgroundImage: {
         'linear-gradient-orange': "linear-gradient(122deg, rgba(246, 93, 81, 0.20) 5.66%, rgba(246, 93, 81, 0.00) 24.99%)",
+        'linear-gradient-dark-orange': 'linear-gradient(92deg, #F7A454 0%, #F66957 100%)',
       }
     },
   },
