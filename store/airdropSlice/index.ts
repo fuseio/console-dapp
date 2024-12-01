@@ -51,7 +51,7 @@ export interface AirdropStateType {
 }
 
 const INIT_STATE: AirdropStateType = {
-  inviteCode: defaultReferralCode,
+  inviteCode: "",
   user: initUser,
   isQuestModalOpen: false,
   selectedQuest: initQuest,
@@ -73,27 +73,28 @@ const INIT_STATE: AirdropStateType = {
 export const authenticateAirdropUser = createAsyncThunk<
   any,
   {
-    eoaAddress: Address;
+    walletAddress: Address;
+    referralCode: string | null;
   },
   { state: RootState }
 >(
   "USER/AUTHENTICATE_AIRDROP_USER",
   async ({
-    eoaAddress,
+    walletAddress,
+    referralCode
   }: {
-    eoaAddress: Address;
+    walletAddress: Address;
+    referralCode: string | null;
   },
     thunkAPI
   ) => {
     try {
-      const authenticatedUser = await postAuthenticateAirdropUser(eoaAddress);
+      const authenticatedUser = await postAuthenticateAirdropUser(walletAddress);
       if (authenticatedUser?.jwt) {
-        const state = thunkAPI.getState();
-        const airdropState: AirdropStateType = state.airdrop;
         thunkAPI.dispatch(createAirdropUser({
           createUserDetail: {
-            walletAddress: eoaAddress,
-            referralCode: airdropState.inviteCode
+            walletAddress: walletAddress,
+            referralCode: referralCode ?? defaultReferralCode
           },
           accessToken: authenticatedUser.jwt
         }));
@@ -258,6 +259,7 @@ const airdropSlice = createSlice({
   reducers: {
     setInviteCode: (state, action: PayloadAction<string>) => {
       state.inviteCode = action.payload
+      localStorage.setItem("airdrop-inviteCode", action.payload);
     },
     setIsQuestModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isQuestModalOpen = action.payload
