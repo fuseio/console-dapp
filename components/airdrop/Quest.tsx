@@ -7,6 +7,7 @@ import { AirdropQuest } from "@/lib/types";
 import { useAppDispatch } from "@/store/store";
 import { setIsQuestModalOpen, setSelectedQuest } from "@/store/airdropSlice";
 import checkmark from "@/assets/checkmark-orange.svg";
+import fire from "@/assets/fire.svg";
 
 type QuestProps = {
   quest: AirdropQuest;
@@ -36,7 +37,7 @@ function QuestItem({ quest }: QuestProps) {
               <CardItem
                 as="p"
                 translateZ="30"
-                className="bg-lightest-gray rounded-full px-5 py-2.5 text-sm leading-none font-semibold"
+                className="bg-dune rounded-full px-5 py-2.5 text-sm leading-none text-white font-semibold"
               >
                 Coming soon
               </CardItem>
@@ -70,10 +71,17 @@ function QuestItem({ quest }: QuestProps) {
             <div className="flex items-center gap-2">
               <CardItem
                 translateZ="50"
-                as="p"
-                className="text-lg text-bean-red font-bold"
+                className="flex items-end gap-1"
               >
-                {quest.point} XP
+                <Image
+                  src={fire}
+                  alt="fire"
+                  width={18}
+                  height={22}
+                />
+                <p className="text-lg leading-none text-bean-red font-bold">
+                  {quest.point} Points
+                </p>
               </CardItem>
               <CardItem
                 translateZ="50"
