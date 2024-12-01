@@ -250,7 +250,7 @@ const Home = () => {
                   <CardItem
                     as="p"
                     translateZ="90"
-                    className="text-lg leading-none text-ash-gray font-medium max-w-[23rem]"
+                    className="text-lg leading-none text-ash-gray font-medium max-w-[22rem]"
                   >
                     Get some $FUSE from our faucet. you can request 210 per week.
                   </CardItem>
@@ -265,12 +265,12 @@ const Home = () => {
                   Claim $FUSE
                 </CardItem>
               </div>
-              <div className="flex justify-center items-center md:justify-end md:pb-6">
+              <div className="flex justify-center items-end md:justify-end pb-10 xl:pb-[30px] md:pb-6">
                 <Image
                   src={flashFaucet}
                   alt="flash faucet"
-                  width={150}
-                  height={120}
+                  width={180}
+                  height={140}
                 />
               </div>
             </CardBody>
@@ -289,7 +289,7 @@ const Home = () => {
                   <CardItem
                     as="p"
                     translateZ="90"
-                    className="text-lg leading-none text-text-dark-gray font-medium max-w-[23rem]"
+                    className="text-lg leading-none text-text-dark-gray font-medium max-w-[22rem]"
                   >
                     Receive 100XP for each referral who made min 10 interactions with quests. Also receive 15% of your referrals points
                   </CardItem>
@@ -321,11 +321,11 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex justify-center items-center md:justify-end md:pb-6">
+              <div className="flex justify-center items-end md:justify-end pb-10 xl:pb-[30px] md:pb-6">
                 <Image
                   src={friends}
                   alt="friends"
-                  width={150}
+                  width={160}
                   height={120}
                 />
               </div>
