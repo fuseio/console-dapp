@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Copy from "@/components/ui/Copy";
 import { convertTimestampToUTC, eclipseAddress, IS_SERVER, isFloat, path } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { retrieveAirdropUser, selectAirdropSlice } from "@/store/airdropSlice";
+import { selectAirdropSlice, setIsClaimTestnetFuseModalOpen } from "@/store/airdropSlice";
 import Avatar from "@/components/ui/Avatar";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/Card3D";
 import Quest from "@/components/airdrop/Quest";
@@ -138,7 +138,10 @@ const Home = () => {
 
   useEffect(() => {
     if (twitterConnected === "true") {
-      dispatch(retrieveAirdropUser());
+      if (localStorage.getItem("airdrop-isClaimTestnetFuse")) {
+        dispatch(setIsClaimTestnetFuseModalOpen(true));
+        localStorage.removeItem("airdrop-isClaimTestnetFuse");
+      }
     }
   }, [dispatch, router, twitterConnected])
 
@@ -181,13 +184,19 @@ const Home = () => {
                   <p className="text-sm text-text-dark-gray font-medium">
                     Last update {convertTimestampToUTC(user.pointsLastUpdatedAt)}
                   </p>
-                  <Image
-                    src={questionMark}
-                    alt="question mark"
-                    width={13}
-                    height={13}
-                    className="transition ease-in-out group-hover:translate-x-0.5"
-                  />
+                  <div className="group relative cursor-pointer flex justify-center items-center mb-1">
+                    <Image
+                      src={questionMark}
+                      alt="question mark"
+                      width={13}
+                      height={13}
+                    />
+                    <div className="tooltip-text-up hidden top-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg group-hover:block text-black text-sm font-medium">
+                      <p>
+                        Points calculation updated every 24 hours. Next update {convertTimestampToUTC(user.nextRewardDistributionTime)}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               ) : <div></div>}
             </div>
@@ -257,10 +266,9 @@ const Home = () => {
                 </div>
                 <CardItem
                   translateZ="30"
-                  href="https://faucet.flash.fuse.io/"
-                  target="_blank"
                   className="transition ease-in-out w-fit bg-white border border-white rounded-full text-black font-semibold text-center px-10 py-4 hover:bg-black hover:text-white"
-                  as="a"
+                  onClick={() => dispatch(setIsClaimTestnetFuseModalOpen(true))}
+                  as="button"
                 >
                   Claim $FUSE
                 </CardItem>
@@ -291,7 +299,7 @@ const Home = () => {
                     translateZ="90"
                     className="text-lg leading-none text-text-dark-gray font-medium max-w-[22rem]"
                   >
-                    Receive 100XP for each referral who made min 10 interactions with quests. Also receive 15% of your referrals points
+                    Get 20% of your referrals points
                   </CardItem>
                 </div>
                 <div className="flex flex-col gap-2.5 xl:gap-2">
