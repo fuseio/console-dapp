@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import Copy from "@/components/ui/Copy";
-import { convertTimestampToUTC, eclipseAddress, IS_SERVER, isFloat, path } from "@/lib/helpers";
+import { convertTimestampToUTC, eclipseAddress, IS_SERVER, isFloat } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectAirdropSlice, setIsClaimTestnetFuseModalOpen } from "@/store/airdropSlice";
 import Avatar from "@/components/ui/Avatar";
@@ -152,67 +151,85 @@ const Home = () => {
   }, [router, twitterAuthUrl])
 
   return (
-    <div className="w-8/9 flex flex-col text-fuse-black my-16 xl:my-14 xl:w-9/12 md:w-9/10 max-w-7xl">
+    <div className="w-8/9 grow flex flex-col text-fuse-black my-16 xl:my-14 xl:w-9/12 md:w-9/10 max-w-7xl">
       <div className="flex justify-between items-center">
         <h1 className="text-5xl xl:text-3xl font-semibold">
           Hey, {eclipseAddress(user.walletAddress)}
         </h1>
       </div>
-      <div className="relative bg-lightest-gray rounded-[20px] mt-11 mb-[100px] xl:mb-11 p-8">
-        <div className="flex flex-wrap justify-between gap-6 max-w-3xl xl:max-w-none">
-          <div className="flex flex-row items-center gap-6">
-            <div>
-              <Avatar size={80} />
-            </div>
-            <div className="md:shrink">
-              <p className="text-lg leading-none text-text-dark-gray font-medium">
-                My Ember Points
+      <div className="flex flex-wrap justify-between gap-6 bg-lightest-gray rounded-[20px] mt-11 mb-[100px] xl:mb-11 p-8">
+        <div className="flex flex-row items-center gap-6">
+          <div>
+            <Avatar size={80} />
+          </div>
+          <div className="md:shrink">
+            <p className="text-lg leading-none text-text-dark-gray font-medium">
+              My Ember Points
+            </p>
+            <div className="flex items-center gap-1.5 mt-6 xl:mt-2 mb-2">
+              <Image
+                src={fire}
+                alt="fire"
+                width={26}
+                height={32}
+              />
+              <p className="text-5xl xl:text-4xl md:text-3xl leading-none font-bold">
+                {isFloat(user.points) ? user.points.toFixed(2) : user.points}
               </p>
-              <div className="flex items-center gap-1.5 mt-6 xl:mt-2 mb-2">
-                <Image
-                  src={fire}
-                  alt="fire"
-                  width={26}
-                  height={32}
-                />
-                <p className="text-5xl xl:text-4xl md:text-3xl leading-none font-bold">
-                  {isFloat(user.points) ? user.points.toFixed(2) : user.points}
+            </div>
+            {user.pointsLastUpdatedAt ? (
+              <div className="flex md:flex-col items-center md:items-start gap-2">
+                <p className="text-sm text-text-dark-gray font-medium">
+                  Last update {convertTimestampToUTC(user.pointsLastUpdatedAt)}
                 </p>
-              </div>
-              {user.pointsLastUpdatedAt ? (
-                <div className="flex md:flex-col items-center md:items-start gap-2">
-                  <p className="text-sm text-text-dark-gray font-medium">
-                    Last update {convertTimestampToUTC(user.pointsLastUpdatedAt)}
-                  </p>
-                  <div className="group relative cursor-pointer flex justify-center items-center mb-1">
-                    <Image
-                      src={questionMark}
-                      alt="question mark"
-                      width={13}
-                      height={13}
-                    />
-                    <div className="tooltip-text-up hidden top-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg group-hover:block text-black text-sm font-medium">
-                      <p>
-                        Points calculation updated every 24 hours. Next update {convertTimestampToUTC(user.nextRewardDistributionTime)}
-                      </p>
-                    </div>
+                <div className="group relative cursor-pointer flex justify-center items-center mb-1">
+                  <Image
+                    src={questionMark}
+                    alt="question mark"
+                    width={13}
+                    height={13}
+                  />
+                  <div className="tooltip-text-up hidden top-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg group-hover:block text-black text-sm font-medium">
+                    <p>
+                      Points calculation updated every 24 hours. Next update {convertTimestampToUTC(user.nextRewardDistributionTime)}
+                    </p>
                   </div>
                 </div>
-              ) : <div></div>}
-            </div>
+              </div>
+            ) : <div></div>}
           </div>
-          <div>
-            <p className="text-lg xl:text-base leading-none text-text-dark-gray font-medium">
-              Your Rank
+        </div>
+        <div>
+          <p className="text-lg xl:text-base leading-none text-text-dark-gray font-medium">
+            My $FUSE
+          </p>
+          <div className="flex xl:flex-col items-center gap-4 mt-6 xl:mt-2 mb-2 lg:m-0">
+            <p className="text-5xl xl:text-4xl leading-none font-bold">
+              0 $FUSE
             </p>
-            <p className="text-5xl xl:text-4xl leading-none font-bold mt-6 xl:mt-2 mb-2 lg:m-0">
-              {Intl.NumberFormat('en-US').format(user.leaderboardPosition)}
-            </p>
-            <Link
-              href={path.AIRDROP_LEADERBOARD}
-              className="group flex items-center gap-1 text-sm xl:text-xs leading-none text-text-dark-gray font-medium"
+            <button
+              className="transition ease-in-out bg-fuse-black border border-fuse-black rounded-full leading-none text-white font-semibold px-6 py-3 hover:bg-[transparent] hover:text-fuse-black"
+              onClick={() => dispatch(setIsClaimTestnetFuseModalOpen(true))}
             >
-              View Leaderboard
+              Claim $FUSE
+            </button>
+          </div>
+          <div></div>
+        </div>
+        <div className="relative w-1/3 xl:w-fit">
+          <Image
+            src={ember}
+            alt="ember"
+            width={220}
+            height={250}
+            className="absolute -top-full xl:hidden"
+          />
+          <div className="ms-52 xl:ms-0 flex flex-col gap-2">
+            <p className="text-sm max-w-48">
+              Fuse is migrating to a zkEvm L2 (Fuse Ember) and taking its robust comunity with it
+            </p>
+            <a className="group flex items-center gap-1 font-semibold" href="#">
+              Learn more
               <Image
                 src={rightCaret}
                 alt="right caret"
@@ -220,25 +237,9 @@ const Home = () => {
                 height={13}
                 className="transition ease-in-out group-hover:translate-x-0.5"
               />
-            </Link>
-          </div>
-          <div>
-            <p className="text-lg xl:text-base leading-none text-text-dark-gray font-medium">
-              Number of referrals
-            </p>
-            <p className="text-5xl xl:text-4xl leading-none font-bold mt-6 xl:mt-2 mb-2 lg:m-0">
-              {user.referrals ? Intl.NumberFormat('en-US').format(user.referrals) : 0}
-            </p>
-            <div></div>
+            </a>
           </div>
         </div>
-        <Image
-          src={ember}
-          alt="ember"
-          width={220}
-          height={250}
-          className="absolute -top-1/2 right-5 xl:hidden"
-        />
       </div>
       <div className="flex flex-col gap-8 xl:gap-6">
         <h2 className="text-3xl font-semibold">
@@ -266,7 +267,7 @@ const Home = () => {
                 </div>
                 <CardItem
                   translateZ="30"
-                  className="transition ease-in-out w-fit bg-white border border-white rounded-full text-black font-semibold text-center px-10 py-4 hover:bg-black hover:text-white"
+                  className="transition ease-in-out w-fit bg-white border border-white rounded-full text-black leading-none font-semibold text-center px-16 py-4 hover:bg-black hover:text-white"
                   onClick={() => dispatch(setIsClaimTestnetFuseModalOpen(true))}
                   as="button"
                 >
@@ -314,7 +315,7 @@ const Home = () => {
                     <CardItem
                       as="p"
                       translateZ="70"
-                      className="text-[1.25rem] xl:text-xl font-bold md:max-w-[243px]"
+                      className="truncate text-[1.25rem] xl:text-xl font-bold max-w-sm"
                     >
                       {referralLink()}
                     </CardItem>

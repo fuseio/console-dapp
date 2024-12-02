@@ -1,11 +1,13 @@
+import Image from "next/image";
 import { useAccount } from "wagmi";
 
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-
-import RightCaret from "@/assets/RightCaret";
 import { selectAirdropSlice } from "@/store/airdropSlice";
 import Spinner from "@/components/ui/Spinner";
+
+import RightCaret from "@/assets/RightCaret";
+import rightCaret from "@/assets/right-caret-black.svg";
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -41,10 +43,17 @@ const Home = () => {
           </button>
           <div className="absolute inset-0 bg-linear-gradient-dark-orange rounded-[inherit] blur-[25px] -z-[1]"></div>
         </div>
-        <div>
+        <div className="flex items-center gap-1">
           What is the Fuse Ember?{" "}
-          <a className="font-bold hover:underline" href="#">
+          <a className="group flex items-center gap-1 font-bold" href="#">
             Learn more
+            <Image
+              src={rightCaret}
+              alt="right caret"
+              width={7}
+              height={13}
+              className="transition ease-in-out group-hover:translate-x-0.5"
+            />
           </a>
         </div>
       </div>
