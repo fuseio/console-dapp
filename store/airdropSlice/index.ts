@@ -46,8 +46,10 @@ export interface AirdropStateType {
   leaderboardUsers: AirdropLeaderboardUsers;
   lastLeaderboardUserId: string;
   isLeaderboardUsersFinished: boolean;
+  isGeneratingTwitterAuthUrl: boolean;
   twitterAuthUrl: string;
   isWaitlistModalOpen: boolean;
+  isClaimTestnetFuseModalOpen: boolean;
 }
 
 const INIT_STATE: AirdropStateType = {
@@ -66,8 +68,10 @@ const INIT_STATE: AirdropStateType = {
   leaderboardUsers: [],
   lastLeaderboardUserId: "",
   isLeaderboardUsersFinished: false,
+  isGeneratingTwitterAuthUrl: false,
   twitterAuthUrl: "",
   isWaitlistModalOpen: false,
+  isClaimTestnetFuseModalOpen: false,
 }
 
 export const authenticateAirdropUser = createAsyncThunk<
@@ -270,6 +274,9 @@ const airdropSlice = createSlice({
     setIsWaitlistModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isWaitlistModalOpen = action.payload
     },
+    setIsClaimTestnetFuseModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isClaimTestnetFuseModalOpen = action.payload
+    },
     setLogoutAirdrop: (state) => {
       state.inviteCode = "";
       state.accessToken = "";
@@ -356,17 +363,23 @@ const airdropSlice = createSlice({
         state.isLeaderboardUsersLoading = false;
       })
       .addCase(generateAirdropTwitterAuthUrl.pending, (state) => {
-        if (!state.selectedQuest.buttons) return;
-        state.selectedQuest.buttons[0].isLoading = true;
+        if (state.selectedQuest.buttons) {
+          state.selectedQuest.buttons[0].isLoading = true;
+        }
+        state.isGeneratingTwitterAuthUrl = true;
       })
       .addCase(generateAirdropTwitterAuthUrl.fulfilled, (state, action) => {
-        if (!state.selectedQuest.buttons) return;
-        state.selectedQuest.buttons[0].isLoading = false;
+        if (state.selectedQuest.buttons) {
+          state.selectedQuest.buttons[0].isLoading = false;
+        }
         state.twitterAuthUrl = action.payload;
+        state.isGeneratingTwitterAuthUrl = false;
       })
       .addCase(generateAirdropTwitterAuthUrl.rejected, (state) => {
-        if (!state.selectedQuest.buttons) return;
-        state.selectedQuest.buttons[0].isLoading = false;
+        if (state.selectedQuest.buttons) {
+          state.selectedQuest.buttons[0].isLoading = false;
+        }
+        state.isGeneratingTwitterAuthUrl = false;
       })
       .addCase(verifyAirdropQuest.pending, (state) => {
         if (!state.selectedQuest.buttons) return;
@@ -397,6 +410,7 @@ export const {
   setIsQuestModalOpen,
   setSelectedQuest,
   setIsWaitlistModalOpen,
+  setIsClaimTestnetFuseModalOpen,
   setLogoutAirdrop,
   setHydrateAirdrop
 } = airdropSlice.actions;

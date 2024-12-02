@@ -10,8 +10,9 @@ import Home from "./Home";
 import Footer from "@/components/Footer";
 import Topbar from "@/components/Topbar";
 import WaitlistModal from "@/components/airdrop/WaitlistModal";
-import { selectAirdropSlice } from "@/store/airdropSlice";
+import { retrieveAirdropUser, selectAirdropSlice } from "@/store/airdropSlice";
 import QuestModal from "@/components/airdrop/QuestModal";
+import ClaimTestnetFuseModal from "@/components/airdrop/ClaimTestnetFuseModal";
 
 const AirdropProfile = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +21,7 @@ const AirdropProfile = () => {
 
   useEffect(() => {
     dispatch(setSelectedNavbar("airdrop"));
+    dispatch(retrieveAirdropUser());
   }, [dispatch])
 
   useEffect(() => {
@@ -33,6 +35,7 @@ const AirdropProfile = () => {
       <div className="flex-col flex items-center bg-light-gray h-full">
         <QuestModal />
         <WaitlistModal />
+        <ClaimTestnetFuseModal />
         <Topbar />
         <Home />
         <Footer />
