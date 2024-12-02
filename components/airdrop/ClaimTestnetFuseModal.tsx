@@ -11,6 +11,7 @@ import close from "@/assets/close.svg";
 import twitter from "@/assets/twitter-x-logo.svg";
 import copy from "@/assets/copy.svg";
 import checkmark from "@/assets/checkmark.svg";
+import { eclipseAddress } from "@/lib/helpers";
 
 const ClaimTestnetFuseModal = (): JSX.Element => {
   const airdropSlice = useAppSelector(selectAirdropSlice);
@@ -98,7 +99,12 @@ const ClaimTestnetFuseModal = (): JSX.Element => {
                   Your smart wallet address
                 </p>
                 <button className="w-full flex justify-between items-center gap-2 bg-white rounded-full px-6 py-6 leading-none font-medium">
-                  {airdropSlice.user.walletAddress}
+                  <span className="md:hidden">
+                    {airdropSlice.user.walletAddress}
+                  </span>
+                  <span className="hidden md:block">
+                    {eclipseAddress(airdropSlice.user.walletAddress)}
+                  </span>
                   <Copy
                     src={copy}
                     text={airdropSlice.user.walletAddress}
