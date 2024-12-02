@@ -31,15 +31,13 @@ const AirdropProfile = () => {
   }, [airdropSlice.isHydrated, airdropSlice.isUser, router]);
 
   return (
-    <div className="w-full font-mona justify-end min-h-screen">
-      <div className="flex-col flex items-center bg-light-gray h-full">
-        <QuestModal />
-        <WaitlistModal />
-        <ClaimTestnetFuseModal />
-        <Topbar />
-        <Home />
-        <Footer />
-      </div>
+    <div className="font-mona w-full min-h-screen flex-col flex items-center bg-light-gray">
+      <QuestModal />
+      <WaitlistModal />
+      <ClaimTestnetFuseModal />
+      <Topbar />
+      <Home />
+      <Footer />
     </div>
   );
 };
