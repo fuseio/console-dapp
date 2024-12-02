@@ -82,17 +82,6 @@ export const path = {
   DASHBOARD: "/dashboard",
 };
 
-export const buildSubMenuItems = [
-  {
-    title: "Welcome",
-    link: "/build",
-  },
-  {
-    title: "Dashboard",
-    link: "/dashboard",
-  },
-];
-
 export const splitSecretKey = (secretKey: string) => {
   return {
     secretPrefix: secretKey.split("_")[0] + "_",

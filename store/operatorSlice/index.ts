@@ -3,8 +3,8 @@ import { AppState } from "../rootReducer";
 import { Signer, ethers } from "ethers";
 import { FuseSDK } from "@fuseio/fusebox-web-sdk";
 import { hex, splitSecretKey } from "@/lib/helpers";
-import { Operator, OperatorContactDetail, SignData, Withdraw } from "@/lib/types";
-import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
+import { MenuItems, Operator, OperatorContactDetail, SignData, Withdraw } from "@/lib/types";
+import { checkActivated, checkOperatorExist, fetchAddressTokenBalances, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
 import { parseEther, parseUnits } from "ethers/lib/utils";
@@ -47,6 +47,26 @@ const initWithdraw: Withdraw = {
   coinGeckoId: "",
 }
 
+const initMenuItems: MenuItems = [
+  {
+    title: "Welcome",
+    link: "/build",
+  },
+  {
+    title: "Dashboard",
+    link: "/dashboard",
+  },
+];
+
+const userMenuItems: MenuItems = [
+  ...initMenuItems,
+  {
+    title: "Billing & Plan",
+    link: "/billing",
+    isAuthenticated: true,
+  },
+];
+
 export interface OperatorStateType {
   isLogin: boolean;
   isLoggedIn: boolean;
@@ -84,6 +104,11 @@ export interface OperatorStateType {
   withdraw: Withdraw;
   operatorContactDetail: OperatorContactDetail;
   operator: Operator;
+  isFetchingTokenBalances: boolean;
+  totalTokenBalance: number;
+  isPayModalOpen: boolean;
+  isBillingModalOpen: boolean;
+  menuItems: MenuItems;
 }
 
 const INIT_STATE: OperatorStateType = {
@@ -123,6 +148,11 @@ const INIT_STATE: OperatorStateType = {
   withdraw: initWithdraw,
   operatorContactDetail: initOperatorContactDetail,
   operator: initOperator,
+  isFetchingTokenBalances: false,
+  totalTokenBalance: 0,
+  isPayModalOpen: false,
+  isBillingModalOpen: false,
+  menuItems: initMenuItems,
 };
 
 export const checkOperator = createAsyncThunk(
@@ -541,6 +571,32 @@ export const fetchSponsoredTransactions = createAsyncThunk(
   }
 );
 
+export const fetchTokenBalances = createAsyncThunk(
+  "OPERATOR/FETCH_TOKEN_BALANCES",
+  async ({
+    address,
+  }: {
+    address: Address,
+  }) => {
+    try {
+      const tokenBalances = await fetchAddressTokenBalances(address);
+      let totalTokenBalance = 0;
+      tokenBalances.forEach((tokenBalance) => {
+        const value = parseFloat(tokenBalance.value) || 0;
+        const decimals = parseInt(tokenBalance.token.decimals) || 18;
+        const exchangeRate = parseFloat(tokenBalance.token.exchange_rate) || 0;
+
+        const tokenValue = value / Math.pow(10, decimals);
+        totalTokenBalance += tokenValue * exchangeRate;
+      });
+      return totalTokenBalance;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
 const operatorSlice = createSlice({
   name: "OPERATOR_STATE",
   initialState: INIT_STATE,
@@ -594,6 +650,12 @@ const operatorSlice = createSlice({
     setOperator: (state, action: PayloadAction<Operator>) => {
       state.operator = action.payload
     },
+    setIsPayModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isPayModalOpen = action.payload
+    },
+    setIsBillingModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isBillingModalOpen = action.payload
+    },
     setLogout: (state) => {
       state.isOperatorExist = false;
       state.isValidated = false;
@@ -602,6 +664,7 @@ const operatorSlice = createSlice({
       state.operatorContactDetail = initOperatorContactDetail;
       state.isActivated = false;
       state.sponsoredTransactions = 0;
+      state.menuItems = initMenuItems;
       localStorage.removeItem("Fuse-isOperatorExist");
       localStorage.removeItem("Fuse-isValidated");
       localStorage.removeItem("Fuse-operator");
@@ -624,6 +687,7 @@ const operatorSlice = createSlice({
       state.isAuthenticated = isAuthenticated ? JSON.parse(isAuthenticated) : false;
       state.operatorContactDetail = operatorContactDetail ? JSON.parse(operatorContactDetail) : initOperatorContactDetail;
       state.isActivated = isActivated ? JSON.parse(isActivated) : false;
+      state.menuItems = isAuthenticated ? userMenuItems : initMenuItems;
       state.isHydrated = true;
     }
   },
@@ -659,6 +723,7 @@ const operatorSlice = createSlice({
         state.operator = action.payload;
         state.isLoggedIn = true;
         state.isAuthenticated = true;
+        state.menuItems = userMenuItems;
         localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
         localStorage.setItem("Fuse-isOperatorAuthenticated", "true");
       })
@@ -679,6 +744,7 @@ const operatorSlice = createSlice({
         const { secretPrefix, secretLastFourChars } = splitSecretKey(action.payload.project.secretKey);
         state.operator.project.secretPrefix = secretPrefix;
         state.operator.project.secretLastFourChars = secretLastFourChars;
+        state.menuItems = userMenuItems;
         localStorage.setItem("Fuse-operator", JSON.stringify(state.operator));
         localStorage.setItem("Fuse-isOperatorAuthenticated", "true");
         localStorage.removeItem("Fuse-operatorContactDetail");
@@ -786,6 +852,16 @@ const operatorSlice = createSlice({
       .addCase(fetchSponsoredTransactions.rejected, (state) => {
         state.isFetchingSponsoredTransactions = false;
       })
+      .addCase(fetchTokenBalances.pending, (state) => {
+        state.isFetchingTokenBalances = true;
+      })
+      .addCase(fetchTokenBalances.fulfilled, (state, action) => {
+        state.isFetchingTokenBalances = false;
+        state.totalTokenBalance = action.payload;
+      })
+      .addCase(fetchTokenBalances.rejected, (state) => {
+        state.isFetchingTokenBalances = false;
+      })
   },
 });
 
@@ -808,6 +884,8 @@ export const {
   setRedirect,
   setOperatorContactDetail,
   setOperator,
+  setIsPayModalOpen,
+  setIsBillingModalOpen,
   setLogout,
   setHydrate
 } = operatorSlice.actions;

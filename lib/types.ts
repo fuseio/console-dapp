@@ -279,6 +279,9 @@ export const createAppConfig = (
 export type MenuItem = {
   title: string;
   link: string;
+  isAuthenticated?: boolean;
+  unauthenticatedLink?: string;
+  authenticatedLink?: string;
 }
 
 export type MenuItems = MenuItem[];
@@ -387,3 +390,15 @@ export interface ValidatorResponse {
   pendingValidators: Address[]
   validatorsMetadata: Record<Address, ValidatorTypeResponse>
 }
+
+export type Token = {
+  decimals: string;
+  exchange_rate: string;
+}
+
+export type TokenBalance = {
+  value: string;
+  token: Token;
+}
+
+export type TokenBalances = TokenBalance[];
