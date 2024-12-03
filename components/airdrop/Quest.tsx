@@ -5,7 +5,7 @@ import React from "react";
 import { CardBody, CardContainer, CardItem } from "../ui/Card3D";
 import { AirdropQuest } from "@/lib/types";
 import { useAppDispatch } from "@/store/store";
-import { setIsQuestModalOpen, setSelectedQuest } from "@/store/airdropSlice";
+import { setIsQuestModalOpen, setIsWaitlistModalOpen, setSelectedQuest } from "@/store/airdropSlice";
 import checkmark from "@/assets/checkmark-orange.svg";
 import fire from "@/assets/fire.svg";
 
@@ -13,8 +13,20 @@ type QuestProps = {
   quest: AirdropQuest;
 }
 
+type Custom = {
+  [key: string]: { onClick: () => void };
+}
+
 function QuestItem({ quest }: QuestProps) {
   const dispatch = useAppDispatch();
+
+  const custom: Custom = {
+    "joinWaitlist": {
+      onClick: () => {
+        dispatch(setIsWaitlistModalOpen(true));
+      }
+    }
+  }
 
   return (
     <CardContainer containerClassName="block p-0 h-full" className="block h-full">
@@ -23,10 +35,13 @@ function QuestItem({ quest }: QuestProps) {
           as="button"
           translateZ="40"
           disabled={quest.completed || quest.comingSoon}
-          className="relative flex flex-col justify-between gap-2 w-full min-h-[346px] xl:min-h-[277px]"
+          className={`relative flex flex-col gap-2 w-full h-[inherit] min-h-[346px] xl:min-h-[277px] ${quest.comingSoon ? "justify-between" : "justify-end"}`}
           onClick={() => {
             if (quest.completed) {
               return;
+            }
+            if (quest.isCustom) {
+              return custom[quest.id].onClick();
             }
             dispatch(setIsQuestModalOpen(true));
             dispatch(setSelectedQuest(quest));

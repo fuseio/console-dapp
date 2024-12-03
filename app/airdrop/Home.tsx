@@ -45,7 +45,11 @@ const Home = () => {
         </div>
         <div className="flex items-center gap-1">
           What is the Fuse Ember?{" "}
-          <a className="group flex items-center gap-1 font-bold" href="#">
+          <a
+            href="https://news.fuse.io/announcing-fuse-ember-and-our-updated-roadmap/"
+            target="_blank"
+            className="group flex items-center gap-1 font-bold"
+          >
             Learn more
             <Image
               src={rightCaret}

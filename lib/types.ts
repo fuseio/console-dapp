@@ -432,6 +432,7 @@ export type AirdropQuest = {
   isEcosystem?: boolean;
   buttons?: AirdropButton[];
   comingSoon?: boolean;
+  isCustom?: boolean;
 }
 
 export type AirdropQuests = AirdropQuest[];
