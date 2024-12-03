@@ -24,6 +24,8 @@ import fuseFaucet from "@/assets/fuse-faucet.svg";
 import rouletteGame from "@/assets/roulette-game.svg";
 import verifyDiscord from "@/assets/verify-discord.svg";
 import joinTelegram from "@/assets/join-telegram.svg";
+import voltWallet from "@/assets/volt-wallet.svg";
+import artrific from "@/assets/artrific.svg";
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -108,6 +110,46 @@ const Home = () => {
       frequency: "Up to 10 times a day",
       image: rouletteGame,
       comingSoon: true,
+    },
+    {
+      id: "exploreVoltWallet",
+      title: "Install the Volt wallet",
+      description: "The Volt wallet is the best mobile solution for interacting with the Fuse network, as it is built and developed by the Fuse team. Explore its features and get 20 points.  \n**Verify the quest 1 hour after completing it on Layer3**",
+      point: 20,
+      frequency: "Up to 10 times a day",
+      image: voltWallet,
+      isEcosystem: true,
+      buttons: [
+        {
+          text: "Go to Quest",
+          link: "https://app.layer3.xyz/quests/discover-volt-wallet",
+        },
+        {
+          text: "Verify Quest",
+          isFunction: true,
+          endpoint: "explore-volt-wallet",
+        }
+      ]
+    },
+    {
+      id: "exploreArtrific",
+      title: "Create an NFT on Artrific",
+      description: "Create an NFT on the leading NFT marketplace on Fuse Network and get 200 points  \n**Verify the quest 1 hour after completing it on Layer3**\n",
+      point: 200,
+      frequency: "One-time",
+      image: artrific,
+      isEcosystem: true,
+      buttons: [
+        {
+          text: "Go to Quest",
+          link: "https://app.layer3.xyz/quests/explore-artrific-nft-marketplace-on-fuse-network",
+        },
+        {
+          text: "Verify Quest",
+          isFunction: true,
+          endpoint: "explore-artrific",
+        }
+      ]
     },
   ])
 
@@ -347,7 +389,17 @@ const Home = () => {
           Earn ember points
         </h2>
         <div className="grid grid-cols-3 md:grid-cols-1 auto-rows-min gap-[30px] xl:gap-5">
-          {quests.map((quest) => (
+          {quests.filter((quest) => !quest.isEcosystem).map((quest) => (
+            <Quest key={quest.title} quest={quest} />
+          ))}
+        </div>
+      </div>
+      <div className="flex flex-col gap-8 xl:gap-6 mt-24 xl:mt-16">
+        <h2 className="text-3xl font-semibold">
+          Explore the Fuse ecosystem
+        </h2>
+        <div className="grid grid-cols-3 md:grid-cols-1 auto-rows-min gap-[30px] xl:gap-5">
+          {quests.filter((quest) => quest.isEcosystem).map((quest) => (
             <Quest key={quest.title} quest={quest} />
           ))}
         </div>
