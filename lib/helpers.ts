@@ -10,18 +10,6 @@ export const eclipseAddress = (address: string): string => {
   );
 };
 
-export const fetchTransactionsFromLocalStorage = (
-  address: string
-): TransactionType[] => {
-  const transactions = localStorage.getItem("transactions");
-  if (!transactions) return [];
-
-  const allTransactions: TransactionType[] = JSON.parse(transactions);
-  return allTransactions.filter(
-    (transaction: TransactionType) => transaction.address === address
-  );
-};
-
 export const fetchAllTransactionsFromLocalStorage = (): TransactionType[] => {
   const transactions = localStorage.getItem("transactions");
   return transactions ? JSON.parse(transactions) : [];
@@ -104,7 +92,7 @@ export const splitSecretKey = (secretKey: string) => {
 };
 
 export const getChain = (chainId: number) => {
-  return chains.concat(fuseChain).find((chain) => chain.chainId === chainId);
+  return chains.concat(fuseChain).find((chain) => chain.chainId == chainId);
 };
 
 export const evmDecimals = 18;

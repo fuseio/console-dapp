@@ -18,10 +18,7 @@ interface TransactionProps {
   isLoading?: boolean;
 }
 
-const Transactions = ({
-  isOpen,
-  onToggle,
-}: TransactionProps): JSX.Element => {
+const Transactions = ({ isOpen, onToggle }: TransactionProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const { address } = useAccount();
 
@@ -60,22 +57,17 @@ const Transactions = ({
             <Image
               src={cross}
               alt="cross"
-              className="h-10 bg-modal-bg p-1 rounded-md cursor-pointer"
+              className="bg-modal-bg p-1 rounded-md cursor-pointer"
               onClick={() => {
                 onToggle(false);
               }}
+              height={24}
             />
             <span className="text-2xl font-semibold mt-4 mb-2">
               Transactions History
             </span>
             {transactionsSlice.transactions.map((transaction, i) => {
-              return (
-                <Transaction
-                  transaction={transaction}
-                  transactionHashes={transactionsSlice.transactionHashes[i]}
-                  key={i}
-                />
-              );
+              return <Transaction transaction={transaction} key={i} />;
             })}
           </motion.div>
           <motion.div
@@ -92,13 +84,7 @@ const Transactions = ({
             </span>
             <div className="flex w-full h-[75%] flex-col overflow-y-auto">
               {transactionsSlice.transactions.map((transaction, i) => {
-                return (
-                  <Transaction
-                    transaction={transaction}
-                    transactionHashes={transactionsSlice.transactionHashes[i]}
-                    key={i}
-                  />
-                );
+                return <Transaction transaction={transaction} key={i} />;
               })}
             </div>
           </motion.div>
