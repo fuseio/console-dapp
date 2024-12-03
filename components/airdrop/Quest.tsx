@@ -5,7 +5,7 @@ import React from "react";
 import { CardBody, CardContainer, CardItem } from "../ui/Card3D";
 import { AirdropQuest } from "@/lib/types";
 import { useAppDispatch } from "@/store/store";
-import { setIsQuestModalOpen, setIsWaitlistModalOpen, setSelectedQuest } from "@/store/airdropSlice";
+import { setIsClaimTestnetFuseModalOpen, setIsQuestModalOpen, setIsWaitlistModalOpen, setSelectedQuest } from "@/store/airdropSlice";
 import checkmark from "@/assets/checkmark-orange.svg";
 import fire from "@/assets/fire.svg";
 
@@ -24,6 +24,11 @@ function QuestItem({ quest }: QuestProps) {
     "joinWaitlist": {
       onClick: () => {
         dispatch(setIsWaitlistModalOpen(true));
+      }
+    },
+    "emberFaucet": {
+      onClick: () => {
+        dispatch(setIsClaimTestnetFuseModalOpen(true));
       }
     }
   }

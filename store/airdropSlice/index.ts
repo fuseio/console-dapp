@@ -2,7 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
 import { AirdropUser, AirdropLeaderboardUsers, AirdropQuest, CreateAirdropUser } from "@/lib/types";
 import { Address } from "viem";
-import { fetchAirdropLeaderboard, fetchAirdropTwitterAuthUrl, fetchAirdropUser, postAuthenticateAirdropUser, postCreateAirdropUser, postJoinAirdropWaitlist, postVerifyAirdropQuest } from "@/lib/api";
+import { fetchAirdropLeaderboard, fetchAirdropTwitterAuthUrl, fetchAirdropUser, postAuthenticateAirdropUser, postClaimTestnetFuse, postCreateAirdropUser, postJoinAirdropWaitlist, postVerifyAirdropQuest } from "@/lib/api";
 import { RootState } from "../store";
 import { defaultReferralCode } from "@/lib/helpers";
 
@@ -48,9 +48,11 @@ export interface AirdropStateType {
   isLeaderboardUsersFinished: boolean;
   isGeneratingTwitterAuthUrl: boolean;
   twitterAuthUrl: string;
+  isVerifyingQuest: boolean;
   isWaitlistModalOpen: boolean;
   isClaimTestnetFuseModalOpen: boolean;
   isJoiningWaitlist: boolean;
+  isClaimingTestnetFuse: boolean;
 }
 
 const INIT_STATE: AirdropStateType = {
@@ -71,9 +73,11 @@ const INIT_STATE: AirdropStateType = {
   isLeaderboardUsersFinished: false,
   isGeneratingTwitterAuthUrl: false,
   twitterAuthUrl: "",
+  isVerifyingQuest: false,
   isWaitlistModalOpen: false,
   isClaimTestnetFuseModalOpen: false,
   isJoiningWaitlist: false,
+  isClaimingTestnetFuse: false,
 }
 
 export const authenticateAirdropUser = createAsyncThunk<
@@ -295,6 +299,33 @@ export const joinAirdropWaitlist = createAsyncThunk<
   }
 );
 
+export const claimTestnetFuse = createAsyncThunk<
+  any,
+  undefined,
+  { state: RootState }
+>(
+  "USER/CLAIM_TESTNET_FUSE",
+  async (
+    _,
+    thunkAPI
+  ) => {
+    try {
+      const state = thunkAPI.getState();
+      const airdropState: AirdropStateType = state.airdrop;
+      const claimed = await postClaimTestnetFuse(airdropState.user.walletAddress);
+      if (claimed?.msg) {
+        thunkAPI.dispatch(verifyAirdropQuest({ endpoint: 'faucet-claim' }));
+        return claimed;
+      } else {
+        throw new Error("Failed to claim testnet $FUSE");
+      }
+    } catch (error: any) {
+      console.error(error);
+      throw error?.response?.status;
+    }
+  }
+);
+
 const airdropSlice = createSlice({
   name: "AIRDROP_STATE",
   initialState: INIT_STATE,
@@ -420,23 +451,29 @@ const airdropSlice = createSlice({
         state.isGeneratingTwitterAuthUrl = false;
       })
       .addCase(verifyAirdropQuest.pending, (state) => {
-        if (!state.selectedQuest.buttons) return;
-        state.selectedQuest.buttons[1].isLoading = true;
+        if (state.selectedQuest.buttons) {
+          state.selectedQuest.buttons[1].isLoading = true;
+        }
+        state.isVerifyingQuest = true;
       })
       .addCase(verifyAirdropQuest.fulfilled, (state) => {
-        if (!state.selectedQuest.buttons) return;
-        state.selectedQuest.buttons[1].isLoading = false;
-        state.selectedQuest.buttons[1].text = state.selectedQuest.buttons[1].success ?? "Verified";
+        if (state.selectedQuest.buttons) {
+          state.selectedQuest.buttons[1].isLoading = false;
+          state.selectedQuest.buttons[1].text = state.selectedQuest.buttons[1].success ?? "Verified";
+        }
+        state.isVerifyingQuest = false;
       })
       .addCase(verifyAirdropQuest.rejected, (state, action) => {
-        if (!state.selectedQuest.buttons) return;
-        state.selectedQuest.buttons[1].isLoading = false;
-        if (action.error.message === "409") {
-          state.selectedQuest.buttons[1].text = "Already Verified";
-          state.isQuestModalOpen = false;
-        } else {
-          state.selectedQuest.buttons[1].text = "Try Again Later";
+        if (state.selectedQuest.buttons) {
+          state.selectedQuest.buttons[1].isLoading = false;
+          if (action.error.message === "409") {
+            state.selectedQuest.buttons[1].text = "Already Verified";
+            state.isQuestModalOpen = false;
+          } else {
+            state.selectedQuest.buttons[1].text = "Try Again Later";
+          }
         }
+        state.isVerifyingQuest = false;
       })
       .addCase(joinAirdropWaitlist.pending, (state) => {
         state.isJoiningWaitlist = true;
@@ -447,6 +484,15 @@ const airdropSlice = createSlice({
       })
       .addCase(joinAirdropWaitlist.rejected, (state) => {
         state.isJoiningWaitlist = false;
+      })
+      .addCase(claimTestnetFuse.pending, (state) => {
+        state.isClaimingTestnetFuse = true;
+      })
+      .addCase(claimTestnetFuse.fulfilled, (state) => {
+        state.isClaimingTestnetFuse = false;
+      })
+      .addCase(claimTestnetFuse.rejected, (state) => {
+        state.isClaimingTestnetFuse = false;
       })
   },
 });

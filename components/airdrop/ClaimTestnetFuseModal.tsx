@@ -3,7 +3,7 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { generateAirdropTwitterAuthUrl, selectAirdropSlice, setIsClaimTestnetFuseModalOpen, verifyAirdropQuest } from "@/store/airdropSlice";
+import { claimTestnetFuse, generateAirdropTwitterAuthUrl, selectAirdropSlice, setIsClaimTestnetFuseModalOpen } from "@/store/airdropSlice";
 import Copy from "../ui/Copy";
 import Spinner from "../ui/Spinner";
 
@@ -114,9 +114,12 @@ const ClaimTestnetFuseModal = (): JSX.Element => {
               <button
                 className="w-full transition ease-in-out flex justify-center items-center gap-2 bg-fuse-black enabled:border-2 enabled:border-fuse-black rounded-full px-2 py-4 text-lg leading-none enabled:text-white font-bold enabled:hover:bg-[transparent] enabled:hover:text-black disabled:bg-lightest-gray"
                 disabled={!isTwitterFollowed}
-                onClick={() => dispatch(verifyAirdropQuest({endpoint: 'faucet-claim'}))}
+                onClick={() => dispatch(claimTestnetFuse())}
               >
                 Get 210$ Worth of $FUSE Testnet Token
+                {(airdropSlice.isClaimingTestnetFuse || airdropSlice.isVerifyingQuest) && (
+                  <Spinner />
+                )}
               </button>
             </div>
           </motion.div>
