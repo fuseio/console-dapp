@@ -2,7 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
 import { AirdropUser, AirdropLeaderboardUsers, AirdropQuest, CreateAirdropUser } from "@/lib/types";
 import { Address } from "viem";
-import { fetchAirdropLeaderboard, fetchAirdropTwitterAuthUrl, fetchAirdropUser, postAuthenticateAirdropUser, postCreateAirdropUser, postVerifyAirdropQuest } from "@/lib/api";
+import { fetchAirdropLeaderboard, fetchAirdropTwitterAuthUrl, fetchAirdropUser, postAuthenticateAirdropUser, postCreateAirdropUser, postJoinAirdropWaitlist, postVerifyAirdropQuest } from "@/lib/api";
 import { RootState } from "../store";
 import { defaultReferralCode } from "@/lib/helpers";
 
@@ -50,6 +50,7 @@ export interface AirdropStateType {
   twitterAuthUrl: string;
   isWaitlistModalOpen: boolean;
   isClaimTestnetFuseModalOpen: boolean;
+  isJoiningWaitlist: boolean;
 }
 
 const INIT_STATE: AirdropStateType = {
@@ -72,6 +73,7 @@ const INIT_STATE: AirdropStateType = {
   twitterAuthUrl: "",
   isWaitlistModalOpen: false,
   isClaimTestnetFuseModalOpen: false,
+  isJoiningWaitlist: false,
 }
 
 export const authenticateAirdropUser = createAsyncThunk<
@@ -257,6 +259,42 @@ export const verifyAirdropQuest = createAsyncThunk<
   }
 );
 
+export const joinAirdropWaitlist = createAsyncThunk<
+  any,
+  {
+    email: string;
+  },
+  { state: RootState }
+>(
+  "USER/JOIN_AIRDROP_WAITLIST",
+  async (
+    {
+      email
+    }: {
+      email: string;
+    },
+    thunkAPI
+  ) => {
+    try {
+      const state = thunkAPI.getState();
+      const airdropState: AirdropStateType = state.airdrop;
+      const joined = await postJoinAirdropWaitlist(airdropState.accessToken, email);
+      if (joined?.message) {
+        thunkAPI.dispatch(retrieveAirdropUser());
+        return joined;
+      } else {
+        throw new Error("Failed to join Airdrop waitlist");
+      }
+    } catch (error: any) {
+      if (error?.response?.status === 409) {
+        thunkAPI.dispatch(retrieveAirdropUser());
+      }
+      console.error(error);
+      throw error?.response?.status;
+    }
+  }
+);
+
 const airdropSlice = createSlice({
   name: "AIRDROP_STATE",
   initialState: INIT_STATE,
@@ -399,6 +437,16 @@ const airdropSlice = createSlice({
         } else {
           state.selectedQuest.buttons[1].text = "Try Again Later";
         }
+      })
+      .addCase(joinAirdropWaitlist.pending, (state) => {
+        state.isJoiningWaitlist = true;
+      })
+      .addCase(joinAirdropWaitlist.fulfilled, (state) => {
+        state.isJoiningWaitlist = false;
+        state.isWaitlistModalOpen = false;
+      })
+      .addCase(joinAirdropWaitlist.rejected, (state) => {
+        state.isJoiningWaitlist = false;
       })
   },
 });

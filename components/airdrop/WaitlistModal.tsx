@@ -3,7 +3,8 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { selectAirdropSlice, setIsWaitlistModalOpen } from "@/store/airdropSlice";
+import { joinAirdropWaitlist, selectAirdropSlice, setIsWaitlistModalOpen } from "@/store/airdropSlice";
+import Spinner from "../ui/Spinner";
 
 import close from "@/assets/close.svg";
 import emailIcon from "@/assets/email-orange.svg";
@@ -63,8 +64,11 @@ const WaitlistModal = (): JSX.Element => {
               </p>
               <form
                 className="flex bg-light-gray rounded-full mt-4"
-                onSubmit={(e) => {
+                onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
                   e.preventDefault();
+                  const form = e.target as HTMLFormElement;
+                  const emailInput = form.elements[0] as HTMLInputElement;
+                  dispatch(joinAirdropWaitlist({ email: emailInput.value }));
                 }}
               >
                 <input
@@ -73,8 +77,11 @@ const WaitlistModal = (): JSX.Element => {
                   className="w-full px-4 bg-light-gray rounded-full"
                   required
                 />
-                <button type="submit" className="transition-all ease-in-out bg-black border border-black text-white p-4 rounded-full hover:bg-light-gray hover:text-black">
-                  <RightArrow />
+                <button type="submit" className="transition-all ease-in-out flex bg-black border border-black text-white p-4 rounded-full hover:bg-light-gray hover:text-black">
+                  {airdropSlice.isJoiningWaitlist ?
+                    <Spinner /> :
+                    <RightArrow />
+                  }
                 </button>
               </form>
             </div>

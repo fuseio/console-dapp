@@ -231,3 +231,16 @@ export const postVerifyAirdropQuest = async (token: string, endpoint: string): P
     )
     return response.data
 }
+
+export const postJoinAirdropWaitlist = async (token: string, email: string): Promise<{ message: string }> => {
+    const response = await axios.post(
+        `${NEXT_PUBLIC_AIRDROP_API_BASE_URL}/join-waitlist`,
+        {email},
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    )
+    return response.data
+}

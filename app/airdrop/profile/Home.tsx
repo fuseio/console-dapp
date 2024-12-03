@@ -91,12 +91,12 @@ const Home = () => {
       id: "joinWaitlist",
       title: "Join Waitlist",
       point: 100,
-      frequency: "One-time",
+      frequency: "Once a day",
       image: joinWaitlist,
-      comingSoon: true,
+      isCustom: true,
     },
     {
-      id: "claimFuseOnFaucet",
+      id: "emberFaucet",
       title: "Claim FUSE on faucet",
       point: 50,
       frequency: "One-time",
@@ -114,8 +114,8 @@ const Home = () => {
     {
       id: "exploreVoltWallet",
       title: "Install the Volt wallet",
-      description: "The Volt wallet is the best mobile solution for interacting with the Fuse network, as it is built and developed by the Fuse team. Explore its features and get 20 points.  \n**Verify the quest 1 hour after completing it on Layer3**",
-      point: 20,
+      description: "The Volt wallet is the best mobile solution for interacting with the Fuse network, as it is built and developed by the Fuse team. Explore its features and get 200 points.  \n**Verify the quest 1 hour after completing it on Layer3**",
+      point: 200,
       frequency: "Up to 10 times a day",
       image: voltWallet,
       isEcosystem: true,
@@ -132,10 +132,10 @@ const Home = () => {
       ]
     },
     {
-      id: "exploreArtrific",
+      id: "exploreArtrificOnFuse",
       title: "Create an NFT on Artrific",
-      description: "Create an NFT on the leading NFT marketplace on Fuse Network and get 200 points  \n**Verify the quest 1 hour after completing it on Layer3**\n",
-      point: 200,
+      description: "Create an NFT on the leading NFT marketplace on Fuse Network and get 300 points  \n**Verify the quest 1 hour after completing it on Layer3**\n",
+      point: 300,
       frequency: "One-time",
       image: artrific,
       isEcosystem: true,
@@ -270,7 +270,11 @@ const Home = () => {
             <p className="text-sm max-w-48">
               Fuse is migrating to a zkEvm L2 (Fuse Ember) and taking its robust comunity with it
             </p>
-            <a className="group flex items-center gap-1 font-semibold" href="#">
+            <a
+              href="https://news.fuse.io/announcing-fuse-ember-and-our-updated-roadmap/"
+              target="_blank"
+              className="group flex items-center gap-1 font-semibold"
+            >
               Learn more
               <Image
                 src={rightCaret}
@@ -370,6 +374,22 @@ const Home = () => {
                       />
                     </CardItem>
                   </div>
+                </div>
+                <div className="flex flex-col gap-2.5 xl:gap-2">
+                  <CardItem
+                    as="p"
+                    translateZ="110"
+                    className="text-sm xl:text-xs text-text-dark-gray font-medium"
+                  >
+                    No. of my referrals
+                  </CardItem>
+                  <CardItem
+                    as="p"
+                    translateZ="70"
+                    className="truncate text-[1.25rem] xl:text-xl font-bold max-w-sm"
+                  >
+                    {user.referrals ?? 0}
+                  </CardItem>
                 </div>
               </div>
               <div className="flex justify-center items-end md:justify-end pb-10 xl:pb-[30px] md:pb-6">
