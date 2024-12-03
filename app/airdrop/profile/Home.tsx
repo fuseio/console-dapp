@@ -122,7 +122,7 @@ const Home = () => {
       buttons: [
         {
           text: "Go to Quest",
-          link: "https://app.layer3.xyz/quests/discover-volt-wallet",
+          link: "https://app.layer3.xyz/quests/explore-volt-wallet",
         },
         {
           text: "Verify Quest",
