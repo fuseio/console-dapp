@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useBalance, useBlockNumber } from "wagmi";
+import { formatUnits } from "viem";
 
 import Copy from "@/components/ui/Copy";
-import { convertTimestampToUTC, eclipseAddress, IS_SERVER, isFloat } from "@/lib/helpers";
+import { convertTimestampToUTC, eclipseAddress, evmDecimals, IS_SERVER, isFloat } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectAirdropSlice, setIsClaimTestnetFuseModalOpen } from "@/store/airdropSlice";
 import Avatar from "@/components/ui/Avatar";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/Card3D";
 import Quest from "@/components/airdrop/Quest";
 import { AirdropQuests } from "@/lib/types";
+import { flash } from "@/lib/web3Auth";
 
 import copyIcon from "@/assets/copy-gray.svg";
 import rightCaret from "@/assets/right-caret-black.svg";
@@ -33,6 +36,11 @@ const Home = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const twitterConnected = searchParams.get('twitter-connected');
+  const { data: blockNumber } = useBlockNumber({ watch: true });
+  const { data: balance, refetch } = useBalance({
+    address: user.walletAddress,
+    chainId: flash.id
+  });
 
   const [quests, setQuests] = useState<AirdropQuests>([
     {
@@ -91,7 +99,7 @@ const Home = () => {
       id: "joinWaitlist",
       title: "Join Waitlist",
       point: 100,
-      frequency: "Once a day",
+      frequency: "One-time",
       image: joinWaitlist,
       isCustom: true,
     },
@@ -99,9 +107,10 @@ const Home = () => {
       id: "emberFaucet",
       title: "Claim FUSE on faucet",
       point: 50,
-      frequency: "One-time",
+      frequency: "Once a day",
       image: fuseFaucet,
-      comingSoon: true,
+      isCustom: true,
+      completed: false
     },
     {
       id: "rouletteGame",
@@ -116,7 +125,7 @@ const Home = () => {
       title: "Install the Volt wallet",
       description: "The Volt wallet is the best mobile solution for interacting with the Fuse network, as it is built and developed by the Fuse team. Explore its features and get 200 points.  \n**Verify the quest 1 hour after completing it on Layer3**",
       point: 200,
-      frequency: "Up to 10 times a day",
+      frequency: "One-time",
       image: voltWallet,
       isEcosystem: true,
       buttons: [
@@ -192,6 +201,10 @@ const Home = () => {
     }
   }, [router, twitterAuthUrl])
 
+  useEffect(() => {
+    refetch();
+  }, [blockNumber, refetch])
+
   return (
     <div className="w-8/9 grow flex flex-col text-fuse-black my-16 xl:my-14 xl:w-9/12 md:w-9/10 max-w-7xl">
       <div className="flex justify-between items-center">
@@ -247,7 +260,7 @@ const Home = () => {
           </p>
           <div className="flex xl:flex-col items-center gap-4 mt-6 xl:mt-2 mb-2 lg:m-0">
             <p className="text-5xl xl:text-4xl leading-none font-bold">
-              0 $FUSE
+              {formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0"} $FUSE
             </p>
             <button
               className="transition ease-in-out bg-fuse-black border border-fuse-black rounded-full leading-none text-white font-semibold px-6 py-3 hover:bg-[transparent] hover:text-fuse-black"

@@ -235,10 +235,23 @@ export const postVerifyAirdropQuest = async (token: string, endpoint: string): P
 export const postJoinAirdropWaitlist = async (token: string, email: string): Promise<{ message: string }> => {
     const response = await axios.post(
         `${NEXT_PUBLIC_AIRDROP_API_BASE_URL}/join-waitlist`,
-        {email},
+        { email },
         {
             headers: {
                 "Authorization": `Bearer ${token}`
+            }
+        }
+    )
+    return response.data
+}
+
+export const postClaimTestnetFuse = async (walletAddress: Address): Promise<{ msg: string }> => {
+    const response = await axios.post(
+        'https://faucet.flash.fuse.io/api/claim',
+        { address: walletAddress },
+        {
+            headers: {
+                'Content-Type': 'application/json'
             }
         }
     )
