@@ -64,7 +64,7 @@ function QuestItem({ quest }: QuestProps) {
             <CardItem
               translateZ="50"
               as="p"
-              className="text-2xl leading-none font-bold"
+              className="text-start text-2xl leading-none font-bold"
             >
               {quest.title}
             </CardItem>

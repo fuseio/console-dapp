@@ -429,6 +429,7 @@ export type AirdropQuest = {
   frequency: string;
   description?: string;
   completed?: boolean;
+  isEcosystem?: boolean;
   buttons?: AirdropButton[];
   comingSoon?: boolean;
 }
