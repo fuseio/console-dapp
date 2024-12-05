@@ -48,7 +48,7 @@ const ClaimTestnetFuseModal = (): JSX.Element => {
             <div className="flex flex-col gap-10 px-10 py-12">
               <div className="flex justify-between items-start">
                 <p className="text-[2.125rem] leading-none font-semibold">
-                  Get Some $FUSE
+                  Get FUSE on testnet
                 </p>
                 <Image
                   src={close}
@@ -96,7 +96,7 @@ const ClaimTestnetFuseModal = (): JSX.Element => {
               </div>
               <div className="flex flex-col gap-4">
                 <p className="text-[1.25rem] leading-none text-text-dark-gray font-medium">
-                  Your smart wallet address
+                  Your wallet address
                 </p>
                 <button className="w-full flex justify-between items-center gap-2 bg-white rounded-full px-6 py-6 leading-none font-medium">
                   <span className="md:hidden">
@@ -116,7 +116,7 @@ const ClaimTestnetFuseModal = (): JSX.Element => {
                 disabled={!isTwitterFollowed}
                 onClick={() => dispatch(claimTestnetFuse())}
               >
-                Get 210$ Worth of $FUSE Testnet Token
+                Get 1 FUSE token on Flash Testnet
                 {(airdropSlice.isClaimingTestnetFuse || airdropSlice.isVerifyingQuest) && (
                   <Spinner />
                 )}

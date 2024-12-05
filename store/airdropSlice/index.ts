@@ -2,7 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
 import { AirdropUser, AirdropLeaderboardUsers, AirdropQuest, CreateAirdropUser } from "@/lib/types";
 import { Address } from "viem";
-import { fetchAirdropLeaderboard, fetchAirdropTwitterAuthUrl, fetchAirdropUser, postAuthenticateAirdropUser, postClaimTestnetFuse, postCreateAirdropUser, postJoinAirdropWaitlist, postVerifyAirdropQuest } from "@/lib/api";
+import { fetchAirdropLeaderboard, fetchAirdropTwitterAuthUrl, fetchAirdropUser, fetchReferralCount, postAuthenticateAirdropUser, postClaimTestnetFuse, postCreateAirdropUser, postJoinAirdropWaitlist, postVerifyAirdropQuest } from "@/lib/api";
 import { RootState } from "../store";
 import { defaultReferralCode } from "@/lib/helpers";
 
@@ -53,6 +53,8 @@ export interface AirdropStateType {
   isClaimTestnetFuseModalOpen: boolean;
   isJoiningWaitlist: boolean;
   isClaimingTestnetFuse: boolean;
+  referrals: number;
+  isFetchingReferral: boolean;
 }
 
 const INIT_STATE: AirdropStateType = {
@@ -78,6 +80,8 @@ const INIT_STATE: AirdropStateType = {
   isClaimTestnetFuseModalOpen: false,
   isJoiningWaitlist: false,
   isClaimingTestnetFuse: false,
+  referrals: 0,
+  isFetchingReferral: false,
 }
 
 export const authenticateAirdropUser = createAsyncThunk<
@@ -169,6 +173,7 @@ export const retrieveAirdropUser = createAsyncThunk<
     try {
       const fetchedUser = await fetchAirdropUser(airdropState.accessToken);
       if (fetchedUser?.id) {
+        thunkAPI.dispatch(fetchReferral());
         return fetchedUser;
       } else {
         throw new Error("Failed to retrieve Airdrop user");
@@ -319,6 +324,28 @@ export const claimTestnetFuse = createAsyncThunk<
       } else {
         throw new Error("Failed to claim testnet $FUSE");
       }
+    } catch (error: any) {
+      console.error(error);
+      throw error?.response?.status;
+    }
+  }
+);
+
+export const fetchReferral = createAsyncThunk<
+  any,
+  undefined,
+  { state: RootState }
+>(
+  "USER/FETCH_REFERRAL",
+  async (
+    _,
+    thunkAPI
+  ) => {
+    try {
+      const state = thunkAPI.getState();
+      const airdropState: AirdropStateType = state.airdrop;
+      const referral = await fetchReferralCount(airdropState.accessToken);
+      return referral.count;
     } catch (error: any) {
       console.error(error);
       throw error?.response?.status;
@@ -493,6 +520,16 @@ const airdropSlice = createSlice({
       })
       .addCase(claimTestnetFuse.rejected, (state) => {
         state.isClaimingTestnetFuse = false;
+      })
+      .addCase(fetchReferral.pending, (state) => {
+        state.isFetchingReferral = true;
+      })
+      .addCase(fetchReferral.fulfilled, (state, action) => {
+        state.isFetchingReferral = false;
+        state.referrals = action.payload;
+      })
+      .addCase(fetchReferral.rejected, (state) => {
+        state.isFetchingReferral = false;
       })
   },
 });
