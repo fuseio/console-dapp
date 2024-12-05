@@ -27,12 +27,15 @@ import fuseFaucet from "@/assets/fuse-faucet.svg";
 import rouletteGame from "@/assets/roulette-game.svg";
 import verifyDiscord from "@/assets/verify-discord.svg";
 import joinTelegram from "@/assets/join-telegram.svg";
-import voltWallet from "@/assets/volt-wallet.svg";
+import volt from "@/assets/volt-wallet.svg";
 import artrific from "@/assets/artrific.svg";
+import gooddollar from "@/assets/gooddollar.svg";
+import shoebill from "@/assets/shoebill.svg";
+import meridian from "@/assets/meridian.svg";
 
 const Home = () => {
   const dispatch = useAppDispatch();
-  const { user, twitterAuthUrl } = useAppSelector(selectAirdropSlice);
+  const { user, twitterAuthUrl, isRetrieving, isFetchingReferral, referrals } = useAppSelector(selectAirdropSlice);
   const router = useRouter();
   const searchParams = useSearchParams();
   const twitterConnected = searchParams.get('twitter-connected');
@@ -126,7 +129,7 @@ const Home = () => {
       description: "The Volt wallet is the best mobile solution for interacting with the Fuse network, as it is built and developed by the Fuse team. Explore its features and get 200 points.  \n**Verify the quest 1 hour after completing it on Layer3**",
       point: 200,
       frequency: "One-time",
-      image: voltWallet,
+      image: volt,
       isEcosystem: true,
       buttons: [
         {
@@ -156,8 +159,80 @@ const Home = () => {
         {
           text: "Verify Quest",
           isFunction: true,
-          endpoint: "explore-artrific",
+          endpoint: "explore-artrific-on-fuse",
         }
+      ]
+    },
+    {
+      id: "g$Claim",
+      title: "Claim G$ on GoodDapp",
+      description: "To get 30 points daily, you need to take 6 steps:  \n**Step 1:**\nGo to quest on the Layer3 platform  \n**Step 2:**\nConnect to Layer3 a wallet participating in the airdrop  \n**Step 3:**\nGo to GoodDapp  \n**Step 4:**\nClaim G$ token on Fuse Network  \n**Step 5:**\nVerify quest completion on the Layer3  \n**Step 6:**\nRepeat every day. After 5 claims, the quest will renew automatically and allow you to claim more and more.  \n**Verify the quest 1 hour after completing it on Layer3**",
+      point: 30,
+      frequency: "Multiple",
+      image: gooddollar,
+      isEcosystem: true,
+      buttons: [
+        {
+          text: "Go to Quest",
+          link: "https://app.layer3.xyz/streaks/claim-dollarg",
+        },
+        {
+          text: "Verify Quest",
+          isFunction: true,
+          endpoint: "gooddollar",
+        }
+      ]
+    },
+    {
+      id: "exploreShoebillOnFuse",
+      title: "Explore Shoebill on Fuse",
+      description: "Explore Shoebill Finance capabilities and get 200 points.  \n**Verify the quest 1 hour after completing it on Layer3**",
+      point: 200,
+      frequency: "One-time",
+      image: shoebill,
+      isEcosystem: true,
+      buttons: [
+        {
+          text: "Go to Quest",
+          link: "https://app.layer3.xyz/quests/explore-shoebill-finance-on-fuse-network",
+        },
+        {
+          text: "Verify Quest",
+          isFunction: true,
+          endpoint: "explore-shoebill-on-fuse",
+        }
+      ]
+    },
+    {
+      id: "provideMeridianLiquidity",
+      title: "Lend on Meridian",
+      description: "Lend on Meridian & Multiply your points easily with these quick steps  \n**Step 1**\nBridge funds to Fuse Network using the Fuse bridge = 4 points per $1, available once per day.  \n**Step 2**\nVisit the Meridian Finance lending markets  \n**Step 3**\nDouble your points by lending bridged funds in any market = 12 points per $1 of the bridged funds, available once per day.",
+      point: 12,
+      frequency: "Multiple",
+      image: meridian,
+      isEcosystem: true,
+      comingSoon: true,
+      buttons: [
+        {
+          text: "Go to Meridian Lend",
+          link: "https://lend.meridianfinance.net/markets/",
+        },
+      ]
+    },
+    {
+      id: "borrowOnMeridian",
+      title: "Borrow on Meridian",
+      description: "Borrow any asset on Meridian to get 12 points per $1 borrowed every day.  \n**Points will begin to accrue 24 hours after the borrow transaction.**",
+      point: 12,
+      frequency: "Multiple",
+      image: meridian,
+      isEcosystem: true,
+      comingSoon: true,
+      buttons: [
+        {
+          text: "Go to Meridian Borrow",
+          link: "https://lend.meridianfinance.net/borrow/",
+        },
       ]
     },
   ])
@@ -314,14 +389,14 @@ const Home = () => {
                     translateZ="70"
                     className="text-2xl leading-none font-bold"
                   >
-                    Get FUSE on Flash Testnet
+                    Get FUSE on testnet
                   </CardItem>
                   <CardItem
                     as="p"
                     translateZ="90"
-                    className="text-lg leading-none text-ash-gray font-medium max-w-[22rem]"
+                    className="text-lg leading-none text-ash-gray font-medium max-w-80"
                   >
-                    Get some $FUSE from our faucet. you can request 210 per week.
+                    Get FUSE on the faucet. You can request every minute.
                   </CardItem>
                 </div>
                 <CardItem
@@ -401,7 +476,9 @@ const Home = () => {
                     translateZ="70"
                     className="truncate text-[1.25rem] xl:text-xl font-bold max-w-sm"
                   >
-                    {user.referrals ?? 0}
+                    {(isRetrieving || isFetchingReferral) ?
+                      <span className="px-10 py-4 rounded-2xl animate-pulse bg-black/20"></span>
+                      : referrals ?? user.referrals ?? 0}
                   </CardItem>
                 </div>
               </div>

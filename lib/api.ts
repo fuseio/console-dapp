@@ -257,3 +257,15 @@ export const postClaimTestnetFuse = async (walletAddress: Address): Promise<{ ms
     )
     return response.data
 }
+
+export const fetchReferralCount = async (token: string): Promise<{ count: number }> => {
+    const response = await axios.get(
+        `${NEXT_PUBLIC_AIRDROP_API_BASE_URL}/referral-count`,
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    )
+    return response.data
+}
