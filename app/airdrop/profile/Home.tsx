@@ -184,6 +184,26 @@ const Home = () => {
       ]
     },
     {
+      id: "exploreVoltageDex",
+      title: "Explore Voltage Finance",
+      description: "Trade, invest, and earn with just a few clicks.  \n**Verify the quest 1 hour after completing it on Layer3**",
+      point: 200,
+      frequency: "One-time",
+      image: volt,
+      isEcosystem: true,
+      buttons: [
+        {
+          text: "Go to Quest",
+          link: "https://app.layer3.xyz/quests/voltage-on-fuse-network",
+        },
+        {
+          text: "Verify Quest",
+          isFunction: true,
+          endpoint: "explore-voltage-dex",
+        }
+      ]
+    },
+    {
       id: "exploreShoebillOnFuse",
       title: "Explore Shoebill on Fuse",
       description: "Explore Shoebill Finance capabilities and get 200 points.  \n**Verify the quest 1 hour after completing it on Layer3**",

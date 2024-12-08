@@ -1,7 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
 import { AirdropUser, AirdropLeaderboardUsers, AirdropQuest, CreateAirdropUser } from "@/lib/types";
-import { Address } from "viem";
+import { Address, getAddress } from "viem";
 import { fetchAirdropLeaderboard, fetchAirdropTwitterAuthUrl, fetchAirdropUser, fetchReferralCount, postAuthenticateAirdropUser, postClaimTestnetFuse, postCreateAirdropUser, postJoinAirdropWaitlist, postVerifyAirdropQuest } from "@/lib/api";
 import { RootState } from "../store";
 import { defaultReferralCode } from "@/lib/helpers";
@@ -317,7 +317,7 @@ export const claimTestnetFuse = createAsyncThunk<
     try {
       const state = thunkAPI.getState();
       const airdropState: AirdropStateType = state.airdrop;
-      const claimed = await postClaimTestnetFuse(airdropState.user.walletAddress);
+      const claimed = await postClaimTestnetFuse(getAddress(airdropState.user.walletAddress));
       if (claimed?.msg) {
         thunkAPI.dispatch(verifyAirdropQuest({ endpoint: 'faucet-claim' }));
         return claimed;
@@ -517,6 +517,7 @@ const airdropSlice = createSlice({
       })
       .addCase(claimTestnetFuse.fulfilled, (state) => {
         state.isClaimingTestnetFuse = false;
+        state.isClaimTestnetFuseModalOpen = false;
       })
       .addCase(claimTestnetFuse.rejected, (state) => {
         state.isClaimingTestnetFuse = false;
