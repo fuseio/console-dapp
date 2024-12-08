@@ -5,7 +5,7 @@ import { useBalance, useBlockNumber } from "wagmi";
 import { formatUnits } from "viem";
 
 import Copy from "@/components/ui/Copy";
-import { convertTimestampToUTC, eclipseAddress, evmDecimals, IS_SERVER, isFloat } from "@/lib/helpers";
+import { convertTimestampToUTC, eclipseAddress, evmDecimals, IS_SERVER, isFloat, isTwitterFollowed } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectAirdropSlice, setIsClaimTestnetFuseModalOpen } from "@/store/airdropSlice";
 import Avatar from "@/components/ui/Avatar";
@@ -516,7 +516,7 @@ const Home = () => {
       </div>
       <div className="flex flex-col gap-8 xl:gap-6 mt-24 xl:mt-16">
         <h2 className="text-3xl font-semibold">
-          Earn ember points
+          {isTwitterFollowed(user) ? "Earn ember points" : "Follow Fuse on X to unlock quests"}
         </h2>
         <div className="grid grid-cols-3 md:grid-cols-1 auto-rows-min gap-[30px] xl:gap-5">
           {quests.filter((quest) => !quest.isEcosystem).map((quest) => (
@@ -526,7 +526,7 @@ const Home = () => {
       </div>
       <div className="flex flex-col gap-8 xl:gap-6 mt-24 xl:mt-16">
         <h2 className="text-3xl font-semibold">
-          Explore the Fuse ecosystem
+          {isTwitterFollowed(user) ? "Explore the Fuse ecosystem" : "Follow Fuse on X to unlock ecosystem quests"}
         </h2>
         <div className="grid grid-cols-3 md:grid-cols-1 auto-rows-min gap-[30px] xl:gap-5">
           {quests.filter((quest) => quest.isEcosystem).map((quest) => (

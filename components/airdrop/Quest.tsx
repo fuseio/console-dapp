@@ -4,10 +4,11 @@ import Image from "next/image";
 import React from "react";
 import { CardBody, CardContainer, CardItem } from "../ui/Card3D";
 import { AirdropQuest } from "@/lib/types";
-import { useAppDispatch } from "@/store/store";
-import { setIsClaimTestnetFuseModalOpen, setIsQuestModalOpen, setIsWaitlistModalOpen, setSelectedQuest } from "@/store/airdropSlice";
+import { useAppDispatch, useAppSelector } from "@/store/store";
+import { selectAirdropSlice, setIsClaimTestnetFuseModalOpen, setIsQuestModalOpen, setIsWaitlistModalOpen, setSelectedQuest } from "@/store/airdropSlice";
 import checkmark from "@/assets/checkmark-orange.svg";
 import fire from "@/assets/fire.svg";
+import { isTwitterFollowed } from "@/lib/helpers";
 
 type QuestProps = {
   quest: AirdropQuest;
@@ -19,6 +20,8 @@ type Custom = {
 
 function QuestItem({ quest }: QuestProps) {
   const dispatch = useAppDispatch();
+  const airdropSlice = useAppSelector(selectAirdropSlice);
+  const isTwitter = quest.id === "followFuseOnTwitter" || isTwitterFollowed(airdropSlice.user);
 
   const custom: Custom = {
     "joinWaitlist": {
@@ -35,11 +38,11 @@ function QuestItem({ quest }: QuestProps) {
 
   return (
     <CardContainer containerClassName="block p-0 h-full" className="block h-full">
-      <CardBody className="bg-white rounded-[20px] w-auto h-full p-8 md:p-6">
+      <CardBody className={`bg-white rounded-[20px] w-auto h-full p-8 md:p-6 ${isTwitter ? "" : "grayscale"}`}>
         <CardItem
           as="button"
           translateZ="40"
-          disabled={quest.completed || quest.comingSoon}
+          disabled={quest.completed || quest.comingSoon || !isTwitter}
           className={`relative flex flex-col gap-2 w-full h-[inherit] min-h-[346px] xl:min-h-[277px] ${quest.comingSoon ? "justify-between" : "justify-end"}`}
           onClick={() => {
             if (quest.completed) {
