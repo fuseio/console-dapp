@@ -77,6 +77,9 @@ const config: Config = {
       "gray-goose": "#CFCFCF",
       "dune": "#333333",
       "dove-gray": "#6B6B6B",
+      "bean-red": "#F65D51",
+      "antique-white": "#FFECDA",
+      "ash-gray": "#B9B9B9",
     },
     fontFamily: {
       mona: ["var(--font-mona-sans)"],
@@ -99,6 +102,7 @@ const config: Config = {
       },
       animation: {
         "fade-in": "fadeIn 0.5s ease-in-out",
+        'blink-underline': 'blink 1s linear infinite',
       },
       transform: ["group-hover"],
       gridTemplateColumns: {
@@ -110,6 +114,10 @@ const config: Config = {
       },
       boxShadow: {
         'inner-black': 'inset 0px 0px 0px 3px rgba(0,0,0,0.3)',
+      },
+      backgroundImage: {
+        'linear-gradient-orange': "linear-gradient(122deg, rgba(246, 93, 81, 0.20) 5.66%, rgba(246, 93, 81, 0.00) 24.99%)",
+        'linear-gradient-dark-orange': 'linear-gradient(92deg, #F7A454 0%, #F66957 100%)',
       }
     },
   },

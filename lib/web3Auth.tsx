@@ -21,6 +21,19 @@ import { metaMask } from 'wagmi/connectors';
 import { hex, detectDevice, IS_ETHEREUM_OBJECT_DETECTED } from "./helpers";
 import { Web3AuthSocialConnector } from "./connectors/social";
 import { Web3AuthEmailConnector } from "./connectors/email";
+import { defineChain } from "viem";
+
+export const flash = defineChain({
+  id: 1264453517,
+  name: 'Flash',
+  nativeCurrency: { name: 'Fuse', symbol: 'FUSE', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://rpc.flash.fuse.io'] },
+  },
+  blockExplorers: {
+    default: { name: 'Flash Explorer', url: 'https://explorer.flash.fuse.io' },
+  },
+})
 
 const chains: readonly [Chain, ...Chain[]] = [
   fuse,
@@ -30,6 +43,7 @@ const chains: readonly [Chain, ...Chain[]] = [
   mainnet,
   bsc,
   base,
+  flash,
 ]
 
 export const config = createConfig({
@@ -66,6 +80,7 @@ export const config = createConfig({
     [mainnet.id]: http(),
     [bsc.id]: http(),
     [base.id]: http(),
+    [flash.id]: http(),
   },
 })
 
