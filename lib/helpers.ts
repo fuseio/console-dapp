@@ -1,7 +1,7 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { TransactionType } from "@/store/transactionsSlice";
-import { WalletType } from "./types";
+import { AirdropUser, WalletType } from "./types";
 
 export const eclipseAddress = (address: string): string => {
   return (
@@ -125,4 +125,8 @@ export function isFloat(value: unknown) {
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export const isTwitterFollowed = (user: AirdropUser) => {
+  return user.completedQuests?.find((quest) => quest.type === "followFuseOnTwitter");
 }
