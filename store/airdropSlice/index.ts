@@ -25,9 +25,8 @@ const initUser: AirdropUser = {
 const initQuest: AirdropQuest = {
   id: "",
   title: "",
-  point: 0,
+  point: "",
   image: "",
-  frequency: "",
 }
 
 export interface AirdropStateType {
