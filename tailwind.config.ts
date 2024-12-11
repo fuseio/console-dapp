@@ -80,6 +80,8 @@ const config: Config = {
       "bean-red": "#F65D51",
       "antique-white": "#FFECDA",
       "ash-gray": "#B9B9B9",
+      "pale-slate": "#BFBFBF",
+      "stoplight-go-green": "#66E070",
     },
     fontFamily: {
       mona: ["var(--font-mona-sans)"],
@@ -118,6 +120,8 @@ const config: Config = {
       backgroundImage: {
         'linear-gradient-orange': "linear-gradient(122deg, rgba(246, 93, 81, 0.20) 5.66%, rgba(246, 93, 81, 0.00) 24.99%)",
         'linear-gradient-dark-orange': 'linear-gradient(92deg, #F7A454 0%, #F66957 100%)',
+        'linear-gradient-green': "linear-gradient(122deg, rgba(102, 224, 112, 0.20) 5.66%, rgba(102, 224, 112, 0.00) 24.99%)",
+        'linear-gradient-black': 'linear-gradient(180deg, #585858 0%, #000 81.5%)',
       }
     },
   },

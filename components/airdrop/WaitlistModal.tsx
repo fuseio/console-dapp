@@ -39,7 +39,7 @@ const WaitlistModal = (): JSX.Element => {
             transition={{
               duration: 0.3,
             }}
-            className="bg-white bg-linear-gradient-orange text-center min-h-[500px] w-[400px] max-w-[95%] z-50 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-2xl"
+            className="bg-white bg-linear-gradient-green text-center min-h-[500px] w-[400px] max-w-[95%] z-50 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-2xl"
           >
             <Image
               src={close}
