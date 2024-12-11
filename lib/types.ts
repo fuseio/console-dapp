@@ -424,9 +424,9 @@ export type AirdropButton = {
 export type AirdropQuest = {
   id: string;
   title: string;
-  point: number;
+  point: string;
   image: string | StaticImageData;
-  frequency: string;
+  frequency?: string;
   description?: string;
   completed?: boolean;
   isEcosystem?: boolean;

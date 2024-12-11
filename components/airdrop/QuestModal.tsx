@@ -6,13 +6,33 @@ import Image from "next/image";
 import close from "@/assets/close.svg";
 import Spinner from "../ui/Spinner";
 import Markdown from "react-markdown";
-import fire from "@/assets/fire.svg";
+import pointHexagon from "@/assets/fuse-foundation-point-hexagon.svg";
 
 type QuestDescriptions = {
   [key: string]: React.ReactNode;
 }
 
-const questDescriptions: QuestDescriptions = {}
+const BridgeDescription = () => {
+  return (
+    <div className="flex flex-col gap-[30px]">
+      <p>
+        Get 4 points daily for reach $1 bridged to Fuse
+      </p>
+      <div className="flex flex-col gap-2.5">
+        <p className="font-bold">Quest conditions:</p>
+        <ul className="list-disc max-w-[378px] text-left">
+          <li>Bridge FUSE, USDC, UDST or ETH token</li>
+          <li>{"Points begin accumulating after >24 hours pass from the bridging transaction"}</li>
+          <li>Do not swap or stake bridged assets on Console dApp</li>
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+const questDescriptions: QuestDescriptions = {
+  "bridge": <BridgeDescription />
+}
 
 const QuestModal = (): JSX.Element => {
   const { isQuestModalOpen, selectedQuest } = useAppSelector(selectAirdropSlice);
@@ -55,7 +75,7 @@ const QuestModal = (): JSX.Element => {
             transition={{
               duration: 0.3,
             }}
-            className="bg-white bg-linear-gradient-orange h-fit max-h-[98%] overflow-y-auto w-[519px] xl:w-[415px] max-w-[95%] z-[80] absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-2xl"
+            className="bg-white bg-linear-gradient-green h-fit max-h-[98%] overflow-y-auto w-[519px] xl:w-[415px] max-w-[95%] z-[80] absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-2xl"
           >
             <div className="absolute top-5 right-9 xl:right-7 z-10">
               <Image
@@ -79,7 +99,7 @@ const QuestModal = (): JSX.Element => {
                 <p className="text-2xl xl:text-xl leading-none font-bold mt-8 max-w-md xl:max-w-xs">
                   {selectedQuest.title}
                 </p>
-                <div className="text-lg xl:text-base leading-6 text-pale-slate font-medium max-w-md xl:max-w-xs mt-5 whitespace-pre-wrap">
+                <div className="text-lg xl:text-base leading-6 text-fuse-black font-medium max-w-md xl:max-w-xs mt-5 whitespace-pre-wrap">
                   {
                     questDescriptions[selectedQuest.id] ??
                     <Markdown>{selectedQuest.description}</Markdown>
@@ -87,13 +107,13 @@ const QuestModal = (): JSX.Element => {
                 </div>
                 <div className="flex items-end self-start gap-2 text-left mt-12 ml-8 max-w-md xl:max-w-xs">
                   <Image
-                    src={fire}
-                    alt="fire"
+                    src={pointHexagon}
+                    alt="point hexagon"
                     width={22}
                     height={28}
                   />
                   <p className="text-2xl xl:text-lg leading-none font-bold">
-                    {selectedQuest.point} Points
+                    {selectedQuest.point}
                   </p>
                 </div>
               </div>

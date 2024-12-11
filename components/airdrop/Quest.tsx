@@ -6,8 +6,8 @@ import { CardBody, CardContainer, CardItem } from "../ui/Card3D";
 import { AirdropQuest } from "@/lib/types";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectAirdropSlice, setIsClaimTestnetFuseModalOpen, setIsQuestModalOpen, setIsWaitlistModalOpen, setSelectedQuest } from "@/store/airdropSlice";
-import checkmark from "@/assets/checkmark-orange.svg";
-import fire from "@/assets/fire.svg";
+import checkBackground from "@/assets/check-background-black.svg";
+import pointHexagon from "@/assets/fuse-foundation-point-hexagon.svg";
 import { isTwitterFollowed } from "@/lib/helpers";
 
 type QuestProps = {
@@ -66,28 +66,34 @@ function QuestItem({ quest }: QuestProps) {
               </CardItem>
             </div>
           )}
-          <div className="relative flex justify-center items-center w-full">
-            <CardItem translateZ="40">
-              <Image
-                src={quest.image}
-                alt={quest.title}
-              />
+          {quest.completed &&
+            <CardItem translateZ="100" className="w-full flex justify-end">
+              <div className="group relative cursor-pointer flex justify-center items-center">
+                <Image
+                  src={checkBackground}
+                  alt="check"
+                  width={38}
+                  height={38}
+                />
+                <div className="tooltip-text-black hidden bottom-16 absolute bg-black p-4 rounded-2xl w-[130px] shadow-lg group-hover:block text-white text-sm font-medium">
+                  <p>
+                    Task complete
+                  </p>
+                </div>
+              </div>
             </CardItem>
-            {quest.completed &&
-              <Image
-                src={checkmark}
-                alt="checkmark"
-                width={74}
-                height={74}
-                className="absolute bottom-[10%] right-[20%]"
-              />
-            }
-          </div>
+          }
+          <CardItem translateZ="40" className="w-full flex justify-center items-center">
+            <Image
+              src={quest.image}
+              alt={quest.title}
+            />
+          </CardItem>
           <div className="flex flex-col gap-3.5">
             <CardItem
               translateZ="50"
               as="p"
-              className="text-start text-2xl leading-none font-bold"
+              className="text-start text-2xl leading-none font-semibold"
             >
               {quest.title}
             </CardItem>
@@ -97,21 +103,23 @@ function QuestItem({ quest }: QuestProps) {
                 className="flex items-end gap-1"
               >
                 <Image
-                  src={fire}
-                  alt="fire"
+                  src={pointHexagon}
+                  alt="point hexagon"
                   width={18}
                   height={22}
                 />
-                <p className="text-lg leading-none text-bean-red font-bold">
-                  {quest.point} Points
+                <p className="text-lg leading-none text-stoplight-go-green font-bold">
+                  {quest.point}
                 </p>
               </CardItem>
-              <CardItem
-                translateZ="50"
-                className="bg-antique-white rounded-full px-2.5 py-1.5 text-sm leading-none text-bean-red font-semibold"
-              >
-                {quest.frequency}
-              </CardItem>
+              {quest.frequency && (
+                <CardItem
+                  translateZ="50"
+                  className="bg-modal-bg rounded-full px-2.5 py-1.5 text-sm leading-none text-text-dark-gray font-semibold"
+                >
+                  {quest.frequency}
+                </CardItem>
+              )}
             </div>
           </div>
         </CardItem>
