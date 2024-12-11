@@ -127,25 +127,6 @@ const Home = () => {
       ]
     },
     {
-      id: "g$Claim",
-      title: "Claim G$ on GoodDapp",
-      description: "To get 30 points daily, you need to take 6 steps:  \n**Step 1:**\nGo to quest on the Layer3 platform  \n**Step 2:**\nConnect to Layer3 a wallet participating in the airdrop  \n**Step 3:**\nGo to GoodDapp  \n**Step 4:**\nClaim G$ token on Fuse Network  \n**Step 5:**\nVerify quest completion on the Layer3  \n**Step 6:**\nRepeat every day. After 5 claims, the quest will renew automatically and allow you to claim more and more.  \n**Verify the quest 1 hour after completing it on Layer3**",
-      point: "30 Points",
-      frequency: "Multiple",
-      image: gooddollar,
-      buttons: [
-        {
-          text: "Go to Quest",
-          link: "https://app.layer3.xyz/streaks/claim-dollarg",
-        },
-        {
-          text: "Verify Quest",
-          isFunction: true,
-          endpoint: "gooddollar",
-        }
-      ]
-    },
-    {
       id: "exploreVoltageDex",
       title: "Explore Voltage Finance",
       description: "Trade, invest, and earn with just a few clicks.  \n**Verify the quest 1 hour after completing it on Layer3**",
@@ -214,7 +195,7 @@ const Home = () => {
       title: "Lend on Shoebill Finance",
       description: "To multiply you points you need to take 3 simple steps:  \n**Step 1**\nBridge funds to the Fuse Network using Fuse bridge = 4 points per $1, available once per day.  \n**Step 2**\nGo to Shoebill Finance on Fuse Network  \n**Step 3**\nDouble your points by supplying FUSE or sFUSE tokens = 12 points per $1 of the bridged funds, available once per day.",
       point: "12 points per $1 in pool daily",
-      image: meridian,
+      image: shoebill,
       buttons: [
         {
           text: "Go to Shoebill Finance",
