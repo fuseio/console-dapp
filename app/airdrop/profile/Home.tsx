@@ -23,7 +23,6 @@ import verifyDiscord from "@/assets/verify-discord-green.svg";
 import joinTelegram from "@/assets/join-telegram-green.svg";
 import volt from "@/assets/volt-wallet-green.svg";
 import artrific from "@/assets/artrific-green.svg";
-import gooddollar from "@/assets/gooddollar-green.svg";
 import shoebill from "@/assets/shoebill-green.svg";
 import meridian from "@/assets/meridian-green.svg";
 import Link from "next/link";
