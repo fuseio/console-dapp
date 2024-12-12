@@ -21,12 +21,13 @@ const Airdrop = () => {
 
   useEffect(() => {
     if (airdropSlice.isUser) {
-      router.push(path.AIRDROP_PROFILE)
+      router.push(path.AIRDROP_FOUNDATION)
     }
   }, [airdropSlice.isUser, router]);
 
   return (
-    <div className="font-mona w-full min-h-screen flex-col flex items-center bg-light-gray bg-[url('/vectors/airdrop-background.svg')] bg-cover bg-center bg-no-repeat">
+    <div className="font-mona w-full min-h-screen relative flex-col flex items-center bg-modal-bg isolate">
+      <div className="absolute top-0 left-0 bg-linear-gradient-gray w-full h-[64.688rem] -z-10"></div>
       <Topbar />
       <Home />
     </div>

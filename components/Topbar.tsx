@@ -12,12 +12,12 @@ import { selectAirdropSlice } from "@/store/airdropSlice";
 
 const AirdropSubmenu = [
   {
-    title: "Profile",
-    link: "/airdrop/profile",
-  },
-  {
     title: "Leaderboard",
     link: "/airdrop/leaderboard",
+  },
+  {
+    title: "Foundation",
+    link: "/airdrop/foundation",
   },
 ]
 
@@ -56,7 +56,7 @@ const Topbar = () => {
           return { ...item, link: path.DASHBOARD }
         }
         if (item.link === path.AIRDROP && airdropSlice.isUser) {
-          return { ...item, link: path.AIRDROP_PROFILE, submenu: AirdropSubmenu }
+          return { ...item, link: path.AIRDROP_FOUNDATION, submenu: AirdropSubmenu }
         }
         return item
       }
