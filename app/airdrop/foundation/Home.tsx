@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 import Copy from "@/components/ui/Copy";
 import { convertTimestampToUTC, IS_SERVER, isFloat, isTwitterFollowed, path } from "@/lib/helpers";
@@ -25,7 +26,6 @@ import volt from "@/assets/volt-wallet-green.svg";
 import artrific from "@/assets/artrific-green.svg";
 import shoebill from "@/assets/shoebill-green.svg";
 import meridian from "@/assets/meridian-green.svg";
-import Link from "next/link";
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -244,13 +244,13 @@ const Home = () => {
   }, [router, twitterAuthUrl])
 
   return (
-    <div className="w-8/9 grow flex flex-col text-fuse-black my-16 xl:my-14 xl:w-9/12 md:w-9/10 max-w-7xl">
+    <div className="w-8/9 grow flex flex-col text-fuse-black my-20 xl:my-12 xl:w-9/12 md:w-9/10 max-w-7xl">
       <div className="flex justify-between items-center">
         <h1 className="flex flex-col gap-2">
-          <span className="text-3xl text-fuse-black font-semibold md:text-xl">
+          <span className="text-3xl font-semibold md:text-xl">
             fuse
           </span>
-          <span className="bg-linear-gradient-black bg-clip-text text-8xl text-[transparent] font-black md:text-3xl">
+          <span className="bg-linear-gradient-black bg-clip-text text-8xl text-[transparent] font-black md:text-4xl">
             Foundation
           </span>
         </h1>

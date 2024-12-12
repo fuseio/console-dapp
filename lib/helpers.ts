@@ -80,7 +80,7 @@ export const path = {
   STAKING: "/staking",
   DASHBOARD: "/dashboard",
   AIRDROP: "/airdrop",
-  AIRDROP_PROFILE: "/airdrop/profile",
+  AIRDROP_FOUNDATION: "/airdrop/foundation",
   AIRDROP_LEADERBOARD: "/airdrop/leaderboard",
 };
 

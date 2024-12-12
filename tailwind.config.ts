@@ -82,6 +82,10 @@ const config: Config = {
       "ash-gray": "#B9B9B9",
       "pale-slate": "#BFBFBF",
       "stoplight-go-green": "#66E070",
+      "charcoal-gray": "#434343",
+      "peach-orange": "#EBD08B",
+      "atomic-tangerine": "#FCA06D",
+      "sunset-orange": "#F66851",
     },
     fontFamily: {
       mona: ["var(--font-mona-sans)"],
@@ -122,6 +126,9 @@ const config: Config = {
         'linear-gradient-dark-orange': 'linear-gradient(92deg, #F7A454 0%, #F66957 100%)',
         'linear-gradient-green': "linear-gradient(122deg, rgba(102, 224, 112, 0.20) 5.66%, rgba(102, 224, 112, 0.00) 24.99%)",
         'linear-gradient-black': 'linear-gradient(180deg, #585858 0%, #000 81.5%)',
+        'linear-gradient-gray': 'linear-gradient(180deg, #C7C7C7 0%, #F2F2F2 100%)',
+        'linear-gradient-green-red': 'linear-gradient(45deg, #B7F5B5 0%, #F6A051 50%, #F65D51 100%)',
+        'linear-gradient-green-red-bottom': 'linear-gradient(180deg, #B7F5B5 11%, #F6A051 49%, #F65D51 89%)'
       }
     },
   },
