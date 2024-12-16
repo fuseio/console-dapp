@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useAccount } from "wagmi";
+import { useRef, useEffect } from 'react';
 
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
@@ -10,7 +11,7 @@ import RightCaret from "@/assets/RightCaret";
 import rightCaret from "@/assets/right-caret-black.svg";
 import airdrop from "@/assets/airdrop-right.svg";
 import fuseFoundation from "@/assets/fuse-foundation.svg";
-import fuseFounders from "@/assets/fuse-founders.svg";
+import fuseFounders from "@/assets/fuse-founders.png";
 import fuseFlash from "@/assets/fuse-flash.svg";
 import fuseEmber from "@/assets/fuse-ember.svg";
 
@@ -37,7 +38,7 @@ const Hero = () => {
       <div className="flex items-center gap-8 md:flex-col">
         <div className="group relative z-10">
           <button
-            className="transition-all ease-in-out duration-300 flex items-center gap-2 bg-black text-white px-10 py-4 rounded-full scale-100 group-hover:scale-95"
+            className="transition-all ease-in-out duration-300 flex items-center gap-2 bg-black text-[1.25rem] leading-none font-semibold text-white px-10 py-4 rounded-full scale-100 group-hover:scale-95"
             disabled={isLoading}
             onClick={() => {
               dispatch(setIsWalletModalOpen(true));
@@ -67,6 +68,44 @@ const Hero = () => {
   );
 };
 
+const FloatingParachute = () => {
+  const parachuteRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    let frameId: number;
+    let startTime: number;
+
+    const animate = (time: number) => {
+      if (!startTime) startTime = time;
+      const elapsed = time - startTime;
+
+      const translateY = Math.sin(elapsed / 1000) * 30;
+      const rotateZ = Math.sin(elapsed / 2000) * 12;
+
+      if (parachuteRef.current) {
+        parachuteRef.current.style.transform = `translateY(${translateY}px) rotateZ(${rotateZ}deg)`;
+      }
+
+      frameId = requestAnimationFrame(animate);
+    };
+
+    frameId = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(frameId);
+  }, []);
+
+  return (
+    <Image
+      src={airdrop}
+      alt="airdrop"
+      width={306}
+      height={394}
+      className="absolute -top-72 -left-14 md:left-3/4"
+      ref={parachuteRef}
+    />
+  );
+};
+
 const Giveaway = () => {
   return (
     <div className="flex justify-center items-center bg-black rounded-[1.25rem] text-white px-4 py-20 mt-28 md:py-10 md:mt-20">
@@ -75,13 +114,7 @@ const Giveaway = () => {
           Giving away
         </p>
         <div className="relative text-center">
-          <Image
-            src={airdrop}
-            alt="airdrop"
-            width={306}
-            height={394}
-            className="absolute -top-72 -left-14 md:left-3/4"
-          />
+          <FloatingParachute />
           <p className="relative left-10 text-8xl leading-none font-semibold mt-6 md:-left-2 md:text-3xl">
             63,000,000 FUSE
           </p>
@@ -186,7 +219,7 @@ const Phases = () => {
           alt="Fuse Foundation"
           width={300}
           height={350}
-          className="md:order-first"
+          className="relative right-6 md:right-0 md:order-first"
         />
       </div>
       <div className="flex justify-between items-center gap-4 py-10 pr-10 md:py-4 md:pr-4 md:flex-col">
@@ -212,8 +245,8 @@ const Phases = () => {
         <Image
           src={fuseFounders}
           alt="Fuse Founders"
-          width={300}
-          height={350}
+          width={360}
+          height={400}
           className="md:order-first"
         />
       </div>
@@ -240,9 +273,9 @@ const Phases = () => {
         <Image
           src={fuseFlash}
           alt="Fuse Flash"
-          width={200}
-          height={250}
-          className="relative right-10 md:right-0 md:order-first"
+          width={300}
+          height={350}
+          className="relative right-6 md:right-0 md:order-first"
         />
       </div>
       <div className="flex justify-between items-center gap-4 py-10 pr-10 md:py-4 md:pr-4 md:flex-col">
@@ -268,9 +301,9 @@ const Phases = () => {
         <Image
           src={fuseEmber}
           alt="Fuse Ember"
-          width={200}
-          height={250}
-          className="relative right-10 md:right-0 md:order-first"
+          width={300}
+          height={350}
+          className="relative right-6 md:right-0 md:order-first"
         />
       </div>
     </div>
