@@ -202,6 +202,19 @@ const Home = () => {
         },
       ]
     },
+    {
+      id: "stakeOnVoltage",
+      title: "Stake on Voltage",
+      description: "To multiply you points you need to take 2 simple steps:  \n**Step 1**\nBridge funds to the Fuse Network using Fuse bridge = 4 points per $1, available once per day.  \n**Step 2**\nDouble your points by staking bridged funds in any of the four liquid staking on Voltage DEX = 8 points per $1 of the bridged funds, available once per day.",
+      point: "8 points per $1 staked daily",
+      image: volt,
+      buttons: [
+        {
+          text: "Go to Voltage",
+          link: "https://app.voltage.finance/stake",
+        },
+      ]
+    },
   ])
 
   function referralLink() {
