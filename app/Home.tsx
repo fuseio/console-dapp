@@ -1,19 +1,18 @@
-import Image from "next/image";
-import Button from "@/components/ui/Button";
-import { useAppDispatch } from "@/store/store";
-import { setIsWalletModalOpen } from "@/store/navbarSlice";
-import Link from "next/link";
-import { useAccount } from "wagmi";
-import { path } from "@/lib/helpers";
-import mobileSdk from "@/assets/mobile-sdk.svg";
-import webSdk from "@/assets/web-sdk.svg";
-import faucet from "@/assets/faucet.svg";
-import fusebox from "@/assets/fusebox.svg";
-import DocumentSupport from "@/components/DocumentSupport";
-import * as amplitude from "@amplitude/analytics-browser";
+import Image from 'next/image';
+import Link from 'next/link';
+import { useAccount } from 'wagmi';
+
+import faucet from '@/assets/faucet.svg';
+import fusebox from '@/assets/fusebox.svg';
+import mobileSdk from '@/assets/mobile-sdk.svg';
+import webSdk from '@/assets/web-sdk.svg';
+import DocumentSupport from '@/components/DocumentSupport';
+import Button from '@/components/ui/Button';
+import { path } from '@/lib/helpers';
+import * as amplitude from '@amplitude/analytics-browser';
+import { DynamicConnectButton } from '@dynamic-labs/sdk-react-core';
 
 const Home = () => {
-  const dispatch = useAppDispatch();
   const { isConnected } = useAccount();
 
   return (
@@ -27,14 +26,15 @@ const Home = () => {
             Start your journey on Fuse
           </p>
           {!isConnected &&
-            <Button
-              text="Connect Wallet"
-              className="transition ease-in-out text-[20px]/7 leading-none font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
-              padding="py-4 px-[52px] md:px-[60.5px]"
-              onClick={() => {
-                dispatch(setIsWalletModalOpen(true));
-              }}
-            />
+            (
+              <DynamicConnectButton>
+                <Button
+                  text="Connect Wallet"
+                  className="transition ease-in-out text-[20px]/7 leading-none font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
+                  padding="py-4 px-[52px] md:px-[60.5px]"
+                />
+              </DynamicConnectButton>
+            )
           }
         </div>
         <div className="transition-all ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] md:min-h-[514px] px-[83.31px] pt-[60.36px] pb-[67px] md:px-[31px] md:py-[30px] mt-[99.5px] mb-10 md:mt-[78px] md:mb-5 bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-bottom">
