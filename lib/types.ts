@@ -416,7 +416,6 @@ export type AirdropButton = {
   text: string;
   link?: string;
   isFunction?: boolean;
-  endpoint?: string;
   isLoading?: boolean;
   success?: string;
 }

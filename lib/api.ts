@@ -219,10 +219,10 @@ export const fetchAirdropTwitterAuthUrl = async (token: string, redirectDomain: 
     return response.data
 }
 
-export const postVerifyAirdropQuest = async (token: string, endpoint: string): Promise<{ message: string }> => {
+export const postVerifyAirdropQuest = async (token: string, rewardType: string): Promise<{ message: string }> => {
     const response = await axios.post(
-        `${NEXT_PUBLIC_AIRDROP_API_BASE_URL}/${endpoint}`,
-        {},
+        `${NEXT_PUBLIC_AIRDROP_API_BASE_URL}/layer3/verify-one-time-quest`,
+        { rewardType },
         {
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -252,6 +252,19 @@ export const postClaimTestnetFuse = async (walletAddress: Address): Promise<{ ms
         {
             headers: {
                 'Content-Type': 'application/json'
+            }
+        }
+    )
+    return response.data
+}
+
+export const postClaimFaucet = async (token: string): Promise<{ message: string }> => {
+    const response = await axios.post(
+        `${NEXT_PUBLIC_AIRDROP_API_BASE_URL}/faucet-claim`,
+        {},
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
             }
         }
     )
