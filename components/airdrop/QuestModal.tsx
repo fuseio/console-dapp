@@ -16,7 +16,7 @@ const BridgeDescription = () => {
   return (
     <div className="flex flex-col gap-[30px]">
       <p>
-        Get 4 points daily for reach $1 bridged to Fuse
+        Get 4 points daily for each $1 bridged to Fuse
       </p>
       <div className="flex flex-col gap-2.5">
         <p className="font-bold">Quest conditions:</p>

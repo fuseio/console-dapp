@@ -25,6 +25,7 @@ import joinTelegram from "@/assets/join-telegram-green.svg";
 import volt from "@/assets/volt-wallet-green.svg";
 import artrific from "@/assets/artrific-green.svg";
 import meridian from "@/assets/meridian-green.svg";
+import voltageLiquidity from "@/assets/voltage-liquidity.svg";
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -85,42 +86,6 @@ const Home = () => {
       ]
     },
     {
-      id: "exploreVoltWallet",
-      title: "Install the Volt wallet",
-      description: "The Volt wallet is the best mobile solution for interacting with the Fuse network, as it is built and developed by the Fuse team. Explore its features and get 200 points.  \n**Verify the quest 1 hour after completing it on Layer3**",
-      point: "200 Points",
-      frequency: "One-time",
-      image: volt,
-      buttons: [
-        {
-          text: "Go to Quest",
-          link: "https://app.layer3.xyz/quests/explore-volt-wallet",
-        },
-        {
-          text: "Verify Quest",
-          isFunction: true,
-        }
-      ]
-    },
-    {
-      id: "exploreArtrificOnFuse",
-      title: "Create an NFT on Artrific",
-      description: "Create an NFT on the leading NFT marketplace on Fuse Network and get 300 points  \n**Verify the quest 1 hour after completing it on Layer3**\n",
-      point: "300 Points",
-      frequency: "One-time",
-      image: artrific,
-      buttons: [
-        {
-          text: "Go to Quest",
-          link: "https://app.layer3.xyz/quests/explore-artrific-nft-marketplace-on-fuse-network",
-        },
-        {
-          text: "Verify Quest",
-          isFunction: true,
-        }
-      ]
-    },
-    {
       id: "exploreVoltageDex",
       title: "Explore Voltage Finance",
       description: "Trade, invest, and earn with just a few clicks.  \n**Verify the quest 1 hour after completing it on Layer3**",
@@ -139,9 +104,53 @@ const Home = () => {
       ]
     },
     {
+      id: "liquidityVoltage",
+      title: "Provide Liquidity to Voltage v3",
+      description: "To multiply you points you need to take 2 simple steps:  \n**Step 1**\nBridge funds to the Fuse Network using Fuse bridge = 4 points per $1, available once per day.  \n**Step 2**\nDouble your points by putting bridged funds in any V3 liquidity pool on Voltage DEX = 8 points per $1 of the bridged funds, available once per day.",
+      point: "8 points per $1 in pool daily",
+      image: voltageLiquidity,
+      buttons: [
+        {
+          text: "Go to Voltage",
+          link: "https://voltage.finance/pool?filter=v3",
+        },
+      ]
+    },
+    {
+      id: "stakeOnVoltage",
+      title: "Stake on Voltage",
+      description: "To multiply you points you need to take 2 simple steps:  \n**Step 1**\nBridge funds to the Fuse Network using Fuse bridge = 4 points per $1, available once per day.  \n**Step 2**\nDouble your points by staking any of the four tokens on Voltage DEX = 8 points per $1 of the bridged funds, available once per day.",
+      point: "8 points per $1 staked daily",
+      image: volt,
+      buttons: [
+        {
+          text: "Go to Voltage",
+          link: "https://app.voltage.finance/stake",
+        },
+      ]
+    },
+    {
+      id: "exploreVoltWallet",
+      title: "Install the Volt wallet",
+      description: "The Volt wallet is the best mobile solution for interacting with the Fuse network, as it is built and developed by the Fuse team. Explore its features and get 200 points.  \n**Verify the quest 1 hour after completing it on Layer3**",
+      point: "200 Points",
+      frequency: "One-time",
+      image: volt,
+      buttons: [
+        {
+          text: "Go to Quest",
+          link: "https://app.layer3.xyz/quests/explore-volt-wallet",
+        },
+        {
+          text: "Verify Quest",
+          isFunction: true,
+        }
+      ]
+    },
+    {
       id: "provideMeridianLiquidity",
       title: "Lend on Meridian",
-      description: "Lend on Meridian & Multiply your points easily with these quick steps  \n**Step 1**\nBridge funds to Fuse Network using the Fuse bridge = 4 points per $1, available once per day.  \n**Step 2**\nVisit the Meridian Finance lending markets  \n**Step 3**\nDouble your points by lending bridged funds in any market = 12 points per $1 of the bridged funds, available once per day.",
+      description: "Lend on Meridian & Multiply your points easily with these quick steps  \n**Step 1**\nBridge funds to Fuse Network using the Fuse bridge = 4 points per $1, available once per day.  \n**Step 2**\nVisit the Meridian Finance lending markets  \n**Step 3**\nDouble your points by lending bridged funds in any market = 8 points per $1 of the bridged funds, available once per day.",
       point: "8 points per $1 in pool daily",
       image: meridian,
       buttons: [
@@ -165,16 +174,21 @@ const Home = () => {
       ]
     },
     {
-      id: "stakeOnVoltage",
-      title: "Stake on Voltage",
-      description: "To multiply you points you need to take 2 simple steps:  \n**Step 1**\nBridge funds to the Fuse Network using Fuse bridge = 4 points per $1, available once per day.  \n**Step 2**\nDouble your points by staking bridged funds in any of the four liquid staking on Voltage DEX = 8 points per $1 of the bridged funds, available once per day.",
-      point: "8 points per $1 staked daily",
-      image: volt,
+      id: "exploreArtrificOnFuse",
+      title: "Create an NFT on Artrific",
+      description: "Create an NFT on the leading NFT marketplace on Fuse Network and get 300 points  \n**Verify the quest 1 hour after completing it on Layer3**\n",
+      point: "300 Points",
+      frequency: "One-time",
+      image: artrific,
       buttons: [
         {
-          text: "Go to Voltage",
-          link: "https://app.voltage.finance/stake",
+          text: "Go to Quest",
+          link: "https://app.layer3.xyz/quests/explore-artrific-nft-marketplace-on-fuse-network",
         },
+        {
+          text: "Verify Quest",
+          isFunction: true,
+        }
       ]
     },
   ])
