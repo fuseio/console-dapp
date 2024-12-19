@@ -11,7 +11,7 @@ import { MULTICALL_ABI } from "./abi/MultiCall";
 import { getAccount, getWalletClient, waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { fuse } from "viem/chains";
 import { PaymasterAbi } from "./abi/Paymaster";
-import { config } from "./web3Auth";
+import { config } from "./wagmi";
 import { Contract, providers } from "ethers";
 import { Interface } from "ethers/lib/utils";
 import { BlockReward } from "./abi/BlockReward";

@@ -2,7 +2,7 @@ import { ERC20ABI } from "@/lib/abi/ERC20";
 import { Address, createPublicClient, http, parseAbi, parseUnits } from "viem";
 import { getWalletClient, waitForTransactionReceipt } from "wagmi/actions";
 import { hex } from "./helpers";
-import { config } from "./web3Auth";
+import { config } from "./wagmi";
 
 const publicClient = (rpcUrl: string) => {
   return createPublicClient({
