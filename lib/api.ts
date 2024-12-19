@@ -258,10 +258,9 @@ export const postClaimTestnetFuse = async (walletAddress: Address): Promise<{ ms
     return response.data
 }
 
-export const postClaimFaucet = async (token: string): Promise<{ message: string }> => {
-    const response = await axios.post(
-        `${NEXT_PUBLIC_AIRDROP_API_BASE_URL}/faucet-claim`,
-        {},
+export const fetchReferralCount = async (token: string): Promise<{ count: number }> => {
+    const response = await axios.get(
+        `${NEXT_PUBLIC_AIRDROP_API_BASE_URL}/referral-count`,
         {
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -271,9 +270,10 @@ export const postClaimFaucet = async (token: string): Promise<{ message: string 
     return response.data
 }
 
-export const fetchReferralCount = async (token: string): Promise<{ count: number }> => {
-    const response = await axios.get(
-        `${NEXT_PUBLIC_AIRDROP_API_BASE_URL}/referral-count`,
+export const postAuthenticatedAirdrop = async (token: string, endpoint: string): Promise<{ message: string }> => {
+    const response = await axios.post(
+        `${NEXT_PUBLIC_AIRDROP_API_BASE_URL}/${endpoint}`,
+        {},
         {
             headers: {
                 "Authorization": `Bearer ${token}`
