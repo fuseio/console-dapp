@@ -24,7 +24,6 @@ import verifyDiscord from "@/assets/verify-discord-green.svg";
 import joinTelegram from "@/assets/join-telegram-green.svg";
 import volt from "@/assets/volt-wallet-green.svg";
 import artrific from "@/assets/artrific-green.svg";
-import shoebill from "@/assets/shoebill-green.svg";
 import meridian from "@/assets/meridian-green.svg";
 
 const Home = () => {
@@ -140,24 +139,6 @@ const Home = () => {
       ]
     },
     {
-      id: "exploreShoebillOnFuse",
-      title: "Explore Shoebill Finance",
-      description: "Explore Shoebill Finance capabilities and get 200 points.  \n**Verify the quest 1 hour after completing it on Layer3**",
-      point: "200 Points",
-      frequency: "One-time",
-      image: shoebill,
-      buttons: [
-        {
-          text: "Go to Quest",
-          link: "https://app.layer3.xyz/quests/explore-shoebill-finance-on-fuse-network",
-        },
-        {
-          text: "Verify Quest",
-          isFunction: true,
-        }
-      ]
-    },
-    {
       id: "provideMeridianLiquidity",
       title: "Lend on Meridian",
       description: "Lend on Meridian & Multiply your points easily with these quick steps  \n**Step 1**\nBridge funds to Fuse Network using the Fuse bridge = 4 points per $1, available once per day.  \n**Step 2**\nVisit the Meridian Finance lending markets  \n**Step 3**\nDouble your points by lending bridged funds in any market = 12 points per $1 of the bridged funds, available once per day.",
@@ -180,19 +161,6 @@ const Home = () => {
         {
           text: "Go to Meridian Borrow",
           link: "https://lend.meridianfinance.net/borrow/",
-        },
-      ]
-    },
-    {
-      id: "provideShoebillLiquidity",
-      title: "Lend on Shoebill Finance",
-      description: "To multiply you points you need to take 3 simple steps:  \n**Step 1**\nBridge funds to the Fuse Network using Fuse bridge = 4 points per $1, available once per day.  \n**Step 2**\nGo to Shoebill Finance on Fuse Network  \n**Step 3**\nDouble your points by supplying FUSE or sFUSE tokens = 12 points per $1 of the bridged funds, available once per day.",
-      point: "12 points per $1 in pool daily",
-      image: shoebill,
-      buttons: [
-        {
-          text: "Go to Shoebill Finance",
-          link: "https://fuse-fuse.shoebill.finance/#/",
         },
       ]
     },
