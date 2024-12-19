@@ -38,13 +38,17 @@ const QuestModal = (): JSX.Element => {
   const { isQuestModalOpen, selectedQuest } = useAppSelector(selectAirdropSlice);
   const dispatch = useAppDispatch();
 
-  function handleClick(id: string) {
+  function handleClick(id: string, endpoint?: string) {
+    if (endpoint) {
+      return dispatch(verifyAirdropQuest({ endpoint }));
+    }
+
     switch (id) {
       case "followFuseOnTwitter":
         dispatch(generateAirdropTwitterAuthUrl());
         break;
       default:
-        dispatch(verifyAirdropQuest());
+        dispatch(verifyAirdropQuest({}));
         break;
     }
   }
@@ -125,7 +129,7 @@ const QuestModal = (): JSX.Element => {
                       className="transition ease-in-out bg-black flex justify-center items-center gap-2 border border-black rounded-full text-white leading-none font-semibold px-9 py-4 xl:px-7 xl:py-2.5 hover:bg-white hover:text-black"
                       onClick={() => {
                         if (button.isFunction) {
-                          handleClick(selectedQuest.id);
+                          handleClick(selectedQuest.id, button.endpoint);
                         }
                         if (button.link) {
                           window.open(button.link, "_blank")
