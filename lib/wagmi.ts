@@ -26,8 +26,10 @@ export const evmNetworks = chains.map(chain => ({
   networkId: chain.id,
   rpcUrls: [...chain.rpcUrls.default.http],
   vanityName: chain.name,
+})).map(network => ({
+  ...network,
+  blockExplorerUrls: network.blockExplorerUrls.filter((url): url is string => !!url)
 }));
-
 
 export const config = createConfig({
   chains,

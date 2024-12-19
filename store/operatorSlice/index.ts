@@ -466,10 +466,14 @@ export const withdraw = createAsyncThunk<
         const erc20Contract = new ethers.Contract(contractAddress as string, ERC20ABI);
         recipient = contractAddress;
         value = parseEther("0");
-        data = ethers.utils.arrayify(erc20Contract.interface.encodeFunctionData(
-          "transfer",
-          [to, parseUnits(amount, decimals)]
-        ));
+        data = new Uint8Array(
+          ethers.utils.arrayify(
+            erc20Contract.interface.encodeFunctionData(
+              "transfer",
+              [to, parseUnits(amount, decimals)]
+            )
+          )
+        );
       }
 
       if (operatorState.isActivated) {
