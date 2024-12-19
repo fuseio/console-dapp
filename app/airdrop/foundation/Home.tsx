@@ -64,7 +64,6 @@ const Home = () => {
         {
           text: "Verify Quest",
           isFunction: true,
-          endpoint: "telegram",
         }
       ]
     },
@@ -83,7 +82,6 @@ const Home = () => {
         {
           text: "Verify Quest",
           isFunction: true,
-          endpoint: "join-fuse-discord",
         }
       ]
     },
@@ -102,7 +100,6 @@ const Home = () => {
         {
           text: "Verify Quest",
           isFunction: true,
-          endpoint: "explore-volt-wallet",
         }
       ]
     },
@@ -121,7 +118,6 @@ const Home = () => {
         {
           text: "Verify Quest",
           isFunction: true,
-          endpoint: "explore-artrific-on-fuse",
         }
       ]
     },
@@ -140,7 +136,6 @@ const Home = () => {
         {
           text: "Verify Quest",
           isFunction: true,
-          endpoint: "explore-voltage-dex",
         }
       ]
     },
@@ -159,7 +154,6 @@ const Home = () => {
         {
           text: "Verify Quest",
           isFunction: true,
-          endpoint: "explore-shoebill-on-fuse",
         }
       ]
     },

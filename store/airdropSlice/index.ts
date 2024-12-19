@@ -2,7 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
 import { AirdropUser, AirdropLeaderboardUsers, AirdropQuest, CreateAirdropUser } from "@/lib/types";
 import { Address, getAddress } from "viem";
-import { fetchAirdropLeaderboard, fetchAirdropTwitterAuthUrl, fetchAirdropUser, fetchReferralCount, postAuthenticateAirdropUser, postClaimTestnetFuse, postCreateAirdropUser, postJoinAirdropWaitlist, postVerifyAirdropQuest } from "@/lib/api";
+import { fetchAirdropLeaderboard, fetchAirdropTwitterAuthUrl, fetchAirdropUser, fetchReferralCount, postAuthenticateAirdropUser, postClaimFaucet, postClaimTestnetFuse, postCreateAirdropUser, postJoinAirdropWaitlist, postVerifyAirdropQuest } from "@/lib/api";
 import { RootState } from "../store";
 import { defaultReferralCode } from "@/lib/helpers";
 
@@ -238,24 +238,18 @@ export const generateAirdropTwitterAuthUrl = createAsyncThunk<
 
 export const verifyAirdropQuest = createAsyncThunk<
   any,
-  {
-    endpoint: string;
-  },
+  undefined,
   { state: RootState }
 >(
   "USER/VERIFY_AIRDROP_QUEST",
   async (
-    {
-      endpoint
-    }: {
-      endpoint: string;
-    },
+    _,
     thunkAPI
   ) => {
     try {
       const state = thunkAPI.getState();
       const airdropState: AirdropStateType = state.airdrop;
-      const verified = await postVerifyAirdropQuest(airdropState.accessToken, endpoint);
+      const verified = await postVerifyAirdropQuest(airdropState.accessToken, airdropState.selectedQuest.id);
       return verified;
     } catch (error: any) {
       if (error?.response?.status === 409) {
@@ -318,7 +312,7 @@ export const claimTestnetFuse = createAsyncThunk<
       const airdropState: AirdropStateType = state.airdrop;
       const claimed = await postClaimTestnetFuse(getAddress(airdropState.user.walletAddress));
       if (claimed?.msg) {
-        thunkAPI.dispatch(verifyAirdropQuest({ endpoint: 'faucet-claim' }));
+        await postClaimFaucet(airdropState.accessToken);
         return claimed;
       } else {
         throw new Error("Failed to claim testnet $FUSE");
