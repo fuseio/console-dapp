@@ -6,7 +6,7 @@ import Button from "@/components/ui/Button";
 import { useAccount, useDisconnect, useSwitchChain } from "wagmi";
 import { fuse } from "viem/chains";
 import Image from "next/image";
-import { resetConnection } from "@/lib/web3Auth";
+import { resetConnection } from "@/lib/wagmi";
 
 type ChainModalProps = {
   description?: string;

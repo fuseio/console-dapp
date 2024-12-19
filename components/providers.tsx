@@ -1,21 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import store from "@/store/store";
-import { Provider } from "react-redux";
-import ReactGA from "react-ga4";
-import * as amplitude from '@amplitude/analytics-browser';
-import { YMInitializer } from "react-yandex-metrika";
+import { useEffect, useState } from 'react';
+import ReactGA from 'react-ga4';
+import { Provider } from 'react-redux';
+import { YMInitializer } from 'react-yandex-metrika';
+import { WagmiProvider } from 'wagmi';
+
 import {
-  NEXT_PUBLIC_AMPLITUDE_API_KEY,
-  NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
-  NEXT_PUBLIC_YANDEX_METRICA_ID,
-  NEXT_PUBLIC_AMPLITUDE_SERVER_URL
-} from "@/lib/config";
-import { WagmiProvider } from 'wagmi'
-import { config } from "@/lib/web3Auth";
-import WalletModal from "./WalletModal";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+    NEXT_PUBLIC_AMPLITUDE_API_KEY,
+    NEXT_PUBLIC_AMPLITUDE_SERVER_URL,
+    NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID,
+    NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
+    NEXT_PUBLIC_YANDEX_METRICA_ID
+} from '@/lib/config';
+import { config, evmNetworks } from '@/lib/wagmi';
+import store from '@/store/store';
+import * as amplitude from '@amplitude/analytics-browser';
+import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
+import { DynamicContextProvider, mergeNetworks } from '@dynamic-labs/sdk-react-core';
+import { DynamicWagmiConnector } from '@dynamic-labs/wagmi-connector';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [isClient, setIsClient] = useState(false);
@@ -26,7 +30,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
-    if(isClient) {
+    if (isClient) {
       ReactGA.initialize(NEXT_PUBLIC_GOOGLE_ANALYTICS_ID as string);
       amplitude.init(NEXT_PUBLIC_AMPLITUDE_API_KEY as string, { serverUrl: NEXT_PUBLIC_AMPLITUDE_SERVER_URL });
     }
@@ -37,22 +41,34 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <Provider store={store}>
-      <WagmiProvider config={config}>
-        <QueryClientProvider client={queryClient}>
-          <YMInitializer
-            accounts={[parseInt(NEXT_PUBLIC_YANDEX_METRICA_ID)]}
-            options={{
-              clickmap: true,
-              trackLinks: true,
-              accurateTrackBounce: true,
-              webvisor: true
-            }}
-          />
-          <WalletModal />
-          {children}
-        </QueryClientProvider>
-      </WagmiProvider>
-    </Provider>
+    <DynamicContextProvider
+      theme="auto"
+      settings={{
+        environmentId: NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID,
+        walletConnectors: [EthereumWalletConnectors],
+        overrides: {
+          evmNetworks: (networks) => mergeNetworks(evmNetworks, networks)
+        }
+      }}
+    >
+      <Provider store={store}>
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <YMInitializer
+              accounts={[parseInt(NEXT_PUBLIC_YANDEX_METRICA_ID)]}
+              options={{
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true
+              }}
+            />
+            <DynamicWagmiConnector>
+              {children}
+            </DynamicWagmiConnector>
+          </QueryClientProvider>
+        </WagmiProvider>
+      </Provider>
+    </DynamicContextProvider>
   )
 }
