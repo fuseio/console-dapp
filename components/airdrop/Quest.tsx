@@ -38,7 +38,7 @@ function QuestItem({ quest }: QuestProps) {
 
   return (
     <CardContainer containerClassName="block p-0 h-full" className="block h-full">
-      <CardBody className={`bg-white rounded-[20px] w-auto h-full p-8 md:p-6 ${isTwitter ? "" : "grayscale"}`}>
+      <CardBody className={`bg-white rounded-[20px] w-auto h-full py-8 pl-8 pr-6 md:p-6 ${isTwitter ? "" : "grayscale"}`}>
         <CardItem
           as="button"
           translateZ="40"
