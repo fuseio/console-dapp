@@ -7,11 +7,11 @@ import { YMInitializer } from 'react-yandex-metrika';
 import { WagmiProvider } from 'wagmi';
 
 import {
-    NEXT_PUBLIC_AMPLITUDE_API_KEY,
-    NEXT_PUBLIC_AMPLITUDE_SERVER_URL,
-    NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID,
-    NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
-    NEXT_PUBLIC_YANDEX_METRICA_ID
+  NEXT_PUBLIC_AMPLITUDE_API_KEY,
+  NEXT_PUBLIC_AMPLITUDE_SERVER_URL,
+  NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID,
+  NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
+  NEXT_PUBLIC_YANDEX_METRICA_ID
 } from '@/lib/config';
 import { config, evmNetworks } from '@/lib/wagmi';
 import store from '@/store/store';
@@ -20,6 +20,7 @@ import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
 import { DynamicContextProvider, mergeNetworks } from '@dynamic-labs/sdk-react-core';
 import { DynamicWagmiConnector } from '@dynamic-labs/wagmi-connector';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import WalletModal from './WalletModal';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [isClient, setIsClient] = useState(false);
@@ -64,6 +65,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
               }}
             />
             <DynamicWagmiConnector>
+              <WalletModal />
               {children}
             </DynamicWagmiConnector>
           </QueryClientProvider>

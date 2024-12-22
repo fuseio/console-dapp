@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { fetchValidators } from "@/store/validatorSlice";
 import copy from "@/assets/copy-black.svg";
 import Image, { StaticImageData } from "next/image";
 import { motion, Variants } from "framer-motion";
@@ -51,7 +50,8 @@ import switchNetworkIcon from "@/assets/switch-network.svg";
 import Copy from "./ui/Copy";
 import { formatUnits } from "viem";
 import { resetConnection } from "@/lib/wagmi";
-import { DynamicConnectButton, useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { setIsWalletModalOpen } from "@/store/navbarSlice";
 
 const menu: Variants = {
   closed: (isCenter) => ({
@@ -120,7 +120,7 @@ const ConnectWallet = ({
   const [isAccountsOpen, setIsAccountsOpen] = React.useState(false);
   const [isWrongNetworksOpen, setIsWrongNetworksOpen] = React.useState(false);
   const [isQrCodeOpen, setIsQrCodeOpen] = React.useState(false);
-  const { address, connector, isConnected, chain } = useAccount();
+  const { address, isConnected, chain } = useAccount();
   const { chains } = useConfig();
   const { switchChain } = useSwitchChain();
   const { primaryWallet } = useDynamicContext();
@@ -163,10 +163,6 @@ const ConnectWallet = ({
   };
 
   useEffect(() => {
-    dispatch(fetchValidators());
-  }, [connector, chain, dispatch]);
-
-  useEffect(() => {
     dispatch(
       fetchUsdPrice({
         tokenId: usdTokens[chain?.id ?? fuse.id],
@@ -184,21 +180,20 @@ const ConnectWallet = ({
   }, [blockNumber, refetch]);
 
   return !isConnected ? (
-    <DynamicConnectButton>
-      <div className={"flex justify-end " + containerClassName}>
-        <button
-          className={defaultClassName + className}
-          onClick={() => {
-            if (pathname === path.BUILD) {
-              dispatch(setIsOperatorWalletModalOpen(true));
-              dispatch(setIsLogin(true));
-            }
-          }}
-        >
-          Connect Wallet
-        </button>
-      </div>
-    </DynamicConnectButton>
+    <div className={"flex justify-end " + containerClassName}>
+      <button
+        className={defaultClassName + className}
+        onClick={() => {
+          if (pathname === path.BUILD) {
+            dispatch(setIsOperatorWalletModalOpen(true));
+            dispatch(setIsLogin(true));
+          }
+          dispatch(setIsWalletModalOpen(true));
+        }}
+      >
+        Connect Wallet
+      </button>
+    </div>
   ) : checkCorrectNetwork() && isChainOpen ? (
     <div
       className="flex relative justify-end md:me-5 text-base/4 md:text-sm h-9 md:h-7"

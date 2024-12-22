@@ -319,7 +319,7 @@ const Home = () => {
           </div>
         </div>
         {(operatorSlice.isAuthenticated && !operatorSlice.isActivated) &&
-          <div className="flex flex-row md:flex-col gap-4 justify-between items-center bg-lemon-chiffon rounded-[20px] px-[30px] py-[18px] mb-[30px] border border-[0.5px] border-star-dust-alpha-70">
+          <div className="flex flex-row md:flex-col gap-4 justify-between items-center bg-lemon-chiffon rounded-[20px] px-[30px] py-[18px] mb-[30px] border-[0.5px] border-star-dust-alpha-70">
             <div className="flex flex-row md:flex-col items-center md:text-center gap-7 md:gap-2">
               <Image
                 src={info}
