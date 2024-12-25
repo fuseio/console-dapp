@@ -47,7 +47,7 @@ const NavMenu = ({
               <Link
                 href={isAuthenticated && path.BUILD.includes(item.title.toLowerCase()) ? path.DASHBOARD : item.link}
                 key={index}
-                className={`flex justify-center items-center rounded-full h-9 px-4 hover:bg-lightest-gray ${isResponsive ? "md:w-full md:justify-start" : ""} ${liClassName} ${(item.title.toLowerCase() === selected ? `bg-lightest-gray py-2.5 pointer-events-none ${isResponsive ? "md:text-white" : ""}` : `cursor-pointer group ${isResponsive ? "md:text-gray" : ""}`)}`}
+                className={`flex justify-center items-center rounded-full h-9 px-2 hover:bg-lightest-gray ${isResponsive ? "md:w-full md:justify-start" : ""} ${liClassName} ${(item.title.toLowerCase() === selected ? `bg-lightest-gray py-2.5 pointer-events-none ${isResponsive ? "md:text-white" : ""}` : `cursor-pointer group ${isResponsive ? "md:text-gray" : ""}`)}`}
                 aria-current={
                   item.title.toLowerCase() === selected
                     ? "page"
