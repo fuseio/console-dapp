@@ -53,6 +53,14 @@ const Topbar = () => {
       link: path.AIRDROP,
     },
     {
+      title: "AI Agent",
+      link: "/ai-agent",
+    },
+    {
+      title: "Build",
+      link: "/build",
+    },
+    {
       title: "Bridge",
       link: path.BRIDGE,
     },
