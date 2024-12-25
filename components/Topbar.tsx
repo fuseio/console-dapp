@@ -19,6 +19,10 @@ const AirdropSubmenu = [
     title: "Foundation",
     link: "/airdrop/foundation",
   },
+  {
+    title: "Builder Grants",
+    link: "/airdrop/grant",
+  },
 ]
 
 const Topbar = () => {

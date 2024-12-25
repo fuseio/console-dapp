@@ -86,6 +86,8 @@ const config: Config = {
       "peach-orange": "#EBD08B",
       "atomic-tangerine": "#FCA06D",
       "sunset-orange": "#F66851",
+      sand: "#EDC765",
+      marzipan: "#F5DC99"
     },
     fontFamily: {
       mona: ["var(--font-mona-sans)"],
@@ -120,6 +122,10 @@ const config: Config = {
       },
       boxShadow: {
         'inner-black': 'inset 0px 0px 0px 3px rgba(0,0,0,0.3)',
+        'marzipan': '0px 8px 50px 0px #F5DC99',
+      },
+      dropShadow: {
+        'light-tan': '0px 4px 4px #FFE9AD',
       },
       backgroundImage: {
         'linear-gradient-orange': "linear-gradient(122deg, rgba(246, 93, 81, 0.20) 5.66%, rgba(246, 93, 81, 0.00) 24.99%)",
@@ -128,7 +134,8 @@ const config: Config = {
         'linear-gradient-black': 'linear-gradient(180deg, #585858 0%, #000 81.5%)',
         'linear-gradient-gray': 'linear-gradient(180deg, #C7C7C7 0%, #F2F2F2 100%)',
         'linear-gradient-green-red': 'linear-gradient(45deg, #B7F5B5 0%, #F6A051 50%, #F65D51 100%)',
-        'linear-gradient-green-red-bottom': 'linear-gradient(180deg, #B7F5B5 11%, #F6A051 49%, #F65D51 89%)'
+        'linear-gradient-green-red-bottom': 'linear-gradient(180deg, #B7F5B5 11%, #F6A051 49%, #F65D51 89%)',
+        'linear-gradient-sand': 'linear-gradient(0deg, #EDC765 50.29%, #AD8213 100.29%)',
       }
     },
   },

@@ -235,7 +235,7 @@ const Phases = () => {
               </p>
             </div>
             <p className="text-7xl md:text-2xl leading-none font-semibold">
-              Fuse Founders
+              Builder Grants
             </p>
             <p className="text-lg max-w-2xl">
               Earn points with a campaign incentivizing building on the new Ember (Flash) Testnet first, then migrating apps to the new Ember Mainnet.
