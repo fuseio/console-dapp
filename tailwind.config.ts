@@ -125,7 +125,7 @@ const config: Config = {
         'marzipan': '0px 8px 50px 0px #F5DC99',
       },
       dropShadow: {
-        'light-tan': '0px 4px 4px #FFE9AD',
+        'light-tan': '0px 4px 2px #FFE9AD',
       },
       backgroundImage: {
         'linear-gradient-orange': "linear-gradient(122deg, rgba(246, 93, 81, 0.20) 5.66%, rgba(246, 93, 81, 0.00) 24.99%)",
