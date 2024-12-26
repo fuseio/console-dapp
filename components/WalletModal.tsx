@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { FormEventHandler, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import close from "@/assets/close.svg";
 import metamask from "@/public/metamask.png";
@@ -27,16 +27,15 @@ import { checkIsActivated, checkOperator, fetchOperator, fetchSponsoredTransacti
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import { usePathname, useRouter } from "next/navigation";
 import { fuse } from "viem/chains";
-import { useSocialAccounts, useWalletOptions } from "@dynamic-labs/sdk-react-core";
+import { useConnectWithOtp, useSocialAccounts, useWalletOptions } from "@dynamic-labs/sdk-react-core";
 
 const WalletModal = (): JSX.Element => {
   const [selected, setSelected] = useState<"HOME" | "VOLT">("HOME");
   const [isConnectedWallet, setIsConnectedWallet] = useState(false);
   const [connectingWalletId, setConnectingWalletId] = useState<string>("");
-  // const emailRef = useRef<HTMLInputElement>(null);
-  // const { connectWithEmail, verifyOneTimePassword } = useConnectWithOtp();
-  // const { user } = useDynamicContext();
-  // const [isProcessingEmail, setIsProcessingEmail] = useState(false);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const { connectWithEmail, verifyOneTimePassword } = useConnectWithOtp();
+  const [isProcessingEmail, setIsProcessingEmail] = useState(false);
   const { isWalletModalOpen } = useAppSelector(selectNavbarSlice);
   const dispatch = useAppDispatch();
   const { address, isConnected, isDisconnected, chain } = useAccount();
@@ -48,34 +47,34 @@ const WalletModal = (): JSX.Element => {
   const { isLogin, isValidated, isLoggedIn, isLoginError, isAuthenticated, isOperatorWalletModalOpen, redirect, operatorContactDetail } = useAppSelector(selectOperatorSlice);
   const pathname = usePathname();
 
-  // const onSubmitEmailHandler: FormEventHandler<HTMLFormElement> = async (
-  //   event,
-  // ) => {
-  //   event.preventDefault();
-  //   if (!emailRef.current?.value) return;
+  const onSubmitEmailHandler: FormEventHandler<HTMLFormElement> = async (
+    event,
+  ) => {
+    event.preventDefault();
+    if (!emailRef.current?.value) return;
 
-  //   try {
-  //     await connectWithEmail(emailRef.current.value);
-  //     setIsProcessingEmail(true);
-  //     localStorage.setItem("Fuse-loginHint", emailRef.current.value);
-  //   } catch (error) {
-  //     console.error('Email connection failed:', error);
-  //   }
-  // };
+    try {
+      await connectWithEmail(emailRef.current.value);
+      setIsProcessingEmail(true);
+      localStorage.setItem("Fuse-loginHint", emailRef.current.value);
+    } catch (error) {
+      console.error('Email connection failed:', error);
+    }
+  };
 
-  // const onSubmitOtpHandler: FormEventHandler<HTMLFormElement> = async (
-  //   event,
-  // ) => {
-  //   event.preventDefault();
+  const onSubmitOtpHandler: FormEventHandler<HTMLFormElement> = async (
+    event,
+  ) => {
+    event.preventDefault();
 
-  //   const otp = event.currentTarget.otp.value;
+    const otp = event.currentTarget.otp.value;
 
-  //   try {
-  //     await verifyOneTimePassword(otp);
-  //   } catch (error) {
-  //     console.error('OTP verification failed:', error);
-  //   }
-  // };
+    try {
+      await verifyOneTimePassword(otp);
+    } catch (error) {
+      console.error('OTP verification failed:', error);
+    }
+  };
 
   const toggleModal = useCallback((isModal: boolean) => {
     dispatch(setIsWalletModalOpen(isModal));
@@ -357,7 +356,7 @@ const WalletModal = (): JSX.Element => {
                   onClick={() => connectWallet(ProviderEnum.Github, true)}
                 />
               </div>
-              {/* <div className="flex w-full justify-between text-[#9F9F9F] items-center pt-6 text-sm md:text-[10px]">
+              <div className="flex w-full justify-between text-[#9F9F9F] items-center pt-6 text-sm md:text-[10px]">
                 <hr className="w-[40%]" />
                 <p>or with email</p>
                 <hr className="w-[40%]" />
@@ -396,7 +395,7 @@ const WalletModal = (): JSX.Element => {
                     Verify OTP
                   </button>
                 </form>
-              )} */}
+              )}
             </motion.div>
           ) : selected == "VOLT" ? (
             <motion.div
