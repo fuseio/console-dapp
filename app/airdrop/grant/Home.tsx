@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import FAQ from "@/components/FAQ";
 
@@ -70,6 +71,7 @@ const joins = [
     icon: article,
     button: {
       title: "Start building",
+      link: "#"
     },
   },
   {
@@ -78,6 +80,7 @@ const joins = [
     icon: uploadFile,
     button: {
       title: "Apply Now",
+      link: "https://docs.google.com/forms/d/e/1FAIpQLServsLcjBhksX0bGXsE9jwf8qixP4HlKq2jEiJmwEjFxPxX8w/viewform"
     },
   },
 ];
@@ -194,9 +197,13 @@ const Join = () => {
             <p className="max-w-md">
               {join.description}
             </p>
-            <button className="transition ease-in-out w-fit px-12 py-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black">
+            <Link
+              href={join.button.link}
+              target={join.button.link !== "#" ? "_blank" : "_self"}
+              className="transition ease-in-out w-fit px-12 py-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
+            >
               {join.button.title}
-            </button>
+            </Link>
           </article>
         ))}
       </div>
