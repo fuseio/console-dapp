@@ -80,8 +80,9 @@ export const path = {
   STAKING: "/staking",
   DASHBOARD: "/dashboard",
   AIRDROP: "/airdrop",
-  AIRDROP_FOUNDATION: "/airdrop/foundation",
   AIRDROP_LEADERBOARD: "/airdrop/leaderboard",
+  AIRDROP_FOUNDATION: "/airdrop/foundation",
+  AIRDROP_GRANT: "/airdrop/grant",
 };
 
 export const buildSubMenuItems = [

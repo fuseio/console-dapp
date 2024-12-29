@@ -1,11 +1,13 @@
 import Image from "next/image";
 import { useAccount } from "wagmi";
 import { useRef, useEffect } from 'react';
+import { useRouter } from "next/navigation";
 
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectAirdropSlice } from "@/store/airdropSlice";
 import Spinner from "@/components/ui/Spinner";
+import { path } from "@/lib/helpers";
 
 import RightCaret from "@/assets/RightCaret";
 import rightCaret from "@/assets/right-caret-black.svg";
@@ -14,11 +16,13 @@ import fuseFoundation from "@/assets/fuse-foundation.svg";
 import fuseFounders from "@/assets/fuse-founders.png";
 import fuseFlash from "@/assets/fuse-flash.svg";
 import fuseEmber from "@/assets/fuse-ember.svg";
+import Link from "next/link";
 
 const Hero = () => {
   const dispatch = useAppDispatch();
   const airdropSlice = useAppSelector(selectAirdropSlice);
-  const { isConnecting } = useAccount();
+  const { isConnecting, isConnected } = useAccount();
+  const router = useRouter();
 
   const isLoading = isConnecting || airdropSlice.isAuthenticating || airdropSlice.isCreating || airdropSlice.isRetrieving;
 
@@ -32,8 +36,8 @@ const Hero = () => {
           Airdrop
         </span>
       </h1>
-      <p className="text-lg max-w-[40rem]">
-        Join the Fuse Airdrop! Get into Fuse, connect your wallet and earn Rewards with ease: Join the Explosive Airdrop Campaign
+      <p className="text-lg max-w-xl">
+        Explore, build and play to migrate with us easily and fun to the new Fuse Ember network.
       </p>
       <div className="flex items-center gap-8 md:flex-col">
         <div className="group relative z-10">
@@ -41,7 +45,11 @@ const Hero = () => {
             className="transition-all ease-in-out duration-300 flex items-center gap-2 bg-black text-[1.25rem] leading-none font-semibold text-white px-10 py-4 rounded-full scale-100 group-hover:scale-95"
             disabled={isLoading}
             onClick={() => {
-              dispatch(setIsWalletModalOpen(true));
+              if (isConnected) {
+                router.push(path.AIRDROP_FOUNDATION)
+              } else {
+                dispatch(setIsWalletModalOpen(true));
+              }
             }}
           >
             Join the Airdrop
@@ -116,11 +124,11 @@ const Giveaway = () => {
         <div className="relative text-center">
           <FloatingParachute />
           <p className="relative left-10 text-8xl leading-none font-semibold mt-6 md:-left-2 md:text-3xl">
-            63,000,000 FUSE
+            13,000,000 FUSE
           </p>
         </div>
         <p className="text-center text-[1.25rem] leading-none font-semibold mt-14 md:text-base md:mt-8">
-          Phase 1 is live now!
+          Phase 1 and 2 are live now!
         </p>
         <div className="flex flex-col gap-4 mt-6">
           <div className="flex justify-between items-center">
@@ -135,14 +143,14 @@ const Giveaway = () => {
               alt="Fuse Founders"
               width={80}
               height={80}
-              className="relative left-6 md:left-0"
+              className="relative left-4 md:left-0"
             />
             <Image
               src={fuseFlash}
               alt="Fuse Flash"
               width={60}
               height={60}
-              className="relative left-5 md:left-0"
+              className="relative left-2 md:left-0"
             />
             <Image
               src={fuseEmber}
@@ -153,19 +161,19 @@ const Giveaway = () => {
           </div>
           <div className="flex justify-between items-center w-[calc(100%-4rem)] ml-8 relative z-10">
             <span className="shrink-0 bg-pale-green w-4 h-4 rounded-full"></span>
-            <span className="shrink-0 bg-peach-orange w-4 h-4 rounded-full relative left-9 md:left-2"></span>
-            <span className="shrink-0 bg-atomic-tangerine w-4 h-4 rounded-full relative left-8 md:left-2"></span>
+            <span className="shrink-0 bg-peach-orange w-4 h-4 rounded-full relative left-6 md:left-2"></span>
+            <span className="shrink-0 bg-atomic-tangerine w-4 h-4 rounded-full relative left-4 md:left-2"></span>
             <span className="shrink-0 bg-sunset-orange w-4 h-4 rounded-full"></span>
             <div className="absolute bg-charcoal-gray w-full h-1.5 rounded-full -z-10">
-              <span className="block bg-linear-gradient-green-red w-[calc(1/6*100%+2rem)] h-1.5 rounded-full z-10"></span>
+              <span className="block bg-linear-gradient-green-red w-[calc(3/6*100%+2rem)] h-1.5 rounded-full z-10"></span>
             </div>
           </div>
           <div className="flex justify-between items-center">
             <p className="text-lg leading-none font-semibold md:text-sm">
-              Foundations
+              Ecosystem
             </p>
             <p className="text-lg leading-none font-semibold md:text-sm">
-              Founders
+              Grant
             </p>
             <p className="text-lg leading-none font-semibold md:text-sm">
               Flash
@@ -182,6 +190,8 @@ const Giveaway = () => {
 
 const Phases = () => {
   const dispatch = useAppDispatch();
+  const { isConnected } = useAccount();
+  const router = useRouter();
 
   return (
     <div className="flex flex-col justify-around gap-14 mt-28 relative md:mt-16">
@@ -199,15 +209,19 @@ const Phases = () => {
               </p>
             </div>
             <p className="text-7xl md:text-2xl leading-none font-semibold">
-              Fuse Foundation
+              Fuse Ecosystem
             </p>
-            <p className="text-lg max-w-xs">
-              Explore the Fuse ecosystem and expand liquidity through Quests
+            <p className="text-lg max-w-xl">
+              Complete various quests to explore the Fuse ecosystem, find new ways to earn and always be the first to receive the latest news.
             </p>
             <button
               className="transition ease-in-out w-fit px-12 py-4 mt-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
               onClick={() => {
-                dispatch(setIsWalletModalOpen(true));
+                if (isConnected) {
+                  router.push(path.AIRDROP_FOUNDATION)
+                } else {
+                  dispatch(setIsWalletModalOpen(true));
+                }
               }}
             >
               Get started
@@ -230,16 +244,36 @@ const Phases = () => {
               <p className="text-[1.25rem] leading-none font-medium md:text-base">
                 Phase 2
               </p>
-              <p className="bg-lightest-gray text-lg leading-none font-medium px-4 py-2 rounded-full md:text-base md:py-1">
-                Loading
+              <p className="bg-success text-lg leading-none font-medium px-4 py-2 rounded-full md:text-base md:py-1">
+                Live
               </p>
             </div>
             <p className="text-7xl md:text-2xl leading-none font-semibold">
               Builder Grants
             </p>
             <p className="text-lg max-w-2xl">
-              Earn points with a campaign incentivizing building on the new Ember (Flash) Testnet first, then migrating apps to the new Ember Mainnet.
+              {"If you're a developer, start building an app on the new testnet today to get support and a grant from the Fuse team to help grow your project."}
             </p>
+            <div className="flex items-center gap-4 mt-4 md:flex-col md:items-start">
+              <button
+                className="transition ease-in-out w-fit px-12 py-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
+                onClick={() => {
+                  if (isConnected) {
+                    router.push(path.AIRDROP_GRANT)
+                  } else {
+                    dispatch(setIsWalletModalOpen(true));
+                  }
+                }}
+              >
+                Get started
+              </button>
+              <Link
+                className="transition ease-in-out w-fit px-12 py-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
+                href="#"
+              >
+                Learn more
+              </Link>
+            </div>
           </div>
         </div>
         <Image
@@ -259,15 +293,21 @@ const Phases = () => {
                 Phase 3
               </p>
               <p className="bg-lightest-gray text-lg leading-none font-medium px-4 py-2 rounded-full md:text-base md:py-1">
-                Loading
+                Coming soon
               </p>
             </div>
             <p className="text-7xl md:text-2xl leading-none font-semibold">
               Fuse Flash
             </p>
-            <p className="text-lg max-w-lg">
-              Interact with the Flash Testnet, test its functionality, and earn points that will convert into tokens on Fuse Ember at launch.
+            <p className="text-lg max-w-xl">
+              By playing games on the Fuse Flash testnet, you will help us verify that the network is stable and reliable, and we will be happy to reward you for being with us!
             </p>
+            <Link
+              className="transition ease-in-out w-fit px-12 py-4 mt-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
+              href="#"
+            >
+              Learn more
+            </Link>
           </div>
         </div>
         <Image
@@ -287,15 +327,21 @@ const Phases = () => {
                 Phase 4
               </p>
               <p className="bg-lightest-gray text-lg leading-none font-medium px-4 py-2 rounded-full md:text-base md:py-1">
-                Loading
+                Coming soon
               </p>
             </div>
             <p className="text-7xl md:text-2xl leading-none font-semibold">
               Fuse Ember
             </p>
-            <p className="text-lg max-w-[34rem]">
-              Access and earn by engaging with our next-gen Layer 2 zkEVM Web3 payment & loyalty infrastructure  - Fuse Ember..
+            <p className="text-lg max-w-[37rem]">
+              Migrate all your funds from old L1 Fuse Network mainnet to L2 Fuse Ember mainnet and earn airdrop points. The more funds you migrate, the more points you get.
             </p>
+            <Link
+              className="transition ease-in-out w-fit px-12 py-4 mt-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
+              href="#"
+            >
+              Learn more
+            </Link>
           </div>
         </div>
         <Image
