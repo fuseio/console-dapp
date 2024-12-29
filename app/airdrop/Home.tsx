@@ -46,7 +46,7 @@ const Hero = () => {
             disabled={isLoading}
             onClick={() => {
               if (isConnected) {
-                router.push(path.AIRDROP_FOUNDATION)
+                router.push(path.AIRDROP_ECOSYSTEM)
               } else {
                 dispatch(setIsWalletModalOpen(true));
               }
@@ -143,7 +143,7 @@ const Giveaway = () => {
               alt="Fuse Founders"
               width={80}
               height={80}
-              className="relative left-4 md:left-0"
+              className="relative left-6 md:left-0"
             />
             <Image
               src={fuseFlash}
@@ -161,7 +161,7 @@ const Giveaway = () => {
           </div>
           <div className="flex justify-between items-center w-[calc(100%-4rem)] ml-8 relative z-10">
             <span className="shrink-0 bg-pale-green w-4 h-4 rounded-full"></span>
-            <span className="shrink-0 bg-peach-orange w-4 h-4 rounded-full relative left-6 md:left-2"></span>
+            <span className="shrink-0 bg-peach-orange w-4 h-4 rounded-full relative left-9 md:left-2"></span>
             <span className="shrink-0 bg-atomic-tangerine w-4 h-4 rounded-full relative left-4 md:left-2"></span>
             <span className="shrink-0 bg-sunset-orange w-4 h-4 rounded-full"></span>
             <div className="absolute bg-charcoal-gray w-full h-1.5 rounded-full -z-10">
@@ -173,7 +173,7 @@ const Giveaway = () => {
               Ecosystem
             </p>
             <p className="text-lg leading-none font-semibold md:text-sm">
-              Grant
+              Builders Grant
             </p>
             <p className="text-lg leading-none font-semibold md:text-sm">
               Flash
@@ -214,18 +214,26 @@ const Phases = () => {
             <p className="text-lg max-w-xl">
               Complete various quests to explore the Fuse ecosystem, find new ways to earn and always be the first to receive the latest news.
             </p>
-            <button
-              className="transition ease-in-out w-fit px-12 py-4 mt-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
-              onClick={() => {
-                if (isConnected) {
-                  router.push(path.AIRDROP_FOUNDATION)
-                } else {
-                  dispatch(setIsWalletModalOpen(true));
-                }
-              }}
-            >
-              Get started
-            </button>
+            <div className="flex items-center gap-4 mt-4 md:flex-col md:items-start">
+              <button
+                className="transition ease-in-out w-fit px-12 py-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
+                onClick={() => {
+                  if (isConnected) {
+                    router.push(path.AIRDROP_ECOSYSTEM)
+                  } else {
+                    dispatch(setIsWalletModalOpen(true));
+                  }
+                }}
+              >
+                Get started
+              </button>
+              <Link
+                className="transition ease-in-out w-fit px-12 py-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
+                href="#"
+              >
+                Learn more
+              </Link>
+            </div>
           </div>
         </div>
         <Image

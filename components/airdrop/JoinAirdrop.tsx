@@ -55,7 +55,7 @@ const JoinAirdrop = ({ invite, setInvite }: JoinAirdropProps) => {
       <button
         type="submit"
         className="transition ease-in-out bg-fuse-black border border-fuse-black flex justify-center items-center gap-2 rounded-full text-[1.25rem] leading-none text-white font-semibold px-6 py-2.5 md:w-full hover:bg-transparent hover:border-fuse-black hover:text-fuse-black"
-        onClick={() => router.push(path.AIRDROP_FOUNDATION)}
+        onClick={() => router.push(path.AIRDROP_ECOSYSTEM)}
       >
         Join
         <Image

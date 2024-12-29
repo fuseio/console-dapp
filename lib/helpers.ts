@@ -81,7 +81,7 @@ export const path = {
   DASHBOARD: "/dashboard",
   AIRDROP: "/airdrop",
   AIRDROP_LEADERBOARD: "/airdrop/leaderboard",
-  AIRDROP_FOUNDATION: "/airdrop/foundation",
+  AIRDROP_ECOSYSTEM: "/airdrop/ecosystem",
   AIRDROP_GRANT: "/airdrop/grant",
 };
 

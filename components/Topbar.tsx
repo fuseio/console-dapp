@@ -16,8 +16,8 @@ const AirdropSubmenu = [
     link: "/airdrop/leaderboard",
   },
   {
-    title: "Foundation",
-    link: "/airdrop/foundation",
+    title: "Fuse Ecosystem",
+    link: "/airdrop/ecosystem",
   },
   {
     title: "Builder Grants",
@@ -60,7 +60,7 @@ const Topbar = () => {
           return { ...item, link: path.DASHBOARD }
         }
         if (item.link === path.AIRDROP && airdropSlice.isUser) {
-          return { ...item, link: path.AIRDROP_FOUNDATION, submenu: AirdropSubmenu }
+          return { ...item, link: path.AIRDROP, submenu: AirdropSubmenu }
         }
         return item
       }

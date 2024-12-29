@@ -14,7 +14,7 @@ import { retrieveAirdropUser, selectAirdropSlice } from "@/store/airdropSlice";
 import QuestModal from "@/components/airdrop/QuestModal";
 import ClaimTestnetFuseModal from "@/components/airdrop/ClaimTestnetFuseModal";
 
-const AirdropFoundation = () => {
+const AirdropEcosystem = () => {
   const dispatch = useAppDispatch();
   const airdropSlice = useAppSelector(selectAirdropSlice);
   const router = useRouter();
@@ -42,4 +42,4 @@ const AirdropFoundation = () => {
   );
 };
 
-export default AirdropFoundation;
+export default AirdropEcosystem;

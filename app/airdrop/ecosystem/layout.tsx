@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Airdrop Foundation - Fuse Console',
+  title: 'Airdrop Ecosystem - Fuse Console',
   description: 'Complete quests and invite friends to earn XP',
 }
 
-export default function AirdropFoundationLayout({
+export default function AirdropEcosystemLayout({
   children,
 }: {
   children: React.ReactNode

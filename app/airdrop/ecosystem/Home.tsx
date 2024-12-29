@@ -282,7 +282,7 @@ const Home = () => {
             fuse
           </span>
           <span className="bg-linear-gradient-black bg-clip-text text-8xl text-[transparent] font-black md:text-4xl">
-            Foundation
+            Ecosystem
           </span>
         </h1>
       </div>
