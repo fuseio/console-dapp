@@ -89,7 +89,7 @@ const Home = () => {
               </div>
             ) : (
               messages.map((message, index) => (
-                <ChatMessage key={index} message={message} />
+                <ChatMessage key={index} message={message} setMessages={setMessages} />
               ))
             )}
             {isLoading && (

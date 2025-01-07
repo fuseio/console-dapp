@@ -3,6 +3,9 @@ import { NEXT_PUBLIC_AGENT_API_URL, NEXT_PUBLIC_AGENT_ID } from "../config";
 export type TextResponse = {
   text: string;
   user: 'user' | 'Fuse Network';
+  action?: string;
+  hash?: string;
+  [key: string]: unknown;
 };
 
 export async function sendMessage(text: string): Promise<TextResponse[]> {
