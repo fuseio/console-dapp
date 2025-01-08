@@ -75,6 +75,7 @@ const Home = () => {
   const [isExchange, setIsExchange] = useState(false);
   const [isDisabledChain, setIsDisabledChain] = useState(false);
   const [isThirdPartyChain, setIsThirdPartyChain] = useState(false);
+  const [isStargate, setIsStargate] = useState(false);
   const [pendingPromise, setPendingPromise] = React.useState<any>();
   const { address, connector, isConnected } = useAccount();
   const config = useConfig();
@@ -619,6 +620,8 @@ const Home = () => {
                   setIsThirdPartyChain={setIsThirdPartyChain}
                   pendingPromise={pendingPromise}
                   setPendingPromise={setPendingPromise}
+                  isStargate={isStargate}
+                  setIsStargate={setIsStargate}
                 />
               ) : (
                 <Withdraw

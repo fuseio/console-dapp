@@ -25,6 +25,7 @@ import { getAccount } from "wagmi/actions";
 import { formatUnits } from "viem";
 import Image from "next/image";
 import { getTokenOnFuse } from "@/lib/helper-bridge";
+import { stargateConfig } from "@/lib/stargate";
 
 type DepositProps = {
   selectedChainSection: number;
@@ -52,6 +53,8 @@ type DepositProps = {
   setIsThirdPartyChain: (isThirdPartyChain: boolean) => void;
   pendingPromise: any;
   setPendingPromise: (pendingPromise: any) => void;
+  isStargate: boolean;
+  setIsStargate: (isStargate: boolean) => void;
 };
 
 const Deposit = ({
@@ -75,6 +78,8 @@ const Deposit = ({
   setIsThirdPartyChain,
   pendingPromise,
   setPendingPromise,
+  isStargate,
+  setIsStargate,
 }: DepositProps) => {
   const { address, connector } = useAccount();
   const dispatch = useAppDispatch();
@@ -127,6 +132,17 @@ const Deposit = ({
   }, [address, selectedChainItem]);
 
   useEffect(() => {
+    if (
+      appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+        selectedTokenItem
+      ].isDisabled
+    ) {
+      setIsStargate(true);
+      setDisplayButton(false);
+    } else {
+      setIsStargate(false);
+      setDisplayButton(true);
+    }
     if (address && selectedChainSection === 0) {
       if (pendingPromise) {
         pendingPromise.abort();
@@ -166,6 +182,7 @@ const Deposit = ({
     selectedChainSection,
     nativeBalance,
   ]);
+
   useEffect(() => {
     if (chainSlice.chainId === 0 && selectedChainSection === 0) {
       dispatch(setChain(appConfig.wrappedBridge.chains[selectedChainItem]));
@@ -417,6 +434,46 @@ const Deposit = ({
                     appConfig.wrappedBridge.disabledChains[selectedChainItem]
                       .appURL
                   }
+                </p>
+              </div>
+              <Image src={visit} alt="go" className="ml-auto" />
+            </div>
+          </a>
+          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm md:text-xs">
+            <div className="flex p-2 w-[10%] items-start">
+              <Image src={alert} alt="warning" className="h-5" />
+            </div>
+            <div className="flex flex-col font-medium">
+              <p>
+                Remember that using 3rd party application carries risks. Fuse
+                does not control the code or content of these websites.
+              </p>
+            </div>
+          </div>
+        </>
+      ) : isStargate ? (
+        <>
+          <a
+            href={stargateConfig.appDepositURL}
+            target="_blank"
+            rel="noreferrer"
+            className="cursor-pointer"
+            onClick={() => {
+              amplitude.track("External Provider", {
+                provider: stargateConfig.appName,
+                walletType: connector ? walletType[connector.id] : undefined,
+                walletAddress: address,
+              });
+            }}
+          >
+            <div className="flex mt-2 bg-modal-bg py-4 px-5 rounded-md items-center cursor-pointer">
+              <Image src={stargateConfig.appLogo} alt="icon" height={50} className="rounded-md" />
+              <div className="flex flex-col ml-3">
+                <p className="font-semibold text-base">
+                  {stargateConfig.appName}
+                </p>
+                <p className="font-medium text-[#898888] text-sm md:text-xs">
+                  {stargateConfig.appDepositURL}
                 </p>
               </div>
               <Image src={visit} alt="go" className="ml-auto" />

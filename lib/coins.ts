@@ -24,20 +24,6 @@ import wbtc from "@/assets/wbtc.png";
 
 export const coins: CoinConfigLike[] = [
   {
-    name: "USD Coin",
-    symbol: "USDC",
-    decimals: 6,
-    icon: usdc,
-    coinGeckoId: "usd-coin",
-  },
-  {
-    name: "Tether USD",
-    symbol: "USDT",
-    decimals: 6,
-    icon: usdt,
-    coinGeckoId: "tether",
-  },
-  {
     name: "Fuse",
     symbol: "FUSE",
     decimals: 18,
@@ -45,18 +31,36 @@ export const coins: CoinConfigLike[] = [
     coinGeckoId: "fuse-network-token",
   },
   {
-    name: "Wrapped Ether",
-    symbol: "WETH",
-    decimals: 18,
-    icon: weth,
-    coinGeckoId: "ethereum",
-  },
-  {
     name: "Ethereum",
     symbol: "ETH",
     decimals: 18,
     icon: eth,
     coinGeckoId: "ethereum",
+    isDisabled: true,
+  },
+  {
+    name: "Wrapped Ether",
+    symbol: "WETH",
+    decimals: 18,
+    icon: weth,
+    coinGeckoId: "ethereum",
+    isDisabled: true,
+  },
+  {
+    name: "USD Coin",
+    symbol: "USDC",
+    decimals: 6,
+    icon: usdc,
+    coinGeckoId: "usd-coin",
+    isDisabled: true,
+  },
+  {
+    name: "Tether USD",
+    symbol: "USDT",
+    decimals: 6,
+    icon: usdt,
+    coinGeckoId: "tether",
+    isDisabled: true,
   },
   {
     name: "Freedom",
