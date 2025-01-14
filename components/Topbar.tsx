@@ -19,6 +19,10 @@ const Topbar = () => {
       link: "/wallet",
     },
     {
+      title: "AI Agent",
+      link: "/ai-agent",
+    },
+    {
       title: "Build",
       link: "/build",
     },
