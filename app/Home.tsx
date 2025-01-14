@@ -11,6 +11,7 @@ import faucet from "@/assets/faucet.svg";
 import fusebox from "@/assets/fusebox.svg";
 import DocumentSupport from "@/components/DocumentSupport";
 import * as amplitude from "@amplitude/analytics-browser";
+import Carousel from "@/components/landing/Carousel";
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -37,22 +38,7 @@ const Home = () => {
             />
           }
         </div>
-        <div className="transition-all ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] md:min-h-[514px] px-[83.31px] pt-[60.36px] pb-[67px] md:px-[31px] md:py-[30px] mt-[99.5px] mb-10 md:mt-[78px] md:mb-5 bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-bottom">
-          <p className="text-[40px] md:text-[32px] leading-tight text-fuse-black font-semibold max-w-[414.86px]">
-            Build your Web3 project with Fuse
-          </p>
-          <p className="text-[20px]/7 text-text-dark-gray md:text-base max-w-[395.25px] mt-[15.42px] mb-[35.58px]">
-            Easily access affordable Web3 payment & loyalty infrastructure
-            without development hurdles or vendor dependencies.
-          </p>
-          <Link
-            href="/build"
-            className="transition ease-in-out md:block md:text-center text-lg leading-none text-white hover:text-black font-semibold bg-black hover:bg-white rounded-full py-4 px-[52px] md:px-2 md:w-11/12 md:max-w-[270px]"
-            onClick={() => amplitude.track("Home: Create project")}
-          >
-            Create your project
-          </Link>
-        </div>
+        <Carousel />
         <div className="grid grid-cols-3 lg:grid-cols-1 gap-[31px] md:gap-5">
           <Link
             href={path.STAKING}
