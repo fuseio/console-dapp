@@ -23,7 +23,3 @@
   border-style: solid;
   border-color: transparent transparent black transparent;
 }
-
-.swiper-button-disabled {
-  visibility: hidden;
-}
