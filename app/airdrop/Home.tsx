@@ -58,7 +58,7 @@ const Hero = () => {
           <div className="transition-all ease-in-out duration-300 absolute inset-8 bg-linear-gradient-dark-orange rounded-[inherit] blur-[25px] -z-[1] group-hover:inset-0"></div>
         </div>
         <a
-          href="https://news.fuse.io/announcing-fuse-ember-and-our-updated-roadmap/"
+          href="https://docs.fuse.io/fuse-ember/airdrop/"
           target="_blank"
           className="group flex items-center gap-2 text-[1.25rem] leading-none font-semibold"
         >
@@ -229,7 +229,8 @@ const Phases = () => {
               </button>
               <Link
                 className="transition ease-in-out w-fit px-12 py-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
-                href="#"
+                href="https://docs.fuse.io/fuse-ember/airdrop/phase1"
+                target="_blank"
               >
                 Learn more
               </Link>
@@ -277,7 +278,8 @@ const Phases = () => {
               </button>
               <Link
                 className="transition ease-in-out w-fit px-12 py-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
-                href="#"
+                href="https://docs.fuse.io/fuse-ember/airdrop/phase2"
+                target="_blank"
               >
                 Learn more
               </Link>
@@ -312,7 +314,8 @@ const Phases = () => {
             </p>
             <Link
               className="transition ease-in-out w-fit px-12 py-4 mt-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
-              href="#"
+              href="https://docs.fuse.io/fuse-ember/airdrop/phase3"
+              target="_blank"
             >
               Learn more
             </Link>
@@ -346,7 +349,8 @@ const Phases = () => {
             </p>
             <Link
               className="transition ease-in-out w-fit px-12 py-4 mt-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
-              href="#"
+              href="https://docs.fuse.io/fuse-ember/airdrop/phase4"
+              target="_blank"
             >
               Learn more
             </Link>

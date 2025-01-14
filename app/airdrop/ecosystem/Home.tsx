@@ -240,7 +240,7 @@ const Home = () => {
     setQuests((prevQuests) => {
       const newQuests = [...prevQuests];
       newQuests.map((newQuest) => {
-        if (newQuest.frequency === "Once a day") {
+        if (newQuest.frequency !== "One-time") {
           return newQuest;
         }
 
@@ -277,11 +277,11 @@ const Home = () => {
   return (
     <div className="w-8/9 grow flex flex-col text-fuse-black my-20 xl:my-12 xl:w-9/12 md:w-9/10 max-w-7xl">
       <div className="flex justify-between items-center">
-        <h1 className="flex flex-col gap-2">
-          <span className="text-3xl font-semibold md:text-xl">
+        <h1 className="flex items-end gap-2 bg-linear-gradient-black bg-clip-text text-8xl text-[transparent] md:text-4xl">
+          <span className="font-semibold">
             fuse
           </span>
-          <span className="bg-linear-gradient-black bg-clip-text text-8xl text-[transparent] font-black md:text-4xl">
+          <span className="font-black">
             Ecosystem
           </span>
         </h1>
@@ -362,7 +362,7 @@ const Home = () => {
               Fuse is migrating to a zkEvm L2 (Fuse Ember) and taking its robust comunity with it
             </p>
             <a
-              href="https://news.fuse.io/announcing-fuse-ember-and-our-updated-roadmap/"
+              href="https://docs.fuse.io/fuse-ember/airdrop/phase1"
               target="_blank"
               className="group flex items-center gap-1 font-semibold"
             >
