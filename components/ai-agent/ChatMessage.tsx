@@ -23,7 +23,7 @@ type SendTokensContent = {
 }
 
 const AssistantIcon = () => (
-  <div className="relative w-[58px] h-[58px] -mt-[10px]">
+  <div className="relative shrink-0 w-[58px] h-[58px] -mt-[10px]">
     <Image
       src={edisonGradient}
       alt="Assistant Icon"
@@ -98,7 +98,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
   const isButton = message.action === "SEND_TOKENS";
 
   return (
-    <div className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex gap-3 md:gap-0 ${isUser ? 'justify-end' : 'justify-start'}`}>
       {!isUser && <AssistantIcon />}
       <div
         className={`rounded-2xl px-4 py-3 max-w-[85%] ${isUser

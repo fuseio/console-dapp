@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, KeyboardEvent } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -8,7 +8,7 @@ import { useAccount } from "wagmi";
 import { Coins, LinkIcon, Gift, ChevronRight } from 'lucide-react'
 
 import { useAppDispatch } from "@/store/store";
-import { addMessage, sendMessage, setHydrate } from "@/store/aiSlice";
+import { addMessage, sendMessage } from "@/store/aiSlice";
 import { path } from "@/lib/helpers";
 
 import edisonWordmark from "@/assets/edison-wordmark.png"
@@ -16,6 +16,7 @@ import edisonWordmark from "@/assets/edison-wordmark.png"
 const Home = () => {
   const router = useRouter()
   const [prompt, setPrompt] = useState('')
+  const [isComposing, setIsComposing] = useState(false);
   const dispatch = useAppDispatch();
   const { address } = useAccount();
 
@@ -28,9 +29,12 @@ const Home = () => {
     router.push(path.AI_AGENT_CHAT)
   }
 
-  useEffect(() => {
-    dispatch(setHydrate({ address }))
-  }, [dispatch, address])
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey && !isComposing) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
 
   return (
     <main className="flex-1 container mx-auto px-4 py-12 max-w-4xl mt-12">
@@ -69,6 +73,9 @@ const Home = () => {
             rows={3}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onCompositionStart={() => setIsComposing(true)}
+            onCompositionEnd={() => setIsComposing(false)}
             placeholder="What would you like to build? Start typing or choose an example..."
             className="w-full bg-[transparent] text-white placeholder-white/60 resize-none focus:outline-none"
           />
