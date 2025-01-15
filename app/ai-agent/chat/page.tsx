@@ -4,10 +4,9 @@ import { useEffect } from "react";
 import { useAppDispatch } from "@/store/store";
 import { setSelectedNavbar } from "@/store/navbarSlice";
 import Topbar from "@/components/Topbar";
-import Home from "@/app/ai-agent/Home";
-import Footer from "@/components/Footer";
+import Home from "@/app/ai-agent/chat/Home";
 
-const AIAgent = () => {
+const AIAgentChat = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -18,9 +17,8 @@ const AIAgent = () => {
     <div className="font-mona w-full min-h-screen flex-col flex items-center bg-light-gray">
       <Topbar />
       <Home />
-      <Footer />
     </div>
   );
 };
 
-export default AIAgent;
+export default AIAgentChat;

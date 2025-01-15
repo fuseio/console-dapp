@@ -387,3 +387,11 @@ export interface ValidatorResponse {
   pendingValidators: Address[]
   validatorsMetadata: Record<Address, ValidatorTypeResponse>
 }
+
+export type TextResponse = {
+  text: string;
+  user: 'user' | 'Fuse Network';
+  action?: string;
+  hash?: string;
+  [key: string]: unknown;
+};

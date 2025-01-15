@@ -1,110 +1,120 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import Button from "@/components/ui/Button";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import back from "@/assets/back.svg";
 import { useRouter } from "next/navigation";
-import ChatMessage from "@/components/ai-agent/ChatMessage";
-import ChatInput from "@/components/ai-agent/ChatInput";
-import { sendMessage, TextResponse } from "@/lib/services/aiService";
+import Link from "next/link";
 import { useAccount } from "wagmi";
+import { Coins, LinkIcon, Gift, ChevronRight } from 'lucide-react'
+
+import { useAppDispatch } from "@/store/store";
+import { addMessage, sendMessage, setHydrate } from "@/store/aiSlice";
+import { path } from "@/lib/helpers";
+
+import edisonWordmark from "@/assets/edison-wordmark.png"
 
 const Home = () => {
-  const router = useRouter();
+  const router = useRouter()
+  const [prompt, setPrompt] = useState('')
+  const dispatch = useAppDispatch();
   const { address } = useAccount();
-  const [messages, setMessages] = useState<TextResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom when new messages arrive
+  const handleSend = (text?: string) => {
+    text = text ?? prompt.trim()
+    if (!text) return;
+
+    dispatch(addMessage({ message: { user: "user", text }, address }))
+    dispatch(sendMessage({ text, address }))
+    router.push(path.AI_AGENT_CHAT)
+  }
+
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  // Load chat history from localStorage on component mount
-  useEffect(() => {
-    if (address) {
-      const savedMessages = localStorage.getItem(`chat_history_${address}`);
-      if (savedMessages) {
-        setMessages(JSON.parse(savedMessages));
-      }
-    }
-  }, [address]);
-
-  // Save messages to localStorage whenever they change
-  useEffect(() => {
-    if (address && messages.length > 0) {
-      localStorage.setItem(`chat_history_${address}`, JSON.stringify(messages));
-    }
-  }, [messages, address]);
-
-  const handleSendMessage = async (message: string) => {
-    if (!message.trim()) return;
-
-    const newMessage: TextResponse = {
-      user: "user",
-      text: message
-    };
-
-    setMessages(prev => [...prev, newMessage]);
-    setIsLoading(true);
-
-    try {
-      const response = await sendMessage(message);
-      setMessages((prev) => [...prev, ...response]);
-    } catch (error) {
-      console.error('Error sending message:', error);
-      // Handle error - show error message to user
-      const errorMessage: TextResponse = {
-        user: "Fuse Network",
-        text: "Sorry, I encountered an error. Please try again."
-      };
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    dispatch(setHydrate({ address }))
+  }, [dispatch, address])
 
   return (
-    <div className="w-full flex flex-col items-center">
-      <div className="w-8/9 flex flex-col mt-[30.84px] md:mt-12 md:w-9/10 max-w-7xl">
-        <div className="flex items-center gap-2 mb-6">
-          <Button
-            text=""
-            className="p-2"
-            onClick={() => router.back()}
-          >
-            <Image src={back} alt="back" />
-          </Button>
-          <h1 className="text-2xl font-semibold">AI Assistant</h1>
+    <main className="flex-1 container mx-auto px-4 py-12 max-w-4xl mt-12">
+      <div className="text-center mb-16">
+        <div className="flex items-center justify-center mb-6">
+          <Image
+            src={edisonWordmark}
+            alt="Edison Logo"
+            width={120}
+            height={32}
+          />
         </div>
 
-        <div className="rounded-2xl p-6 h-[600px] my-5 flex flex-col">
-          <div className="flex-1 overflow-y-auto mb-6 scroll-smooth">
-            {messages.length === 0 ? (
-              <div className="text-center text-gray-500 mt-8">
-                <p>👋 Hi! I&apos;m your AI assistant.</p>
-                <p>How can I help you today?</p>
-              </div>
-            ) : (
-              messages.map((message, index) => (
-                <ChatMessage key={index} message={message} setMessages={setMessages} />
-              ))
-            )}
-            {isLoading && (
-              <div className="flex justify-center mt-4">
-                <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+        <h1 className="text-4xl font-semibold mb-4">
+          What would you like to do today?
+        </h1>
+        <p className="text-text-dark-gray max-w-2xl mx-auto">
+          Experience the power of blockchain without the complexity. Ask the Fuse
+          AI Agent to handle your Fuse Network transactions, manage assets, and
+          navigate DeFi services.{" "}
+          <Link
+            href="https://news.fuse.io/introducing-edison-the-first-ai-payments-agent-on-fuse/"
+            target="_blank"
+            className="text-black hover:underline inline-flex items-center"
+          >
+            Learn More <ChevronRight className="w-4 h-4" />
+          </Link>
+        </p>
+      </div>
 
-          <ChatInput onSendMessage={handleSendMessage} />
+      <div className="relative max-w-3xl mx-auto mb-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#49E358]/50 to-[#41008F]/50 rounded-2xl blur-xl" />
+        <div className="absolute inset-0 rounded-2xl shadow-[0_0_50px_rgba(74,222,128,0.15)] shadow-green-400/30" />
+        <div className="relative bg-fuse-black rounded-2xl p-5">
+          <textarea
+            rows={3}
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="What would you like to build? Start typing or choose an example..."
+            className="w-full bg-[transparent] text-white placeholder-white/60 resize-none focus:outline-none"
+          />
+          <div className="flex justify-end mt-2">
+            <button
+              onClick={() => handleSend()}
+              className="h-10 px-4 py-2 bg-pale-green hover:bg-[#92DC98] text-sm text-black font-medium rounded-full"
+            >
+              Start building
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
 
-export default Home; 
+      <div className="flex flex-wrap justify-center gap-4">
+        <button
+          className="flex items-center gap-2 h-10 px-4 py-2 bg-lightest-gray hover:bg-selected-gray rounded-[50px] text-sm font-medium"
+          onClick={() => handleSend("I would like to mint a branded Stablecoin")}
+        >
+          <Coins className="w-4 h-4" />
+          Mint a branded Stablecoin
+        </button>
+        <button
+          className="flex items-center gap-2 h-10 px-4 py-2 bg-lightest-gray hover:bg-selected-gray rounded-[50px] text-sm font-medium"
+          onClick={() => handleSend("I would like to create a payment link")}
+        >
+          <LinkIcon className="w-4 h-4" />
+          Create a payment link
+        </button>
+        <button
+          className="flex items-center gap-2 h-10 px-4 py-2 bg-lightest-gray hover:bg-selected-gray rounded-[50px] text-sm font-medium"
+          onClick={() => handleSend("I would like to create an Airdrop")}
+        >
+          <Gift className="w-4 h-4" />
+          Create an Airdrop
+        </button>
+        <button
+          className="flex items-center gap-2 h-10 px-4 py-2 bg-lightest-gray hover:bg-selected-gray rounded-[50px] text-sm font-medium"
+          onClick={() => handleSend("I would like to summarize my Rewards")}
+        >
+          <Gift className="w-4 h-4" />
+          Summarize my Rewards
+        </button>
+      </div>
+    </main>
+  )
+}
+
+export default Home;
