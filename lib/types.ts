@@ -542,3 +542,11 @@ export type DelegateLicenseModal = {
 export type OperatorRegistrationClassNames = {
   pricingArticle: string;
 }
+
+export type TextResponse = {
+  text: string;
+  user: 'user' | 'Fuse Network';
+  action?: string;
+  hash?: string;
+  [key: string]: unknown;
+};
