@@ -124,7 +124,7 @@ const Giveaway = () => {
         <div className="relative text-center">
           <FloatingParachute />
           <p className="relative left-10 text-8xl leading-none font-semibold mt-6 md:-left-2 md:text-3xl">
-            13,000,000 FUSE
+            10,400,000 FUSE
           </p>
         </div>
         <p className="text-center text-[1.25rem] leading-none font-semibold mt-14 md:text-base md:mt-8">
