@@ -387,3 +387,13 @@ export interface ValidatorResponse {
   pendingValidators: Address[]
   validatorsMetadata: Record<Address, ValidatorTypeResponse>
 }
+
+export interface Verifier {
+  operator: string;
+  address: Address;
+  receivedDelegations: number;
+  uptimeAll: number;
+  uptime7d: number;
+  commission: number;
+  status: string;
+}

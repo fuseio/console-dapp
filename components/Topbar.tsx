@@ -30,6 +30,10 @@ const Topbar = () => {
       title: "Staking",
       link: "/staking",
     },
+    {
+      title: "Nodes",
+      link: "/nodes",
+    },
   ]);
 
   useEffect(() => {
