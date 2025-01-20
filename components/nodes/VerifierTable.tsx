@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Filter as FilterIcon, Search } from 'lucide-react';
 import {
   Column,
   ColumnDef,
@@ -16,6 +16,13 @@ import {
 } from '@tanstack/react-table'
 
 import { Verifier } from '@/lib/types';
+import { useOutsideClick } from '@/lib/hooks/useOutsideClick';
+import { eclipseAddress } from '@/lib/helpers';
+
+import nodeops from '@/assets/nodeops.svg';
+import easeflow from '@/assets/easeflow.png';
+import profile from '@/assets/profile.svg';
+import Image, { StaticImageData } from 'next/image';
 
 declare module '@tanstack/react-table' {
   // see: https://github.com/TanStack/table/discussions/5222
@@ -23,6 +30,11 @@ declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     filterVariant?: 'text' | 'select'
   }
+}
+
+type FilterProps = {
+  column: Column<any, unknown>
+  setFilterOpen: (value: string) => void
 }
 
 const myDelegates = [
@@ -60,6 +72,12 @@ const verifiers: Verifier[] = [
   }
 ]
 
+const verifierImages: Record<string, StaticImageData> = {
+  "NodeOps": nodeops,
+  "Easeflow": easeflow,
+  "Solo Operator": profile,
+}
+
 const data = new Array(100).fill(null).map((_, index) => verifiers[index % verifiers.length])
 
 const renderPageNumbers = (table: Table<Verifier>) => {
@@ -84,7 +102,7 @@ const renderPageNumbers = (table: Table<Verifier>) => {
   return pages.map((page, index) => (
     <button
       key={index}
-      className={`border rounded p-1 ${pageIndex === page ? 'bg-gray-200' : ''}`}
+      className={`border border-light-gray rounded-md text-text-dark-gray p-1 w-8 ${pageIndex === page ? 'bg-success-light' : 'hover:bg-light-gray'}`}
       onClick={() => typeof page === 'number' && table.setPageIndex(page)}
       disabled={typeof page !== 'number'}
     >
@@ -94,13 +112,23 @@ const renderPageNumbers = (table: Table<Verifier>) => {
 };
 
 const VerifierTable = () => {
+  const [filterOpen, setFilterOpen] = useState("");
+
   const columns = useMemo<ColumnDef<Verifier, any>[]>(
     () => [
       {
         accessorKey: 'operator',
         header: 'Operator',
         filterFn: 'arrIncludesSome',
+        size: 200,
+        cell: info => (
+          <div className='flex items-center gap-2 w-max'>
+            <Image src={verifierImages[info.getValue()]} alt={info.getValue()} width={24} height={24} />
+            {info.getValue()}
+          </div>
+        ),
         enableGlobalFilter: false,
+        enableSorting: false,
         meta: {
           filterVariant: 'select',
         },
@@ -108,7 +136,9 @@ const VerifierTable = () => {
       {
         accessorKey: 'address',
         header: 'Address',
-        cell: info => info.getValue(),
+        size: 160,
+        cell: info => eclipseAddress(info.getValue()),
+        enableSorting: false,
         meta: {
           filterVariant: 'text',
         },
@@ -116,28 +146,38 @@ const VerifierTable = () => {
       {
         accessorKey: 'receivedDelegations',
         header: () => 'Received Delegations',
+        cell: info => <div>{info.getValue()} ({(info.getValue() / 600).toFixed(2)}%)</div>,
+        enableColumnFilter: false,
         enableGlobalFilter: false,
       },
       {
         accessorKey: 'uptimeAll',
-        header: () => 'Uptime All',
+        header: () => 'Uptime (All)',
+        cell: info => <div>{info.getValue().toFixed(2)}%</div>,
+        enableColumnFilter: false,
         enableGlobalFilter: false,
       },
       {
         accessorKey: 'uptime7d',
-        header: () => 'Uptime 7d',
+        header: () => 'Uptime (7d)',
+        cell: info => <div>{info.getValue().toFixed(2)}%</div>,
+        enableColumnFilter: false,
         enableGlobalFilter: false,
       },
       {
         accessorKey: 'commission',
         header: () => 'Commission',
+        cell: info => <div>{info.getValue().toFixed(2)}%</div>,
+        enableColumnFilter: false,
         enableGlobalFilter: false,
       },
       {
         accessorKey: 'status',
         header: () => 'Status',
         filterFn: 'arrIncludesSome',
+        cell: info => <div className={`p-2 rounded-full text-center leading-none font-semibold w-24 ${info.getValue() === 'Active' ? 'bg-success' : 'bg-light-gray'}`}>{info.getValue()}</div>,
         enableGlobalFilter: false,
+        enableSorting: false,
         meta: {
           filterVariant: 'select',
         },
@@ -145,8 +185,10 @@ const VerifierTable = () => {
       {
         accessorKey: 'action',
         header: () => '',
-        cell: () => <button>Delegate</button>,
+        cell: () => <button className="px-3 py-2 border border-black rounded-full leading-none font-semibold hover:bg-black hover:text-white">Delegate</button>,
+        enableColumnFilter: false,
         enableGlobalFilter: false,
+        enableSorting: false,
       }
     ],
     []
@@ -171,192 +213,231 @@ const VerifierTable = () => {
   })
 
   return (
-    <div className="p-2">
-      <div className="flex items-center gap-4">
-        <button
-          onClick={() => table.setGlobalFilter(null)}
-        >
-          All
-        </button>
-        <button
-          onClick={() => table.setGlobalFilter(myDelegates)}
-        >
-          My Delegates
-        </button>
-      </div>
-      <table>
-        <thead>
-          {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => {
-                return (
-                  <th key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder ? null : (
-                      <>
-                        <div
-                          {...{
-                            className: header.column.getCanSort()
-                              ? 'cursor-pointer select-none'
-                              : '',
-                            onClick: header.column.getToggleSortingHandler(),
-                          }}
-                        >
+    <section className="flex flex-col gap-4">
+      <header className="flex justify-end items-center gap-3">
+        <div>
+          Delegators
+        </div>
+        <div>
+          <button
+            onClick={() => table.setGlobalFilter(null)}
+            className={`transition-all ease-in-out ${table.getState().globalFilter ? "bg-white hover:opacity-70" : "bg-success-light text-success-dark"} text-sm font-semibold rounded-s-full px-7 py-3`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => table.setGlobalFilter(myDelegates)}
+            className={`transition-all ease-in-out ${table.getState().globalFilter ? "bg-success-light text-success-dark" : "bg-white hover:opacity-70"} text-sm font-semibold rounded-e-full px-7 py-3`}
+          >
+            My Delegates
+          </button>
+        </div>
+      </header>
+      <div className='bg-white rounded-[1.25rem] md:overflow-auto'>
+        <div className='px-8 py-7'>
+          Total of {table.getPrePaginationRowModel().rows.length} verifiers.
+        </div>
+        <table className='w-full border-spacing-2'>
+          <thead className='bg-transaction-bg text-sm text-text-dark-gray'>
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header, index) => {
+                  return (
+                    <th
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      className={`whitespace-nowrap font-normal py-2 ${index === 0 ? 'ps-8' : ''} ${index === headerGroup.headers.length - 1 ? 'pe-8' : ''}`}
+                      style={{ width: `${header.getSize() !== 150 ? `${header.getSize()}px` : 'auto'}` }}
+                    >
+                      {!header.isPlaceholder && (
+                        <div className='flex items-center gap-2'>
                           {flexRender(
                             header.column.columnDef.header,
                             header.getContext()
                           )}
-                          {{
-                            asc: <ChevronUp />,
-                            desc: <ChevronDown />,
-                          }[header.column.getIsSorted() as string] ?? null}
+                          {header.column.getCanSort() && (
+                            <div className='flex flex-col items-center'>
+                              <button
+                                onClick={() => header.column.toggleSorting(false)}
+                                disabled={header.column.getIsSorted() === 'asc'}
+                                className={`${header.column.getIsSorted() === 'asc' ? 'text-fuse-green' : ''}`}
+                              >
+                                <ChevronUp size={10} strokeWidth={3} />
+                              </button>
+                              <button
+                                onClick={() => header.column.toggleSorting(true)}
+                                disabled={header.column.getIsSorted() === 'desc'}
+                                className={`${header.column.getIsSorted() === 'desc' ? 'text-fuse-green' : ''}`}
+                              >
+                                <ChevronDown size={10} strokeWidth={3} />
+                              </button>
+                            </div>
+                          )}
+                          {header.column.getCanFilter() ? (
+                            <div className='relative flex items-center'>
+                              <button
+                                onClick={() => setFilterOpen(header.id)}
+                                className={`${filterOpen === header.id ? 'text-black' : ''}`}
+                              >
+                                <FilterIcon size={10} strokeWidth={3} />
+                              </button>
+                              {filterOpen === header.id && (
+                                <div className='absolute top-full left-0 text-base'>
+                                  <Filter column={header.column} setFilterOpen={setFilterOpen} />
+                                </div>
+                              )}
+                            </div>
+                          ) : null}
                         </div>
-                        {header.column.getCanFilter() ? (
-                          <div>
-                            <Filter column={header.column} />
-                          </div>
-                        ) : null}
-                      </>
-                    )}
-                  </th>
-                )
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map(row => {
-            return (
-              <tr key={row.id}>
-                {row.getVisibleCells().map(cell => {
-                  return (
-                    <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
                       )}
-                    </td>
+                    </th>
                   )
                 })}
               </tr>
-            )
-          })}
-        </tbody>
-      </table>
-      <div className="h-2" />
-      <div className="flex items-center gap-2">
-        <button
-          className="border rounded p-1"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          <ChevronLeft />
-        </button>
-        {renderPageNumbers(table)}
-        <button
-          className="border rounded p-1"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          <ChevronRight />
-        </button>
-        <span className="flex items-center gap-1">
-          <div>Page</div>
-          <strong>
-            {table.getState().pagination.pageIndex + 1} of{' '}
-            {table.getPageCount()}
-          </strong>
-        </span>
-        <span className="flex items-center gap-1">
-          | Go to page:
-          <input
-            type="number"
-            min="1"
-            max={table.getPageCount()}
-            defaultValue={table.getState().pagination.pageIndex + 1}
-            onChange={e => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0
-              table.setPageIndex(page)
-            }}
-            className="border p-1 rounded w-16"
-          />
-        </span>
-        <select
-          value={table.getState().pagination.pageSize}
-          onChange={e => {
-            table.setPageSize(Number(e.target.value))
-          }}
-        >
-          {[25, 50, 100].map(pageSize => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map(row => {
+              return (
+                <tr key={row.id} className='border-b border-light-gray'>
+                  {row.getVisibleCells().map((cell, index) => {
+                    return (
+                      <td key={cell.id} className={`px-2 py-4 ${index === 0 ? 'ps-8' : ''} ${index === row.getVisibleCells().length - 1 ? 'pe-8' : ''}`}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    )
+                  })}
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+        <footer className="px-8 py-7 flex justify-between items-center gap-2">
+          <div className="flex items-center gap-2">
+            <div className="whitespace-nowrap">
+              View records per page
+            </div>
+            <select
+              value={table.getState().pagination.pageSize}
+              onChange={e => {
+                table.setPageSize(Number(e.target.value))
+              }}
+              className="border border-light-gray rounded-md text-text-dark-gray p-2"
+            >
+              {[25, 50, 100].map(pageSize => (
+                <option key={pageSize} value={pageSize}>
+                  {pageSize}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              className="border border-light-gray rounded-md text-text-dark-gray w-8 p-1 enabled:hover:bg-light-gray"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <ChevronLeft />
+            </button>
+            {renderPageNumbers(table)}
+            <button
+              className="border border-light-gray rounded-md text-text-dark-gray w-8 p-1 enabled:hover:bg-light-gray"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <ChevronRight />
+            </button>
+          </div>
+          <div className="w-60 md:hidden"></div>
+        </footer>
       </div>
-      <div>{table.getPrePaginationRowModel().rows.length} Rows</div>
-      <pre>
-        {JSON.stringify(
-          { columnFilters: table.getState().columnFilters },
-          null,
-          2
-        )}
-      </pre>
-    </div>
+    </section>
   )
 }
 
 export default VerifierTable;
 
-function Filter({ column }: { column: Column<any, unknown> }) {
+function Filter({ column, setFilterOpen }: FilterProps) {
   const { filterVariant } = column.columnDef.meta ?? {}
   const uniqueValues = column.getFacetedUniqueValues()
   const columnFilterValue = column.getFilterValue()
+  const filterRef = useOutsideClick<any>(() => setFilterOpen(""));
 
   const sortedUniqueValues = useMemo(
     () =>
       Array.from(uniqueValues.keys())
-        .sort()
-        .slice(0, 5000),
+        .sort(),
     [uniqueValues]
   )
 
-  const handleChange = useCallback((value: string | number) => {
+  const handleFilter = useCallback((value: string | number) => {
     column.setFilterValue(value)
   }, [column])
 
   return filterVariant === 'select' ? (
-    <select
-      multiple
-      onChange={e => {
-        const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
-        column.setFilterValue(selectedOptions);
-      }}
-      value={columnFilterValue as string[]}
-    >
-      <option value="">All</option>
+    <div ref={filterRef} className="flex flex-col bg-white w-max shadow-xl rounded-xl">
+      <label className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-light-gray">
+        <input
+          type="checkbox"
+          checked={!columnFilterValue || (columnFilterValue as string[]).length === 0}
+          onChange={e => {
+            column.setFilterValue(e.target.checked ? [] : null)
+          }}
+        />
+        All
+      </label>
       {sortedUniqueValues.map(value => (
-        <option value={value} key={value}>
+        <label key={value} className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-light-gray">
+          <input
+            type="checkbox"
+            checked={(columnFilterValue as string[])?.includes(value)}
+            onChange={e => {
+              const currentValues = (columnFilterValue as string[]) || []
+              if (e.target.checked) {
+                column.setFilterValue([...currentValues, value])
+              } else {
+                column.setFilterValue(currentValues.filter(v => v !== value))
+              }
+            }}
+          />
           {value}
-        </option>
+        </label>
       ))}
-    </select>
+    </div>
   ) : filterVariant === 'text' ? (
-    <>
-      <datalist id={column.id + 'list'}>
-        {sortedUniqueValues.map((value: any) => (
-          <option value={value} key={value} />
-        ))}
-      </datalist>
-      <DebouncedInput
-        type="text"
-        value={(columnFilterValue ?? '') as string}
-        onChange={handleChange}
-        placeholder={`Search... (${column.getFacetedUniqueValues().size})`}
-        className="w-36 border shadow rounded"
-        list={column.id + 'list'}
-      />
-      <div className="h-1" />
-    </>
+    <div
+      ref={filterRef}
+      className="flex flex-col bg-white w-max shadow-xl rounded-xl"
+    >
+      <div className="flex items-center gap-2 p-2">
+        <Search size={16} />
+        <DebouncedInput
+          type="text"
+          value={(columnFilterValue ?? '') as string}
+          onChange={handleFilter}
+          placeholder="Search..."
+          className="w-full bg-[transparent] focus:outline-none"
+        />
+      </div>
+      <div className="flex flex-col">
+        {sortedUniqueValues
+          .filter(value =>
+            value.toString().toLowerCase().includes((columnFilterValue ?? '').toString().toLowerCase())
+          )
+          .map((value: any) => (
+            <button
+              key={value}
+              onClick={() => handleFilter(value)}
+              className="p-2 rounded-md hover:bg-light-gray"
+            >
+              {value}
+            </button>
+          ))}
+      </div>
+    </div>
   ) : null
 }
 
