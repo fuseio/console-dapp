@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
   Column,
@@ -12,6 +12,7 @@ import {
   useReactTable,
   getFacetedUniqueValues,
   getFacetedRowModel,
+  Table,
 } from '@tanstack/react-table'
 
 import { Verifier } from '@/lib/types';
@@ -59,7 +60,38 @@ const verifiers: Verifier[] = [
   }
 ]
 
-const data: Verifier[] = new Array(100).fill(null).map((_, index) => verifiers[index % verifiers.length])
+const data = new Array(100).fill(null).map((_, index) => verifiers[index % verifiers.length])
+
+const renderPageNumbers = (table: Table<Verifier>) => {
+  const { pageIndex } = table.getState().pagination;
+  const pageCount = table.getPageCount();
+  const pages = [];
+
+  if (pageCount <= 5) {
+    for (let i = 0; i < pageCount; i++) {
+      pages.push(i);
+    }
+  } else {
+    if (pageIndex < 3) {
+      pages.push(0, 1, 2, 3, '...', pageCount - 1);
+    } else if (pageIndex > pageCount - 4) {
+      pages.push(0, '...', pageCount - 4, pageCount - 3, pageCount - 2, pageCount - 1);
+    } else {
+      pages.push(0, '...', pageIndex - 1, pageIndex, pageIndex + 1, '...', pageCount - 1);
+    }
+  }
+
+  return pages.map((page, index) => (
+    <button
+      key={index}
+      className={`border rounded p-1 ${pageIndex === page ? 'bg-gray-200' : ''}`}
+      onClick={() => typeof page === 'number' && table.setPageIndex(page)}
+      disabled={typeof page !== 'number'}
+    >
+      {typeof page === 'number' ? page + 1 : page}
+    </button>
+  ));
+};
 
 const VerifierTable = () => {
   const columns = useMemo<ColumnDef<Verifier, any>[]>(
@@ -68,6 +100,7 @@ const VerifierTable = () => {
         accessorKey: 'operator',
         header: 'Operator',
         filterFn: 'arrIncludesSome',
+        enableGlobalFilter: false,
         meta: {
           filterVariant: 'select',
         },
@@ -83,23 +116,28 @@ const VerifierTable = () => {
       {
         accessorKey: 'receivedDelegations',
         header: () => 'Received Delegations',
+        enableGlobalFilter: false,
       },
       {
         accessorKey: 'uptimeAll',
         header: () => 'Uptime All',
+        enableGlobalFilter: false,
       },
       {
         accessorKey: 'uptime7d',
         header: () => 'Uptime 7d',
+        enableGlobalFilter: false,
       },
       {
         accessorKey: 'commission',
         header: () => 'Commission',
+        enableGlobalFilter: false,
       },
       {
         accessorKey: 'status',
         header: () => 'Status',
         filterFn: 'arrIncludesSome',
+        enableGlobalFilter: false,
         meta: {
           filterVariant: 'select',
         },
@@ -107,7 +145,8 @@ const VerifierTable = () => {
       {
         accessorKey: 'action',
         header: () => '',
-        cell: () => <button>Delegate</button>
+        cell: () => <button>Delegate</button>,
+        enableGlobalFilter: false,
       }
     ],
     []
@@ -116,45 +155,20 @@ const VerifierTable = () => {
   const table = useReactTable({
     data,
     columns,
+    globalFilterFn: 'arrIncludesSome',
+    debugTable: true,
+    initialState: {
+      pagination: {
+        pageSize: 25,
+      },
+    },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    globalFilterFn: 'arrIncludesSome'
   })
-
-  const renderPageNumbers = () => {
-    const { pageIndex } = table.getState().pagination;
-    const pageCount = table.getPageCount();
-    const pages = [];
-
-    if (pageCount <= 5) {
-      for (let i = 0; i < pageCount; i++) {
-        pages.push(i);
-      }
-    } else {
-      if (pageIndex < 3) {
-        pages.push(0, 1, 2, 3, '...', pageCount - 1);
-      } else if (pageIndex > pageCount - 4) {
-        pages.push(0, '...', pageCount - 4, pageCount - 3, pageCount - 2, pageCount - 1);
-      } else {
-        pages.push(0, '...', pageIndex - 1, pageIndex, pageIndex + 1, '...', pageCount - 1);
-      }
-    }
-
-    return pages.map((page, index) => (
-      <button
-        key={index}
-        className={`border rounded p-1 ${pageIndex === page ? 'bg-gray-200' : ''}`}
-        onClick={() => typeof page === 'number' && table.setPageIndex(page)}
-        disabled={typeof page !== 'number'}
-      >
-        {typeof page === 'number' ? page + 1 : page}
-      </button>
-    ));
-  };
 
   return (
     <div className="p-2">
@@ -237,7 +251,7 @@ const VerifierTable = () => {
         >
           <ChevronLeft />
         </button>
-        {renderPageNumbers()}
+        {renderPageNumbers(table)}
         <button
           className="border rounded p-1"
           onClick={() => table.nextPage()}
@@ -294,16 +308,21 @@ const VerifierTable = () => {
 export default VerifierTable;
 
 function Filter({ column }: { column: Column<any, unknown> }) {
-  const columnFilterValue = column.getFilterValue()
   const { filterVariant } = column.columnDef.meta ?? {}
-  const uniqueValues = column.getFacetedUniqueValues();
+  const uniqueValues = column.getFacetedUniqueValues()
+  const columnFilterValue = column.getFilterValue()
 
   const sortedUniqueValues = useMemo(
-    () => Array.from(uniqueValues.keys())
-          .sort()
-          .slice(0, 5000),
+    () =>
+      Array.from(uniqueValues.keys())
+        .sort()
+        .slice(0, 5000),
     [uniqueValues]
-  );
+  )
+
+  const handleChange = useCallback((value: string | number) => {
+    column.setFilterValue(value)
+  }, [column])
 
   return filterVariant === 'select' ? (
     <select
@@ -322,13 +341,22 @@ function Filter({ column }: { column: Column<any, unknown> }) {
       ))}
     </select>
   ) : filterVariant === 'text' ? (
-    <DebouncedInput
-      className="w-36 border shadow rounded"
-      onChange={value => column.setFilterValue(value)}
-      placeholder={`Search...`}
-      type="text"
-      value={(columnFilterValue ?? '') as string}
-    />
+    <>
+      <datalist id={column.id + 'list'}>
+        {sortedUniqueValues.map((value: any) => (
+          <option value={value} key={value} />
+        ))}
+      </datalist>
+      <DebouncedInput
+        type="text"
+        value={(columnFilterValue ?? '') as string}
+        onChange={handleChange}
+        placeholder={`Search... (${column.getFacetedUniqueValues().size})`}
+        className="w-36 border shadow rounded"
+        list={column.id + 'list'}
+      />
+      <div className="h-1" />
+    </>
   ) : null
 }
 
