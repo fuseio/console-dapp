@@ -15,6 +15,7 @@ import { AirdropQuests } from "@/lib/types";
 import copyIcon from "@/assets/copy-gray.svg";
 import rightCaret from "@/assets/right-caret.svg";
 import rightCaretBlack from "@/assets/right-caret-black.svg";
+import leftArrow from "@/assets/left-arrow.svg";
 import questionMark from "@/assets/questionmark-border.svg";
 import pointHexagon from "@/assets/fuse-foundation-point-hexagon.svg";
 import fuseAirdropPhase from "@/assets/fuse-foundation.svg";
@@ -121,7 +122,7 @@ const Home = () => {
       id: "stakeOnVoltage",
       title: "Stake on Voltage",
       description: "To multiply you points you need to take 2 simple steps:  \n**Step 1**\nBridge funds to the Fuse Network using Fuse bridge = 4 points per $1, available once per day.  \n**Step 2**\nDouble your points by staking any of the four tokens on Voltage DEX = 8 points per $1 of the bridged funds, available once per day.",
-      point: "8 points per $1 staked daily",
+      point: "Up to 8 points per $1 staked daily",
       image: volt,
       buttons: [
         {
@@ -170,7 +171,7 @@ const Home = () => {
       id: "provideMeridianLiquidity",
       title: "Lend on Meridian",
       description: "Lend on Meridian & Multiply your points easily with these quick steps  \n**Step 1**\nBridge funds to Fuse Network using the Fuse bridge = 4 points per $1, available once per day.  \n**Step 2**\nVisit the Meridian Finance lending markets  \n**Step 3**\nDouble your points by lending bridged funds in any market = 8 points per $1 of the bridged funds, available once per day.",
-      point: "8 points per $1 in pool daily",
+      point: "Up to 8 points per $1 in pool daily",
       image: meridian,
       buttons: [
         {
@@ -276,14 +277,24 @@ const Home = () => {
 
   return (
     <div className="w-8/9 grow flex flex-col text-fuse-black my-20 xl:my-12 xl:w-9/12 md:w-9/10 max-w-7xl">
-      <div className="flex justify-between items-center">
-        <h1 className="flex items-end gap-2 bg-linear-gradient-black bg-clip-text text-8xl text-[transparent] md:text-4xl">
-          <span className="font-semibold">
-            fuse
-          </span>
-          <span className="font-black">
-            Ecosystem
-          </span>
+      <Link
+        href={path.AIRDROP}
+        className="group flex items-center gap-1.5 hover:opacity-70"
+      >
+        <Image
+          src={leftArrow}
+          alt="back to Points"
+          width={7}
+          height={13}
+          className="transition ease-in-out group-hover:-translate-x-0.5"
+        />
+        <div className="leading-none font-semibold">
+          Points
+        </div>
+      </Link>
+      <div className="flex justify-between items-center mt-4">
+        <h1 className="text-7xl font-semibold md:text-4xl">
+          Explore the Ecosystem
         </h1>
       </div>
       <div className="flex flex-wrap justify-between gap-6 bg-lightest-gray rounded-[20px] mt-11 mb-[100px] xl:mb-11 p-8">
@@ -490,10 +501,20 @@ const Home = () => {
       </div>
       <div className="flex flex-col gap-8 xl:gap-6 mt-24 xl:mt-16">
         <h2 className="text-3xl font-semibold">
-          {isTwitterFollowed(user) ? "Explore the Fuse ecosystem" : "Follow Fuse on X to unlock quests"}
+          {isTwitterFollowed(user) ? "Join our Socials and explore the Ecosystem" : "Follow Fuse on X to unlock quests"}
         </h2>
         <div className="grid grid-cols-3 md:grid-cols-1 auto-rows-min gap-[30px] xl:gap-5">
-          {quests.filter((quest) => !quest.isEcosystem).map((quest) => (
+          {quests.filter((quest) => quest.frequency === "One-time").map((quest) => (
+            <Quest key={quest.title} quest={quest} />
+          ))}
+        </div>
+      </div>
+      <div className="flex flex-col gap-8 xl:gap-6 mt-24 xl:mt-16">
+        <h2 className="text-3xl font-semibold">
+          {isTwitterFollowed(user) ? "Get multipliers for your points!" : "Follow Fuse on X to unlock multiplier quests"}
+        </h2>
+        <div className="grid grid-cols-3 md:grid-cols-1 auto-rows-min gap-[30px] xl:gap-5">
+          {quests.filter((quest) => quest.frequency !== "One-time").map((quest) => (
             <Quest key={quest.title} quest={quest} />
           ))}
         </div>
