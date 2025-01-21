@@ -128,6 +128,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const isTwitterFollowed = (user: AirdropUser) => {
-  return user.completedQuests?.find((quest) => quest.type === "followFuseOnTwitter");
+export const isSocialFollowed = (user: AirdropUser) => {
+  const socialQuests = ["followFuseOnTwitter", "telegramSubscription"];
+  
+  return user
+  .completedQuests
+  ?.filter((quest) => socialQuests.includes(quest.type))
+  .length === socialQuests.length;
 }

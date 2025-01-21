@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectAirdropSlice, setIsClaimTestnetFuseModalOpen, setIsQuestModalOpen, setIsWaitlistModalOpen, setSelectedQuest } from "@/store/airdropSlice";
 import checkBackground from "@/assets/check-background-black.svg";
 import pointHexagon from "@/assets/fuse-foundation-point-hexagon.svg";
-import { isTwitterFollowed } from "@/lib/helpers";
+import { isSocialFollowed } from "@/lib/helpers";
 
 type QuestProps = {
   quest: AirdropQuest;
@@ -21,7 +21,7 @@ type Custom = {
 function QuestItem({ quest }: QuestProps) {
   const dispatch = useAppDispatch();
   const airdropSlice = useAppSelector(selectAirdropSlice);
-  const isTwitter = quest.id === "followFuseOnTwitter" || isTwitterFollowed(airdropSlice.user);
+  const isSocial = quest.id === "followFuseOnTwitter" || quest.id === "telegramSubscription" || isSocialFollowed(airdropSlice.user);
 
   const custom: Custom = {
     "joinWaitlist": {
@@ -38,11 +38,11 @@ function QuestItem({ quest }: QuestProps) {
 
   return (
     <CardContainer containerClassName="block p-0 h-full" className="block h-full">
-      <CardBody className={`bg-white rounded-[20px] w-auto h-full py-8 pl-8 pr-6 md:p-6 ${isTwitter ? "" : "grayscale"}`}>
+      <CardBody className={`bg-white rounded-[20px] w-auto h-full py-8 pl-8 pr-6 md:p-6 ${isSocial ? "" : "grayscale"}`}>
         <CardItem
           as="button"
           translateZ="40"
-          disabled={quest.completed || quest.comingSoon || !isTwitter}
+          disabled={quest.completed || quest.comingSoon || !isSocial}
           className={`relative flex flex-col gap-2 w-full h-[inherit] min-h-[346px] xl:min-h-[277px] ${quest.comingSoon ? "justify-between" : "justify-end"}`}
           onClick={() => {
             if (quest.completed) {

@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { claimTestnetFuse, generateAirdropTwitterAuthUrl, selectAirdropSlice, setIsClaimTestnetFuseModalOpen } from "@/store/airdropSlice";
 import Copy from "../ui/Copy";
 import Spinner from "../ui/Spinner";
-import { eclipseAddress, isTwitterFollowed } from "@/lib/helpers";
+import { eclipseAddress, isSocialFollowed } from "@/lib/helpers";
 
 import close from "@/assets/close.svg";
 import twitter from "@/assets/twitter-x-logo.svg";
@@ -62,7 +62,7 @@ const ClaimTestnetFuseModal = (): JSX.Element => {
                 <p className="text-[1.25rem] leading-none text-text-dark-gray font-medium">
                   Follow us on twitter
                 </p>
-                {isTwitterFollowed(airdropSlice.user) ? (
+                {isSocialFollowed(airdropSlice.user) ? (
                   <div className="w-full transition ease-in-out flex justify-center items-center gap-2 bg-lightest-gray border-2 border-lightest-gray rounded-full px-2 py-4 text-lg leading-none font-bold">
                     <Image
                       src={checkmark}
@@ -112,7 +112,7 @@ const ClaimTestnetFuseModal = (): JSX.Element => {
               </div>
               <button
                 className="w-full transition ease-in-out flex justify-center items-center gap-2 bg-fuse-black enabled:border-2 enabled:border-fuse-black rounded-full px-2 py-4 text-lg leading-none enabled:text-white font-bold enabled:hover:bg-[transparent] enabled:hover:text-black disabled:bg-lightest-gray"
-                disabled={!isTwitterFollowed(airdropSlice.user)}
+                disabled={!isSocialFollowed(airdropSlice.user)}
                 onClick={() => dispatch(claimTestnetFuse())}
               >
                 Get 1 FUSE token on Flash Testnet
