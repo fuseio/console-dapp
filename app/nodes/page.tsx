@@ -7,6 +7,7 @@ import Home from "./Home";
 import { useAppDispatch } from "@/store/store";
 import { setSelectedNavbar } from "@/store/navbarSlice";
 import Footer from "@/components/Footer";
+import NoLicenseModal from "@/components/nodes/NoLicenseModal";
 
 const Nodes = () => {
   const dispatch = useAppDispatch();
@@ -17,6 +18,7 @@ const Nodes = () => {
 
   return (
     <div className="font-mona w-full min-h-screen flex-col flex items-center bg-light-gray">
+      <NoLicenseModal />
       <Topbar />
       <Home />
       <Footer />

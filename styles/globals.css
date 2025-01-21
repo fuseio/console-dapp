@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --red-berry: #8E0B0B;
+}
+
 .tooltip-text::after {
   content: "";
   position: absolute;
@@ -11,6 +15,17 @@
   border-width: 9px;
   border-style: solid;
   border-color: white transparent transparent transparent;
+}
+
+.tooltip-text-up::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -10px;
+  border-width: 9px;
+  border-style: solid;
+  border-color: transparent transparent white transparent;
 }
 
 .copy-tooltip::after {

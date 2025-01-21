@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Filter as FilterIcon, Search } from 'lucide-react';
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Filter as FilterIcon, Search, Info } from 'lucide-react';
 import {
   Column,
   ColumnDef,
@@ -23,12 +23,15 @@ import nodeops from '@/assets/nodeops.svg';
 import easeflow from '@/assets/easeflow.png';
 import profile from '@/assets/profile.svg';
 import Image, { StaticImageData } from 'next/image';
+import { useAppDispatch } from '@/store/store';
+import { setIsNoLicenseModalOpen } from '@/store/nodesSlice';
 
 declare module '@tanstack/react-table' {
   // see: https://github.com/TanStack/table/discussions/5222
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     filterVariant?: 'text' | 'select'
+    tooltip?: string
   }
 }
 
@@ -113,6 +116,7 @@ const renderPageNumbers = (table: Table<Verifier>) => {
 
 const VerifierTable = () => {
   const [filterOpen, setFilterOpen] = useState("");
+  const dispatch = useAppDispatch();
 
   const columns = useMemo<ColumnDef<Verifier, any>[]>(
     () => [
@@ -156,6 +160,9 @@ const VerifierTable = () => {
         cell: info => <div>{info.getValue().toFixed(2)}%</div>,
         enableColumnFilter: false,
         enableGlobalFilter: false,
+        meta: {
+          tooltip: "The percentage of days your node has met the minimum uptime requirement since it began operating."
+        }
       },
       {
         accessorKey: 'uptime7d',
@@ -163,6 +170,9 @@ const VerifierTable = () => {
         cell: info => <div>{info.getValue().toFixed(2)}%</div>,
         enableColumnFilter: false,
         enableGlobalFilter: false,
+        meta: {
+          tooltip: "The percentage of days your node has met the minimum uptime requirement in the past 7 days."
+        }
       },
       {
         accessorKey: 'commission',
@@ -170,6 +180,9 @@ const VerifierTable = () => {
         cell: info => <div>{info.getValue().toFixed(2)}%</div>,
         enableColumnFilter: false,
         enableGlobalFilter: false,
+        meta: {
+          tooltip: "The percentage of FUSE rewards that you will receive from those who delegate to your verifier address."
+        }
       },
       {
         accessorKey: 'status',
@@ -185,13 +198,20 @@ const VerifierTable = () => {
       {
         accessorKey: 'action',
         header: () => '',
-        cell: () => <button className="px-3 py-2 border border-black rounded-full leading-none font-semibold hover:bg-black hover:text-white">Delegate</button>,
+        cell: (info) => (
+          <button
+            onClick={() => info.row.original.status !== 'Active' && dispatch(setIsNoLicenseModalOpen(true))}
+            className="px-3 py-2 border border-black rounded-full leading-none font-semibold hover:bg-black hover:text-white"
+          >
+            Delegate
+          </button>
+        ),
         enableColumnFilter: false,
         enableGlobalFilter: false,
         enableSorting: false,
       }
     ],
-    []
+    [dispatch]
   )
 
   const table = useReactTable({
@@ -233,7 +253,7 @@ const VerifierTable = () => {
           </button>
         </div>
       </header>
-      <div className='bg-white rounded-[1.25rem] md:overflow-auto'>
+      <div className='bg-white rounded-[1.25rem] xl:overflow-auto'>
         <div className='px-8 py-7'>
           Total of {table.getPrePaginationRowModel().rows.length} verifiers.
         </div>
@@ -246,7 +266,7 @@ const VerifierTable = () => {
                     <th
                       key={header.id}
                       colSpan={header.colSpan}
-                      className={`whitespace-nowrap font-normal py-2 ${index === 0 ? 'ps-8' : ''} ${index === headerGroup.headers.length - 1 ? 'pe-8' : ''}`}
+                      className={`whitespace-nowrap font-normal px-2 py-2 ${index === 0 ? 'ps-8' : ''} ${index === headerGroup.headers.length - 1 ? 'pe-8' : ''}`}
                       style={{ width: `${header.getSize() !== 150 ? `${header.getSize()}px` : 'auto'}` }}
                     >
                       {!header.isPlaceholder && (
@@ -254,6 +274,14 @@ const VerifierTable = () => {
                           {flexRender(
                             header.column.columnDef.header,
                             header.getContext()
+                          )}
+                          {header.column.columnDef.meta?.tooltip && (
+                            <div className="group relative hover:text-black">
+                              <Info size={12} />
+                              <div className="tooltip-text-up hidden top-[200%] left-1/2 -translate-x-1/2 absolute bg-white p-4 rounded-2xl w-[400px] text-sm whitespace-normal shadow-xl group-hover:block">
+                               {header.column.columnDef.meta.tooltip}
+                              </div>
+                            </div>
                           )}
                           {header.column.getCanSort() && (
                             <div className='flex flex-col items-center'>
@@ -277,9 +305,9 @@ const VerifierTable = () => {
                             <div className='relative flex items-center'>
                               <button
                                 onClick={() => setFilterOpen(header.id)}
-                                className={`${filterOpen === header.id ? 'text-black' : ''}`}
+                                className={`${filterOpen === header.id ? 'text-black' : ''} hover:text-black`}
                               >
-                                <FilterIcon size={10} strokeWidth={3} />
+                                <FilterIcon size={12} />
                               </button>
                               {filterOpen === header.id && (
                                 <div className='absolute top-full left-0 text-base'>
