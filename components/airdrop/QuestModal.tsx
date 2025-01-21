@@ -30,8 +30,74 @@ const BridgeDescription = () => {
   )
 }
 
+const LiquidityVoltageDescription = () => {
+  return (
+    <div className="flex flex-col gap-6">
+      <p>
+        Earn up to 8 points per each $1 provided to liquidity pool every day!
+      </p>
+      <div className="flex flex-col gap-1">
+        <p className="font-bold">How to earn 4 point per $1?</p>
+        <ul className="list-disc pl-5 md:pl-3 text-left">
+          <li>Put your funds on Fuse Network to any liquidity pool on Voltage right now to earn 4 point on each $1 in the pool daily.</li>
+          <li>If you already have funds in a pool - just keep it!</li>
+        </ul>
+      </div>
+      <div className="flex flex-col gap-1">
+        <p className="font-bold">How to multiply points?</p>
+        <p>Use bridged to Fuse Network funds to get 8 points on each $1 in the pool every day.</p>
+      </div>
+    </div>
+  )
+}
+
+const StakeOnVoltageDescription = () => {
+  return (
+    <div className="flex flex-col gap-6">
+      <p>
+        Earn up to 8 points per each $1 staked every day!
+      </p>
+      <div className="flex flex-col gap-1">
+        <p className="font-bold">How to earn 4 point per $1?</p>
+        <ul className="list-disc pl-5 md:pl-3 text-left">
+          <li>Stake FUSE, VOLT, USDC or WETH on Voltage right now to earn 4 point on each $1 staked daily.</li>
+          <li>If you already have staked funds - just keep it!</li>
+        </ul>
+      </div>
+      <div className="flex flex-col gap-1">
+        <p className="font-bold">How to multiply points?</p>
+        <p>Use bridged to Fuse Network funds to get 8 points on each $1 staked every day.</p>
+      </div>
+    </div>
+  )
+}
+
+const ProvideMeridianLiquidityDescription = () => {
+  return (
+    <div className="flex flex-col gap-6">
+      <p>
+        Earn up to 8 points per each $1 lent on Meridian Finance!
+      </p>
+      <div className="flex flex-col gap-1">
+        <p className="font-bold">How to earn 4 point per $1?</p>
+        <ul className="list-disc pl-5 md:pl-3 text-left">
+          <li>Go to Meridian Finance and lend your funds in any market.</li>
+          <li>If you already have lent funds - just keep it!</li>
+        </ul>
+      </div>
+      <div className="flex flex-col gap-1">
+        <p className="font-bold">How to multiply points?</p>
+        <p>Use bridged to Fuse Network funds to get 8 points on each $1 lent every day.</p>
+      </div>
+    </div>
+  )
+}
+
 const questDescriptions: QuestDescriptions = {
-  "bridge": <BridgeDescription />
+  "bridge": <BridgeDescription />,
+  "liquidityVoltage": <LiquidityVoltageDescription />,
+  "stakeOnVoltage": <StakeOnVoltageDescription />,
+  "provideMeridianLiquidity": <ProvideMeridianLiquidityDescription />
 }
 
 const QuestModal = (): JSX.Element => {

@@ -108,7 +108,6 @@ const Home = () => {
     {
       id: "liquidityVoltage",
       title: "Provide Liquidity to Voltage",
-      description: "Earn up to 8 points per each $1 provided to liquidity pool!  \n**How to earn 4 point per $1?**\nPut your funds on Fuse Network to any liquidity pool on Voltage right now to earn 4 point on each $1 in the poo daily.  \n**How to multiply points?**\nUse bridged to Fuse Network funds to get 8 points on each $1 in the pool every day.",
       point: "Up to 8 points per $1 in pool daily",
       image: voltageLiquidity,
       buttons: [
@@ -121,7 +120,6 @@ const Home = () => {
     {
       id: "stakeOnVoltage",
       title: "Stake on Voltage",
-      description: "To multiply you points you need to take 2 simple steps:  \n**Step 1**\nBridge funds to the Fuse Network using Fuse bridge = 4 points per $1, available once per day.  \n**Step 2**\nDouble your points by staking any of the four tokens on Voltage DEX = 8 points per $1 of the bridged funds, available once per day.",
       point: "Up to 8 points per $1 staked daily",
       image: volt,
       buttons: [
@@ -170,7 +168,6 @@ const Home = () => {
     {
       id: "provideMeridianLiquidity",
       title: "Lend on Meridian",
-      description: "Lend on Meridian & Multiply your points easily with these quick steps  \n**Step 1**\nBridge funds to Fuse Network using the Fuse bridge = 4 points per $1, available once per day.  \n**Step 2**\nVisit the Meridian Finance lending markets  \n**Step 3**\nDouble your points by lending bridged funds in any market = 8 points per $1 of the bridged funds, available once per day.",
       point: "Up to 8 points per $1 in pool daily",
       image: meridian,
       buttons: [
