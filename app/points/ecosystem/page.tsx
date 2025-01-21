@@ -9,15 +9,19 @@ import { setSelectedNavbar } from "@/store/navbarSlice";
 import Home from "./Home";
 import Footer from "@/components/Footer";
 import Topbar from "@/components/Topbar";
-import { selectAirdropSlice } from "@/store/airdropSlice";
+import WaitlistModal from "@/components/airdrop/WaitlistModal";
+import { retrieveAirdropUser, selectAirdropSlice } from "@/store/airdropSlice";
+import QuestModal from "@/components/airdrop/QuestModal";
+import ClaimTestnetFuseModal from "@/components/airdrop/ClaimTestnetFuseModal";
 
-const AirdropLeaderboard = () => {
+const AirdropEcosystem = () => {
   const dispatch = useAppDispatch();
   const airdropSlice = useAppSelector(selectAirdropSlice);
   const router = useRouter();
 
   useEffect(() => {
-    dispatch(setSelectedNavbar("airdrop"));
+    dispatch(setSelectedNavbar("points"));
+    dispatch(retrieveAirdropUser());
   }, [dispatch])
 
   useEffect(() => {
@@ -28,6 +32,9 @@ const AirdropLeaderboard = () => {
 
   return (
     <div className="font-mona w-full min-h-screen flex-col flex items-center bg-light-gray">
+      <QuestModal />
+      <WaitlistModal />
+      <ClaimTestnetFuseModal />
       <Topbar />
       <Home />
       <Footer />
@@ -35,4 +42,4 @@ const AirdropLeaderboard = () => {
   );
 };
 
-export default AirdropLeaderboard;
+export default AirdropEcosystem;

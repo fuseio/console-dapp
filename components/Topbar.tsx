@@ -13,15 +13,15 @@ import { selectAirdropSlice } from "@/store/airdropSlice";
 const AirdropSubmenu = [
   {
     title: "Leaderboard",
-    link: "/airdrop/leaderboard",
+    link: path.AIRDROP_LEADERBOARD,
   },
   {
     title: "Fuse Ecosystem",
-    link: "/airdrop/ecosystem",
+    link: path.AIRDROP_ECOSYSTEM,
   },
   {
     title: "Builder Grants",
-    link: "/airdrop/grant",
+    link: path.AIRDROP_GRANT,
   },
 ]
 
@@ -36,8 +36,8 @@ const Topbar = () => {
       link: "/wallet",
     },
     {
-      title: "Airdrop",
-      link: "/airdrop",
+      title: "Points",
+      link: path.AIRDROP,
     },
     {
       title: "Build",

@@ -136,6 +136,7 @@ const config: Config = {
         'linear-gradient-green-red': 'linear-gradient(45deg, #B7F5B5 0%, #F6A051 50%, #F65D51 100%)',
         'linear-gradient-green-red-bottom': 'linear-gradient(180deg, #B7F5B5 11%, #F6A051 49%, #F65D51 89%)',
         'linear-gradient-sand': 'linear-gradient(0deg, #EDC765 50.29%, #AD8213 100.29%)',
+        'linear-gradient-pale-green': 'linear-gradient(180deg, #66E070 0%, #A3F5AA 100%)',
       }
     },
   },

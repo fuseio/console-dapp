@@ -79,10 +79,10 @@ export const path = {
   BRIDGE: "/bridge",
   STAKING: "/staking",
   DASHBOARD: "/dashboard",
-  AIRDROP: "/airdrop",
-  AIRDROP_LEADERBOARD: "/airdrop/leaderboard",
-  AIRDROP_ECOSYSTEM: "/airdrop/ecosystem",
-  AIRDROP_GRANT: "/airdrop/grant",
+  AIRDROP: "/points",
+  AIRDROP_LEADERBOARD: "/points/leaderboard",
+  AIRDROP_ECOSYSTEM: "/points/ecosystem",
+  AIRDROP_GRANT: "/points/grant",
 };
 
 export const buildSubMenuItems = [

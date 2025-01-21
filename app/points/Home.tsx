@@ -32,8 +32,8 @@ const Hero = () => {
         <span className="text-3xl font-semibold md:text-xl">
           Welcome to the fuse
         </span>
-        <span className="bg-linear-gradient-black bg-clip-text text-[10.625rem] leading-none text-[transparent] font-black md:text-4xl">
-          Airdrop
+        <span className="bg-linear-gradient-pale-green bg-clip-text text-[10.625rem] leading-none text-[transparent] font-black md:text-4xl">
+          Points
         </span>
       </h1>
       <p className="text-lg max-w-xl">
@@ -42,7 +42,7 @@ const Hero = () => {
       <div className="flex items-center gap-8 md:flex-col">
         <div className="group relative z-10">
           <button
-            className="transition-all ease-in-out duration-300 flex items-center gap-2 bg-black text-[1.25rem] leading-none font-semibold text-white px-10 py-4 rounded-full scale-100 group-hover:scale-95"
+            className="transition-all ease-in-out duration-300 flex items-center gap-6 bg-black text-[1.25rem] leading-none font-semibold text-white px-10 py-4 rounded-full scale-100 group-hover:scale-95"
             disabled={isLoading}
             onClick={() => {
               if (isConnected) {
@@ -52,7 +52,7 @@ const Hero = () => {
               }
             }}
           >
-            Join the Airdrop
+            Get Points
             {isLoading ? <Spinner /> : <RightCaret />}
           </button>
           <div className="transition-all ease-in-out duration-300 absolute inset-8 bg-linear-gradient-dark-orange rounded-[inherit] blur-[25px] -z-[1] group-hover:inset-0"></div>

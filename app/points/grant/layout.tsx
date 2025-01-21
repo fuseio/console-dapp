@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Airdrop Builder Grants - Fuse Console',
+  title: 'Builder Grants - Fuse Console Points',
   description: 'A bounty program rewarding developers for building apps on Ember',
 }
 

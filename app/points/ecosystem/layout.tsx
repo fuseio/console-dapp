@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Airdrop Ecosystem - Fuse Console',
+  title: 'Ecosystem - Fuse Console Points',
   description: 'Complete quests and invite friends to earn XP',
 }
 
