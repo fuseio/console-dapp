@@ -106,9 +106,9 @@ const Home = () => {
     },
     {
       id: "liquidityVoltage",
-      title: "Provide Liquidity to Voltage v3",
-      description: "To multiply you points you need to take 2 simple steps:  \n**Step 1**\nBridge funds to the Fuse Network using Fuse bridge = 4 points per $1, available once per day.  \n**Step 2**\nDouble your points by putting bridged funds in any V3 liquidity pool on Voltage DEX = 8 points per $1 of the bridged funds, available once per day.",
-      point: "8 points per $1 in pool daily",
+      title: "Provide Liquidity to Voltage",
+      description: "Earn up to 8 points per each $1 provided to liquidity pool!  \n**How to earn 4 point per $1?**\nPut your funds on Fuse Network to any liquidity pool on Voltage right now to earn 4 point on each $1 in the poo daily.  \n**How to multiply points?**\nUse bridged to Fuse Network funds to get 8 points on each $1 in the pool every day.",
+      point: "Up to 8 points per $1 in pool daily",
       image: voltageLiquidity,
       buttons: [
         {
