@@ -7,6 +7,7 @@ import close from "@/assets/close.svg";
 import Spinner from "../ui/Spinner";
 import Markdown from "react-markdown";
 import pointHexagon from "@/assets/fuse-foundation-point-hexagon.svg";
+import pointHexagonYellow from "@/assets/point-hexagon-yellow.svg";
 
 type QuestDescriptions = {
   [key: string]: React.ReactNode;
@@ -144,7 +145,7 @@ const QuestModal = (): JSX.Element => {
             transition={{
               duration: 0.3,
             }}
-            className="bg-white bg-linear-gradient-green h-fit max-h-[98%] overflow-y-auto w-[519px] xl:w-[415px] max-w-[95%] z-[80] absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-2xl"
+            className={`bg-white h-fit max-h-[98%] overflow-y-auto w-[519px] xl:w-[415px] max-w-[95%] z-[80] absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-2xl ${selectedQuest.frequency === "One-time" ? "bg-linear-gradient-green" : "bg-linear-gradient-yellow"}`}
           >
             <div className="absolute top-5 right-9 xl:right-7 z-10">
               <Image
@@ -176,7 +177,7 @@ const QuestModal = (): JSX.Element => {
                 </div>
                 <div className="flex items-end self-start gap-2 text-left mt-12 ml-8 max-w-md xl:max-w-xs">
                   <Image
-                    src={pointHexagon}
+                    src={selectedQuest.frequency === "One-time" ? pointHexagon : pointHexagonYellow}
                     alt="point hexagon"
                     width={22}
                     height={28}

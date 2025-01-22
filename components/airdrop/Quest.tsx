@@ -9,6 +9,7 @@ import { selectAirdropSlice, setIsClaimTestnetFuseModalOpen, setIsQuestModalOpen
 import checkBackground from "@/assets/check-background-black.svg";
 import pointHexagon from "@/assets/fuse-foundation-point-hexagon.svg";
 import { isSocialFollowed } from "@/lib/helpers";
+import pointHexagonYellow from "@/assets/point-hexagon-yellow.svg";
 
 type QuestProps = {
   quest: AirdropQuest;
@@ -103,12 +104,12 @@ function QuestItem({ quest }: QuestProps) {
                 className="flex items-end gap-1"
               >
                 <Image
-                  src={pointHexagon}
+                  src={quest.frequency === "One-time" ? pointHexagon : pointHexagonYellow}
                   alt="point hexagon"
                   width={18}
                   height={22}
                 />
-                <p className="text-lg leading-none text-stoplight-go-green font-bold">
+                <p className={`text-start text-lg leading-none font-bold ${quest.frequency === "One-time" ? "text-stoplight-go-green" : "text-sand"}`}>
                   {quest.point}
                 </p>
               </CardItem>

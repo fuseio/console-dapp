@@ -26,8 +26,10 @@ import joinTelegram from "@/assets/join-telegram-green.svg";
 import volt from "@/assets/volt-wallet-green.svg";
 import artrific from "@/assets/artrific-green.svg";
 import meridian from "@/assets/meridian-green.svg";
-import voltageLiquidity from "@/assets/voltage-liquidity.svg";
-import gooddollar from "@/assets/gooddollar-green.svg";
+import voltYellow from "@/assets/volt-wallet-yellow.svg";
+import meridianYellow from "@/assets/meridian-yellow.svg";
+import voltageLiquidityYellow from "@/assets/voltage-liquidity-yellow.svg";
+import gooddollarYellow from "@/assets/gooddollar-yellow.svg";
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -109,7 +111,7 @@ const Home = () => {
       id: "liquidityVoltage",
       title: "Provide Liquidity to Voltage",
       point: "Up to 8 points per $1 in pool daily",
-      image: voltageLiquidity,
+      image: voltageLiquidityYellow,
       buttons: [
         {
           text: "Go to Voltage",
@@ -121,7 +123,7 @@ const Home = () => {
       id: "stakeOnVoltage",
       title: "Stake on Voltage",
       point: "Up to 8 points per $1 staked daily",
-      image: volt,
+      image: voltYellow,
       buttons: [
         {
           text: "Go to Voltage",
@@ -169,7 +171,7 @@ const Home = () => {
       id: "provideMeridianLiquidity",
       title: "Lend on Meridian",
       point: "Up to 8 points per $1 in pool daily",
-      image: meridian,
+      image: meridianYellow,
       buttons: [
         {
           text: "Go to Meridian Lend",
@@ -182,7 +184,7 @@ const Home = () => {
       title: "Borrow on Meridian",
       description: "Borrow any asset on Meridian to get 12 points per $1 borrowed every day.  \n**Points will begin to accrue 24 hours after the borrow transaction.**",
       point: "12 points per $1 borrowed daily",
-      image: meridian,
+      image: meridianYellow,
       buttons: [
         {
           text: "Go to Meridian Borrow",
@@ -214,7 +216,7 @@ const Home = () => {
       description: "To get 30 points daily, you need to take 6 steps:  \n**Step 1:**\nGo to quest on the Layer3 platform  \n**Step 2:**\nConnect to Layer3 a wallet participating in the airdrop  \n**Step 3:**\nGo to GoodDapp  \n**Step 4:**\nClaim G$ token on Fuse Network  \n**Step 5:**\nVerify quest completion on the Layer3  \n**Step 6:**\nRepeat every day. After 5 claims, the quest will renew automatically and allow you to claim more and more.  \n**Verify the quest 1 hour after completing it on Layer3**",
       point: "30 Points per claim",
       frequency: "Once a day",
-      image: gooddollar,
+      image: gooddollarYellow,
       buttons: [
         {
           text: "Go to Quest",

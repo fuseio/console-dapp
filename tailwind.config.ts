@@ -138,6 +138,7 @@ const config: Config = {
         'linear-gradient-sand': 'linear-gradient(0deg, #EDC765 50.29%, #AD8213 100.29%)',
         'linear-gradient-pale-green': 'linear-gradient(180deg, #66E070 0%, #A3F5AA 100%)',
         'linear-gradient-green-thumb': "linear-gradient(180deg, #98F1A0 0%, #68E172 82%)",
+        'linear-gradient-yellow': "linear-gradient(122deg, rgba(237, 199, 101, 0.20) 5.66%, rgba(237, 199, 101, 0.00) 24.99%)",
       }
     },
   },
