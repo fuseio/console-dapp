@@ -129,7 +129,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const isSocialFollowed = (user: AirdropUser) => {
-  const socialQuests = ["followFuseOnTwitter", "telegramSubscription"];
+  const socialQuests = ["followFuseOnTwitter"];
   
   return user
   .completedQuests

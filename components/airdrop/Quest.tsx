@@ -22,7 +22,7 @@ type Custom = {
 function QuestItem({ quest }: QuestProps) {
   const dispatch = useAppDispatch();
   const airdropSlice = useAppSelector(selectAirdropSlice);
-  const isSocial = quest.id === "followFuseOnTwitter" || quest.id === "telegramSubscription" || isSocialFollowed(airdropSlice.user);
+  const isSocial = quest.id === "followFuseOnTwitter" || isSocialFollowed(airdropSlice.user);
 
   const custom: Custom = {
     "joinWaitlist": {
