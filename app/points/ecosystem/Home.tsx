@@ -500,7 +500,7 @@ const Home = () => {
       </div>
       <div className="flex flex-col gap-8 xl:gap-6 mt-24 xl:mt-16">
         <h2 className="text-3xl font-semibold">
-          {isSocialFollowed(user) ? "Join our Socials and explore the Ecosystem" : "Follow Fuse on Socials to unlock quests"}
+          {isSocialFollowed(user) ? "Join our Socials and explore the Ecosystem" : "Follow Fuse on X to unlock quests"}
         </h2>
         <div className="grid grid-cols-3 md:grid-cols-1 auto-rows-min gap-[30px] xl:gap-5">
           {quests.filter((quest) => quest.frequency === "One-time").map((quest) => (
@@ -510,7 +510,7 @@ const Home = () => {
       </div>
       <div className="flex flex-col gap-8 xl:gap-6 mt-24 xl:mt-16">
         <h2 className="text-3xl font-semibold">
-          {isSocialFollowed(user) ? "Get multipliers for your points!" : "Follow Fuse on Socials to unlock multiplier quests"}
+          {isSocialFollowed(user) ? "Get multipliers for your points!" : "Follow Fuse on X to unlock multiplier quests"}
         </h2>
         <div className="grid grid-cols-3 md:grid-cols-1 auto-rows-min gap-[30px] xl:gap-5">
           {quests.filter((quest) => quest.frequency !== "One-time").map((quest) => (
