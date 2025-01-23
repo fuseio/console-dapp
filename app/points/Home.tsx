@@ -52,7 +52,7 @@ const Hero = () => {
               }
             }}
           >
-            Get Points
+            Earn Points
             {isLoading ? <Spinner /> : <RightCaret />}
           </button>
           <div className="transition-all ease-in-out duration-300 absolute inset-8 bg-linear-gradient-dark-orange rounded-[inherit] blur-[25px] -z-[1] group-hover:inset-0"></div>
