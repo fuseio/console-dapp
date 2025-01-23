@@ -120,18 +120,6 @@ const Home = () => {
       ]
     },
     {
-      id: "stakeOnVoltage",
-      title: "Stake on Voltage",
-      point: "Up to 8 points per $1 staked daily",
-      image: voltYellow,
-      buttons: [
-        {
-          text: "Go to Voltage",
-          link: "https://app.voltage.finance/stake",
-        },
-      ]
-    },
-    {
       id: "exploreVoltWallet",
       title: "Install the Volt wallet",
       description: "The Volt wallet is the best mobile solution for interacting with the Fuse network, as it is built and developed by the Fuse team. Explore its features and get 200 points.  \n**Verify the quest 1 hour after completing it on Layer3**",
