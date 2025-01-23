@@ -115,7 +115,7 @@ const Home = () => {
       buttons: [
         {
           text: "Go to Voltage",
-          link: "https://voltage.finance/pool?filter=v3",
+          link: "https://voltage.finance/pool",
         },
       ]
     },
