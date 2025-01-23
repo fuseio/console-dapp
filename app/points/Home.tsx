@@ -37,7 +37,7 @@ const Hero = () => {
         </span>
       </h1>
       <p className="text-lg max-w-xl">
-        Explore, build and play to migrate with us easily and fun to the new Fuse Ember network.
+        Fuse is building the Stripe of Layer 2, powered by zkEVM technology. We invite you to be part of this revolutionary journey
       </p>
       <div className="flex items-center gap-8 md:flex-col">
         <div className="group relative z-10">
