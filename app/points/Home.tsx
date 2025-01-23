@@ -30,10 +30,10 @@ const Hero = () => {
     <div className="flex flex-col justify-center items-center gap-7 text-center">
       <h1 className="flex flex-col gap-4">
         <span className="text-3xl font-semibold md:text-xl">
-          Welcome to the fuse
+          Welcome to
         </span>
         <span className="bg-linear-gradient-pale-green bg-clip-text text-[10.625rem] leading-none text-[transparent] font-black md:text-4xl">
-          Points
+          Ember Points
         </span>
       </h1>
       <p className="text-lg max-w-xl">
