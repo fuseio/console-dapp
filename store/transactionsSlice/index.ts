@@ -208,7 +208,6 @@ const transactionsSlice = createSlice({
         } as TransactionType;
       })
       .addCase(updateLastTransactionStatus.fulfilled, (state, action) => {
-        console.log(action.payload);
         if (state.lastTransaction) {
           state.lastTransaction.bridgeStatus = action.payload.bridgeStatus;
           state.lastTransaction.status = action.payload.status;
