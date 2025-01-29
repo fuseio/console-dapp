@@ -27,6 +27,7 @@
     "@web3auth/web3auth-wagmi-connector": "^6.0.0",
     "abitype": "^1.0.6",
     "axios": "^1.7.7",
+    "color-convert": "^2.0.1",
     "ethers": "^5.7.2",
     "formik": "^2.4.6",
     "framer-motion": "^11.9.0",
@@ -39,6 +40,8 @@
     "react-ga4": "^2.1.0",
     "react-iframe": "^1.8.5",
     "react-jazzicon": "^1.0.4",
+    "react-markdown": "^9.0.1",
+    "react-otp-input": "^3.1.1",
     "react-qr-code": "^2.0.15",
     "react-redux": "^9.1.2",
     "react-spinners": "^0.14.1",
@@ -46,6 +49,7 @@
     "react-yandex-metrika": "^2.6.0",
     "sharp": "^0.33.5",
     "swiper": "^11.2.1",
+    "tailwind-merge": "^2.5.5",
     "use-deep-compare-effect": "^1.8.1",
     "usehooks-ts": "^3.1.0",
     "viem": "^2.21.16",
@@ -53,6 +57,7 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
+    "@types/color-convert": "^2.0.4",
     "@types/lodash": "^4.17.10",
     "@types/node": "^20",
     "@types/react": "^18",

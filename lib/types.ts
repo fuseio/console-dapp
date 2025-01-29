@@ -279,6 +279,7 @@ export const createAppConfig = (
 export type MenuItem = {
   title: string;
   link: string;
+  submenu?: MenuItem[];
 }
 
 export type MenuItems = MenuItem[];
@@ -386,4 +387,72 @@ export interface ValidatorResponse {
   jailedValidators: Address[]
   pendingValidators: Address[]
   validatorsMetadata: Record<Address, ValidatorTypeResponse>
+}
+
+export interface CompletedQuest {
+  type: string;
+  stakingType?: string;
+}
+
+export type CompletedQuests = CompletedQuest[];
+
+export interface AirdropUser {
+  id: string,
+  walletAddress: Address,
+  twitterAccountId: string,
+  points: number,
+  referrals: number,
+  referralCode: string,
+  leaderboardPosition: number
+  pointsLastUpdatedAt: string;
+  createdAt: string;
+  completedQuests: CompletedQuests;
+  walletAgeInDays?: number;
+  seasonOnePoints: number;
+  nextRewardDistributionTime: string;
+}
+
+export type AirdropButton = {
+  text: string;
+  link?: string;
+  isFunction?: boolean;
+  endpoint?: string;
+  isLoading?: boolean;
+  success?: string;
+}
+
+export type AirdropQuest = {
+  id: string;
+  title: string;
+  point: string;
+  image: string | StaticImageData;
+  frequency?: string;
+  description?: string;
+  completed?: boolean;
+  isEcosystem?: boolean;
+  buttons?: AirdropButton[];
+  comingSoon?: boolean;
+  isCustom?: boolean;
+}
+
+export type AirdropQuests = AirdropQuest[];
+
+export interface AirdropLeaderboardUser {
+  id: string;
+  walletAddress: Address;
+  twitterAccountId: string;
+  points: number;
+  referralCode: string;
+  walletAgeInDays?: number;
+}
+
+export type AirdropLeaderboardUsers = AirdropLeaderboardUser[];
+
+export interface AirdropLeaderboard {
+  users: AirdropLeaderboardUser[];
+}
+
+export type CreateAirdropUser = {
+  walletAddress: Address;
+  referralCode: string;
 }
