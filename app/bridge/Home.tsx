@@ -97,43 +97,6 @@ const Home = () => {
     }
   }, [contractSlice.isBridgeLoading]);
 
-  useEffect(() => {
-    if (chargeSlice.isLoading) return;
-    console.log(
-      appConfig.wrappedBridge.chains[
-        selectedChainSlice.depositSelectedChainItem
-      ]
-    );
-    dispatch(
-      estimateTransferFee({
-        rpcUrl:
-          selected === 0
-            ? appConfig.wrappedBridge.chains[
-                selectedChainSlice.depositSelectedChainItem
-              ].rpcUrl
-            : "https://rpc.fuse.io",
-        isNative:
-          chargeSlice.tokens[
-            selected === 0
-              ? depositSelectedTokenItem
-              : withdrawSelectedTokenItem
-          ].isNative,
-        tokenId:
-          selected === 0
-            ? (appConfig.wrappedBridge.chains[
-                selectedChainSlice.depositSelectedChainItem
-              ].tokenId as string)
-            : "fuse-network-token",
-      })
-    );
-  }, [
-    selected,
-    chain,
-    depositSelectedTokenItem,
-    withdrawSelectedTokenItem,
-    chargeSlice.isLoading,
-  ]);
-
   const deposit = () => {
     dispatch(
       initiateBridgeTransaction({
