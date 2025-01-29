@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import Button from "@/components/ui/Button";
-import { buildSubMenuItems, evmDecimals, signDataMessage } from "@/lib/helpers";
+import { evmDecimals, signDataMessage } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useBlockNumber, useSignMessage } from "wagmi";
 import { fuse } from "wagmi/chains";
-import { checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, validateOperator, withRefreshToken } from "@/store/operatorSlice";
+import { OperatorStateType, checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, fetchTokenBalances, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, validateOperator, withRefreshToken } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
@@ -31,7 +31,7 @@ import hide from "@/assets/hide.svg";
 import { formatUnits } from "viem";
 import { SignMessageVariables } from "wagmi/query";
 import contactSupport from "@/assets/contact-support.svg";
-
+import { useRouter } from "next/navigation";
 type CreateOperatorWalletProps = {
   isValidated: boolean;
   signMessage: (variables: SignMessageVariables) => void;
@@ -48,7 +48,7 @@ type OperatorAccountBalanceProps = {
   chain: any;
   balanceSlice: BalanceStateType;
   balance: any;
-  isActivated: boolean;
+  operatorSlice: OperatorStateType;
   dispatch: ThunkDispatch<any, undefined, AnyAction> & Dispatch<AnyAction>;
 }
 
@@ -125,12 +125,12 @@ const ConnectEoaWallet = () => {
   )
 }
 
-const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dispatch }: OperatorAccountBalanceProps) => {
+const OperatorAccountBalance = ({ chain, balanceSlice, balance, operatorSlice, dispatch }: OperatorAccountBalanceProps) => {
   useEffect(() => {
     const fiveSecondInMillisecond = 5000;
 
     const intervalId = setInterval(() => {
-      if (isActivated) {
+      if (operatorSlice.isActivated) {
         dispatch(withRefreshToken(() => dispatch(fetchSponsoredTransactions())));
       } else {
         dispatch(withRefreshToken(() => dispatch(checkIsActivated())));
@@ -140,7 +140,13 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
     return () => {
       clearInterval(intervalId);
     }
-  }, [dispatch, isActivated])
+  }, [dispatch, operatorSlice.isActivated])
+
+  useEffect(() => {
+    if (operatorSlice.operator.user.smartWalletAddress) {
+      dispatch(fetchTokenBalances({ address: operatorSlice.operator.user.smartWalletAddress }));
+    }
+  }, [dispatch, operatorSlice.operator.user.smartWalletAddress])
 
   return (
     <div className="flex flex-col justify-between items-start">
@@ -160,24 +166,15 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
           </div>
         </div>
         <div className="flex items-end md:flex-wrap gap-x-[30px] md:gap-x-4">
-          <h1 className="font-bold text-5xl leading-none whitespace-nowrap">
-            {(chain && chain.id === fuse.id) ?
-              new Intl.NumberFormat().format(
-                parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0")
-              ) :
-              0
-            } FUSE
-          </h1>
-          {balanceSlice.isUsdPriceLoading ?
-            <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
-            <p className="text-[20px]/7 font-medium">
+          {operatorSlice.isFetchingTokenBalances || balanceSlice.isUsdPriceLoading ?
+            <span className="w-20 h-10 rounded-md animate-pulse bg-white/80"></span> :
+            <h1 className="font-bold text-5xl leading-none whitespace-nowrap">
               ${(chain && chain.id === fuse.id) ?
                 new Intl.NumberFormat().format(
-                  parseFloat((parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0.00") * balanceSlice.price).toString())
+                  (parseFloat(balance?.formatted ?? "0") * balanceSlice.price) + operatorSlice.totalTokenBalance
                 ) :
-                "0.00"
-              }
-            </p>
+                "0.00"}
+            </h1>
           }
         </div>
       </div>
@@ -209,6 +206,7 @@ const Home = () => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const [showSecretKey, setShowSecretKey] = useState(false);
   const controller = useMemo(() => new AbortController(), []);
+  const router = useRouter();
   const { isConnected, address, chain } = useAccount();
   const signer = useEthersSigner();
   const { data: blockNumber } = useBlockNumber({ watch: true });
@@ -292,7 +290,7 @@ const Home = () => {
       {operatorSlice.isAccountCreationModalOpen && <AccountCreationModal />}
       {operatorSlice.isCongratulationModalOpen && <CongratulationModal />}
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
-        <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="md:flex md:justify-center" liClassName="w-28" />
+        <NavMenu menuItems={operatorSlice.menuItems} isOpen={true} selected="dashboard" className="md:flex md:justify-center" />
         <div className={`flex justify-between md:flex-col gap-2 mt-[66.29px] md:mt-14 ${operatorSlice.isActivated ? "mb-[70px]" : "mb-[42px]"} md:mb-[50px]`}>
           <h1 className="text-5xl md:text-[32px] text-fuse-black font-semibold leading-none md:leading-tight md:text-center">
             Operator Dashboard
@@ -342,7 +340,14 @@ const Home = () => {
           </div>
         }
         <div className="flex flex-col gap-y-[30px] md:gap-y-[21px] mb-[143.32px] md:mb-[66px]">
-          <div className="flex flex-row md:flex-col gap-x-4 gap-y-12 bg-lightest-gray justify-between rounded-[20px] p-12 md:p-8 min-h-[297px]">
+          <div className="flex relative flex-row md:flex-col gap-x-4 gap-y-12 bg-lightest-gray justify-between rounded-[20px] p-12 md:p-8 min-h-[297px]">
+            {operatorSlice.isAuthenticated && (
+              <Button
+                text="Upgrade now"
+                className="absolute top-[34px] right-6 md:right-4 sm:top-[75px] sm:w-[152px] w-[162px] h-[43px] py-[14px] px-5 bg-success text-black rounded-full hover:bg-black hover:text-white transition ease-in-out text-base font-bold leading-[15.47px] text-center"
+                onClick={() => router.push("/billing")}
+              />
+            )}
             {(!isConnected || !signer) ?
               <ConnectEoaWallet /> :
               operatorSlice.isAuthenticated ?
@@ -350,7 +355,7 @@ const Home = () => {
                   chain={chain}
                   balanceSlice={balanceSlice}
                   balance={balance}
-                  isActivated={operatorSlice.isActivated}
+                  operatorSlice={operatorSlice}
                   dispatch={dispatch}
                 /> :
                 operatorSlice.isOperatorExist ?
