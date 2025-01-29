@@ -152,10 +152,9 @@ const Deposit = ({
     chainSlice.chainId,
     selectedChainSection,
     nativeBalance,
-    chainId,
-    chargeSlice.isBridgeLoading,
+    chainId
   ]);
-
+  
   useEffect(() => {
     if (chainSlice.chainId === 0 && selectedChainSection === 0) {
       dispatch(setChain(appConfig.wrappedBridge.chains[selectedChainItem]));

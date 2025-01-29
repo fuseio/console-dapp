@@ -92,7 +92,7 @@ const Dropdown = ({
             width={size === "sm" ? 17 : 32}
             height={size === "sm" ? 17 : 32}
             alt={items[selectedSection].items[selectedItem].id.toString()}
-            className="me-1 -mt-1 max-h-[32px] rounded-full"
+            className="me-1 -mt-1 max-h-[32px]"
           />
           <span className="font-semibold pe-1">
             {items[selectedSection].items[selectedItem].item}
@@ -130,7 +130,7 @@ const Dropdown = ({
                     alt={item.id.toString()}
                     width={32}
                     height={32}
-                    className="h-8 me-2 md:h-6 rounded-full"
+                    className="h-8 me-2 md:h-6"
                   />
                   <p className="font-medium cursor-pointer">{item.item}</p>
                 </div>
