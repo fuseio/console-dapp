@@ -1,5 +1,7 @@
+import { ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 import { TransactionType } from "@/store/transactionsSlice";
-import { WalletType } from "./types";
+import { AirdropUser, WalletType } from "./types";
 
 export const eclipseAddress = (address: string): string => {
   return (
@@ -77,6 +79,10 @@ export const path = {
   BRIDGE: "/bridge",
   STAKING: "/staking",
   DASHBOARD: "/dashboard",
+  AIRDROP: "/points",
+  AIRDROP_LEADERBOARD: "/points/leaderboard",
+  AIRDROP_ECOSYSTEM: "/points/ecosystem",
+  AIRDROP_GRANT: "/points/grant",
 };
 
 export const buildSubMenuItems = [
@@ -100,3 +106,33 @@ export const splitSecretKey = (secretKey: string) => {
 export const evmDecimals = 18;
 
 export const screenMediumWidth = 768;
+
+export const defaultReferralCode = "EMBER";
+
+export function convertTimestampToUTC(timestamp: string) {
+  const months: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const date = new Date(timestamp);
+  const day = date.getUTCDate().toString().padStart(2, '0');
+  const monthName = months[date.getUTCMonth()];
+  const year = date.getUTCFullYear();
+  const hour = date.getUTCHours().toString().padStart(2, '0');
+  const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+  return `${day} ${monthName}, ${year} ${hour}:${minutes} UTC`;
+}
+
+export function isFloat(value: unknown) {
+  return !Number.isInteger(value) && Number.isFinite(value);
+}
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+export const isSocialFollowed = (user: AirdropUser) => {
+  const socialQuests = ["followFuseOnTwitter"];
+  
+  return user
+  .completedQuests
+  ?.filter((quest) => socialQuests.includes(quest.type))
+  .length === socialQuests.length;
+}
