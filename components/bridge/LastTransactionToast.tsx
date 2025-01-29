@@ -8,18 +8,18 @@ import { selectTransactionsSlice } from "@/store/transactionsSlice";
 import { MessageStatus } from "@layerzerolabs/scan-client";
 import {
   getEstimatedTransactionTime,
+  getNetworkByChainKey,
   getScanLink,
 } from "@layerzerolabs/ui-core";
+import { getChainKey } from "@layerzerolabs/lz-sdk";
 import Pill from "./Pill";
 import { toggleLastTransactionToast } from "@/store/toastSlice";
 import Image from "next/image";
-import { getChain } from "@/lib/helpers";
 
 const LastTransactionToast = () => {
   const transactionsSlice = useAppSelector(selectTransactionsSlice);
-  const lastTransaction = transactionsSlice.lastTransaction;
   const dispatch = useAppDispatch();
-  return lastTransaction ? (
+  return transactionsSlice.transactionHashes.length > 0 ? (
     <div className="w-full rounded-md border-[#8054FF66]/40 border-[1px] bg-[#EDEBFF] mt-4 p-4">
       <div className="flex">
         <Image src={historyPurple} alt="history" className="h-6 w-[5%]" />
@@ -38,11 +38,10 @@ const LastTransactionToast = () => {
           <div
             className="flex sm:flex-col sm:gap-2 text-sm text-secondary-gray mt-3 md:text-xs md:justify-between cursor-pointer"
             onClick={() => {
-              if (!lastTransaction.bridgeHash) return;
               window.open(
                 getScanLink(
-                  getChain(lastTransaction.dstChainId)?.lzChainId as number,
-                  lastTransaction.bridgeHash
+                  transactionsSlice.transactionHashes[0].srcChainId,
+                  transactionsSlice.transactionHashes[0].hash
                 ),
                 "_blank"
               );
@@ -51,54 +50,70 @@ const LastTransactionToast = () => {
             <div className="flex flex-col w-2/5 sm:w-full">
               <p className="text-sm text-secondary-gray">From</p>
               <div className="flex font-medium mt-1 text-black">
-                <span>{getChain(lastTransaction.dstChainId)?.chainName}</span>
+                <span>
+                  {
+                    getNetworkByChainKey(
+                      getChainKey(
+                        transactionsSlice.transactionHashes[0].srcChainId
+                      )
+                    ).name
+                  }
+                </span>
                 <Image src={right} alt="right" className="ml-2" />
                 <span className="ml-2">
-                  {getChain(lastTransaction.srcChainId)?.chainName}
+                  {
+                    getNetworkByChainKey(
+                      getChainKey(
+                        transactionsSlice.transactionHashes[0].dstChainId
+                      )
+                    ).name
+                  }
                 </span>
               </div>
             </div>
             <div className="flex flex-col w-1/5 sm:w-full">
               <p>Amount</p>
               <p className="font-medium text-black mt-1">
-                {parseFloat(
-                  parseFloat(lastTransaction.amount.split(" ")[0]).toFixed(5)
+                {(parseFloat(
+                  parseFloat(
+                    transactionsSlice.transactionHashes[0].amount.split(" ")[0]
+                  ).toFixed(5)
                 ) < 0.00001
                   ? "< 0.00001"
                   : parseFloat(
-                      parseFloat(lastTransaction.amount.split(" ")[0]).toFixed(
-                        5
-                      )
-                    ) +
-                    " " +
-                    lastTransaction.amount.split(" ")[1]}
+                      parseFloat(
+                        transactionsSlice.transactionHashes[0].amount.split(
+                          " "
+                        )[0]
+                      ).toFixed(5)
+                    )) +
+                  " " +
+                  transactionsSlice.transactionHashes[0].amount.split(" ")[1]}
               </p>
             </div>
             <div className="flex flex-col sm:w-fit">
               <p className="mb-1">Status</p>
               <Pill
                 text={
-                  lastTransaction.status === "completed" &&
-                  lastTransaction.bridgeStatus === "completed"
+                  transactionsSlice.transactions[0] === MessageStatus.DELIVERED
                     ? "Complete"
-                    : lastTransaction.status === "completed" &&
-                      (lastTransaction.bridgeStatus === "pending" ||
-                        lastTransaction.bridgeStatus === "processing")
+                    : transactionsSlice.transactions[0] ===
+                      MessageStatus.INFLIGHT
                     ? "Finishing"
-                    : lastTransaction.status === "failed"
-                    ? "Failed"
-                    : "Pending"
+                    : "Failed"
                 }
                 type={
-                  lastTransaction.status === "completed" &&
-                  lastTransaction.bridgeStatus === "completed"
+                  transactionsSlice.transactions[0] === MessageStatus.DELIVERED
                     ? "success"
-                    : "warning"
+                    : transactionsSlice.transactions[0] ===
+                      MessageStatus.INFLIGHT
+                    ? "warning"
+                    : "error"
                 }
               />
             </div>
           </div>
-          {!(lastTransaction.bridgeStatus == "completed") && (
+          {transactionsSlice.transactions[0] === MessageStatus.INFLIGHT && (
             <div className="flex rounded-md px-3 py-[6px] bg-[#8054FF40] mt-3 items-center mr-auto">
               <Image src={info} alt="info" className="h-3 mr-2" />
               <span className="text-xs flex md:text-[10px]">
@@ -106,7 +121,7 @@ const LastTransactionToast = () => {
                 <p className="font-semibold ml-1">
                   {Math.ceil(
                     getEstimatedTransactionTime(
-                      getChain(lastTransaction.dstChainId)?.lzChainId as number
+                      transactionsSlice.transactionHashes[0].srcChainId
                     ) / 60
                   ) + " min"}
                 </p>

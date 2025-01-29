@@ -42,11 +42,13 @@ export const fetchBalance = createAsyncThunk(
     {
       contractAddress,
       address,
+      bridge,
       decimals = 18,
       rpc,
     }: {
       contractAddress: Address;
       address: Address;
+      bridge: Address;
       decimals: number;
       rpc?: string;
     },
@@ -60,6 +62,14 @@ export const fetchBalance = createAsyncThunk(
       getERC20Balance(contractAddress, address, rpc)
         .then((balance) => {
           const bal = ethers.utils.formatUnits(balance, decimals);
+          thunkAPI.dispatch(
+            fetchApproval({
+              contractAddress,
+              address,
+              spender: bridge,
+              decimals,
+            })
+          );
           resolve(bal);
         })
         .catch((err) => {
@@ -82,10 +92,10 @@ export const fetchUsdPrice = createAsyncThunk(
   "BALANCE/FETCH_USD_PRICE",
   async ({
     tokenId,
-    controller,
+    controller
   }: {
     tokenId: string;
-    controller: AbortController;
+    controller: AbortController
   }) => {
     return new Promise<any>(async (resolve, reject) => {
       fetchTokenPrice(tokenId)

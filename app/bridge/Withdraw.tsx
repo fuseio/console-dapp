@@ -26,7 +26,7 @@ import { fuse } from "viem/chains";
 import { evmDecimals, hex, walletType } from "@/lib/helpers";
 import { getAccount } from "wagmi/actions";
 import { fetchAvailableLiquidityOnChains } from "@/store/liquiditySlice";
-import { formatUnits, size } from "viem";
+import { formatUnits } from "viem";
 
 type WithdrawProps = {
   selectedChainSection: number;
@@ -222,77 +222,7 @@ const Withdraw = ({
     <>
       {!(isDisabledChain || isThirdPartyChain) && (
         <>
-          <div className="flex bg-modal-bg rounded-[20px] p-6 mt-[30px] w-full justify-between items-center">
-            <div className="flex flex-col w-full">
-              <span className="font-semibold text-sm">
-                To
-                <Image
-                  src={sFuse}
-                  alt="sFuse"
-                  className="inline-block ml-2 mr-2 h-7 -mt-1"
-                  width={17}
-                  height={17}
-                />
-                FUSE
-              </span>
-              <div className="flex w-full items-center mt-1">
-                <div className="py-3 pe-4 md:p-2 rounded-s-md w-[70%] flex items-center">
-                  <input
-                    type="text"
-                    className="w-full bg-modal-bg focus:outline-none text-[34px] font-semibold"
-                    placeholder="0.00"
-                    value={amount}
-                    onChange={(e) => {
-                      setAmount(e.target.value);
-                    }}
-                  />
-                  <span
-                    className="text-black px-3 py-1 bg-lightest-gray rounded-full cursor-pointer text-base"
-                    onClick={() => {
-                      setAmount(balanceSlice.balance);
-                    }}
-                  >
-                    Max
-                  </span>
-                </div>
-                <Dropdown
-                  items={[
-                    {
-                      heading: "Tokens",
-                      items: appConfig.wrappedBridge.chains[
-                        selectedChainItem
-                      ].tokens.map((coin, i) => {
-                        return {
-                          icon: coin.icon,
-                          id: i,
-                          item: coin.symbol,
-                        };
-                      }),
-                    },
-                  ]}
-                  selectedSection={selectedTokenSection}
-                  selectedItem={selectedTokenItem}
-                  className="w-[30%]"
-                  onClick={(section, item) => {
-                    setSelectedTokenSection(section);
-                    setSelectedTokenItem(item);
-                  }}
-                />
-              </div>
-              <span className="text-sm font-medium">
-                Balance:{" "}
-                {balanceSlice.isBalanceLoading ||
-                chain?.id !==
-                  appConfig.wrappedBridge.chains[selectedChainItem].chainId ||
-                balanceSlice.isApprovalLoading ? (
-                  <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
-                ) : (
-                  balanceSlice.balance
-                )}
-              </span>
-            </div>
-          </div>
-          {/* <div className="flex bg-modal-bg rounded-md p-4 mt-[30px] w-full flex-col">
+          <div className="flex bg-modal-bg rounded-md p-4 mt-3 w-full flex-col">
             <span className="font-medium text-xs">
               From
               <Image
@@ -354,14 +284,14 @@ const Withdraw = ({
             <span className="mt-3 text-xs font-medium">
               Balance:{" "}
               {balanceSlice.isBalanceLoading ||
-              balanceSlice.isApprovalLoading ||
-              chain?.id !== fuse.id ? (
+                balanceSlice.isApprovalLoading ||
+                chain?.id !== fuse.id ? (
                 <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
               ) : (
                 balanceSlice.balance
               )}
             </span>
-          </div> */}
+          </div>
           <div className="flex justify-center">
             <Image
               src={switchImg}
@@ -382,7 +312,7 @@ const Withdraw = ({
           </div>
         </>
       )}
-      {/* <div className="flex bg-modal-bg rounded-md p-4 mt-3 w-full flex-col">
+      <div className="flex bg-modal-bg rounded-md p-4 mt-3 w-full flex-col">
         <span className="font-medium mb-2 text-xs ">To Network</span>
         <Dropdown
           items={[
@@ -495,102 +425,6 @@ const Withdraw = ({
             </div>
           </span>
         }
-      </div> */}
-      <div className="flex bg-modal-bg rounded-[20px] p-6 mt-3 w-full flex-col">
-        <div className="flex items-start">
-          <span className="font-semibold pe-[10px] text-sm">To</span>
-          <Dropdown
-            items={[
-              {
-                heading: "Chains",
-                items: appConfig.wrappedBridge.chains.map((chain) => {
-                  return {
-                    item: chain.name,
-                    icon: chain.icon,
-                    id: chain.lzChainId,
-                  };
-                }),
-              },
-              {
-                items: appConfig.wrappedBridge.disabledChains.map(
-                  (chain, i) => {
-                    return {
-                      item: chain.chainName,
-                      icon: chain.icon,
-                      id: i,
-                    };
-                  }
-                ),
-              },
-              {
-                items: appConfig.wrappedBridge.thirdPartyChains.map(
-                  (chain, i) => {
-                    return {
-                      item: chain.chainName,
-                      icon: chain.icon,
-                      id: i,
-                    };
-                  }
-                ),
-              },
-            ]}
-            selectedSection={selectedChainSection}
-            selectedItem={selectedChainItem}
-            isHighlight={true}
-            onClick={(section, item) => {
-              if (section === 1) {
-                setDisplayButton(false);
-                setIsDisabledChain(true);
-                setIsThirdPartyChain(false);
-              } else if (section === 2) {
-                setDisplayButton(false);
-                setIsDisabledChain(false);
-                setIsThirdPartyChain(true);
-              } else if (section === 3) {
-                setDisplayButton(false);
-                setIsDisabledChain(false);
-                setIsThirdPartyChain(false);
-              }
-            }}
-            size="sm"
-          />
-        </div>
-        {!(isDisabledChain || isThirdPartyChain) && (
-          <>
-            <div className="flex w-full items-center mt-2">
-              <div className="pt-1 pe-4 md:p-2 rounded-s-md w-[70%] flex items-center">
-                <div className="w-full bg-modal-bg focus:outline-none text-[34px] font-semibold">
-                  {amount && !isNaN(parseFloat(amount))
-                    ? parseFloat(amount)
-                    : "0.0"}
-                </div>
-              </div>
-              <Dropdown
-                items={[
-                  {
-                    heading: "Tokens",
-                    items: appConfig.wrappedBridge.chains[
-                      selectedChainItem
-                    ].tokens.map((coin, i) => {
-                      return {
-                        icon: coin.icon,
-                        id: i,
-                        item: coin.symbol,
-                      };
-                    }),
-                  },
-                ]}
-                selectedSection={selectedTokenSection}
-                selectedItem={selectedTokenItem}
-                className="w-[30%]"
-                onClick={(section, item) => {
-                  setSelectedTokenSection(section);
-                  setSelectedTokenItem(item);
-                }}
-              />
-            </div>
-          </>
-        )}
       </div>
       {isDisabledChain && (
         <>
@@ -642,8 +476,8 @@ const Withdraw = ({
             </div>
             <div className="flex flex-col font-medium text-sm md:text-xs md:mt-2">
               <p>
-                Remember that using 3rd party application carries risks. Fuse
-                does not control the code or content of these websites.
+                Remember that using 3rd party application carries risks.
+                Fuse does not control the code or content of these websites.
               </p>
             </div>
           </div>
@@ -653,8 +487,7 @@ const Withdraw = ({
         <>
           <a
             href={
-              appConfig.wrappedBridge.thirdPartyChains[selectedChainItem]
-                .appWithdrawURL
+              appConfig.wrappedBridge.thirdPartyChains[selectedChainItem].appWithdrawURL
             }
             target="_blank"
             rel="noreferrer"
@@ -700,8 +533,8 @@ const Withdraw = ({
             </div>
             <div className="flex flex-col font-medium text-sm md:text-xs md:mt-2">
               <p>
-                Remember that using 3rd party application carries risks. Fuse
-                does not control the code or content of these websites.
+                Remember that using 3rd party application carries risks.
+                Fuse does not control the code or content of these websites.
               </p>
             </div>
           </div>

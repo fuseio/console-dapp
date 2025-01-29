@@ -1,5 +1,5 @@
 import { ERC20ABI } from "@/lib/abi/ERC20";
-import { Address, createPublicClient, http, parseAbi, parseUnits } from "viem";
+import { Address, createPublicClient, http, parseUnits } from "viem";
 import { getWalletClient, waitForTransactionReceipt } from "wagmi/actions";
 import { hex } from "./helpers";
 import { config } from "./web3Auth";
@@ -46,9 +46,7 @@ export const approveSpend = async (
   decimals: number = 18,
   selectedChainId: number
 ) => {
-  const walletClient = await getWalletClient(config, {
-    chainId: selectedChainId,
-  });
+  const walletClient = await getWalletClient(config, { chainId: selectedChainId });
   let tx: Address = hex;
   if (walletClient) {
     const accounts = await walletClient.getAddresses();
@@ -59,38 +57,6 @@ export const approveSpend = async (
       abi: ERC20ABI,
       functionName: "approve",
       args: [spender, parseUnits(amount, decimals)],
-    });
-  }
-  try {
-    await waitForTransactionReceipt(config, {
-      chainId: selectedChainId,
-      hash: tx,
-    });
-  } catch (e) {
-    console.log(e);
-  }
-  return tx;
-};
-
-export const transferToken = async (
-  tokenAddress: Address,
-  to: Address,
-  amount: string,
-  decimals: number = 18,
-  selectedChainId: number
-) => {
-  const walletClient = await getWalletClient(config, {
-    chainId: selectedChainId,
-  });
-  let tx: Address = hex;
-  if (walletClient) {
-    tx = await walletClient.writeContract({
-      address: tokenAddress,
-      abi: parseAbi([
-        "function transfer(address to, uint256 amount) external returns (bool)",
-      ]),
-      functionName: "transfer",
-      args: [to, parseUnits(amount, decimals)],
     });
   }
   try {
