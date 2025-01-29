@@ -63,7 +63,7 @@ const Home = () => {
     useState(0);
   const [withdrawSelectedTokenItem, setWithdrawSelectedTokenItem] = useState(0);
   const [amount, setAmount] = useState("");
-  const filters = ["Deposit", "Withdraw"];
+  const filters = ["Deposit", "Withdraw", "History"];
   const [isOpen, setIsOpen] = useState(false);
   const [isExchange, setIsExchange] = useState(false);
   const [isDisabledChain, setIsDisabledChain] = useState(false);
@@ -100,6 +100,11 @@ const Home = () => {
 
   useEffect(() => {
     if (chargeSlice.isLoading) return;
+    console.log(
+      appConfig.wrappedBridge.chains[
+        selectedChainSlice.depositSelectedChainItem
+      ]
+    );
     dispatch(
       estimateTransferFee({
         rpcUrl:
@@ -316,14 +321,6 @@ const Home = () => {
                       </motion.p>
                     );
                   })}
-                  <motion.p
-                    className="text-primary font-bold py-[18px] rounded-full cursor-pointer px-6 text-center text-lg md:text-sm"
-                    onClick={() => {
-                      setIsOpen(true);
-                    }}
-                  >
-                    History
-                  </motion.p>
                 </div>
                 {selected === 0 ? (
                   <Deposit

@@ -45,13 +45,6 @@ export const fetchTransactionStatus = (id: string) =>
     (response) => response.data
   );
 
-export const fetchTransactionHistory = (address: string) =>
-  ChargePaymentsAPI.get(`/payments/payment/bridge-payments`, {
-    params: {
-      wallet: address,
-    },
-  }).then((response) => response.data);
-
 export const initiateBridge = async (
   chainId: string,
   token: string,
