@@ -112,7 +112,6 @@ const Home = () => {
         token: chargeSlice.tokens[depositSelectedTokenItem].symbol,
         amount,
         destinationWallet: address ?? hex,
-        isNative: chargeSlice.tokens[depositSelectedTokenItem].isNative,
       })
     );
   };

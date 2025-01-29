@@ -82,10 +82,7 @@ export const sendNative = async (
   });
   let tx: Address = hex;
   if (walletClient) {
-    const accounts = await walletClient.getAddresses();
-    const account = accounts[0];
     tx = await walletClient.sendTransaction({
-      account,
       to,
       value: parseUnits(amount, 18),
     });
