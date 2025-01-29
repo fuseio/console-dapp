@@ -8,6 +8,7 @@ import Image from "next/image";
 import {
   selectBalanceSlice,
   fetchBalance,
+  fetchLiquidity,
   setNativeBalanceThunk,
 } from "@/store/balanceSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
@@ -15,17 +16,15 @@ import { selectChainSlice, setChain } from "@/store/chainSlice";
 import alert from "@/assets/alert.svg";
 import visit from "@/assets/visit.svg";
 import sFuse from "@/assets/sFuse.svg";
+import { toggleLiquidityToast } from "@/store/toastSlice";
 import * as amplitude from "@amplitude/analytics-browser";
 import { useAccount, useConfig } from "wagmi";
 import { getBalance } from "wagmi/actions";
 import { fuse } from "viem/chains";
-import { evmDecimals, walletType } from "@/lib/helpers";
+import { evmDecimals, hex, walletType } from "@/lib/helpers";
 import { getAccount } from "wagmi/actions";
+import { fetchAvailableLiquidityOnChains } from "@/store/liquiditySlice";
 import { formatUnits } from "viem";
-import {
-  fetchChargeWithdrawTokens,
-  selectChargeSlice,
-} from "@/store/chargeSlice";
 
 type WithdrawProps = {
   selectedChainSection: number;
@@ -76,7 +75,6 @@ const Withdraw = ({
   const dispatch = useAppDispatch();
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const chainSlice = useAppSelector(selectChainSlice);
-  const chargeSlice = useAppSelector(selectChargeSlice);
   const [nativeBalance, setNativeBalance] = React.useState<string>("0");
   const { address, connector } = useAccount();
   const config = useConfig();
@@ -102,28 +100,51 @@ const Withdraw = ({
   }, [address]);
 
   useEffect(() => {
-    dispatch(
-      fetchChargeWithdrawTokens(
-        appConfig.wrappedBridge.chains[selectedChainItem].chainId
-      )
-    );
-  }, [selectedChainItem]);
-
+    if (
+      !appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+        selectedTokenItem
+      ].isNative ||
+      !appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+        selectedTokenItem
+      ].isBridged
+    ) {
+      dispatch(
+        fetchLiquidity({
+          bridge: appConfig.wrappedBridge.chains[selectedChainItem].original,
+          contractAddress:
+            appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+              selectedTokenItem
+            ].address,
+          decimals:
+            appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+              selectedTokenItem
+            ].decimals,
+          rpcUrl: appConfig.wrappedBridge.chains[selectedChainItem].rpcUrl,
+        })
+      );
+    }
+  }, [selectedTokenItem, selectedChainItem]);
   useEffect(() => {
     if (address && selectedChainSection === 0) {
       if (pendingPromise) {
         pendingPromise.abort();
       }
-      console.log(chargeSlice.tokens[selectedTokenItem]);
+      const tokenChain =
+        appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+          selectedTokenItem
+        ].coinGeckoId;
+      const tokenFuse = appConfig.wrappedBridge.fuse.tokens.find(
+        (token) => token.coinGeckoId === tokenChain
+      );
       const promise =
-        chargeSlice.tokens[selectedTokenItem].isNative && chain?.id === fuse.id
+        (!tokenFuse?.address || tokenFuse.address === hex) &&
+        chain?.id === fuse.id
           ? dispatch(setNativeBalanceThunk(nativeBalance.toString()))
           : dispatch(
               fetchBalance({
                 address: address,
-                contractAddress: chargeSlice.tokens[selectedTokenItem]
-                  .address as `0x${string}`,
-                decimals: chargeSlice.tokens[selectedTokenItem].decimals,
+                contractAddress: tokenFuse?.address as `0x${string}`,
+                decimals: tokenFuse?.decimals as number,
                 rpc: "https://rpc.fuse.io",
               })
             );
@@ -137,7 +158,48 @@ const Withdraw = ({
     nativeBalance,
     chain,
   ]);
-
+  useEffect(() => {
+    if (
+      !appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+        selectedTokenItem
+      ].isNative &&
+      !balanceSlice.isLiquidityLoading &&
+      parseFloat(amount) > parseFloat(balanceSlice.liquidity) &&
+      parseFloat(amount) <= parseFloat(balanceSlice.balance)
+    ) {
+      dispatch(toggleLiquidityToast(true));
+      dispatch(
+        fetchAvailableLiquidityOnChains({
+          amount: amount,
+          token:
+            appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+              selectedTokenItem
+            ].symbol,
+        })
+      );
+      amplitude.track("Withdraw: Insufficient Liquidity", {
+        amount: parseFloat(amount),
+        network: appConfig.wrappedBridge.chains[selectedChainItem].name,
+        token:
+          appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+            selectedTokenItem
+          ].symbol,
+        available_liquidity: parseFloat(balanceSlice.liquidity),
+        walletType: connector ? walletType[connector.id] : undefined,
+        walletAddress: address,
+      });
+    } else if (
+      parseFloat(amount) === 0 ||
+      !amount ||
+      (!appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+        selectedTokenItem
+      ].isNative &&
+        !balanceSlice.isLiquidityLoading &&
+        parseFloat(amount) <= parseFloat(balanceSlice.liquidity))
+    ) {
+      dispatch(toggleLiquidityToast(false));
+    }
+  }, [balanceSlice.liquidity, amount]);
   useEffect(() => {
     if (chainSlice.chainId === 0) {
       dispatch(
@@ -153,7 +215,6 @@ const Withdraw = ({
       );
     }
   }, [chainSlice.chainId]);
-
   return (
     <>
       {!(isDisabledChain || isThirdPartyChain) && (
@@ -161,7 +222,7 @@ const Withdraw = ({
           <div className="flex bg-modal-bg rounded-[20px] p-6 mt-[30px] w-full justify-between items-center">
             <div className="flex flex-col w-full">
               <span className="font-semibold text-sm">
-                From
+                To
                 <Image
                   src={sFuse}
                   alt="sFuse"
@@ -195,7 +256,9 @@ const Withdraw = ({
                   items={[
                     {
                       heading: "Tokens",
-                      items: chargeSlice.tokens.map((coin, i) => {
+                      items: appConfig.wrappedBridge.chains[
+                        selectedChainItem
+                      ].tokens.map((coin, i) => {
                         return {
                           icon: coin.icon,
                           id: i,
@@ -211,14 +274,13 @@ const Withdraw = ({
                     setSelectedTokenSection(section);
                     setSelectedTokenItem(item);
                   }}
-                  isLoading={chargeSlice.isLoading}
                 />
               </div>
               <span className="text-sm font-medium">
                 Balance:{" "}
                 {balanceSlice.isBalanceLoading ||
-                (chargeSlice.tokens[selectedTokenItem].isNative &&
-                  chain?.id !== fuse.id) ||
+                chain?.id !==
+                  appConfig.wrappedBridge.chains[selectedChainItem].chainId ||
                 balanceSlice.isApprovalLoading ? (
                   <span className="px-10 py-1 ml-2 rounded-md animate-pulse bg-fuse-black/10"></span>
                 ) : (
@@ -473,9 +535,6 @@ const Withdraw = ({
             selectedItem={selectedChainItem}
             isHighlight={true}
             onClick={(section, item) => {
-              setSelectedTokenItem(0);
-              setSelectedChainSection(section);
-              setSelectedChainItem(item);
               if (section === 1) {
                 setDisplayButton(false);
                 setIsDisabledChain(true);
@@ -488,10 +547,12 @@ const Withdraw = ({
                 setDisplayButton(false);
                 setIsDisabledChain(false);
                 setIsThirdPartyChain(false);
+              } else {
+                setSelectedChainSection(section);
+                setSelectedChainItem(item);
               }
             }}
             size="sm"
-            isLoading={chargeSlice.isLoading}
           />
         </div>
         {!(isDisabledChain || isThirdPartyChain) && (
@@ -508,9 +569,9 @@ const Withdraw = ({
                 items={[
                   {
                     heading: "Tokens",
-                    items: chargeSlice.tokens[
-                      selectedTokenItem
-                    ].recieveTokens.map((coin, i) => {
+                    items: appConfig.wrappedBridge.chains[
+                      selectedChainItem
+                    ].tokens.map((coin, i) => {
                       return {
                         icon: coin.icon,
                         id: i,
@@ -519,14 +580,13 @@ const Withdraw = ({
                     }),
                   },
                 ]}
-                selectedSection={0}
-                selectedItem={0}
+                selectedSection={selectedTokenSection}
+                selectedItem={selectedTokenItem}
                 className="w-[30%]"
-                // onClick={(section, item) => {
-                //   setSelectedTokenSection(section);
-                //   setSelectedTokenItem(item);
-                // }}
-                isLoading={chargeSlice.isLoading}
+                onClick={(section, item) => {
+                  setSelectedTokenSection(section);
+                  setSelectedTokenItem(item);
+                }}
               />
             </div>
           </>

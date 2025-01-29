@@ -9,7 +9,12 @@ import fuseToken from "@/assets/tokenLogo.svg";
 import { appConfig } from "@/lib/config";
 import { selectBalanceSlice } from "@/store/balanceSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { selectContractSlice } from "@/store/contractSlice";
+import {
+  bridgeAndUnwrap,
+  bridgeNativeTokens,
+  bridgeWrappedTokens,
+  selectContractSlice,
+} from "@/store/contractSlice";
 import { setChain } from "@/store/chainSlice";
 import Button from "@/components/ui/Button";
 import { fetchBridgeTransactions } from "@/store/transactionsSlice";
@@ -24,7 +29,7 @@ import ToastPane from "@/components/bridge/ToastPane";
 import { useAccount, useBalance, useBlockNumber, useConfig } from "wagmi";
 import { fuse } from "viem/chains";
 import { getAccount, switchChain } from "wagmi/actions";
-import { hex } from "@/lib/helpers";
+import { hex, walletType } from "@/lib/helpers";
 import "@/styles/bridge.css";
 import {
   selectSelectedChainSlice,
@@ -32,9 +37,9 @@ import {
   setWithdrawChainItem,
 } from "@/store/selectedChainSlice";
 import { formatUnits } from "viem";
+import { getTokenOnFuse } from "@/lib/helper-bridge";
 import {
   initiateBridgeTransaction,
-  initiateWithdrawTransaction,
   selectChargeSlice,
 } from "@/store/chargeSlice";
 
@@ -68,7 +73,7 @@ const Home = () => {
   const [isDisabledChain, setIsDisabledChain] = useState(false);
   const [isThirdPartyChain, setIsThirdPartyChain] = useState(false);
   const [pendingPromise, setPendingPromise] = React.useState<any>();
-  const { address, isConnected } = useAccount();
+  const { address, connector, isConnected } = useAccount();
   const config = useConfig();
   const { chainId } = getAccount(config);
   const chain = config.chains.find((chain) => chain.id === chainId);
@@ -128,31 +133,121 @@ const Home = () => {
     });
   };
 
-  const withdraw = () => {
-    dispatch(
-      initiateWithdrawTransaction({
-        chainId:
+  const withdraw = (res: any) => {
+    if (res) {
+      if (
+        appConfig.wrappedBridge.chains[
+          selectedChainSlice.withdrawSelectedChainItem
+        ].tokens[withdrawSelectedTokenItem].isNative &&
+        appConfig.wrappedBridge.chains[
+          selectedChainSlice.withdrawSelectedChainItem
+        ].tokens[withdrawSelectedTokenItem].isBridged
+      ) {
+        dispatch(
+          bridgeNativeTokens({
+            address: address ?? hex,
+            amount: amount,
+            bridge:
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.withdrawSelectedChainItem
+              ].originalFuse,
+            decimals:
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.withdrawSelectedChainItem
+              ].tokens[withdrawSelectedTokenItem].decimals,
+            dstChainId:
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.withdrawSelectedChainItem
+              ].lzChainId,
+            srcChainId: 138,
+            symbol: "FUSE",
+            network:
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.withdrawSelectedChainItem
+              ].name,
+            tokenId: "fuse-network-token",
+            walletType: connector ? walletType[connector.id] : undefined,
+            selectedChainId: fuse.id,
+          })
+        );
+      } else if (
+        appConfig.wrappedBridge.chains[
+          selectedChainSlice.withdrawSelectedChainItem
+        ].tokens[withdrawSelectedTokenItem].isNative &&
+        !appConfig.wrappedBridge.chains[
+          selectedChainSlice.withdrawSelectedChainItem
+        ].tokens[withdrawSelectedTokenItem].isBridged
+      ) {
+        const token = getTokenOnFuse(
           appConfig.wrappedBridge.chains[
             selectedChainSlice.withdrawSelectedChainItem
-          ].chainId,
-        token: chargeSlice.tokens[withdrawSelectedTokenItem].symbol,
-        amount,
-        destinationWallet: address ?? hex,
-        isNative: chargeSlice.tokens[withdrawSelectedTokenItem].isNative,
-      })
-    );
+          ].tokens[withdrawSelectedTokenItem].coinGeckoId
+        );
+        dispatch(
+          bridgeAndUnwrap({
+            address: address ?? hex,
+            amount: amount,
+            bridge: appConfig.wrappedBridge.fuse.wrapped,
+            contractAddress: token?.address as `0x${string}`,
+            decimals: token?.decimals as number,
+            chainId:
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.withdrawSelectedChainItem
+              ].lzChainId,
+            symbol: token?.symbol as string,
+            srcChainId: 138,
+            network:
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.withdrawSelectedChainItem
+              ].name,
+            tokenId: token?.coinGeckoId as string,
+            walletType: connector ? walletType[connector.id] : undefined,
+            selectedChainId: fuse.id,
+          })
+        );
+      } else {
+        const token = getTokenOnFuse(
+          appConfig.wrappedBridge.chains[
+            selectedChainSlice.withdrawSelectedChainItem
+          ].tokens[withdrawSelectedTokenItem].coinGeckoId
+        );
+        dispatch(
+          bridgeWrappedTokens({
+            address: address ?? hex,
+            amount: amount,
+            bridge: appConfig.wrappedBridge.fuse.wrapped,
+            contractAddress: token?.address as `0x${string}`,
+            decimals: token?.decimals as number,
+            chainId:
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.withdrawSelectedChainItem
+              ].lzChainId,
+            symbol: token?.symbol as string,
+            srcChainId: 138,
+            network:
+              appConfig.wrappedBridge.chains[
+                selectedChainSlice.withdrawSelectedChainItem
+              ].name,
+            tokenId:
+              appConfig.wrappedBridge.fuse.tokens[withdrawSelectedTokenItem]
+                .coinGeckoId,
+            walletType: connector ? walletType[connector.id] : undefined,
+          })
+        );
+      }
+    }
   };
 
   const handleWithdraw = () => {
     if (chain?.id === fuse.id) {
-      withdraw();
+      withdraw(true);
       return;
     }
     switchChain(config, {
       chainId: fuse.id,
     }).then((res) => {
       if (res) {
-        withdraw();
+        withdraw(res);
       }
     });
   };
@@ -401,7 +496,11 @@ const Home = () => {
                     text={
                       parseFloat(amount) > parseFloat(balanceSlice.balance)
                         ? `Insufficient ${
-                            chargeSlice.tokens[
+                            appConfig.wrappedBridge.chains[
+                              selected
+                                ? selectedChainSlice.withdrawSelectedChainItem
+                                : selectedChainSlice.depositSelectedChainItem
+                            ].tokens[
                               selected
                                 ? withdrawSelectedTokenItem
                                 : depositSelectedTokenItem
