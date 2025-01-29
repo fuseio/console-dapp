@@ -12,7 +12,9 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import {
   bridgeAndUnwrap,
   bridgeNativeTokens,
+  bridgeOriginalTokens,
   bridgeWrappedTokens,
+  increaseERC20Allowance,
   selectContractSlice,
 } from "@/store/contractSlice";
 import { setChain } from "@/store/chainSlice";
@@ -37,6 +39,7 @@ import {
   setWithdrawChainItem,
 } from "@/store/selectedChainSlice";
 import { formatUnits } from "viem";
+import Image from "next/image";
 import { getTokenOnFuse } from "@/lib/helper-bridge";
 import {
   initiateBridgeTransaction,
@@ -101,8 +104,92 @@ const Home = () => {
       setAmount("");
     }
   }, [contractSlice.isBridgeLoading]);
+  const increaseAllowance = (res: any, selectedChainId: number) => {
+    if (res && selected === 0)
+      dispatch(
+        increaseERC20Allowance({
+          contractAddress:
+            appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens[depositSelectedTokenItem].address,
+          amount: amount,
+          bridge:
+            appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens[depositSelectedTokenItem].isNative &&
+            appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens[depositSelectedTokenItem].isBridged
+              ? appConfig.wrappedBridge.chains[
+                  selectedChainSlice.depositSelectedChainItem
+                ].wrapped
+              : appConfig.wrappedBridge.chains[
+                  selectedChainSlice.depositSelectedChainItem
+                ].original,
+          decimals:
+            appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens[depositSelectedTokenItem].decimals,
+          address: address ?? hex,
+          type: 0,
+          network:
+            appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].name,
+          token:
+            appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens[depositSelectedTokenItem].symbol,
+          tokenId:
+            appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens[depositSelectedTokenItem].coinGeckoId,
+          selectedChainId,
+          walletType: connector ? walletType[connector.id] : undefined,
+        })
+      );
+    else if (res && selected === 1) {
+      const token = getTokenOnFuse(
+        appConfig.wrappedBridge.chains[
+          selectedChainSlice.withdrawSelectedChainItem
+        ].tokens[withdrawSelectedTokenItem].coinGeckoId
+      );
+      dispatch(
+        increaseERC20Allowance({
+          contractAddress: token?.address as `0x${string}`,
+          amount: amount,
+          bridge: appConfig.wrappedBridge.fuse.wrapped,
+          decimals: token?.decimals as number,
+          address: address ?? hex,
+          type: 1,
+          network: "Fuse",
+          token: token?.symbol as string,
+          tokenId: token?.coinGeckoId as string,
+          selectedChainId,
+          walletType: connector ? walletType[connector.id] : undefined,
+        })
+      );
+    }
+  };
+  const handleIncreaseAllowance = () => {
+    const selectedChainId =
+      selected === 0
+        ? appConfig.wrappedBridge.chains[
+            selectedChainSlice.depositSelectedChainItem
+          ].chainId
+        : fuse.id;
+    if (selectedChainId == chain?.id) {
+      increaseAllowance(true, selectedChainId);
+      return;
+    }
+    switchChain(config, { chainId: selectedChainId }).then((res) => {
+      if (res) {
+        increaseAllowance(res, selectedChainId);
+      }
+    });
+  };
 
-  const deposit = () => {
+  const deposit = (res: any, selectedChainId: number) => {
     dispatch(
       initiateBridgeTransaction({
         chainId:
@@ -122,12 +209,12 @@ const Home = () => {
         selectedChainSlice.depositSelectedChainItem
       ].chainId;
     if (selectedChainId == chain?.id) {
-      deposit();
+      deposit(true, selectedChainId);
       return;
     }
     switchChain(config, { chainId: selectedChainId }).then((res) => {
       if (res) {
-        deposit();
+        deposit(res, selectedChainId);
       }
     });
   };

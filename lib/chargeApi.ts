@@ -47,7 +47,7 @@ export const initiateBridge = async (
   destinationWallet: string
 ): Promise<BridgeResponseType> => {
   return new Promise((resolve, reject) => {
-    const data = {
+    let data = {
       chainId,
       token,
       amount,

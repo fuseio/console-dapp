@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import down from "@/assets/dropdown-down.svg";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import { motion } from "framer-motion";
@@ -60,7 +60,7 @@ const Dropdown = ({
       setIsOpen(false);
     }
   });
-
+  
   const highlight = (currentSection: number, currentItem: number) => {
     if (!isHighlight) {
       return false;
