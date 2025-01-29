@@ -220,7 +220,7 @@ const Home = () => {
 
   function referralLink() {
     const host = !IS_SERVER ? window?.location?.host : ""
-    return `${host}/airdrop?ref=${user.referralCode}`
+    return `${host}/points?ref=${user.referralCode}`
   }
 
   useEffect(() => {
