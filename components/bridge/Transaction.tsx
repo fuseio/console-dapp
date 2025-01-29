@@ -24,7 +24,7 @@ const Transaction = ({
       className="flex flex-col justify-between px-10 md:px-4 py-5 md:py-3 bg-transaction-bg w-full rounded-md mt-3 border-border-gray border-solid border font-medium cursor-pointer text-sm min-h-16 items-center"
       onClick={() => {
         window.open(
-          getScanLink(transactionHashes.srcChainId, transactionHashes.transactionHash),
+          getScanLink(transactionHashes.srcChainId, transactionHashes.hash),
           "_blank"
         );
       }}

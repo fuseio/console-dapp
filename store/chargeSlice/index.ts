@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
 import { fetchSupportedTokensByChain, initiateBridge } from "@/lib/chargeApi";
-import { sendNative, transferToken } from "@/lib/erc20";
+import { transferToken } from "@/lib/erc20";
 import { setLastTransaction } from "../transactionsSlice";
 
 export interface TokensStateType {
@@ -68,50 +68,34 @@ export const initiateBridgeTransaction = createAsyncThunk(
       token,
       amount,
       destinationWallet,
-      isNative,
     }: {
       chainId: number;
       token: string;
       amount: string;
       destinationWallet: string;
-      isNative?: boolean;
     },
     thunkAPI
   ) => {
     return new Promise<any>((resolve, reject) => {
       initiateBridge(chainId.toString(), token, amount, destinationWallet)
         .then((data) => {
-          if (isNative) {
-            sendNative(data.walletAddress, amount, chainId).then((txHash) => {
-              thunkAPI.dispatch(
-                setLastTransaction({
-                  id: data.paymentId,
-                  srcChainId: 122,
-                  dstChainId: Number(data.chainId),
-                  amount: `${amount} ${token}`,
-                })
-              );
-              resolve(txHash);
-            });
-          } else {
-            transferToken(
-              data.tokenAddress,
-              data.walletAddress,
-              amount,
-              data.tokenDecimals,
-              chainId
-            ).then((txHash) => {
-              thunkAPI.dispatch(
-                setLastTransaction({
-                  id: data.paymentId,
-                  srcChainId: 122,
-                  dstChainId: Number(data.chainId),
-                  amount: `${amount} ${token}`,
-                })
-              );
-              resolve(txHash);
-            });
-          }
+          transferToken(
+            data.tokenAddress,
+            data.walletAddress,
+            amount,
+            data.tokenDecimals,
+            chainId
+          ).then((txHash) => {
+            thunkAPI.dispatch(
+              setLastTransaction({
+                id: data.paymentId,
+                srcChainId: 122,
+                dstChainId: Number(data.chainId),
+                amount: `${amount} ${token}`,
+              })
+            );
+            resolve(txHash);
+          });
         })
         .catch((error) => {
           reject(error);

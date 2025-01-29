@@ -37,11 +37,11 @@ const LastTransactionToast = () => {
           <div
             className="flex sm:flex-col sm:gap-2 text-sm text-secondary-gray mt-3 md:text-xs md:justify-between cursor-pointer"
             onClick={() => {
-              if (!lastTransaction.bridgeTransactionHash) return;
+              if (!lastTransaction.bridgeHash) return;
               window.open(
                 getScanLink(
                   getChain(lastTransaction.dstChainId)?.lzChainId as number,
-                  lastTransaction.bridgeTransactionHash
+                  lastTransaction.bridgeHash
                 ),
                 "_blank"
               );

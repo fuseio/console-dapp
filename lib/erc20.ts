@@ -72,32 +72,6 @@ export const approveSpend = async (
   return tx;
 };
 
-export const sendNative = async (
-  to: Address,
-  amount: string,
-  selectedChainId: number
-) => {
-  const walletClient = await getWalletClient(config, {
-    chainId: selectedChainId,
-  });
-  let tx: Address = hex;
-  if (walletClient) {
-    tx = await walletClient.sendTransaction({
-      to,
-      value: parseUnits(amount, 18),
-    });
-  }
-  try {
-    await waitForTransactionReceipt(config, {
-      chainId: selectedChainId,
-      hash: tx,
-    });
-  } catch (e) {
-    console.log(e);
-  }
-  return tx;
-};
-
 export const transferToken = async (
   tokenAddress: Address,
   to: Address,
