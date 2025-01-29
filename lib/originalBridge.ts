@@ -176,12 +176,3 @@ export const estimateOriginalNativeFee = async (
   const increasedNativeFee = (Number(nativeFee) * 1.2).toFixed(0);
   return increasedNativeFee;
 };
-
-export const estimateNativeFee = async (rpcUrl: string, isNative?: boolean) => {
-  const client = publicClient(rpcUrl);
-  const gasPrice = await client.getGasPrice();
-  if (isNative) {
-    return parseFloat(ethers.utils.formatEther(gasPrice)) * 22000;
-  }
-  return parseFloat(ethers.utils.formatEther(gasPrice)) * 70000;
-};

@@ -19,7 +19,7 @@ const LastTransactionToast = () => {
   const lastTransaction = transactionsSlice.lastTransaction;
   const dispatch = useAppDispatch();
   return lastTransaction ? (
-    <div className="w-full rounded-[20px] border-[#8054FF66]/40 border-[1px] bg-[#EDEBFF] mt-4 p-4">
+    <div className="w-full rounded-md border-[#8054FF66]/40 border-[1px] bg-[#EDEBFF] mt-4 p-4">
       <div className="flex">
         <Image src={historyPurple} alt="history" className="h-6 w-[5%]" />
         <div className="flex flex-col w-[95%] ml-3">

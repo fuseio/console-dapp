@@ -22,10 +22,7 @@ import AddToken from "@/components/bridge/AddToken";
 import { getAccount } from "wagmi/actions";
 import { Address, formatUnits } from "viem";
 import Image from "next/image";
-import {
-  fetchChargeBridgeTokens,
-  selectChargeSlice,
-} from "@/store/chargeSlice";
+import { fetchChargeBridgeTokens, selectChargeSlice } from "@/store/chargeSlice";
 
 type DepositProps = {
   selectedChainSection: number;
@@ -96,9 +93,7 @@ const Deposit = ({
   const handleDropdownSection = (item: number) => {
     setIsExchange(false);
     dispatch(setChain(appConfig.wrappedBridge.chains[item]));
-    dispatch(
-      fetchChargeBridgeTokens(appConfig.wrappedBridge.chains[item].chainId)
-    );
+    dispatch(fetchChargeBridgeTokens(appConfig.wrappedBridge.chains[item].chainId));
     setDisplayButton(true);
     setIsDisabledChain(false);
     setIsThirdPartyChain(false);
@@ -120,7 +115,7 @@ const Deposit = ({
       }
     }
     updateBalance();
-  }, [address, selectedChainItem, chainId]);
+  }, [address, selectedChainItem]);
 
   useEffect(() => {
     if (chargeSlice.isLoading) {
@@ -152,9 +147,7 @@ const Deposit = ({
     chainSlice.chainId,
     selectedChainSection,
     nativeBalance,
-    chainId
   ]);
-  
   useEffect(() => {
     if (chainSlice.chainId === 0 && selectedChainSection === 0) {
       dispatch(setChain(appConfig.wrappedBridge.chains[selectedChainItem]));
@@ -531,17 +524,9 @@ const Deposit = ({
               <div className="flex w-full items-center mt-2">
                 <div className=" pe-4 md:p-2 rounded-s-md w-[70%] flex items-center">
                   <div className="w-full bg-modal-bg focus:outline-none text-[34px] font-semibold">
-                    <input
-                      type="text"
-                      className="w-full bg-modal-bg focus:outline-none text-[34px] font-semibold"
-                      placeholder="0.00"
-                      value={
-                        amount && !isNaN(parseFloat(amount))
-                          ? parseFloat(amount)
-                          : "0.0"
-                      }
-                      readOnly
-                    />
+                    {amount && !isNaN(parseFloat(amount))
+                      ? parseFloat(amount)
+                      : "0.0"}
                   </div>
                 </div>
                 <Dropdown

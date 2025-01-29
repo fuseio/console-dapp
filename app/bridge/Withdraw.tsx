@@ -114,6 +114,7 @@ const Withdraw = ({
       if (pendingPromise) {
         pendingPromise.abort();
       }
+      console.log(chargeSlice.tokens[selectedTokenItem]);
       const promise =
         chargeSlice.tokens[selectedTokenItem].isNative && chain?.id === fuse.id
           ? dispatch(setNativeBalanceThunk(nativeBalance.toString()))
@@ -498,17 +499,9 @@ const Withdraw = ({
             <div className="flex w-full items-center mt-2">
               <div className="pt-1 pe-4 md:p-2 rounded-s-md w-[70%] flex items-center">
                 <div className="w-full bg-modal-bg focus:outline-none text-[34px] font-semibold">
-                  <input
-                    type="text"
-                    className="w-full bg-modal-bg focus:outline-none text-[34px] font-semibold"
-                    placeholder="0.00"
-                    value={
-                      amount && !isNaN(parseFloat(amount))
-                        ? parseFloat(amount)
-                        : "0.0"
-                    }
-                    readOnly
-                  />
+                  {amount && !isNaN(parseFloat(amount))
+                    ? parseFloat(amount)
+                    : "0.0"}
                 </div>
               </div>
               <Dropdown
