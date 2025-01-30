@@ -1,22 +1,24 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
 import { Signer, ethers } from "ethers";
-import { FuseSDK } from "@fuseio/fusebox-web-sdk";
+import { FuseSDK, OwnerWalletClient } from "@fuseio/fusebox-web-sdk";
+import { SmartAccountClient } from "permissionless";
 import { hex, splitSecretKey } from "@/lib/helpers";
 import { Operator, OperatorContactDetail, SignData, Withdraw } from "@/lib/types";
-import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
+import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreateOperatorWallet, postCreatePaymaster, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
-import { parseEther, parseUnits } from "ethers/lib/utils";
 import { CONFIG, NEXT_PUBLIC_FUSE_API_BASE_URL } from "@/lib/config";
 import { PaymasterAbi } from "@/lib/abi/Paymaster";
 import { getSponsorIdBalance } from "@/lib/contractInteract";
 import * as amplitude from "@amplitude/analytics-browser";
 import { getERC20Balance } from "@/lib/erc20";
 import { ERC20ABI } from "@/lib/abi/ERC20";
+import { Account, parseEther, parseUnits } from "viem";
 
 const initOperator: Operator = {
   user: {
+    id: "",
     name: "",
     email: "",
     auth0Id: "",
@@ -213,23 +215,49 @@ export const createOperator = createAsyncThunk<
   any,
   {
     operatorContactDetail: OperatorContactDetail;
+    account: Account;
   }
 >(
   "OPERATOR/CREATE_OPERATOR",
   async (
     {
       operatorContactDetail,
+      account
     }: {
       operatorContactDetail: OperatorContactDetail;
+      account: Account;
     },
   ) => {
     try {
       const operator = await postCreateOperator(operatorContactDetail)
-      if (operator) {
-        return operator;
-      } else {
+      if (!operator) {
         throw new Error("Operator not found");
       }
+
+      const fuseSDK = await FuseSDK.init(
+        operator.project.publicKey,
+        account,
+        {
+          baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
+        }
+      );
+      const fuseClient = fuseSDK.client as SmartAccountClient
+      const smartWalletAddress = fuseClient.account?.address
+      if (!smartWalletAddress) {
+        throw new Error("Smart wallet address not found");
+      }
+
+      const operatorWallet = await postCreateOperatorWallet({
+        ownerId: operator.user.id,
+        smartWalletAddress
+      })
+      if (!operatorWallet) {
+        throw new Error("Operator wallet not found");
+      }
+
+      operator.user.smartWalletAddress = operatorWallet.smartWalletAddress
+
+      return operator;
     } catch (error) {
       console.log(error);
       throw error;
@@ -419,8 +447,7 @@ export const fetchErc20Balance = createAsyncThunk(
 export const withdraw = createAsyncThunk<
   any,
   {
-    signer: Signer;
-    signature: string;
+    walletClient: OwnerWalletClient;
     amount: string;
     to: string;
     decimals: number;
@@ -433,8 +460,7 @@ export const withdraw = createAsyncThunk<
   "OPERATOR/WITHDRAW",
   async (
     {
-      signer,
-      signature,
+      walletClient,
       amount,
       to,
       decimals,
@@ -442,8 +468,7 @@ export const withdraw = createAsyncThunk<
       coinGeckoId,
       contractAddress,
     }: {
-      signer: Signer;
-      signature: string;
+      walletClient: OwnerWalletClient;
       amount: string;
       to: string;
       decimals: number;
@@ -457,23 +482,19 @@ export const withdraw = createAsyncThunk<
       const state = thunkAPI.getState();
       const operatorState: OperatorStateType = state.operator;
 
-      let recipient = to;
-      let value = parseEther(amount);
-      let data = Uint8Array.from([]);
+      let call: any = {
+        to,
+        value: parseEther(amount)
+      }
       let withPaymaster = false;
 
       if (contractAddress) {
-        const erc20Contract = new ethers.Contract(contractAddress as string, ERC20ABI);
-        recipient = contractAddress;
-        value = parseEther("0");
-        data = new Uint8Array(
-          ethers.utils.arrayify(
-            erc20Contract.interface.encodeFunctionData(
-              "transfer",
-              [to, parseUnits(amount, decimals)]
-            )
-          )
-        );
+        call = {
+          abi: ERC20ABI,
+          functionName: 'transfer',
+          to: contractAddress,
+          args: [to, parseUnits(amount, decimals)]
+        }
       }
 
       if (operatorState.isActivated) {
@@ -482,22 +503,22 @@ export const withdraw = createAsyncThunk<
 
       const fuseSDK = await FuseSDK.init(
         operatorState.operator.project.publicKey,
-        signer,
+        walletClient,
         {
           withPaymaster,
           baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
-          signature
         }
       );
+      const fuseClient = fuseSDK.client as SmartAccountClient
 
-      const userOp = await fuseSDK.callContract(
-        recipient,
-        value,
-        data
-      );
-      const result = await userOp?.wait();
-      const transactionHash = result?.transactionHash;
+      const userOpHash = await fuseClient.sendUserOperation({
+        calls: [call],
+      })
+      const userOpReceipt = await fuseClient.waitForUserOperationReceipt({
+        hash: userOpHash,
+      })
 
+      const transactionHash = userOpReceipt.receipt.transactionHash;
       if (transactionHash) {
         return { amount, token, coinGeckoId };
       } else {

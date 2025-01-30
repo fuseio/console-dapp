@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { CONFIG, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL, NEXT_PUBLIC_FUSE_API_BASE_URL } from './config'
-import { DelegatedAmountsByDelegators, DelegatedAmountsRequest, Operator, OperatorContactDetail, Paymaster, SignData, ValidatorResponse } from "./types";
+import { DelegatedAmountsByDelegators, DelegatedAmountsRequest, Operator, OperatorContactDetail, OperatorWallet, Paymaster, SignData, ValidatorResponse } from "./types";
 import { Address } from "viem";
 
 export const fetchAllNodes = () =>
@@ -86,6 +86,16 @@ export const postCreateOperator = async (operatorContactDetail: OperatorContactD
     return response.data
 }
 
+export const postCreateOperatorWallet = async (operatorWallet: OperatorWallet): Promise<OperatorWallet> => {
+    const response = await axios.post(
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/wallet`,
+        operatorWallet,
+        {
+            withCredentials: true
+        }
+    )
+    return response.data
+}
 
 export const postCreateApiSecretKey = async (projectId: string): Promise<{ secretKey: string }> => {
     const response = await axios.post(

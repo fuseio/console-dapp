@@ -300,6 +300,12 @@ export interface OperatorContactDetail {
   name?: string;
 }
 
+export interface OperatorWallet {
+  ownerId: string;
+  smartWalletAddress: Address;
+  isActivated?: boolean;
+}
+
 export interface Withdraw {
   amount: string;
   token: string;
@@ -307,6 +313,7 @@ export interface Withdraw {
 }
 
 export interface User {
+  id: string;
   name: string;
   email: string;
   auth0Id: string;

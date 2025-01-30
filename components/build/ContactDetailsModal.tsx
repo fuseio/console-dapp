@@ -7,6 +7,7 @@ import Image from "next/image";
 import close from "@/assets/close.svg";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useWalletClient } from "wagmi";
 
 type ErrorProps = {
   touched: boolean | undefined;
@@ -43,6 +44,7 @@ const Error = ({ touched, error }: ErrorProps) => {
 
 const ContactDetailsModal = (): JSX.Element => {
   const dispatch = useAppDispatch();
+  const walletClient = useWalletClient()
 
   useEffect(() => {
     window.addEventListener("click", (e) => {
@@ -73,9 +75,16 @@ const ContactDetailsModal = (): JSX.Element => {
       dispatch(setOperatorContactDetail(values));
       localStorage.setItem("Fuse-operatorContactDetail", JSON.stringify(values));
 
+      const account = walletClient.data?.account;
+      if(!account) {
+        console.log("WalletClient Account not found")
+        return;
+      }
+
       dispatch(withRefreshToken(() =>
         dispatch(createOperator({
           operatorContactDetail: values,
+          account
         }))
       ))
     },
