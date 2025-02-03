@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useBlockNumber, useSignMessage } from "wagmi";
 import { fuse } from "wagmi/chains";
-import { checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, validateOperator, withRefreshToken } from "@/store/operatorSlice";
+import { checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, generateSecretApiKey, selectOperatorSlice, setIsContactDetailsModalOpen, setIsRollSecretKeyModalOpen, setIsSubscriptionModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, validateOperator, withRefreshToken } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
@@ -31,6 +31,7 @@ import hide from "@/assets/hide.svg";
 import { formatUnits } from "viem";
 import { SignMessageVariables } from "wagmi/query";
 import contactSupport from "@/assets/contact-support.svg";
+import SubscriptionModal from "@/components/dashboard/SubscriptionModal";
 
 type CreateOperatorWalletProps = {
   isValidated: boolean;
@@ -216,7 +217,7 @@ const Home = () => {
     address: operatorSlice.operator.user.smartWalletAddress,
     chainId: fuse.id,
   });
-  const totalTransaction = 1000;
+  const totalTransaction = operatorSlice.isActivated ? 1_000_000 : 1000;
   const { isPending, signMessage } = useSignMessage({
     mutation: {
       onSuccess(data) {
@@ -284,6 +285,7 @@ const Home = () => {
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TopupAccountModal />
+      <SubscriptionModal />
       <WithdrawModal balance={formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0"} />
       <TopupPaymasterModal balance={formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0"} />
       <YourSecretKeyModal />
@@ -318,6 +320,19 @@ const Home = () => {
             </div>
           </div>
         </div>
+        {(operatorSlice.isAuthenticated && operatorSlice.isSubscribed) && (
+          <div className="flex flex-row md:flex-col items-center md:text-center gap-7 md:gap-2 bg-success rounded-[20px] px-[30px] py-[18px] mb-[30px] border-[0.5px] border-star-dust-alpha-70">
+            <Image
+              src={info}
+              alt="info"
+              width={32}
+              height={32}
+            />
+            <p className="font-medium">
+              Congratulations! your operator account basic plan is active
+            </p>
+          </div>
+        )}
         {(operatorSlice.isAuthenticated && !operatorSlice.isActivated) &&
           <div className="flex flex-row md:flex-col gap-4 justify-between items-center bg-lemon-chiffon rounded-[20px] px-[30px] py-[18px] mb-[30px] border-[0.5px] border-star-dust-alpha-70">
             <div className="flex flex-row md:flex-col items-center md:text-center gap-7 md:gap-2">
@@ -328,15 +343,15 @@ const Home = () => {
                 height={32}
               />
               <p className="font-medium">
-                To activate Starter plan and get an API key it is required to deposit at least 10 FUSE to the Account balance
+                Get access to all services on Fuse
               </p>
             </div>
             <Button
-              text="Add funds"
+              text="Upgrade"
               className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black hover:text-black hover:bg-white rounded-full"
               padding="py-3.5 px-[38px]"
               onClick={() => {
-                dispatch(setIsTopupAccountModalOpen(true));
+                dispatch(setIsSubscriptionModalOpen(true));
               }}
             />
           </div>

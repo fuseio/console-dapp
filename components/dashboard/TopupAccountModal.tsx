@@ -78,8 +78,8 @@ const TopupAccountModal = (): JSX.Element => {
                   <p className="text-3xl leading-none font-bold">
                     Top up account balance
                   </p>
-                  <p className="text-text-heading-gray max-w-[461.35px]">
-                    To activate your account send at least 10 FUSE tokens to your smart wallet
+                  <p className="text-text-heading-gray max-w-md">
+                    Deposit FUSE, USDC, or any other token to your smart wallet
                     address on the Fuse network. You can always withdraw the funds.
                   </p>
                 </div>

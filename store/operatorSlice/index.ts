@@ -3,12 +3,12 @@ import { AppState } from "../rootReducer";
 import { Signer, ethers } from "ethers";
 import { FuseSDK, OwnerWalletClient } from "@fuseio/fusebox-web-sdk";
 import { SmartAccountClient } from "permissionless";
-import { hex, splitSecretKey } from "@/lib/helpers";
+import { hex, splitSecretKey, subscriptionInfo } from "@/lib/helpers";
 import { Operator, OperatorContactDetail, SignData, Withdraw } from "@/lib/types";
-import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreateOperatorWallet, postCreatePaymaster, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
+import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreateOperatorWallet, postCreatePaymaster, postOperatorSubscription, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
-import { CONFIG, NEXT_PUBLIC_FUSE_API_BASE_URL } from "@/lib/config";
+import { CONFIG, NEXT_PUBLIC_FUSE_API_BASE_URL, NEXT_PUBLIC_PAYMASTER_FUNDER_ADDRESS } from "@/lib/config";
 import { PaymasterAbi } from "@/lib/abi/Paymaster";
 import { getSponsorIdBalance } from "@/lib/contractInteract";
 import * as amplitude from "@amplitude/analytics-browser";
@@ -86,6 +86,9 @@ export interface OperatorStateType {
   withdraw: Withdraw;
   operatorContactDetail: OperatorContactDetail;
   operator: Operator;
+  isSubscriptionModalOpen: boolean;
+  isSubscribing: boolean;
+  isSubscribed: boolean;
 }
 
 const INIT_STATE: OperatorStateType = {
@@ -125,6 +128,9 @@ const INIT_STATE: OperatorStateType = {
   withdraw: initWithdraw,
   operatorContactDetail: initOperatorContactDetail,
   operator: initOperator,
+  isSubscriptionModalOpen: false,
+  isSubscribing: false,
+  isSubscribed: false,
 };
 
 export const checkOperator = createAsyncThunk(
@@ -566,6 +572,70 @@ export const fetchSponsoredTransactions = createAsyncThunk(
   }
 );
 
+export const subscription = createAsyncThunk<
+  any,
+  {
+    walletClient: OwnerWalletClient;
+  },
+  { state: RootState }
+>(
+  "OPERATOR/SUBSCRIPTION",
+  async (
+    {
+      walletClient,
+    }: {
+      walletClient: OwnerWalletClient;
+    },
+    thunkAPI
+  ) => {
+    try {
+      const state = thunkAPI.getState();
+      const operatorState: OperatorStateType = state.operator;
+      const recipient = NEXT_PUBLIC_PAYMASTER_FUNDER_ADDRESS as Address;
+      const amount = parseUnits(
+        (subscriptionInfo.payment * subscriptionInfo.advance).toString(),
+        subscriptionInfo.decimals
+      );
+
+      const fuseSDK = await FuseSDK.init(
+        operatorState.operator.project.publicKey,
+        walletClient,
+        {
+          withPaymaster: true,
+          baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
+        }
+      );
+      const fuseClient = fuseSDK.client as SmartAccountClient
+
+      const userOpHash = await fuseClient.sendUserOperation({
+        calls: [{
+          abi: ERC20ABI,
+          functionName: 'increaseAllowance',
+          to: subscriptionInfo.usdcAddress,
+          args: [recipient, amount]
+        }],
+      })
+      const userOpReceipt = await fuseClient.waitForUserOperationReceipt({
+        hash: userOpHash,
+      })
+
+      const transactionHash = userOpReceipt.receipt.transactionHash;
+      if (!transactionHash) {
+        throw new Error("Transaction failed");
+      }
+
+      const invoice = await postOperatorSubscription()
+      if (!invoice) {
+        throw new Error("Invoice not found");
+      }
+      return invoice;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
 const operatorSlice = createSlice({
   name: "OPERATOR_STATE",
   initialState: INIT_STATE,
@@ -618,6 +688,9 @@ const operatorSlice = createSlice({
     },
     setOperator: (state, action: PayloadAction<Operator>) => {
       state.operator = action.payload
+    },
+    setIsSubscriptionModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isSubscriptionModalOpen = action.payload
     },
     setLogout: (state) => {
       state.isOperatorExist = false;
@@ -811,6 +884,19 @@ const operatorSlice = createSlice({
       .addCase(fetchSponsoredTransactions.rejected, (state) => {
         state.isFetchingSponsoredTransactions = false;
       })
+      .addCase(subscription.pending, (state) => {
+        state.isSubscribing = true;
+      })
+      .addCase(subscription.fulfilled, (state) => {
+        state.isSubscribing = false;
+        state.isSubscriptionModalOpen = false;
+        state.isSubscribed = true;
+        state.isActivated = true;
+        localStorage.setItem("Fuse-isActivated", "true");
+      })
+      .addCase(subscription.rejected, (state) => {
+        state.isSubscribing = false;
+      })
   },
 });
 
@@ -834,7 +920,8 @@ export const {
   setOperatorContactDetail,
   setOperator,
   setLogout,
-  setHydrate
+  setHydrate,
+  setIsSubscriptionModalOpen,
 } = operatorSlice.actions;
 
 export default operatorSlice.reducer;

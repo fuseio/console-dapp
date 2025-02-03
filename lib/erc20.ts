@@ -3,6 +3,7 @@ import { Address, createPublicClient, http, parseAbi, parseUnits } from "viem";
 import { getWalletClient, waitForTransactionReceipt } from "wagmi/actions";
 import { hex } from "./helpers";
 import { config } from "./wagmi";
+import { fuse } from "viem/chains";
 
 const publicClient = (rpcUrl: string) => {
   return createPublicClient({
@@ -13,7 +14,7 @@ const publicClient = (rpcUrl: string) => {
 export const getERC20Balance = async (
   contractAddress: Address,
   address: Address,
-  rpcUrl: string
+  rpcUrl: string = fuse.rpcUrls.default.http[0]
 ) => {
   const balance = await publicClient(rpcUrl).readContract({
     address: contractAddress,

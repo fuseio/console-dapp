@@ -1,5 +1,5 @@
 import { TransactionType } from "@/store/transactionsSlice";
-import { WalletType } from "./types";
+import { SubscriptionInfo, WalletType } from "./types";
 import { chains, fuseChain } from "./chains";
 
 export const eclipseAddress = (address: string): string => {
@@ -98,3 +98,10 @@ export const getChain = (chainId: number) => {
 export const evmDecimals = 18;
 
 export const screenMediumWidth = 768;
+
+export const subscriptionInfo: SubscriptionInfo = {
+  payment: 50,
+  advance: 12,
+  decimals: 6,
+  usdcAddress: "0x28C3d1cD466Ba22f6cae51b1a4692a831696391A"
+}
