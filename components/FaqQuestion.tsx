@@ -6,7 +6,7 @@ import Image from "next/image";
 
 type FaqQuestionProps = {
   question: string;
-  answer: JSX.Element;
+  answer: JSX.Element | string;
   className?: string;
 };
 
