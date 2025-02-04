@@ -1,29 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
-import Topbar from "@/components/Topbar";
-import Home from "./Home";
-
-import { useAppDispatch } from "@/store/store";
-import { setSelectedNavbar } from "@/store/navbarSlice";
-import Footer from "@/components/Footer";
-import NoLicenseModal from "@/components/nodes/NoLicenseModal";
+import { useRouter } from 'next/navigation'
 
 const Nodes = () => {
-  const dispatch = useAppDispatch();
+  const router = useRouter()
 
   useEffect(() => {
-    dispatch(setSelectedNavbar("nodes"));
-  }, [dispatch])
-
-  return (
-    <div className="font-mona w-full min-h-screen flex-col flex items-center bg-light-gray">
-      <NoLicenseModal />
-      <Topbar />
-      <Home />
-      <Footer />
-    </div>
-  );
+    router.push("/")
+  }, [router])
 };
 
-export default Nodes;
+export default Nodes

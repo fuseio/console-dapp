@@ -40,7 +40,7 @@ const Header = () => {
   return (
     <header className="flex justify-between items-center">
       <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
-        Nodes
+        Ember Nodes
       </h1>
       <Link
         href=""
