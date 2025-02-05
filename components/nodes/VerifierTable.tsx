@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
+import Image, { StaticImageData } from 'next/image';
 import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Filter as FilterIcon, Search, Info } from 'lucide-react';
 import {
   Column,
@@ -18,13 +19,12 @@ import {
 import { Verifier } from '@/lib/types';
 import { useOutsideClick } from '@/lib/hooks/useOutsideClick';
 import { eclipseAddress } from '@/lib/helpers';
+import { useAppDispatch, useAppSelector } from '@/store/store';
+import { selectNodesSlice, setIsNoCapacityModalOpen, setIsNoLicenseModalOpen } from '@/store/nodesSlice';
 
 import nodeops from '@/assets/nodeops.svg';
 import easeflow from '@/assets/easeflow.png';
 import profile from '@/assets/profile.svg';
-import Image, { StaticImageData } from 'next/image';
-import { useAppDispatch } from '@/store/store';
-import { setIsNoLicenseModalOpen } from '@/store/nodesSlice';
 
 declare module '@tanstack/react-table' {
   // see: https://github.com/TanStack/table/discussions/5222
@@ -117,6 +117,7 @@ const renderPageNumbers = (table: Table<Verifier>) => {
 const VerifierTable = () => {
   const [filterOpen, setFilterOpen] = useState("");
   const dispatch = useAppDispatch();
+  const nodesSlice = useAppSelector(selectNodesSlice);
 
   const columns = useMemo<ColumnDef<Verifier, any>[]>(
     () => [
@@ -200,7 +201,13 @@ const VerifierTable = () => {
         header: () => '',
         cell: (info) => (
           <button
-            onClick={() => info.row.original.status !== 'Active' && dispatch(setIsNoLicenseModalOpen(true))}
+            onClick={() => {
+              if (info.row.original.receivedDelegations === 100) {
+                dispatch(setIsNoCapacityModalOpen(true));
+              } else if (!nodesSlice.user.licences) {
+                dispatch(setIsNoLicenseModalOpen(true));
+              }
+            }}
             className="px-3 py-2 border border-black rounded-full leading-none font-semibold hover:bg-black hover:text-white"
           >
             Delegate
@@ -211,7 +218,7 @@ const VerifierTable = () => {
         enableSorting: false,
       }
     ],
-    [dispatch]
+    [dispatch, nodesSlice.user.licences]
   )
 
   const table = useReactTable({

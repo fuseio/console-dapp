@@ -466,3 +466,7 @@ export type CreateAirdropUser = {
   walletAddress: Address;
   referralCode: string;
 }
+
+export interface NodesUser {
+  licences: number;
+}
