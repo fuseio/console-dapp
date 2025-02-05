@@ -311,13 +311,15 @@ const Deposit = ({
                     heading: "Tokens",
                     items: appConfig.wrappedBridge.chains[
                       selectedChainItem
-                    ].tokens.map((coin, i) => {
-                      return {
-                        icon: coin.icon,
-                        id: i,
-                        item: coin.symbol,
-                      };
-                    }),
+                    ].tokens
+                      .filter((coin) => !coin.isDepositPaused)
+                      .map((coin, i) => {
+                        return {
+                          icon: coin.icon,
+                          id: i,
+                          item: coin.symbol,
+                        };
+                      }),
                   },
                 ]}
                 selectedSection={selectedTokenSection}
@@ -467,7 +469,12 @@ const Deposit = ({
             }}
           >
             <div className="flex mt-2 bg-modal-bg py-4 px-5 rounded-md items-center cursor-pointer">
-              <Image src={stargateConfig.appLogo} alt="icon" height={50} className="rounded-md" />
+              <Image
+                src={stargateConfig.appLogo}
+                alt="icon"
+                height={50}
+                className="rounded-md"
+              />
               <div className="flex flex-col ml-3">
                 <p className="font-semibold text-base">
                   {stargateConfig.appName}

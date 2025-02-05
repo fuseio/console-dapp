@@ -47,6 +47,14 @@ export const coins: CoinConfigLike[] = [
     isDisabled: true,
   },
   {
+    name: "Wrapped Ether (Stargate)",
+    symbol: "WETH (Stargate)",
+    decimals: 18,
+    icon: weth,
+    coinGeckoId: "ethereum",
+    isWithdrawStargate: true,
+  },
+  {
     name: "USD Coin",
     symbol: "USDC",
     decimals: 6,
@@ -55,12 +63,28 @@ export const coins: CoinConfigLike[] = [
     isDisabled: true,
   },
   {
+    name: "Bridged USD Coin",
+    symbol: "USDC.e (Stargate)",
+    decimals: 6,
+    icon: usdc,
+    coinGeckoId: "usde-coin",
+    isWithdrawStargate: true,
+  },
+  {
     name: "Tether USD",
     symbol: "USDT",
     decimals: 6,
     icon: usdt,
     coinGeckoId: "tether",
     isDisabled: true,
+  },
+  {
+    name: "Tether USD (Stargate)",
+    symbol: "USDT (Stargate)",
+    decimals: 6,
+    icon: usdt,
+    coinGeckoId: "tether",
+    isWithdrawStargate: true,
   },
   {
     name: "Freedom",

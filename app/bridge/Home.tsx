@@ -656,6 +656,8 @@ const Home = () => {
                   setDisplayButton={setDisplayButton}
                   pendingPromise={pendingPromise}
                   setPendingPromise={setPendingPromise}
+                  isStargate={isStargate}
+                  setIsStargate={setIsStargate}
                 />
               )}
               {!isConnected && displayButton ? (
