@@ -76,7 +76,7 @@ const Home = () => {
           </div>
         </div>
         <div className="flex flex-col gap-8 md:gap-5">
-          <h2 className="text-2.5rem md:text-3xl leading-tight text-fuse-black font-semibold">
+          <h2 className="text-[2.5rem] md:text-3xl leading-tight text-fuse-black font-semibold">
             Developer tools
           </h2>
           <div className="grid grid-cols-4 md:grid-cols-1 gap-[30px] md:gap-5">
