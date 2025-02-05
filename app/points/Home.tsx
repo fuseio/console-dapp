@@ -128,7 +128,7 @@ const Giveaway = () => {
           </p>
         </div>
         <p className="text-center text-[1.25rem] leading-none font-semibold mt-14 md:text-base md:mt-8">
-          Phase 1 is live now!
+          Phase 1 and 2 are live now!
         </p>
         <div className="flex flex-col gap-4 mt-6">
           <div className="flex justify-between items-center">
@@ -165,7 +165,7 @@ const Giveaway = () => {
             <span className="shrink-0 bg-atomic-tangerine w-4 h-4 rounded-full relative left-4 md:left-2"></span>
             <span className="shrink-0 bg-sunset-orange w-4 h-4 rounded-full"></span>
             <div className="absolute bg-charcoal-gray w-full h-1.5 rounded-full -z-10">
-              <span className="block bg-linear-gradient-green-red w-[calc(1/6*100%+2rem)] h-1.5 rounded-full z-10"></span>
+              <span className="block bg-linear-gradient-green-red w-[calc(3/6*100%+2rem)] h-1.5 rounded-full z-10"></span>
             </div>
           </div>
           <div className="flex justify-between items-center">
@@ -253,8 +253,8 @@ const Phases = () => {
               <p className="text-[1.25rem] leading-none font-medium md:text-base">
                 Phase 2
               </p>
-              <p className="bg-lightest-gray text-lg leading-none font-medium px-4 py-2 rounded-full md:text-base md:py-1">
-                Coming soon
+              <p className="bg-success text-lg leading-none font-medium px-4 py-2 rounded-full md:text-base md:py-1">
+                Live
               </p>
             </div>
             <p className="text-7xl md:text-2xl leading-none font-semibold">
@@ -264,6 +264,18 @@ const Phases = () => {
               {"If you're a developer, start building an app on the new testnet today to get support and a grant from the Fuse team to help grow your project."}
             </p>
             <div className="flex items-center gap-4 mt-4 md:flex-col md:items-start">
+              <button
+                className="transition ease-in-out w-fit px-12 py-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
+                onClick={() => {
+                  if (isConnected) {
+                    router.push(path.AIRDROP_GRANT)
+                  } else {
+                    dispatch(setIsWalletModalOpen(true));
+                  }
+                }}
+              >
+                Get started
+              </button>
               <Link
                 className="transition ease-in-out w-fit px-12 py-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
                 href="https://docs.fuse.io/fuse-ember/airdrop/phase2"

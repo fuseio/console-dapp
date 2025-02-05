@@ -19,6 +19,10 @@ const AirdropSubmenu = [
     title: "Fuse Ecosystem",
     link: path.AIRDROP_ECOSYSTEM,
   },
+  {
+    title: "Builder Grant",
+    link: path.AIRDROP_GRANT,
+  },
 ]
 
 const Topbar = () => {
