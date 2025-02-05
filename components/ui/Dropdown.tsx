@@ -11,6 +11,7 @@ type DropdownProps = {
   selectedSection: number;
   selectedItem: number;
   isHighlight?: boolean;
+  dropdownWidth?: string;
 };
 type DropdownItemsType = {
   id: number;
@@ -49,6 +50,7 @@ const Dropdown = ({
   selectedSection,
   selectedItem,
   isHighlight = false,
+  dropdownWidth = "w-full",
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const ref = useOutsideClick(() => {
@@ -58,16 +60,16 @@ const Dropdown = ({
   });
 
   const highlight = (currentSection: number, currentItem: number) => {
-    if(!isHighlight) {
+    if (!isHighlight) {
       return false;
     }
 
-    if(!(currentSection === selectedSection && currentItem === selectedItem)) {
+    if (!(currentSection === selectedSection && currentItem === selectedItem)) {
       return false;
     }
 
     return true;
-  }
+  };
 
   return (
     <div
@@ -87,7 +89,7 @@ const Dropdown = ({
           className="h-8 me-2 md:h-6"
         />
         <span className="font-semibold">
-          {items[selectedSection].items[selectedItem].item}
+          {items[selectedSection].items[selectedItem].item.split(" ")[0]}
         </span>
         <Image src={down} alt="down" className="ml-auto" />
       </div>
@@ -96,7 +98,7 @@ const Dropdown = ({
         initial="closed"
         exit="closed"
         variants={menu}
-        className="absolute top-[120%] left-0 bg-white rounded-md shadow-xl pb-3 w-full z-50 max-h-[360px] overflow-y-auto md:text-xs"
+        className={`absolute top-[120%] left-0 bg-white rounded-md shadow-xl pb-3 ${dropdownWidth} z-50 max-h-[360px] overflow-y-auto md:text-xs`}
       >
         {items.map((section, index) => (
           <div className="w-full" key={index}>
@@ -108,7 +110,9 @@ const Dropdown = ({
             {items[index].items.map((item, i) => {
               return (
                 <div
-                  className={`flex items-center px-4 py-2 md:py-[6px] ${highlight(index, i) ? "bg-modal-bg" : ""}`}
+                  className={`flex items-center px-4 py-2 md:py-[6px] ${
+                    highlight(index, i) ? "bg-modal-bg" : ""
+                  }`}
                   onClick={() => {
                     onClick(index, i);
                   }}

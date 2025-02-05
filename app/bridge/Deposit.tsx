@@ -25,6 +25,7 @@ import { getAccount } from "wagmi/actions";
 import { formatUnits } from "viem";
 import Image from "next/image";
 import { getTokenOnFuse } from "@/lib/helper-bridge";
+import { stargateConfig } from "@/lib/stargate";
 
 type DepositProps = {
   selectedChainSection: number;
@@ -52,6 +53,8 @@ type DepositProps = {
   setIsThirdPartyChain: (isThirdPartyChain: boolean) => void;
   pendingPromise: any;
   setPendingPromise: (pendingPromise: any) => void;
+  isStargate: boolean;
+  setIsStargate: (isStargate: boolean) => void;
 };
 
 const Deposit = ({
@@ -75,6 +78,8 @@ const Deposit = ({
   setIsThirdPartyChain,
   pendingPromise,
   setPendingPromise,
+  isStargate,
+  setIsStargate,
 }: DepositProps) => {
   const { address, connector } = useAccount();
   const dispatch = useAppDispatch();
@@ -127,31 +132,42 @@ const Deposit = ({
   }, [address, selectedChainItem]);
 
   useEffect(() => {
+    if (
+      appConfig.wrappedBridge.chains[selectedChainItem].tokens.filter(
+        (coin) => !coin.isDepositPaused
+      )[selectedTokenItem].isDisabled
+    ) {
+      setIsStargate(true);
+      setDisplayButton(false);
+    } else {
+      setIsStargate(false);
+      setDisplayButton(true);
+    }
     if (address && selectedChainSection === 0) {
       if (pendingPromise) {
         pendingPromise.abort();
       }
       if (
-        appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-          selectedTokenItem
-        ].isNative &&
-        !appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-          selectedTokenItem
-        ].isBridged
+        appConfig.wrappedBridge.chains[selectedChainItem].tokens.filter(
+          (coin) => !coin.isDepositPaused
+        )[selectedTokenItem].isNative &&
+        !appConfig.wrappedBridge.chains[selectedChainItem].tokens.filter(
+          (coin) => !coin.isDepositPaused
+        )[selectedTokenItem].isBridged
       ) {
         dispatch(setNativeBalanceThunk(nativeBalance));
       } else {
         const promise = dispatch(
           fetchBalance({
             address: address,
-            contractAddress:
-              appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                selectedTokenItem
-              ].address,
-            decimals:
-              appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                selectedTokenItem
-              ].decimals,
+            contractAddress: appConfig.wrappedBridge.chains[
+              selectedChainItem
+            ].tokens.filter((coin) => !coin.isDepositPaused)[selectedTokenItem]
+              .address,
+            decimals: appConfig.wrappedBridge.chains[
+              selectedChainItem
+            ].tokens.filter((coin) => !coin.isDepositPaused)[selectedTokenItem]
+              .decimals,
             bridge: appConfig.wrappedBridge.chains[selectedChainItem].original,
           })
         );
@@ -166,6 +182,7 @@ const Deposit = ({
     selectedChainSection,
     nativeBalance,
   ]);
+
   useEffect(() => {
     if (chainSlice.chainId === 0 && selectedChainSection === 0) {
       dispatch(setChain(appConfig.wrappedBridge.chains[selectedChainItem]));
@@ -294,13 +311,15 @@ const Deposit = ({
                     heading: "Tokens",
                     items: appConfig.wrappedBridge.chains[
                       selectedChainItem
-                    ].tokens.map((coin, i) => {
-                      return {
-                        icon: coin.icon,
-                        id: i,
-                        item: coin.symbol,
-                      };
-                    }),
+                    ].tokens
+                      .filter((coin) => !coin.isDepositPaused)
+                      .map((coin, i) => {
+                        return {
+                          icon: coin.icon,
+                          id: i,
+                          item: coin.symbol,
+                        };
+                      }),
                   },
                 ]}
                 selectedSection={selectedTokenSection}
@@ -434,6 +453,51 @@ const Deposit = ({
             </div>
           </div>
         </>
+      ) : isStargate ? (
+        <>
+          <a
+            href={stargateConfig.appDepositURL}
+            target="_blank"
+            rel="noreferrer"
+            className="cursor-pointer"
+            onClick={() => {
+              amplitude.track("External Provider", {
+                provider: stargateConfig.appName,
+                walletType: connector ? walletType[connector.id] : undefined,
+                walletAddress: address,
+              });
+            }}
+          >
+            <div className="flex mt-2 bg-modal-bg py-4 px-5 rounded-md items-center cursor-pointer">
+              <Image
+                src={stargateConfig.appLogo}
+                alt="icon"
+                height={50}
+                className="rounded-md"
+              />
+              <div className="flex flex-col ml-3">
+                <p className="font-semibold text-base">
+                  {stargateConfig.appName}
+                </p>
+                <p className="font-medium text-[#898888] text-sm md:text-xs">
+                  {stargateConfig.appDepositURL}
+                </p>
+              </div>
+              <Image src={visit} alt="go" className="ml-auto" />
+            </div>
+          </a>
+          <div className="px-2 py-4 mt-4 mb-2 bg-warning-bg rounded-md border border-warning-border flex text-sm md:text-xs">
+            <div className="flex p-2 w-[10%] items-start">
+              <Image src={alert} alt="warning" className="h-5" />
+            </div>
+            <div className="flex flex-col font-medium">
+              <p>
+                Remember that using 3rd party application carries risks. Fuse
+                does not control the code or content of these websites.
+              </p>
+            </div>
+          </div>
+        </>
       ) : isThirdPartyChain ? (
         <>
           <a
@@ -533,10 +597,14 @@ const Deposit = ({
               <span className="font-medium mt-1 text-sm">
                 You will receive{" "}
                 {amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0}{" "}
-                {appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                {appConfig.wrappedBridge.chains[
+                  selectedChainItem
+                ].tokens.filter((coin) => !coin.isDepositPaused)[
                   selectedTokenItem
                 ].receiveToken?.symbol ||
-                  appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                  appConfig.wrappedBridge.chains[
+                    selectedChainItem
+                  ].tokens.filter((coin) => !coin.isDepositPaused)[
                     selectedTokenItem
                   ].symbol}
               </span>
@@ -546,7 +614,9 @@ const Deposit = ({
                 className="flex px-[10px] py-2 bg-white rounded-lg cursor-pointer text-xs font-medium items-center"
                 onClick={() => {
                   const token = getTokenOnFuse(
-                    appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                    appConfig.wrappedBridge.chains[
+                      selectedChainItem
+                    ].tokens.filter((coin) => !coin.isDepositPaused)[
                       selectedTokenItem
                     ].coinGeckoId
                   );
