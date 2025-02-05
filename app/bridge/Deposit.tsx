@@ -133,9 +133,9 @@ const Deposit = ({
 
   useEffect(() => {
     if (
-      appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-        selectedTokenItem
-      ].isDisabled
+      appConfig.wrappedBridge.chains[selectedChainItem].tokens.filter(
+        (coin) => !coin.isDepositPaused
+      )[selectedTokenItem].isDisabled
     ) {
       setIsStargate(true);
       setDisplayButton(false);
@@ -148,26 +148,26 @@ const Deposit = ({
         pendingPromise.abort();
       }
       if (
-        appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-          selectedTokenItem
-        ].isNative &&
-        !appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-          selectedTokenItem
-        ].isBridged
+        appConfig.wrappedBridge.chains[selectedChainItem].tokens.filter(
+          (coin) => !coin.isDepositPaused
+        )[selectedTokenItem].isNative &&
+        !appConfig.wrappedBridge.chains[selectedChainItem].tokens.filter(
+          (coin) => !coin.isDepositPaused
+        )[selectedTokenItem].isBridged
       ) {
         dispatch(setNativeBalanceThunk(nativeBalance));
       } else {
         const promise = dispatch(
           fetchBalance({
             address: address,
-            contractAddress:
-              appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                selectedTokenItem
-              ].address,
-            decimals:
-              appConfig.wrappedBridge.chains[selectedChainItem].tokens[
-                selectedTokenItem
-              ].decimals,
+            contractAddress: appConfig.wrappedBridge.chains[
+              selectedChainItem
+            ].tokens.filter((coin) => !coin.isDepositPaused)[selectedTokenItem]
+              .address,
+            decimals: appConfig.wrappedBridge.chains[
+              selectedChainItem
+            ].tokens.filter((coin) => !coin.isDepositPaused)[selectedTokenItem]
+              .decimals,
             bridge: appConfig.wrappedBridge.chains[selectedChainItem].original,
           })
         );
@@ -597,10 +597,14 @@ const Deposit = ({
               <span className="font-medium mt-1 text-sm">
                 You will receive{" "}
                 {amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0}{" "}
-                {appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                {appConfig.wrappedBridge.chains[
+                  selectedChainItem
+                ].tokens.filter((coin) => !coin.isDepositPaused)[
                   selectedTokenItem
                 ].receiveToken?.symbol ||
-                  appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                  appConfig.wrappedBridge.chains[
+                    selectedChainItem
+                  ].tokens.filter((coin) => !coin.isDepositPaused)[
                     selectedTokenItem
                   ].symbol}
               </span>
@@ -610,7 +614,9 @@ const Deposit = ({
                 className="flex px-[10px] py-2 bg-white rounded-lg cursor-pointer text-xs font-medium items-center"
                 onClick={() => {
                   const token = getTokenOnFuse(
-                    appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+                    appConfig.wrappedBridge.chains[
+                      selectedChainItem
+                    ].tokens.filter((coin) => !coin.isDepositPaused)[
                       selectedTokenItem
                     ].coinGeckoId
                   );
