@@ -1,8 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import FAQ from "@/components/FAQ";
-
 import prizePool from "@/assets/airdrop-grant-prize-background.svg";
 import wallet from "@/assets/wallet.svg";
 import paid from "@/assets/paid.svg";
@@ -71,7 +69,7 @@ const joins = [
     icon: article,
     button: {
       title: "Start building",
-      link: "#"
+      link: "https://docs.fuse.io/fuse-ember/connect-to-ember"
     },
   },
   {
@@ -85,40 +83,14 @@ const joins = [
   },
 ];
 
-const questions = [
-  "What is Fuse Ember?",
-  "How do I apply to Fuse Ember bounty program?",
-  "Who can participate in the Fuse Ember bounty program?",
-  "What types of projects can be submitted?",
-  "How are winners selected?",
-  "How much bounty will each winner get?",
-  "When will the Fuse Ember bounty be distributed?",
-  "What support is available for participants?",
-  "Can existing projects participate?",
-  "?"
-]
-
-const answers = [
-  "Fuse Nodes are devices (computers or servers) that run the Fuse blockchain's protocol software and connect to its network. They participate  in the Fuse Network by maintaining a copy of the ",
-  "Fuse Nodes are devices (computers or servers) that run the Fuse blockchain's protocol software and connect to its network. They participate  in the Fuse Network by maintaining a copy of the ",
-  "Fuse Nodes are devices (computers or servers) that run the Fuse blockchain's protocol software and connect to its network. They participate  in the Fuse Network by maintaining a copy of the ",
-  "Fuse Nodes are devices (computers or servers) that run the Fuse blockchain's protocol software and connect to its network. They participate  in the Fuse Network by maintaining a copy of the ",
-  "Fuse Nodes are devices (computers or servers) that run the Fuse blockchain's protocol software and connect to its network. They participate  in the Fuse Network by maintaining a copy of the ",
-  "Fuse Nodes are devices (computers or servers) that run the Fuse blockchain's protocol software and connect to its network. They participate  in the Fuse Network by maintaining a copy of the ",
-  "Fuse Nodes are devices (computers or servers) that run the Fuse blockchain's protocol software and connect to its network. They participate  in the Fuse Network by maintaining a copy of the ",
-  "Fuse Nodes are devices (computers or servers) that run the Fuse blockchain's protocol software and connect to its network. They participate  in the Fuse Network by maintaining a copy of the ",
-  "Fuse Nodes are devices (computers or servers) that run the Fuse blockchain's protocol software and connect to its network. They participate  in the Fuse Network by maintaining a copy of the ",
-  "Fuse Nodes are devices (computers or servers) that run the Fuse blockchain's protocol software and connect to its network. They participate  in the Fuse Network by maintaining a copy of the ",
-]
-
 const Hero = () => {
   return (
     <section className="w-8/9 max-w-7xl mx-auto flex flex-col justify-center items-center gap-4 text-center">
       <h1 className="bg-linear-gradient-black bg-clip-text text-[10.625rem] leading-none text-[transparent] font-black md:text-4xl">
-        Builder Grants
+        Build and Earn
       </h1>
       <p className="text-lg max-w-md">
-        A bounty program rewarding developers for building apps on Ember.
+        A builder grant program rewarding projects for building apps on Ember.
       </p>
       <article className="bg-night rounded-[2.5rem] mt-3 px-4 py-20 w-full relative min-h-[773px] flex flex-col gap-8 md:rounded-2xl md:p-4 md:min-h-0 md:gap-4">
         <p className="text-2xl text-sand font-semibold md:text-base">
@@ -148,11 +120,11 @@ const Bounty = () => {
         ))}
       </div>
       <div className="flex flex-col gap-5">
-        <h2 className="text-7xl font-semibold md:text-2xl">
-          Bounty list
-        </h2>
         <p>
-          The bounty program covers a wide range of categories to encourage diverse and innovative apps. Multiple winners can be selected in each category. To qualify, your app must fit into one of the following categories:
+          {"We're thrilled that you're exploring Fuse ecosystem! The Grants program is aimed at providing initial support for talented teams to kick off product development or migrate a successful existing product to Fuse. We welcome initiatives that bring unique value to the ecosystem and attracting new users."}
+        </p>
+        <p>
+          {"The program covers a wide range of categories to encourage diverse and innovative apps. Multiple winners can be selected in each category. To qualify, your app must fit into one of the following categories:"}
         </p>
       </div>
     </section>
@@ -219,11 +191,6 @@ const Home = () => {
       <Bounty />
       <Winner />
       <Join />
-      <FAQ
-        className="w-8/9 max-w-7xl mx-auto"
-        questions={questions}
-        answers={answers}
-      />
     </div>
   );
 };
