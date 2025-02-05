@@ -20,7 +20,6 @@ import wbeth from "@/assets/wbeth.webp";
 import weeth from "@/assets/weeth.webp";
 import ethx from "@/assets/ethx.png";
 import wstETH from "@/assets/wstETH.png";
-import wbtc from "@/assets/wbtc.png";
 
 export const coins: CoinConfigLike[] = [
   {
@@ -47,14 +46,6 @@ export const coins: CoinConfigLike[] = [
     isDisabled: true,
   },
   {
-    name: "Wrapped Ether (Stargate)",
-    symbol: "WETH (Stargate)",
-    decimals: 18,
-    icon: weth,
-    coinGeckoId: "ethereum",
-    isWithdrawStargate: true,
-  },
-  {
     name: "USD Coin",
     symbol: "USDC",
     decimals: 6,
@@ -63,28 +54,12 @@ export const coins: CoinConfigLike[] = [
     isDisabled: true,
   },
   {
-    name: "Bridged USD Coin",
-    symbol: "USDC.e (Stargate)",
-    decimals: 6,
-    icon: usdc,
-    coinGeckoId: "usde-coin",
-    isWithdrawStargate: true,
-  },
-  {
     name: "Tether USD",
     symbol: "USDT",
     decimals: 6,
     icon: usdt,
     coinGeckoId: "tether",
     isDisabled: true,
-  },
-  {
-    name: "Tether USD (Stargate)",
-    symbol: "USDT (Stargate)",
-    decimals: 6,
-    icon: usdt,
-    coinGeckoId: "tether",
-    isWithdrawStargate: true,
   },
   {
     name: "Freedom",
@@ -206,10 +181,27 @@ export const coins: CoinConfigLike[] = [
     coinGeckoId: "wrapped-steth",
   },
   {
-    name: "Wrapped BTC",
-    symbol: "WBTC",
-    decimals: 8,
-    icon: wbtc,
-    coinGeckoId: "wrapped-bitcoin",
+    name: "Wrapped Ether (Stargate)",
+    symbol: "WETH (Stargate)",
+    decimals: 18,
+    icon: weth,
+    coinGeckoId: "ethereum",
+    isWithdrawStargate: true,
+  },
+  {
+    name: "Tether USD (Stargate)",
+    symbol: "USDT (Stargate)",
+    decimals: 6,
+    icon: usdt,
+    coinGeckoId: "tether",
+    isWithdrawStargate: true,
+  },
+  {
+    name: "Bridged USD Coin",
+    symbol: "USDC.e (Stargate)",
+    decimals: 6,
+    icon: usdc,
+    coinGeckoId: "usde-coin",
+    isWithdrawStargate: true,
   },
 ];
