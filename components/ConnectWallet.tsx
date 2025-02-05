@@ -276,7 +276,7 @@ const ConnectWallet = ({
       </motion.div>
     </div>
   ) : checkCorrectNetwork() ? (
-    <div className="flex justify-end md:justify-center md:me-5 relative w-[410px] md:w-fit h-9 md:h-7">
+    <div className="flex justify-end md:justify-center md:me-5 relative h-9 md:h-7">
       <div
         className="flex bg-lightest-gray px-4 py-3 md:py-3.5 rounded-full cursor-pointer items-center relative text-base/4 md:text-sm font-normal ml-2 md:ml-1"
         ref={accountsRef}

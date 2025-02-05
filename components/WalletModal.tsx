@@ -22,10 +22,10 @@ import ReactGA from "react-ga4";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
-import { path, signDataMessage } from "@/lib/helpers";
+import { signDataMessage } from "@/lib/helpers";
 import { checkIsActivated, checkOperator, fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setHydrate, setIsContactDetailsModalOpen, setIsLoggedIn, setIsLogin, setIsLoginError, setIsOperatorWalletModalOpen, setIsValidated, setLogout, setRedirect, validateOperator, withRefreshToken } from "@/store/operatorSlice";
 import { useEthersSigner } from "@/lib/ethersAdapters/signer";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { fuse } from "viem/chains";
 import { useConnectWithOtp, useSocialAccounts, useWalletOptions } from "@dynamic-labs/sdk-react-core";
 
@@ -45,7 +45,6 @@ const WalletModal = (): JSX.Element => {
   const { signInWithSocialAccount } = useSocialAccounts();
   const { selectWalletOption } = useWalletOptions();
   const { isLogin, isValidated, isLoggedIn, isLoginError, isAuthenticated, isOperatorWalletModalOpen, redirect, operatorContactDetail } = useAppSelector(selectOperatorSlice);
-  const pathname = usePathname();
 
   const onSubmitEmailHandler: FormEventHandler<HTMLFormElement> = async (
     event,
@@ -208,9 +207,6 @@ const WalletModal = (): JSX.Element => {
     }
     localStorage.setItem("Fuse-selectedConnectorId", id);
     localStorage.setItem("Fuse-connectedWalletType", id);
-    if (pathname === path.HOME) {
-      router.push("/wallet");
-    }
     setIsConnectedWallet(true);
   }
 
