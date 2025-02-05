@@ -26,6 +26,7 @@ import joinTelegram from "@/assets/join-telegram-green.svg";
 import volt from "@/assets/volt-wallet-green.svg";
 import artrific from "@/assets/artrific-green.svg";
 import meridian from "@/assets/meridian-green.svg";
+import voltYellow from "@/assets/volt-wallet-yellow.svg";
 import meridianYellow from "@/assets/meridian-yellow.svg";
 import voltageLiquidityYellow from "@/assets/voltage-liquidity-yellow.svg";
 import gooddollarYellow from "@/assets/gooddollar-yellow.svg";
@@ -115,6 +116,18 @@ const Home = () => {
         {
           text: "Go to Voltage",
           link: "https://voltage.finance/pools",
+        },
+      ]
+    },
+    {
+      id: "stakeOnVoltage",
+      title: "Stake on Voltage",
+      point: "Up to 8 points per $1 staked daily",
+      image: voltYellow,
+      buttons: [
+        {
+          text: "Go to Voltage",
+          link: "https://app.voltage.finance/stake",
         },
       ]
     },
