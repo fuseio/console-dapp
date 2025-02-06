@@ -60,6 +60,8 @@ export interface CoinConfigLike {
   decimals: number;
   icon: StaticImageData;
   coinGeckoId: string;
+  isDisabled?: boolean;
+  isWithdrawStargate?: boolean;
 }
 
 export interface ExchangeConfigLike {
@@ -135,6 +137,8 @@ interface WrappedBridgeConfig {
       };
       isNative: boolean;
       isBridged: boolean;
+      isDisabled?: boolean;
+      isWithdrawStargate?: boolean;
     }[];
   };
   disabledChains: DisabledChainConfigLike[];
@@ -164,6 +168,8 @@ interface WrappedBridgeConfig {
         name: string;
       };
       isDepositPaused?: boolean;
+      isDisabled?: boolean;
+      isWithdrawStargate?: boolean;
     }[];
   }[];
 }
@@ -190,6 +196,8 @@ export const createAppConfig = (
     };
     isNative: boolean;
     isBridged: boolean;
+    isDisabled?: boolean;
+    isWithdrawStargate?: boolean;
   }[] = [];
   if (bridgeConfig.tokens.length > 0) {
     tokenConfig.coins.forEach((coin) => {
@@ -230,6 +238,8 @@ export const createAppConfig = (
             name: string;
           };
           isDepositPaused?: boolean;
+          isDisabled?: boolean;
+          isWithdrawStargate?: boolean;
         }[] = [];
         if (bridgeConfig.tokens.length > 0) {
           tokenConfig.coins.forEach((coin) => {
@@ -248,6 +258,8 @@ export const createAppConfig = (
                 coinGeckoId: coin.coinGeckoId,
                 receiveToken: token.receiveToken,
                 isDepositPaused: token.isDepositPaused,
+                isDisabled: coin.isDisabled,
+                isWithdrawStargate: coin.isWithdrawStargate,
               });
             }
           });

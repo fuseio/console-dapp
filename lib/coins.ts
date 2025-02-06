@@ -20,23 +20,8 @@ import wbeth from "@/assets/wbeth.webp";
 import weeth from "@/assets/weeth.webp";
 import ethx from "@/assets/ethx.png";
 import wstETH from "@/assets/wstETH.png";
-import wbtc from "@/assets/wbtc.png";
 
 export const coins: CoinConfigLike[] = [
-  {
-    name: "USD Coin",
-    symbol: "USDC",
-    decimals: 6,
-    icon: usdc,
-    coinGeckoId: "usd-coin",
-  },
-  {
-    name: "Tether USD",
-    symbol: "USDT",
-    decimals: 6,
-    icon: usdt,
-    coinGeckoId: "tether",
-  },
   {
     name: "Fuse",
     symbol: "FUSE",
@@ -45,18 +30,60 @@ export const coins: CoinConfigLike[] = [
     coinGeckoId: "fuse-network-token",
   },
   {
-    name: "Wrapped Ether",
-    symbol: "WETH",
-    decimals: 18,
-    icon: weth,
-    coinGeckoId: "ethereum",
-  },
-  {
     name: "Ethereum",
     symbol: "ETH",
     decimals: 18,
     icon: eth,
     coinGeckoId: "ethereum",
+    isDisabled: true,
+  },
+  {
+    name: "Wrapped Ether",
+    symbol: "WETH",
+    decimals: 18,
+    icon: weth,
+    coinGeckoId: "ethereum",
+    isDisabled: true,
+  },
+  {
+    name: "Wrapped Ether (Stargate)",
+    symbol: "WETH (Stargate)",
+    decimals: 18,
+    icon: weth,
+    coinGeckoId: "weth",
+    isWithdrawStargate: true,
+  },
+  {
+    name: "USD Coin",
+    symbol: "USDC",
+    decimals: 6,
+    icon: usdc,
+    coinGeckoId: "usd-coin",
+    isDisabled: true,
+  },
+  {
+    name: "Bridged USD Coin",
+    symbol: "USDC.e (Stargate)",
+    decimals: 6,
+    icon: usdc,
+    coinGeckoId: "usde-coin",
+    isWithdrawStargate: true,
+  },
+  {
+    name: "Tether USD",
+    symbol: "USDT",
+    decimals: 6,
+    icon: usdt,
+    coinGeckoId: "tether",
+    isDisabled: true,
+  },
+  {
+    name: "Tether USD (Stargate)",
+    symbol: "USDT (Stargate)",
+    decimals: 6,
+    icon: usdt,
+    coinGeckoId: "tether-bridged",
+    isWithdrawStargate: true,
   },
   {
     name: "Freedom",
@@ -176,12 +203,5 @@ export const coins: CoinConfigLike[] = [
     decimals: 18,
     icon: wstETH,
     coinGeckoId: "wrapped-steth",
-  },
-  {
-    name: "Wrapped BTC",
-    symbol: "WBTC",
-    decimals: 8,
-    icon: wbtc,
-    coinGeckoId: "wrapped-bitcoin",
   },
 ];

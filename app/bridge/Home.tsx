@@ -75,6 +75,7 @@ const Home = () => {
   const [isExchange, setIsExchange] = useState(false);
   const [isDisabledChain, setIsDisabledChain] = useState(false);
   const [isThirdPartyChain, setIsThirdPartyChain] = useState(false);
+  const [isStargate, setIsStargate] = useState(false);
   const [pendingPromise, setPendingPromise] = React.useState<any>();
   const { address, connector, isConnected } = useAccount();
   const config = useConfig();
@@ -107,42 +108,50 @@ const Home = () => {
     if (res && selected === 0)
       dispatch(
         increaseERC20Allowance({
-          contractAddress:
-            appConfig.wrappedBridge.chains[
-              selectedChainSlice.depositSelectedChainItem
-            ].tokens[depositSelectedTokenItem].address,
+          contractAddress: appConfig.wrappedBridge.chains[
+            selectedChainSlice.depositSelectedChainItem
+          ].tokens.filter((coin) => !coin.isDepositPaused)[
+            depositSelectedTokenItem
+          ].address,
           amount: amount,
           bridge:
             appConfig.wrappedBridge.chains[
               selectedChainSlice.depositSelectedChainItem
-            ].tokens[depositSelectedTokenItem].isNative &&
+            ].tokens.filter((coin) => !coin.isDepositPaused)[
+              depositSelectedTokenItem
+            ].isNative &&
             appConfig.wrappedBridge.chains[
               selectedChainSlice.depositSelectedChainItem
-            ].tokens[depositSelectedTokenItem].isBridged
+            ].tokens.filter((coin) => !coin.isDepositPaused)[
+              depositSelectedTokenItem
+            ].isBridged
               ? appConfig.wrappedBridge.chains[
                   selectedChainSlice.depositSelectedChainItem
                 ].wrapped
               : appConfig.wrappedBridge.chains[
                   selectedChainSlice.depositSelectedChainItem
                 ].original,
-          decimals:
-            appConfig.wrappedBridge.chains[
-              selectedChainSlice.depositSelectedChainItem
-            ].tokens[depositSelectedTokenItem].decimals,
+          decimals: appConfig.wrappedBridge.chains[
+            selectedChainSlice.depositSelectedChainItem
+          ].tokens.filter((coin) => !coin.isDepositPaused)[
+            depositSelectedTokenItem
+          ].decimals,
           address: address ?? hex,
           type: 0,
           network:
             appConfig.wrappedBridge.chains[
               selectedChainSlice.depositSelectedChainItem
             ].name,
-          token:
-            appConfig.wrappedBridge.chains[
-              selectedChainSlice.depositSelectedChainItem
-            ].tokens[depositSelectedTokenItem].symbol,
-          tokenId:
-            appConfig.wrappedBridge.chains[
-              selectedChainSlice.depositSelectedChainItem
-            ].tokens[depositSelectedTokenItem].coinGeckoId,
+          token: appConfig.wrappedBridge.chains[
+            selectedChainSlice.depositSelectedChainItem
+          ].tokens.filter((coin) => !coin.isDepositPaused)[
+            depositSelectedTokenItem
+          ].symbol,
+          tokenId: appConfig.wrappedBridge.chains[
+            selectedChainSlice.depositSelectedChainItem
+          ].tokens.filter((coin) => !coin.isDepositPaused)[
+            depositSelectedTokenItem
+          ].coinGeckoId,
           selectedChainId,
           walletType: connector ? walletType[connector.id] : undefined,
         })
@@ -193,10 +202,14 @@ const Home = () => {
       if (
         appConfig.wrappedBridge.chains[
           selectedChainSlice.depositSelectedChainItem
-        ].tokens[depositSelectedTokenItem].isBridged &&
+        ].tokens.filter((coin) => !coin.isDepositPaused)[
+          depositSelectedTokenItem
+        ].isBridged &&
         appConfig.wrappedBridge.chains[
           selectedChainSlice.depositSelectedChainItem
-        ].tokens[depositSelectedTokenItem].isNative
+        ].tokens.filter((coin) => !coin.isDepositPaused)[
+          depositSelectedTokenItem
+        ].isNative
       ) {
         dispatch(
           bridgeAndUnwrap({
@@ -206,22 +219,25 @@ const Home = () => {
               appConfig.wrappedBridge.chains[
                 selectedChainSlice.depositSelectedChainItem
               ].wrapped,
-            contractAddress:
-              appConfig.wrappedBridge.chains[
-                selectedChainSlice.depositSelectedChainItem
-              ].tokens[depositSelectedTokenItem].address,
-            decimals:
-              appConfig.wrappedBridge.chains[
-                selectedChainSlice.depositSelectedChainItem
-              ].tokens[depositSelectedTokenItem].decimals,
+            contractAddress: appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens.filter((coin) => !coin.isDepositPaused)[
+              depositSelectedTokenItem
+            ].address,
+            decimals: appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens.filter((coin) => !coin.isDepositPaused)[
+              depositSelectedTokenItem
+            ].decimals,
             srcChainId:
               appConfig.wrappedBridge.chains[
                 selectedChainSlice.depositSelectedChainItem
               ].lzChainId,
-            symbol:
-              appConfig.wrappedBridge.chains[
-                selectedChainSlice.depositSelectedChainItem
-              ].tokens[depositSelectedTokenItem].symbol,
+            symbol: appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens.filter((coin) => !coin.isDepositPaused)[
+              depositSelectedTokenItem
+            ].symbol,
             chainId: 138,
             network:
               appConfig.wrappedBridge.chains[
@@ -235,7 +251,9 @@ const Home = () => {
       } else if (
         appConfig.wrappedBridge.chains[
           selectedChainSlice.depositSelectedChainItem
-        ].tokens[depositSelectedTokenItem].isNative
+        ].tokens.filter((coin) => !coin.isDepositPaused)[
+          depositSelectedTokenItem
+        ].isNative
       ) {
         dispatch(
           bridgeNativeTokens({
@@ -245,27 +263,30 @@ const Home = () => {
               appConfig.wrappedBridge.chains[
                 selectedChainSlice.depositSelectedChainItem
               ].original,
-            decimals:
-              appConfig.wrappedBridge.chains[
-                selectedChainSlice.depositSelectedChainItem
-              ].tokens[depositSelectedTokenItem].decimals,
+            decimals: appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens.filter((coin) => !coin.isDepositPaused)[
+              depositSelectedTokenItem
+            ].decimals,
             srcChainId:
               appConfig.wrappedBridge.chains[
                 selectedChainSlice.depositSelectedChainItem
               ].lzChainId,
-            symbol:
-              appConfig.wrappedBridge.chains[
-                selectedChainSlice.depositSelectedChainItem
-              ].tokens[depositSelectedTokenItem].symbol,
+            symbol: appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens.filter((coin) => !coin.isDepositPaused)[
+              depositSelectedTokenItem
+            ].symbol,
             dstChainId: 138,
             network:
               appConfig.wrappedBridge.chains[
                 selectedChainSlice.depositSelectedChainItem
               ].name,
-            tokenId:
-              appConfig.wrappedBridge.chains[
-                selectedChainSlice.depositSelectedChainItem
-              ].tokens[depositSelectedTokenItem].coinGeckoId,
+            tokenId: appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens.filter((coin) => !coin.isDepositPaused)[
+              depositSelectedTokenItem
+            ].coinGeckoId,
             selectedChainId,
             walletType: connector ? walletType[connector.id] : undefined,
           })
@@ -273,7 +294,9 @@ const Home = () => {
       } else if (
         !appConfig.wrappedBridge.chains[
           selectedChainSlice.depositSelectedChainItem
-        ].tokens[depositSelectedTokenItem].isBridged
+        ].tokens.filter((coin) => !coin.isDepositPaused)[
+          depositSelectedTokenItem
+        ].isBridged
       )
         dispatch(
           bridgeOriginalTokens({
@@ -283,31 +306,35 @@ const Home = () => {
               appConfig.wrappedBridge.chains[
                 selectedChainSlice.depositSelectedChainItem
               ].original,
-            contractAddress:
-              appConfig.wrappedBridge.chains[
-                selectedChainSlice.depositSelectedChainItem
-              ].tokens[depositSelectedTokenItem].address,
-            decimals:
-              appConfig.wrappedBridge.chains[
-                selectedChainSlice.depositSelectedChainItem
-              ].tokens[depositSelectedTokenItem].decimals,
+            contractAddress: appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens.filter((coin) => !coin.isDepositPaused)[
+              depositSelectedTokenItem
+            ].address,
+            decimals: appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens.filter((coin) => !coin.isDepositPaused)[
+              depositSelectedTokenItem
+            ].decimals,
             srcChainId:
               appConfig.wrappedBridge.chains[
                 selectedChainSlice.depositSelectedChainItem
               ].lzChainId,
-            symbol:
-              appConfig.wrappedBridge.chains[
-                selectedChainSlice.depositSelectedChainItem
-              ].tokens[depositSelectedTokenItem].symbol,
+            symbol: appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens.filter((coin) => !coin.isDepositPaused)[
+              depositSelectedTokenItem
+            ].symbol,
             dstChainId: 138,
             network:
               appConfig.wrappedBridge.chains[
                 selectedChainSlice.depositSelectedChainItem
               ].name,
-            tokenId:
-              appConfig.wrappedBridge.chains[
-                selectedChainSlice.depositSelectedChainItem
-              ].tokens[depositSelectedTokenItem].coinGeckoId,
+            tokenId: appConfig.wrappedBridge.chains[
+              selectedChainSlice.depositSelectedChainItem
+            ].tokens.filter((coin) => !coin.isDepositPaused)[
+              depositSelectedTokenItem
+            ].coinGeckoId,
             selectedChainId,
             walletType: connector ? walletType[connector.id] : undefined,
           })
@@ -619,6 +646,8 @@ const Home = () => {
                   setIsThirdPartyChain={setIsThirdPartyChain}
                   pendingPromise={pendingPromise}
                   setPendingPromise={setPendingPromise}
+                  isStargate={isStargate}
+                  setIsStargate={setIsStargate}
                 />
               ) : (
                 <Withdraw
@@ -653,6 +682,8 @@ const Home = () => {
                   setDisplayButton={setDisplayButton}
                   pendingPromise={pendingPromise}
                   setPendingPromise={setPendingPromise}
+                  isStargate={isStargate}
+                  setIsStargate={setIsStargate}
                 />
               )}
               {!isConnected && displayButton ? (
@@ -757,10 +788,14 @@ const Home = () => {
                           selected === 0 &&
                           appConfig.wrappedBridge.chains[
                             selectedChainSlice.depositSelectedChainItem
-                          ].tokens[depositSelectedTokenItem].isNative &&
+                          ].tokens.filter((coin) => !coin.isDepositPaused)[
+                            depositSelectedTokenItem
+                          ].isNative &&
                           !appConfig.wrappedBridge.chains[
                             selectedChainSlice.depositSelectedChainItem
-                          ].tokens[depositSelectedTokenItem].isBridged
+                          ].tokens.filter((coin) => !coin.isDepositPaused)[
+                            depositSelectedTokenItem
+                          ].isBridged
                         ) {
                           handleDeposit();
                         } else if (
@@ -778,7 +813,9 @@ const Home = () => {
                       (selected === 0 &&
                         appConfig.wrappedBridge.chains[
                           selectedChainSlice.depositSelectedChainItem
-                        ].tokens[depositSelectedTokenItem].isDepositPaused) ||
+                        ].tokens.filter((coin) => !coin.isDepositPaused)[
+                          depositSelectedTokenItem
+                        ].isDepositPaused) ||
                       balanceSlice.isApprovalLoading ||
                       contractSlice.isBridgeLoading ||
                       contractSlice.isApprovalLoading ||
@@ -798,10 +835,14 @@ const Home = () => {
                           (selected === 0 &&
                             appConfig.wrappedBridge.chains[
                               selectedChainSlice.depositSelectedChainItem
-                            ].tokens[depositSelectedTokenItem].isNative &&
+                            ].tokens.filter((coin) => !coin.isDepositPaused)[
+                              depositSelectedTokenItem
+                            ].isNative &&
                             !appConfig.wrappedBridge.chains[
                               selectedChainSlice.depositSelectedChainItem
-                            ].tokens[depositSelectedTokenItem].isBridged)
+                            ].tokens.filter((coin) => !coin.isDepositPaused)[
+                              depositSelectedTokenItem
+                            ].isBridged)
                         ? "Bridge"
                         : parseFloat(balanceSlice.approval) < parseFloat(amount)
                         ? "Approve"
