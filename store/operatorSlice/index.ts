@@ -63,9 +63,8 @@ export interface OperatorStateType {
   isValidatingOperator: boolean;
   isFetchingOperator: boolean;
   isOperatorWalletModalOpen: boolean;
-  isContactDetailsModalOpen: boolean;
-  isAccountCreationModalOpen: boolean;
-  isCongratulationModalOpen: boolean;
+  isCreatingOperator: boolean;
+  isCreatedOperator: boolean;
   isTopupAccountModalOpen: boolean;
   isWithdrawModalOpen: boolean;
   isTopupPaymasterModalOpen: boolean;
@@ -105,9 +104,8 @@ const INIT_STATE: OperatorStateType = {
   isValidatingOperator: false,
   isFetchingOperator: false,
   isOperatorWalletModalOpen: false,
-  isContactDetailsModalOpen: false,
-  isAccountCreationModalOpen: false,
-  isCongratulationModalOpen: false,
+  isCreatingOperator: false,
+  isCreatedOperator: false,
   isTopupAccountModalOpen: false,
   isWithdrawModalOpen: false,
   isTopupPaymasterModalOpen: false,
@@ -154,15 +152,22 @@ export const checkOperator = createAsyncThunk(
   }
 );
 
-export const validateOperator = createAsyncThunk(
-  "OPERATOR/VALIDATE_OPERATOR",
-  async ({
-    signData,
-  }: {
+export const validateOperator = createAsyncThunk<
+  any,
+  {
     signData: SignData;
-  }) => {
+  }
+>(
+  "OPERATOR/VALIDATE_OPERATOR",
+  async (
+    {
+      signData
+    },
+    thunkAPI
+  ) => {
     try {
       await postValidateOperator(signData);
+      thunkAPI.dispatch(fetchOperator());
       return true;
     } catch (error) {
       console.error(error);
@@ -653,15 +658,6 @@ const operatorSlice = createSlice({
       state.isValidated = action.payload
       localStorage.setItem("Fuse-isValidated", JSON.stringify(action.payload));
     },
-    setIsContactDetailsModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isContactDetailsModalOpen = action.payload
-    },
-    setIsAccountCreationModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isAccountCreationModalOpen = action.payload
-    },
-    setIsCongratulationModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isCongratulationModalOpen = action.payload
-    },
     setIsTopupAccountModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isTopupAccountModalOpen = action.payload
     },
@@ -766,14 +762,13 @@ const operatorSlice = createSlice({
         localStorage.setItem("Fuse-isLoginError", "true");
       })
       .addCase(createOperator.pending, (state) => {
-        state.isContactDetailsModalOpen = false;
-        state.isAccountCreationModalOpen = true;
+        state.isCreatingOperator = true;
       })
       .addCase(createOperator.fulfilled, (state, action) => {
         state.operator = action.payload;
         state.isAuthenticated = true;
-        state.isAccountCreationModalOpen = false;
-        state.isCongratulationModalOpen = true;
+        state.isCreatingOperator = false;
+        state.isCreatedOperator = true;
         const { secretPrefix, secretLastFourChars } = splitSecretKey(action.payload.project.secretKey);
         state.operator.project.secretPrefix = secretPrefix;
         state.operator.project.secretLastFourChars = secretLastFourChars;
@@ -782,7 +777,7 @@ const operatorSlice = createSlice({
         localStorage.removeItem("Fuse-operatorContactDetail");
       })
       .addCase(createOperator.rejected, (state) => {
-        state.isAccountCreationModalOpen = false;
+        state.isCreatingOperator = false;
       })
       .addCase(generateSecretApiKey.pending, (state) => {
         state.isGeneratingSecretApiKey = true;
@@ -908,9 +903,6 @@ export const {
   setIsLoginError,
   setIsValidated,
   setIsOperatorWalletModalOpen,
-  setIsContactDetailsModalOpen,
-  setIsAccountCreationModalOpen,
-  setIsCongratulationModalOpen,
   setIsTopupAccountModalOpen,
   setIsWithdrawModalOpen,
   setIsTopupPaymasterModalOpen,
