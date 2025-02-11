@@ -470,3 +470,10 @@ export type CreateAirdropUser = {
 export interface NodesUser {
   licences: number;
 }
+
+export enum Status {
+  IDLE = "idle",
+  PENDING = "pending",
+  SUCCESS = "success",
+  ERROR = "error",
+}

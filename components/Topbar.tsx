@@ -21,17 +21,6 @@ const AirdropSubmenu = [
   },
 ]
 
-const NodesSubmenu = [
-  {
-    title: "Testnet Nodes",
-    link: path.TESTNET_NODES,
-  },
-  {
-    title: "Ember Nodes",
-    link: path.EMBER_NODES,
-  },
-]
-
 const Topbar = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const { isTransfiModalOpen, selected } = useAppSelector(selectNavbarSlice);
@@ -60,7 +49,7 @@ const Topbar = () => {
     },
     {
       title: "Nodes",
-      link: "/nodes",
+      link: path.TESTNET_NODES,
     },
   ]);
 
@@ -72,9 +61,6 @@ const Topbar = () => {
         }
         if (item.link === path.AIRDROP && airdropSlice.isUser) {
           return { ...item, link: path.AIRDROP, submenu: AirdropSubmenu }
-        }
-        if (item.link === path.NODES) {
-          return { ...item, link: '#', submenu: NodesSubmenu }
         }
         return item
       }

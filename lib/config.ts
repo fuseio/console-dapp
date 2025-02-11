@@ -17,6 +17,8 @@ type CONFIG = {
   blockRewardAddress: Address;
   bootApi: string;
   paymasterAddress: Address;
+  delegateRegistryAddress: Address;
+  nodeLicenseAddress: Address;
 }
 
 export const CONFIG: CONFIG = {
@@ -26,6 +28,8 @@ export const CONFIG: CONFIG = {
   blockRewardAddress: "0x63D4efeD2e3dA070247bea3073BCaB896dFF6C9B",
   bootApi: "https://bot.fuse.io/api/v1",
   paymasterAddress: "0xEA1Ba4305A07cEd2bB5e42224D71aBE0BC3C3f28",
+  delegateRegistryAddress: "0xf9689022f129aEb4495f6C33bacF4bCabA1F8fca",
+  nodeLicenseAddress: "0xB42F66f690816D2B076D26B20697Aa594dc1Fd2f",
 };
 
 export const chainConfig = createChainConfig(chains);

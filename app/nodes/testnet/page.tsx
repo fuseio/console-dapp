@@ -9,6 +9,7 @@ import { setSelectedNavbar } from "@/store/navbarSlice";
 import Footer from "@/components/Footer";
 import NoLicenseModal from "@/components/nodes/NoLicenseModal";
 import NoCapacityModal from "@/components/nodes/NoCapacityModal";
+import DelegateLicenseModal from "@/components/nodes/DelegateLicenseModal";
 
 const Nodes = () => {
   const dispatch = useAppDispatch();
@@ -21,6 +22,7 @@ const Nodes = () => {
     <div className="font-mona w-full min-h-screen flex-col flex items-center bg-light-gray">
       <NoLicenseModal />
       <NoCapacityModal />
+      <DelegateLicenseModal />
       <Topbar />
       <Home />
       <Footer />

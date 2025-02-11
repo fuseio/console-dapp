@@ -49,3 +49,13 @@
   border-style: solid;
   border-color: transparent transparent black transparent;
 }
+
+.number-input::-webkit-outer-spin-button,
+.number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.number-input[type=number] {
+  -moz-appearance: textfield;
+}
