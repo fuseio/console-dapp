@@ -1,24 +1,13 @@
-import Link from "next/link";
-
-import { setIsDelegateLicenseModalOpen, setIsNodeInstallModalOpen } from "@/store/nodesSlice";
+import { setIsDelegateLicenseModalOpen } from "@/store/nodesSlice";
 import { useAppDispatch } from "@/store/store";
 import VerifierTable from "@/components/nodes/VerifierTable";
 
 const Header = () => {
-  const dispatch = useAppDispatch();
-
   return (
     <header className="flex justify-between items-center">
       <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
         Testnet Nodes
       </h1>
-      <Link
-        href=""
-        onClick={() => dispatch(setIsNodeInstallModalOpen(true))}
-        className="underline underline-offset-4 md:text-sm"
-      >
-        How to operate your own node?
-      </Link>
     </header>
   );
 };

@@ -467,8 +467,13 @@ export type CreateAirdropUser = {
   referralCode: string;
 }
 
+export type NodeLicense = {
+  tokenId: number;
+  balance: number;
+}
+
 export interface NodesUser {
-  licences: number;
+  licences: NodeLicense[];
 }
 
 export enum Status {

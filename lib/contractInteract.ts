@@ -16,6 +16,7 @@ import { Contract, providers } from "ethers";
 import { Interface } from "ethers/lib/utils";
 import { BlockReward } from "./abi/BlockReward";
 import { DelegateRegistryABI } from "./abi/DelegateRegistry";
+import { ERC1155ABI } from "./abi/ERC1155";
 
 const provider = new providers.JsonRpcProvider(CONFIG.fuseRPC);
 
@@ -135,4 +136,14 @@ export const delegateNodeLicense = async (to: Address, tokenId: number, amount: 
     hash: tx,
   });
   return tx;
+};
+
+export const getNodeLicenseBalances = async (accounts: Address[], tokenIds: bigint[]) => {
+  const balances = await publicClient().readContract({
+    address: CONFIG.nodeLicenseAddress,
+    abi: ERC1155ABI,
+    functionName: "balanceOfBatch",
+    args: [accounts, tokenIds],
+  });
+  return balances;
 };
