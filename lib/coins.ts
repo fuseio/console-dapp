@@ -35,7 +35,6 @@ export const coins: CoinConfigLike[] = [
     decimals: 18,
     icon: eth,
     coinGeckoId: "ethereum",
-    isDisabled: true,
   },
   {
     name: "Wrapped Ether",
@@ -43,7 +42,6 @@ export const coins: CoinConfigLike[] = [
     decimals: 18,
     icon: weth,
     coinGeckoId: "ethereum",
-    isDisabled: true,
   },
   {
     name: "Wrapped Ether (Stargate)",
@@ -59,7 +57,6 @@ export const coins: CoinConfigLike[] = [
     decimals: 6,
     icon: usdc,
     coinGeckoId: "usd-coin",
-    isDisabled: true,
   },
   {
     name: "Bridged USD Coin",
@@ -75,7 +72,6 @@ export const coins: CoinConfigLike[] = [
     decimals: 6,
     icon: usdt,
     coinGeckoId: "tether",
-    isDisabled: true,
   },
   {
     name: "Tether USD (Stargate)",
