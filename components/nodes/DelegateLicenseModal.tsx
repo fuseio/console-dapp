@@ -3,18 +3,16 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Address } from "viem";
-import { useAccount } from "wagmi";
 import { useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { Error } from "@/components/ui/Form";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
-import { delegateLicense, fetchNodeLicenseBalances, selectNodesSlice, setIsDelegateLicenseModalOpen } from "@/store/nodesSlice";
+import { delegateLicense, selectNodesSlice, setIsDelegateLicenseModalOpen } from "@/store/nodesSlice";
 import Spinner from "@/components/ui/Spinner";
 
 import close from "@/assets/close.svg";
 import { Status } from "@/lib/types";
-import { useEffect } from "react";
 
 type DelegateLicenseFormValues = {
   to: Address;
@@ -25,9 +23,7 @@ type DelegateLicenseFormValues = {
 const DelegateLicenseModal = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const nodesSlice = useAppSelector(selectNodesSlice);
-  const { address } = useAccount();
   const [isTierDropdownOpen, setIsTierDropdownOpen] = useState(false);
-  const isBalance = nodesSlice.user.licences.some((licence) => licence.balance);
 
   const modalRef = useOutsideClick(() => {
     if (nodesSlice.isDelegateLicenseModalOpen) {
@@ -58,15 +54,6 @@ const DelegateLicenseModal = (): JSX.Element => {
       dispatch(delegateLicense(values));
     },
   });
-
-  useEffect(() => {
-    if (address) {
-      dispatch(fetchNodeLicenseBalances({
-        accounts: Array.from({ length: 10 }, () => address),
-        tokenIds: Array.from({ length: 10 }, (_, i) => i),
-      }));
-    }
-  }, [address, dispatch]);
 
   return (
     <AnimatePresence>
@@ -136,7 +123,7 @@ const DelegateLicenseModal = (): JSX.Element => {
                       {formik.values.tokenId}
                     </button>
                     <AnimatePresence>
-                      {isTierDropdownOpen && isBalance && (
+                      {isTierDropdownOpen && (
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
@@ -191,9 +178,8 @@ const DelegateLicenseModal = (): JSX.Element => {
                 <button
                   type="submit"
                   className={`transition-all ease-in-out flex justify-center items-center gap-2 border rounded-full font-semibold leading-none p-4 disabled:bg-iron disabled:border-iron enabled:hover:bg-[transparent] enabled:hover:border-black enabled:hover:text-black ${nodesSlice.deligateLicenseStatus === Status.ERROR ? "bg-[#FFEBE9] text-[#FD0F0F]" : "border-success bg-success"}`}
-                  disabled={!isBalance}
                 >
-                  {nodesSlice.deligateLicenseStatus === Status.SUCCESS ? "Delegated" : isBalance ? "Delegate" : "No license"}
+                  {nodesSlice.deligateLicenseStatus === Status.SUCCESS ? "Delegated" : "Delegate"}
                   {nodesSlice.deligateLicenseStatus === Status.PENDING && <Spinner />}
                 </button>
               </div>
