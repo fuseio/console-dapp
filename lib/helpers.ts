@@ -1,7 +1,7 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { TransactionType } from "@/store/transactionsSlice";
-import { AirdropUser, WalletType } from "./types";
+import { AirdropUser, NodeLicense, WalletType } from "./types";
 
 export const eclipseAddress = (address: string): string => {
   return (
@@ -138,4 +138,8 @@ export const isSocialFollowed = (user: AirdropUser) => {
   .completedQuests
   ?.filter((quest) => socialQuests.includes(quest.type))
   .length === socialQuests.length;
+}
+
+export const getLicenseBalance = (licences: NodeLicense[]) => {
+  return licences.reduce((acc, licence) => acc + licence.balance, 0);
 }

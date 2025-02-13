@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { CONFIG, NEXT_PUBLIC_AIRDROP_API_BASE_URL, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL, NEXT_PUBLIC_FUSE_API_BASE_URL } from './config'
+import { CONFIG, NEXT_PUBLIC_AIRDROP_API_BASE_URL, NEXT_PUBLIC_AVAIL_MONITORING_API_URL, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL, NEXT_PUBLIC_FUSE_API_BASE_URL } from './config'
 import { AirdropUser, CreateAirdropUser, DelegatedAmountsByDelegators, DelegatedAmountsRequest, AirdropLeaderboard, Operator, OperatorContactDetail, Paymaster, SignData, ValidatorResponse } from "./types";
 import { Address } from "viem";
 
@@ -280,5 +280,15 @@ export const postAuthenticatedAirdrop = async (token: string, endpoint: string):
             }
         }
     )
+    return response.data
+}
+
+export const fetchNodesClients = async () => {
+    const response = await axios.get(`${NEXT_PUBLIC_AVAIL_MONITORING_API_URL}/clients`)
+    return response.data
+}
+
+export const fetchUserDelegations = async (address: Address) => {
+    const response = await axios.get(`${NEXT_PUBLIC_AVAIL_MONITORING_API_URL}/delegations?address=${address}`)
     return response.data
 }

@@ -15,12 +15,13 @@ import {
   getFacetedRowModel,
   Table,
 } from '@tanstack/react-table'
+import { useAccount } from 'wagmi';
 
 import { Verifier } from '@/lib/types';
 import { useOutsideClick } from '@/lib/hooks/useOutsideClick';
-import { eclipseAddress } from '@/lib/helpers';
+import { eclipseAddress, getLicenseBalance } from '@/lib/helpers';
 import { useAppDispatch, useAppSelector } from '@/store/store';
-import { selectNodesSlice, setIsNoCapacityModalOpen, setIsNoLicenseModalOpen } from '@/store/nodesSlice';
+import { fetchDelegations, fetchNodes, selectNodesSlice, setIsNoCapacityModalOpen, setIsNoLicenseModalOpen } from '@/store/nodesSlice';
 
 import nodeops from '@/assets/nodeops.svg';
 import easeflow from '@/assets/easeflow.png';
@@ -118,6 +119,8 @@ const VerifierTable = () => {
   const [filterOpen, setFilterOpen] = useState("");
   const dispatch = useAppDispatch();
   const nodesSlice = useAppSelector(selectNodesSlice);
+  const licenseBalance = getLicenseBalance(nodesSlice.user.licences);
+  const { address } = useAccount();
 
   const columns = useMemo<ColumnDef<Verifier, any>[]>(
     () => [
@@ -204,7 +207,7 @@ const VerifierTable = () => {
             onClick={() => {
               if (info.row.original.receivedDelegations === 100) {
                 dispatch(setIsNoCapacityModalOpen(true));
-              } else if (!nodesSlice.user.licences) {
+              } else if (!licenseBalance) {
                 dispatch(setIsNoLicenseModalOpen(true));
               }
             }}
@@ -218,7 +221,7 @@ const VerifierTable = () => {
         enableSorting: false,
       }
     ],
-    [dispatch, nodesSlice.user.licences]
+    [dispatch, licenseBalance]
   )
 
   const table = useReactTable({
@@ -238,6 +241,16 @@ const VerifierTable = () => {
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
+
+  useEffect(() => {
+    dispatch(fetchNodes());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (address) {
+      dispatch(fetchDelegations(address));
+    }
+  }, [dispatch, address]);
 
   return (
     <section className="flex flex-col gap-4">

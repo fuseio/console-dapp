@@ -474,6 +474,7 @@ export type NodeLicense = {
 
 export interface NodesUser {
   licences: NodeLicense[];
+  delegations: Node[];
 }
 
 export enum Status {
@@ -481,4 +482,16 @@ export enum Status {
   PENDING = "pending",
   SUCCESS = "success",
   ERROR = "error",
+}
+
+export type Node = {
+  Address: Address;
+  TotalTime: number;
+  LastHeartbeat: Date;
+  CreatedAt: Date;
+  NFTAmount: number;
+  CommissionRate: number;
+  Status: string;
+  AllUptimePercentage: number;
+  WeeklyUptimePercentage: number;
 }

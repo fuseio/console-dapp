@@ -5,6 +5,7 @@ import { fetchNodeLicenseBalances, selectNodesSlice, setIsDelegateLicenseModalOp
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import VerifierTable from "@/components/nodes/VerifierTable";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
+import { getLicenseBalance } from "@/lib/helpers";
 
 const Header = () => {
   return (
@@ -20,7 +21,7 @@ const Info = () => {
   const dispatch = useAppDispatch();
   const { address } = useAccount();
   const nodesSlice = useAppSelector(selectNodesSlice);
-  const licenseBalance = nodesSlice.user.licences.reduce((acc, licence) => acc + licence.balance, 0);
+  const licenseBalance = getLicenseBalance(nodesSlice.user.licences);
 
   useEffect(() => {
     if (address) {

@@ -1,11 +1,13 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
-import { NodesUser, Status } from "@/lib/types";
+import { NodesUser, Status, Node } from "@/lib/types";
 import { delegateNodeLicense, getNodeLicenseBalances } from "@/lib/contractInteract";
 import { Address } from "viem";
+import { fetchNodesClients, fetchUserDelegations } from "@/lib/api";
 
 const initUser: NodesUser = {
-  licences: []
+  licences: [],
+  delegations: [],
 }
 
 export interface NodesStateType {
@@ -16,6 +18,9 @@ export interface NodesStateType {
   deligateLicenseStatus: Status;
   user: NodesUser;
   fetchNodeLicenseBalancesStatus: Status;
+  fetchNodesStatus: Status;
+  nodes: Node[];
+  fetchDelegationsStatus: Status;
 }
 
 const INIT_STATE: NodesStateType = {
@@ -26,6 +31,9 @@ const INIT_STATE: NodesStateType = {
   deligateLicenseStatus: Status.IDLE,
   user: initUser,
   fetchNodeLicenseBalancesStatus: Status.IDLE,
+  fetchNodesStatus: Status.IDLE,
+  nodes: [],
+  fetchDelegationsStatus: Status.IDLE,
 };
 
 export const delegateLicense = createAsyncThunk(
@@ -71,6 +79,32 @@ export const fetchNodeLicenseBalances = createAsyncThunk(
   }
 );
 
+export const fetchNodes = createAsyncThunk(
+  "NODES/FETCH_NODES",
+  async () => {
+    try {
+      const nodes = await fetchNodesClients();
+      return nodes.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
+export const fetchDelegations = createAsyncThunk(
+  "NODES/FETCH_DELEGATIONS",
+  async (address: Address) => {
+    try {
+      const delegations = await fetchUserDelegations(address);
+      return delegations.clients.map((client: { client: any; }) => ({ ...client.client }));
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
 const nodesSlice = createSlice({
   name: "NODES_STATE",
   initialState: INIT_STATE,
@@ -109,6 +143,26 @@ const nodesSlice = createSlice({
       })
       .addCase(fetchNodeLicenseBalances.rejected, (state) => {
         state.fetchNodeLicenseBalancesStatus = Status.ERROR;
+      })
+      .addCase(fetchNodes.pending, (state) => {
+        state.fetchNodesStatus = Status.PENDING;
+      })
+      .addCase(fetchNodes.fulfilled, (state, action) => {
+        state.fetchNodesStatus = Status.SUCCESS;
+        state.nodes = action.payload;
+      })
+      .addCase(fetchNodes.rejected, (state) => {
+        state.fetchNodesStatus = Status.ERROR;
+      })
+      .addCase(fetchDelegations.pending, (state) => {
+        state.fetchDelegationsStatus = Status.PENDING;
+      })
+      .addCase(fetchDelegations.fulfilled, (state, action) => {
+        state.fetchDelegationsStatus = Status.SUCCESS;
+        state.user.delegations = action.payload;
+      })
+      .addCase(fetchDelegations.rejected, (state) => {
+        state.fetchDelegationsStatus = Status.ERROR;
       });
   },
 });
