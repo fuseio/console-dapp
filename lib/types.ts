@@ -389,16 +389,6 @@ export interface ValidatorResponse {
   validatorsMetadata: Record<Address, ValidatorTypeResponse>
 }
 
-export interface Verifier {
-  operator: string;
-  address: Address;
-  receivedDelegations: number;
-  uptimeAll: number;
-  uptime7d: number;
-  commission: number;
-  status: string;
-}
-
 export interface CompletedQuest {
   type: string;
   stakingType?: string;
@@ -494,4 +484,9 @@ export type Node = {
   Status: string;
   AllUptimePercentage: number;
   WeeklyUptimePercentage: number;
+}
+
+export type DelegateLicenseModal = {
+  open: boolean;
+  address?: Address;
 }

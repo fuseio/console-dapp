@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import Image, { StaticImageData } from 'next/image';
-import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Filter as FilterIcon, Search, Info } from 'lucide-react';
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Filter as FilterIcon, Search, Info, Ghost, WalletMinimal } from 'lucide-react';
 import {
   Column,
   ColumnDef,
@@ -17,15 +17,13 @@ import {
 } from '@tanstack/react-table'
 import { useAccount } from 'wagmi';
 
-import { Verifier } from '@/lib/types';
+import { Node, Status } from '@/lib/types';
 import { useOutsideClick } from '@/lib/hooks/useOutsideClick';
 import { eclipseAddress, getLicenseBalance } from '@/lib/helpers';
 import { useAppDispatch, useAppSelector } from '@/store/store';
-import { fetchDelegations, fetchNodes, selectNodesSlice, setIsNoCapacityModalOpen, setIsNoLicenseModalOpen } from '@/store/nodesSlice';
+import { fetchDelegations, fetchNodes, NodesStateType, selectNodesSlice, setDelegateLicenseModal, setIsNoCapacityModalOpen, setIsNoLicenseModalOpen } from '@/store/nodesSlice';
 
 import nodeops from '@/assets/nodeops.svg';
-import easeflow from '@/assets/easeflow.png';
-import profile from '@/assets/profile.svg';
 
 declare module '@tanstack/react-table' {
   // see: https://github.com/TanStack/table/discussions/5222
@@ -41,50 +39,27 @@ type FilterProps = {
   setFilterOpen: (value: string) => void
 }
 
-const myDelegates = [
-  "0x885D7D22b5A0D6E155F260bc1Dd61dD116EC7512",
-  "0xb5ebEe21D3e6A1205E9F6cE87D1b77c32089A9C0"
-]
+type SkeletonProps = {
+  length: number
+  span: number
+}
 
-const verifiers: Verifier[] = [
-  {
-    "operator": "NodeOps",
-    "address": "0xc2F1fF60363cD58398fB3352afE43Ca735371C9C",
-    "receivedDelegations": 70,
-    "uptimeAll": 100,
-    "uptime7d": 100,
-    "commission": 0,
-    "status": "Active",
-  },
-  {
-    "operator": "Easeflow",
-    "address": "0x885D7D22b5A0D6E155F260bc1Dd61dD116EC7512",
-    "receivedDelegations": 25,
-    "uptimeAll": 100,
-    "uptime7d": 100,
-    "commission": 0,
-    "status": "Inactive",
-  },
-  {
-    "operator": "Solo Operator",
-    "address": "0xb5ebEe21D3e6A1205E9F6cE87D1b77c32089A9C0",
-    "receivedDelegations": 100,
-    "uptimeAll": 100,
-    "uptime7d": 100,
-    "commission": 0,
-    "status": "Active",
-  }
-]
+type NoticeProps = {
+  span: number
+  icon: React.ReactNode
+  text: string
+}
+
+type RowsProps = {
+  table: Table<Node>
+  nodesSlice: NodesStateType
+}
 
 const verifierImages: Record<string, StaticImageData> = {
   "NodeOps": nodeops,
-  "Easeflow": easeflow,
-  "Solo Operator": profile,
 }
 
-const data = new Array(100).fill(null).map((_, index) => verifiers[index % verifiers.length])
-
-const renderPageNumbers = (table: Table<Verifier>) => {
+const renderPageNumbers = (table: Table<Node>) => {
   const { pageIndex } = table.getState().pagination;
   const pageCount = table.getPageCount();
   const pages = [];
@@ -115,6 +90,94 @@ const renderPageNumbers = (table: Table<Verifier>) => {
   ));
 };
 
+const Skeleton = ({ length, span }: SkeletonProps) => {
+  return (
+    Array.from({ length }).map((_, index) => (
+      <tr key={index} className='border-b border-light-gray'>
+        <td colSpan={span} className='animate-pulse bg-fuse-black/10 h-[67px]'></td>
+      </tr>
+    ))
+  )
+}
+
+const Notice = ({ span, icon, text }: NoticeProps) => {
+  return (
+    <tr>
+      <td colSpan={span} className='px-2 py-36'>
+        <div className='flex flex-col items-center gap-2'>
+          <div>
+            {icon}
+          </div>
+          <div>
+            {text}
+          </div>
+        </div>
+      </td>
+    </tr>
+  )
+}
+
+const Rows = ({ table, nodesSlice }: RowsProps) => {
+  const { address } = useAccount();
+
+  if (table.getRowModel().rows.length) {
+    return (
+      table.getRowModel().rows.map(row => {
+        return (
+          <tr key={row.id} className='border-b border-light-gray'>
+            {row.getVisibleCells().map((cell, index) => {
+              return (
+                <td key={cell.id} className={`px-2 py-4 ${index === 0 ? 'ps-8' : ''} ${index === row.getVisibleCells().length - 1 ? 'pe-8' : ''}`}>
+                  {flexRender(
+                    cell.column.columnDef.cell,
+                    cell.getContext()
+                  )}
+                </td>
+              )
+            })}
+          </tr>
+        )
+      })
+    )
+  }
+
+  if (table.getState().globalFilter) {
+    if (nodesSlice.fetchDelegationsStatus === Status.PENDING) {
+      return (
+        <Skeleton
+          length={3}
+          span={table.getVisibleFlatColumns().length}
+        />
+      )
+    } else {
+      return (
+        <Notice
+          span={table.getVisibleFlatColumns().length}
+          icon={address ? <Ghost size={80} /> : <WalletMinimal size={80} />}
+          text={address ? "No data" : "Connect wallet"}
+        />
+      )
+    }
+  }
+
+  if (nodesSlice.fetchNodesStatus === Status.PENDING) {
+    return (
+      <Skeleton
+        length={3}
+        span={table.getVisibleFlatColumns().length}
+      />
+    )
+  }
+
+  return (
+    <Notice
+      span={table.getVisibleFlatColumns().length}
+      icon={<Ghost size={80} />}
+      text={"No data"}
+    />
+  )
+}
+
 const VerifierTable = () => {
   const [filterOpen, setFilterOpen] = useState("");
   const dispatch = useAppDispatch();
@@ -122,27 +185,24 @@ const VerifierTable = () => {
   const licenseBalance = getLicenseBalance(nodesSlice.user.licences);
   const { address } = useAccount();
 
-  const columns = useMemo<ColumnDef<Verifier, any>[]>(
+  const columns = useMemo<ColumnDef<Node, any>[]>(
     () => [
       {
         accessorKey: 'operator',
         header: 'Operator',
-        filterFn: 'arrIncludesSome',
         size: 200,
-        cell: info => (
+        cell: () => (
           <div className='flex items-center gap-2 w-max'>
-            <Image src={verifierImages[info.getValue()]} alt={info.getValue()} width={24} height={24} />
-            {info.getValue()}
+            <Image src={verifierImages["NodeOps"]} alt="NodeOps" width={24} height={24} />
+            NodeOps
           </div>
         ),
+        enableColumnFilter: false,
         enableGlobalFilter: false,
         enableSorting: false,
-        meta: {
-          filterVariant: 'select',
-        },
       },
       {
-        accessorKey: 'address',
+        accessorKey: 'Address',
         header: 'Address',
         size: 160,
         cell: info => eclipseAddress(info.getValue()),
@@ -152,14 +212,14 @@ const VerifierTable = () => {
         },
       },
       {
-        accessorKey: 'receivedDelegations',
+        accessorKey: 'NFTAmount',
         header: () => 'Received Delegations',
-        cell: info => <div>{info.getValue()} ({(info.getValue() / 600).toFixed(2)}%)</div>,
+        cell: info => <div>{info.getValue()}</div>,
         enableColumnFilter: false,
         enableGlobalFilter: false,
       },
       {
-        accessorKey: 'uptimeAll',
+        accessorKey: 'AllUptimePercentage',
         header: () => 'Uptime (All)',
         cell: info => <div>{info.getValue().toFixed(2)}%</div>,
         enableColumnFilter: false,
@@ -169,7 +229,7 @@ const VerifierTable = () => {
         }
       },
       {
-        accessorKey: 'uptime7d',
+        accessorKey: 'WeeklyUptimePercentage',
         header: () => 'Uptime (7d)',
         cell: info => <div>{info.getValue().toFixed(2)}%</div>,
         enableColumnFilter: false,
@@ -179,7 +239,7 @@ const VerifierTable = () => {
         }
       },
       {
-        accessorKey: 'commission',
+        accessorKey: 'CommissionRate',
         header: () => 'Commission',
         cell: info => <div>{info.getValue().toFixed(2)}%</div>,
         enableColumnFilter: false,
@@ -189,7 +249,7 @@ const VerifierTable = () => {
         }
       },
       {
-        accessorKey: 'status',
+        accessorKey: 'Status',
         header: () => 'Status',
         filterFn: 'arrIncludesSome',
         cell: info => <div className={`p-2 rounded-full text-center leading-none font-semibold w-24 ${info.getValue() === 'Active' ? 'bg-success' : 'bg-light-gray'}`}>{info.getValue()}</div>,
@@ -205,10 +265,12 @@ const VerifierTable = () => {
         cell: (info) => (
           <button
             onClick={() => {
-              if (info.row.original.receivedDelegations === 100) {
+              if (info.row.original.NFTAmount === 100) {
                 dispatch(setIsNoCapacityModalOpen(true));
               } else if (!licenseBalance) {
                 dispatch(setIsNoLicenseModalOpen(true));
+              } else {
+                dispatch(setDelegateLicenseModal({ open: true, address: info.row.original.Address }));
               }
             }}
             className="px-3 py-2 border border-black rounded-full leading-none font-semibold hover:bg-black hover:text-white"
@@ -225,7 +287,7 @@ const VerifierTable = () => {
   )
 
   const table = useReactTable({
-    data,
+    data: nodesSlice.nodes,
     columns,
     globalFilterFn: 'arrIncludesSome',
     debugTable: true,
@@ -266,7 +328,7 @@ const VerifierTable = () => {
             All
           </button>
           <button
-            onClick={() => table.setGlobalFilter(myDelegates)}
+            onClick={() => table.setGlobalFilter(nodesSlice.user.delegations.map(node => node.Address))}
             className={`transition-all ease-in-out ${table.getState().globalFilter ? "bg-success-light text-success-dark" : "bg-white hover:opacity-70"} text-sm font-semibold rounded-e-full px-7 py-3`}
           >
             My Delegates
@@ -299,7 +361,7 @@ const VerifierTable = () => {
                             <div className="group relative hover:text-black">
                               <Info size={12} />
                               <div className="tooltip-text-up hidden top-[200%] left-1/2 -translate-x-1/2 absolute bg-white p-4 rounded-2xl w-[400px] text-sm whitespace-normal shadow-xl group-hover:block">
-                               {header.column.columnDef.meta.tooltip}
+                                {header.column.columnDef.meta.tooltip}
                               </div>
                             </div>
                           )}
@@ -345,22 +407,7 @@ const VerifierTable = () => {
             ))}
           </thead>
           <tbody>
-            {table.getRowModel().rows.map(row => {
-              return (
-                <tr key={row.id} className='border-b border-light-gray'>
-                  {row.getVisibleCells().map((cell, index) => {
-                    return (
-                      <td key={cell.id} className={`px-2 py-4 ${index === 0 ? 'ps-8' : ''} ${index === row.getVisibleCells().length - 1 ? 'pe-8' : ''}`}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </td>
-                    )
-                  })}
-                </tr>
-              )
-            })}
+            <Rows table={table} nodesSlice={nodesSlice} />
           </tbody>
         </table>
         <footer className="px-8 py-7 flex justify-between items-center gap-2">
@@ -479,7 +526,7 @@ function Filter({ column, setFilterOpen }: FilterProps) {
             <button
               key={value}
               onClick={() => handleFilter(value)}
-              className="p-2 rounded-md hover:bg-light-gray"
+              className="p-2 rounded-md text-start hover:bg-light-gray"
             >
               {value}
             </button>

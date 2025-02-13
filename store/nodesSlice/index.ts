@@ -1,6 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
-import { NodesUser, Status, Node } from "@/lib/types";
+import { NodesUser, Status, Node, DelegateLicenseModal } from "@/lib/types";
 import { delegateNodeLicense, getNodeLicenseBalances } from "@/lib/contractInteract";
 import { Address } from "viem";
 import { fetchNodesClients, fetchUserDelegations } from "@/lib/api";
@@ -10,11 +10,16 @@ const initUser: NodesUser = {
   delegations: [],
 }
 
+const initDelegateLicenseModal: DelegateLicenseModal = {
+  open: false,
+  address: undefined,
+}
+
 export interface NodesStateType {
   isNodeInstallModalOpen: boolean;
   isNoLicenseModalOpen: boolean;
   isNoCapacityModalOpen: boolean;
-  isDelegateLicenseModalOpen: boolean;
+  delegateLicenseModal: DelegateLicenseModal;
   deligateLicenseStatus: Status;
   user: NodesUser;
   fetchNodeLicenseBalancesStatus: Status;
@@ -27,7 +32,7 @@ const INIT_STATE: NodesStateType = {
   isNodeInstallModalOpen: false,
   isNoLicenseModalOpen: false,
   isNoCapacityModalOpen: false,
-  isDelegateLicenseModalOpen: false,
+  delegateLicenseModal: initDelegateLicenseModal,
   deligateLicenseStatus: Status.IDLE,
   user: initUser,
   fetchNodeLicenseBalancesStatus: Status.IDLE,
@@ -84,7 +89,7 @@ export const fetchNodes = createAsyncThunk(
   async () => {
     try {
       const nodes = await fetchNodesClients();
-      return nodes.data;
+      return nodes.data ?? [];
     } catch (error) {
       console.log(error);
       throw error;
@@ -97,6 +102,9 @@ export const fetchDelegations = createAsyncThunk(
   async (address: Address) => {
     try {
       const delegations = await fetchUserDelegations(address);
+      if (!delegations.clients?.length) {
+        return [];
+      }
       return delegations.clients.map((client: { client: any; }) => ({ ...client.client }));
     } catch (error) {
       console.log(error);
@@ -118,8 +126,8 @@ const nodesSlice = createSlice({
     setIsNoCapacityModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isNoCapacityModalOpen = action.payload
     },
-    setIsDelegateLicenseModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isDelegateLicenseModalOpen = action.payload
+    setDelegateLicenseModal: (state, action: PayloadAction<DelegateLicenseModal>) => {
+      state.delegateLicenseModal = action.payload
     },
   },
   extraReducers: (builder) => {
@@ -129,7 +137,7 @@ const nodesSlice = createSlice({
       })
       .addCase(delegateLicense.fulfilled, (state) => {
         state.deligateLicenseStatus = Status.SUCCESS;
-        state.isDelegateLicenseModalOpen = false;
+        state.delegateLicenseModal.open = false;
       })
       .addCase(delegateLicense.rejected, (state) => {
         state.deligateLicenseStatus = Status.ERROR;
@@ -173,7 +181,7 @@ export const {
   setIsNodeInstallModalOpen,
   setIsNoLicenseModalOpen,
   setIsNoCapacityModalOpen,
-  setIsDelegateLicenseModalOpen,
+  setDelegateLicenseModal,
 } = nodesSlice.actions;
 
 export default nodesSlice.reducer;

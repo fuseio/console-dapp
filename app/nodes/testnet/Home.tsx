@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
 
-import { fetchNodeLicenseBalances, selectNodesSlice, setIsDelegateLicenseModalOpen, setIsNoLicenseModalOpen } from "@/store/nodesSlice";
+import { fetchNodeLicenseBalances, selectNodesSlice, setDelegateLicenseModal, setIsNoLicenseModalOpen } from "@/store/nodesSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import VerifierTable from "@/components/nodes/VerifierTable";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
-import { getLicenseBalance } from "@/lib/helpers";
+import { eclipseAddress, getLicenseBalance, hex } from "@/lib/helpers";
 
 const Header = () => {
   return (
@@ -22,6 +22,7 @@ const Info = () => {
   const { address } = useAccount();
   const nodesSlice = useAppSelector(selectNodesSlice);
   const licenseBalance = getLicenseBalance(nodesSlice.user.licences);
+  const delegates = nodesSlice.user.delegations.reduce((acc, node) => acc + node.NFTAmount, 0);
 
   useEffect(() => {
     if (address) {
@@ -36,7 +37,7 @@ const Info = () => {
     <section className="grid grid-cols-4 items-center gap-8 p-8 bg-white rounded-[1.25rem] md:grid-cols-1">
       <div className="flex flex-col gap-4 md:gap-2">
         <div className="text-[1.25rem] font-bold">
-          0x892E...f8a6
+          {address ? eclipseAddress(address) : hex}
         </div>
         <div className="text-sm">
           License Key Holder
@@ -44,7 +45,7 @@ const Info = () => {
       </div>
       <div className="flex flex-col gap-4 md:gap-2">
         <div className="text-[1.25rem] font-bold">
-          {licenseBalance} (0 delegated)
+          {licenseBalance} ({delegates} delegated)
         </div>
         <div className="text-sm">
           License Keys
@@ -52,8 +53,8 @@ const Info = () => {
       </div>
       <div className="flex justify-start">
         <div className="flex flex-col items-center gap-4 md:gap-2">
-          <div className="bg-success rounded-full p-2 leading-none font-semibold">
-            Active
+          <div className={`rounded-full p-2 leading-none font-semibold ${delegates ? "bg-success" : "bg-light-gray"}`}>
+            {delegates ? "Active" : "Inactive"}
           </div>
           <div className="text-sm">
             Status
@@ -68,7 +69,7 @@ const Info = () => {
           if (!licenseBalance) {
             return dispatch(setIsNoLicenseModalOpen(true));
           }
-          dispatch(setIsDelegateLicenseModalOpen(true));
+          dispatch(setDelegateLicenseModal({ open: true, address: undefined }));
         }}
         className="transition-all ease-in-out border border-success bg-success rounded-full font-semibold leading-none p-3 hover:bg-[transparent] hover:border-black"
       >

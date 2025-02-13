@@ -3,12 +3,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Address } from "viem";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { Error } from "@/components/ui/Form";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
-import { delegateLicense, selectNodesSlice, setIsDelegateLicenseModalOpen } from "@/store/nodesSlice";
+import { delegateLicense, selectNodesSlice, setDelegateLicenseModal } from "@/store/nodesSlice";
 import Spinner from "@/components/ui/Spinner";
 
 import close from "@/assets/close.svg";
@@ -26,8 +26,8 @@ const DelegateLicenseModal = (): JSX.Element => {
   const [isTierDropdownOpen, setIsTierDropdownOpen] = useState(false);
 
   const modalRef = useOutsideClick(() => {
-    if (nodesSlice.isDelegateLicenseModalOpen) {
-      dispatch(setIsDelegateLicenseModalOpen(false));
+    if (nodesSlice.delegateLicenseModal.open) {
+      dispatch(setDelegateLicenseModal({ open: false }));
     }
   });
 
@@ -55,9 +55,15 @@ const DelegateLicenseModal = (): JSX.Element => {
     },
   });
 
+  useEffect(() => {
+    if (nodesSlice.delegateLicenseModal.address && formik.values.to === '0x') {
+      formik.setFieldValue('to', nodesSlice.delegateLicenseModal.address);
+    }
+  }, [formik, nodesSlice.delegateLicenseModal.address]);
+
   return (
     <AnimatePresence>
-      {nodesSlice.isDelegateLicenseModalOpen && (
+      {nodesSlice.delegateLicenseModal.open && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -83,7 +89,7 @@ const DelegateLicenseModal = (): JSX.Element => {
                 alt="close"
                 className="cursor-pointer w-6 absolute top-[15px] right-5"
                 onClick={() => {
-                  dispatch(setIsDelegateLicenseModalOpen(false));
+                  dispatch(setDelegateLicenseModal({ open: false }));
                 }}
               />
             </div>
