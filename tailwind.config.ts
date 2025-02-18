@@ -77,6 +77,8 @@ const config: Config = {
       "gray-goose": "#CFCFCF",
       "dune": "#333333",
       "dove-gray": "#6B6B6B",
+      "red-berry": "var(--red-berry)",
+      "sundown": "#F9B4B4",
       "bean-red": "#F65D51",
       "antique-white": "#FFECDA",
       "ash-gray": "#B9B9B9",

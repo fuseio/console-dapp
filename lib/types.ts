@@ -468,3 +468,37 @@ export type CreateAirdropUser = {
   walletAddress: Address;
   referralCode: string;
 }
+
+export type NodeLicense = {
+  tokenId: number;
+  balance: number;
+}
+
+export interface NodesUser {
+  licences: NodeLicense[];
+  delegations: Node[];
+}
+
+export enum Status {
+  IDLE = "idle",
+  PENDING = "pending",
+  SUCCESS = "success",
+  ERROR = "error",
+}
+
+export type Node = {
+  Address: Address;
+  TotalTime: number;
+  LastHeartbeat: Date;
+  CreatedAt: Date;
+  NFTAmount: number;
+  CommissionRate: number;
+  Status: string;
+  AllUptimePercentage: number;
+  WeeklyUptimePercentage: number;
+}
+
+export type DelegateLicenseModal = {
+  open: boolean;
+  address?: Address;
+}
