@@ -15,6 +15,7 @@ import navbarReducer from "./navbarSlice";
 import operatorReducer from "./operatorSlice";
 import liquidityReducer from "./liquiditySlice";
 import selectedChainReducer from "./selectedChainSlice";
+import nodesReducer from "./nodesSlice";
 import airdropReducer from "./airdropSlice";
 
 const appReducer = combineReducers({
@@ -30,6 +31,7 @@ const appReducer = combineReducers({
   operator: operatorReducer,
   liquidity: liquidityReducer,
   selectedChain: selectedChainReducer,
+  nodes: nodesReducer,
   airdrop: airdropReducer,
 });
 
@@ -46,6 +48,7 @@ export type AppState = {
   operator: ReturnType<typeof operatorReducer>;
   liquidity: ReturnType<typeof liquidityReducer>;
   selectedChain: ReturnType<typeof selectedChainReducer>;
+  nodes: ReturnType<typeof nodesReducer>;
   airdrop: ReturnType<typeof airdropReducer>;
 };
 

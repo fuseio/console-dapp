@@ -15,6 +15,8 @@ import { config } from "./web3Auth";
 import { Contract, providers } from "ethers";
 import { Interface } from "ethers/lib/utils";
 import { BlockReward } from "./abi/BlockReward";
+import { DelegateRegistryABI } from "./abi/DelegateRegistry";
+import { ERC1155ABI } from "./abi/ERC1155";
 
 const provider = new providers.JsonRpcProvider(CONFIG.fuseRPC);
 
@@ -113,4 +115,35 @@ export const getInflation = async () => {
   });
   const divisor = 10000
   return Number(getInflation) / divisor;
+};
+
+export const delegateNodeLicense = async (to: Address, tokenId: number, amount: number) => {
+  const walletClient = await getWalletClient(config, { chainId: fuse.id });
+  if (!walletClient) {
+    return;
+  }
+  const accounts = await walletClient.getAddresses();
+  const account = accounts[0];
+  const rights: Address = "0x4675736520456d626572204e6f6465204c6963656e7365000000000000000000"
+  const tx = await writeContract(config, {
+    account,
+    address: CONFIG.delegateRegistryAddress,
+    abi: DelegateRegistryABI,
+    functionName: "delegateERC1155",
+    args: [to, CONFIG.nodeLicenseAddress, BigInt(tokenId), rights, BigInt(amount)],
+  });
+  await waitForTransactionReceipt(config, {
+    hash: tx,
+  });
+  return tx;
+};
+
+export const getNodeLicenseBalances = async (accounts: Address[], tokenIds: bigint[]) => {
+  const balances = await publicClient().readContract({
+    address: CONFIG.nodeLicenseAddress,
+    abi: ERC1155ABI,
+    functionName: "balanceOfBatch",
+    args: [accounts, tokenIds],
+  });
+  return balances;
 };

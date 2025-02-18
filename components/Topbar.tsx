@@ -51,6 +51,10 @@ const Topbar = () => {
       title: "Staking",
       link: "/staking",
     },
+    {
+      title: "Nodes",
+      link: path.TESTNET_NODES,
+    },
   ]);
 
   useEffect(() => {
