@@ -1,10 +1,12 @@
+import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import { path } from "@/lib/helpers";
 import checkmark from "@/assets/checkmark-white.svg";
 import Spinner from "../ui/Spinner";
-import { useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/store/store";
+import { checkout, selectOperatorSlice } from "@/store/operatorSlice";
 
 export enum BillingCycle {
   MONTHLY = "monthly",
@@ -23,7 +25,6 @@ type PlanProps = {
   description: string;
   price: number;
   features: string[];
-  selectedBillingCycle: BillingCycle;
   buttonText: string;
   onClick?: () => void;
   isLoading?: boolean;
@@ -60,7 +61,6 @@ const Plan = ({
   description,
   price,
   features,
-  selectedBillingCycle,
   buttonText,
   onClick,
   isLoading,
@@ -89,7 +89,7 @@ const Plan = ({
             ${price}
           </span>
           <span className="text-white/60">
-            Per {selectedBillingCycle === BillingCycle.YEARLY ? "year" : "month"}
+            Per month
           </span>
         </div>
       </div>
@@ -117,6 +117,8 @@ const Plan = ({
 }
 
 const OperatorPricing = () => {
+  const dispatch = useAppDispatch();
+  const operatorSlice = useAppSelector(selectOperatorSlice);
   const router = useRouter();
   const [selectedBillingCycle, setSelectedBillingCycle] = useState<BillingCycle>(BillingCycle.MONTHLY);
   const percentageOff = selectedBillingCycle === BillingCycle.YEARLY ? 30 : 0;
@@ -133,6 +135,15 @@ const OperatorPricing = () => {
       basic: basicPrice - (basicPrice * percentageOff / 100),
       premium: premiumPrice - (premiumPrice * percentageOff / 100)
     }
+  }
+
+  function handleCheckout() {
+    const origin = window?.location?.origin ?? "";
+    dispatch(checkout({
+      successUrl: `${origin}${path.DASHBOARD}`,
+      cancelUrl: `${origin}${path.BUILD}?checkout-cancel=true`,
+      billingCycle: selectedBillingCycle
+    }));
   }
 
   return (
@@ -166,7 +177,6 @@ const OperatorPricing = () => {
             description="Start receiving crypto payments in just a few clicks"
             price={0}
             features={["Up to 1000 monthly transactions"]}
-            selectedBillingCycle={selectedBillingCycle}
             buttonText="Select"
             onClick={() => router.push(path.DASHBOARD)}
           />
@@ -175,9 +185,9 @@ const OperatorPricing = () => {
             description="Robust service. Low price."
             price={prices[selectedBillingCycle].basic}
             features={["1M transactions", "Access to all services on Fuse", "Reliable and fast support"]}
-            selectedBillingCycle={selectedBillingCycle}
             buttonText="Select"
-            onClick={() => router.push(path.DASHBOARD)}
+            onClick={handleCheckout}
+            isLoading={operatorSlice.isCheckingout}
             isBorder
             isPopular
           />
@@ -186,7 +196,6 @@ const OperatorPricing = () => {
             description="Get more. Maximize your business potential"
             price={prices[selectedBillingCycle].premium}
             features={["Everything in the Premium plan +", "Unlimited transactions", "Individual support approach"]}
-            selectedBillingCycle={selectedBillingCycle}
             buttonText="Coming soon"
             isDisabled
           />

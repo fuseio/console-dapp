@@ -4,8 +4,8 @@ import { Signer, ethers } from "ethers";
 import { FuseSDK, OwnerWalletClient } from "@fuseio/fusebox-web-sdk";
 import { SmartAccountClient } from "permissionless";
 import { hex, splitSecretKey, subscriptionInfo } from "@/lib/helpers";
-import { Operator, OperatorContactDetail, SignData, Withdraw } from "@/lib/types";
-import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreateOperatorWallet, postCreatePaymaster, postOperatorSubscription, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
+import { Operator, OperatorCheckout, OperatorContactDetail, SignData, Withdraw } from "@/lib/types";
+import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreateOperatorWallet, postCreatePaymaster, postOperatorCheckout, postOperatorSubscription, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
 import { CONFIG, NEXT_PUBLIC_FUSE_API_BASE_URL, NEXT_PUBLIC_PAYMASTER_FUNDER_ADDRESS } from "@/lib/config";
@@ -88,6 +88,7 @@ export interface OperatorStateType {
   isSubscriptionModalOpen: boolean;
   isSubscribing: boolean;
   isSubscribed: boolean;
+  isCheckingout: boolean;
 }
 
 const INIT_STATE: OperatorStateType = {
@@ -129,6 +130,7 @@ const INIT_STATE: OperatorStateType = {
   isSubscriptionModalOpen: false,
   isSubscribing: false,
   isSubscribed: false,
+  isCheckingout: false,
 };
 
 export const checkOperator = createAsyncThunk(
@@ -641,6 +643,22 @@ export const subscription = createAsyncThunk<
   }
 );
 
+export const checkout = createAsyncThunk(
+  "OPERATOR/CHECKOUT",
+  async (operatorCheckout: OperatorCheckout) => {
+    try {
+      const checkoutUrl = await postOperatorCheckout(operatorCheckout)
+      if (!checkoutUrl) {
+        throw new Error("Checkout URL not found");
+      }
+      return checkoutUrl;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
 const operatorSlice = createSlice({
   name: "OPERATOR_STATE",
   initialState: INIT_STATE,
@@ -759,9 +777,9 @@ const operatorSlice = createSlice({
       .addCase(fetchOperator.rejected, (state) => {
         state.isFetchingOperator = false;
         state.isLoginError = true;
-        localStorage.setItem("Fuse-isLoginError", "true");
       })
       .addCase(createOperator.pending, (state) => {
+        state.isLoginError = false;
         state.isCreatingOperator = true;
       })
       .addCase(createOperator.fulfilled, (state, action) => {
@@ -891,6 +909,16 @@ const operatorSlice = createSlice({
       })
       .addCase(subscription.rejected, (state) => {
         state.isSubscribing = false;
+      })
+      .addCase(checkout.pending, (state) => {
+        state.isCheckingout = true;
+      })
+      .addCase(checkout.fulfilled, (state, action) => {
+        state.isCheckingout = false;
+        window.location.href = action.payload
+      })
+      .addCase(checkout.rejected, (state) => {
+        state.isCheckingout = false;
       })
   },
 });

@@ -408,3 +408,9 @@ export interface SubscriptionInfo {
   decimals: number
   usdcAddress: Address,
 }
+
+export interface OperatorCheckout {
+  successUrl: string
+  cancelUrl: string
+  billingCycle: string
+}

@@ -67,7 +67,7 @@ export const path = {
   BUILD: "/build",
   BRIDGE: "/bridge",
   STAKING: "/staking",
-  DASHBOARD: "/dashboard",
+  DASHBOARD: "/build/dashboard",
 };
 
 export const buildSubMenuItems = [

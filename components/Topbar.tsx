@@ -1,19 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import fuseConsoleLogo from "@/assets/fuse-console-logo.svg";
 import fuseLogoMobile from "@/assets/logo-mobile.svg";
 import NavMenu from "./NavMenu";
 import NavButton from "./NavButton";
 import { useAppSelector } from "@/store/store";
 import { selectNavbarSlice } from "@/store/navbarSlice";
-import { selectOperatorSlice } from "@/store/operatorSlice";
-import { path } from "@/lib/helpers";
 import Image from "next/image";
 
 const Topbar = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const { isTransfiModalOpen, selected } = useAppSelector(selectNavbarSlice);
-  const { isAuthenticated } = useAppSelector(selectOperatorSlice);
-  const [menuItems, setMenuItems] = useState([
+  const [menuItems] = useState([
     {
       title: "Home",
       link: "/",
@@ -27,16 +24,6 @@ const Topbar = () => {
       link: "/staking",
     },
   ]);
-
-  useEffect(() => {
-    setMenuItems((oldMenuItems) =>
-      oldMenuItems.map((item) =>
-        item.link === path.BUILD && isAuthenticated ?
-          { ...item, link: "/dashboard" } :
-          item
-      )
-    );
-  }, [isAuthenticated]);
 
   return (
     <nav className={`w-full h-20 sticky top-0 bg-light-gray/60 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-pastel-gray md:border-0 ${isTransfiModalOpen ? "z-0" : "z-40"}`}>

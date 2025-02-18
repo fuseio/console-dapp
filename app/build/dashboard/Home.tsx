@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Button from "@/components/ui/Button";
-import { buildSubMenuItems, evmDecimals } from "@/lib/helpers";
+import { evmDecimals } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useBlockNumber } from "wagmi";
@@ -9,7 +9,6 @@ import { checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, ge
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
-import NavMenu from "@/components/NavMenu";
 import roll from "@/assets/roll.svg";
 import RollSecretKeyModal from "@/components/dashboard/RollSecretKeyModal";
 import YourSecretKeyModal from "@/components/dashboard/YourSecretKeyModal";
@@ -26,6 +25,7 @@ import hide from "@/assets/hide.svg";
 import { formatUnits } from "viem";
 import contactSupport from "@/assets/contact-support.svg";
 import SubscriptionModal from "@/components/dashboard/SubscriptionModal";
+import { useSearchParams } from "next/navigation";
 
 type OperatorAccountBalanceProps = {
   chain: any;
@@ -125,6 +125,8 @@ const Home = () => {
     address: operatorSlice.operator.user.smartWalletAddress,
     chainId: fuse.id,
   });
+  const searchParams = useSearchParams()
+  const checkoutSuccess = searchParams.get('checkout-success')
   const totalTransaction = operatorSlice.isActivated ? 1_000_000 : 1000;
 
   useEffect(() => {
@@ -179,7 +181,6 @@ const Home = () => {
       <YourSecretKeyModal />
       <RollSecretKeyModal />
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
-        <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="dashboard" className="md:flex md:justify-center" liClassName="w-28" />
         <div className={`flex justify-between md:flex-col gap-2 mt-[66.29px] md:mt-14 ${operatorSlice.isActivated ? "mb-[70px]" : "mb-[42px]"} md:mb-[50px]`}>
           <h1 className="text-5xl md:text-[32px] text-fuse-black font-semibold leading-none md:leading-tight md:text-center">
             Operator Dashboard
@@ -205,7 +206,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-        {(operatorSlice.isAuthenticated && operatorSlice.isSubscribed) && (
+        {checkoutSuccess && (
           <div className="flex flex-row md:flex-col items-center md:text-center gap-7 md:gap-2 bg-success rounded-[20px] px-[30px] py-[18px] mb-[30px] border-[0.5px] border-star-dust-alpha-70">
             <Image
               src={info}
@@ -218,7 +219,7 @@ const Home = () => {
             </p>
           </div>
         )}
-        {(operatorSlice.isAuthenticated && !operatorSlice.isActivated) &&
+        {!operatorSlice.isActivated &&
           <div className="flex flex-row md:flex-col gap-4 justify-between items-center bg-lemon-chiffon rounded-[20px] px-[30px] py-[18px] mb-[30px] border-[0.5px] border-star-dust-alpha-70">
             <div className="flex flex-row md:flex-col items-center md:text-center gap-7 md:gap-2">
               <Image
