@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchErc20Balance, selectOperatorSlice, setIsWithdrawModalOpen, withdraw } from "@/store/operatorSlice";
 import Button from "../ui/Button";
-import { useEthersSigner } from "@/lib/ethersAdapters/signer";
 import Image, { StaticImageData } from "next/image";
 import down from "@/assets/down-arrow.svg";
 import usdc from "@/assets/usdc.svg";
@@ -15,7 +14,7 @@ import { Address } from "viem";
 // import { hex } from "@/lib/helpers";
 import gasIcon from "@/assets/gas.svg";
 import { ethers } from "ethers";
-import { useSignMessage } from "wagmi";
+import { useWalletClient } from "wagmi";
 
 type WithdrawModalProps = {
   balance: string;
@@ -75,30 +74,33 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const [amount, setAmount] = useState("");
   const [toAddress, setToAddress] = useState<Address>();
-  const signer = useEthersSigner();
   const [selectedCoin, setSelectedCoin] = useState("FUSE");
   const [isCoinDropdownOpen, setIsCoinDropdownOpen] = useState(false);
   const [gasEstimateGwei, setGasEstimateGwei] = useState(ethers.utils.formatUnits(gas.NATIVE, "gwei"));
   const [gasEstimate, setGasEstimate] = useState(ethers.utils.formatEther(gas.NATIVE));
-  const { signMessage } = useSignMessage({
-    mutation: {
-      onSuccess(data) {
-        if(!signer || !toAddress) {
-          return;
-        }
-        dispatch(withdraw({
-          signer,
-          signature: data,
-          amount,
-          to: toAddress,
-          decimals: coins[selectedCoin].decimals,
-          token: selectedCoin,
-          coinGeckoId: coins[selectedCoin].coinGeckoId,
-          contractAddress: coins[selectedCoin].address
-        }));
-      }
+  const { data: walletClient } = useWalletClient()
+
+  function handleWithdraw() {
+    if(!walletClient) {
+      console.log("WalletClient not found")
+      return;
     }
-  })
+
+    if(!toAddress) {
+      console.log("toAddress not found")
+      return;
+    }
+
+    dispatch(withdraw({
+      walletClient,
+      amount,
+      to: toAddress,
+      decimals: coins[selectedCoin].decimals,
+      token: selectedCoin,
+      coinGeckoId: coins[selectedCoin].coinGeckoId,
+      contractAddress: coins[selectedCoin].address
+    }));
+  }
 
   const coinDropdownRef = useOutsideClick<HTMLButtonElement>(() => {
     if (isCoinDropdownOpen) {
@@ -260,12 +262,10 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
                 padding="px-12 py-4"
                 onClick={() => {
                   if (
-                    signer &&
                     (parseFloat(amount) + parseFloat(gasEstimate)) <= parseFloat(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) &&
-                    parseFloat(amount) > 0 &&
-                    toAddress
+                    parseFloat(amount) > 0
                   ) {
-                    signMessage({ message: "Verify your wallet ownership to withdraw" });
+                    handleWithdraw();
                   }
                 }}
               >

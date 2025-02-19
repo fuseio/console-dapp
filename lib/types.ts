@@ -313,6 +313,12 @@ export interface OperatorContactDetail {
   name?: string;
 }
 
+export interface OperatorWallet {
+  ownerId: string;
+  smartWalletAddress: Address;
+  isActivated?: boolean;
+}
+
 export interface Withdraw {
   amount: string;
   token: string;
@@ -320,6 +326,7 @@ export interface Withdraw {
 }
 
 export interface User {
+  id: string;
   name: string;
   email: string;
   auth0Id: string;
@@ -399,6 +406,26 @@ export interface ValidatorResponse {
   jailedValidators: Address[]
   pendingValidators: Address[]
   validatorsMetadata: Record<Address, ValidatorTypeResponse>
+}
+
+export interface Invoice {
+  ownerId: string;
+  amount: string;
+  currency: string;
+  txHash: string;
+}
+
+export interface SubscriptionInfo {
+  payment: number,
+  advance: number,
+  decimals: number
+  usdcAddress: Address,
+}
+
+export interface OperatorCheckout {
+  successUrl: string
+  cancelUrl: string
+  billingCycle: string
 }
 
 export interface CompletedQuest {

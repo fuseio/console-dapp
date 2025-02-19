@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { fetchValidators } from "@/store/validatorSlice";
 import copy from "@/assets/copy-black.svg";
 import Image, { StaticImageData } from "next/image";
 import { motion, Variants } from "framer-motion";
@@ -14,7 +13,6 @@ import {
   useDisconnect,
   useSwitchChain,
 } from "wagmi";
-import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import {
   eclipseAddress,
   evmDecimals,
@@ -51,7 +49,9 @@ import { usePathname } from "next/navigation";
 import switchNetworkIcon from "@/assets/switch-network.svg";
 import Copy from "./ui/Copy";
 import { formatUnits } from "viem";
-import { resetConnection } from "@/lib/web3Auth";
+import { resetConnection } from "@/lib/wagmi";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { setIsWalletModalOpen } from "@/store/navbarSlice";
 
 const menu: Variants = {
   closed: (isCenter) => ({
@@ -120,9 +120,10 @@ const ConnectWallet = ({
   const [isAccountsOpen, setIsAccountsOpen] = React.useState(false);
   const [isWrongNetworksOpen, setIsWrongNetworksOpen] = React.useState(false);
   const [isQrCodeOpen, setIsQrCodeOpen] = React.useState(false);
-  const { address, connector, isConnected, chain } = useAccount();
+  const { address, isConnected, chain } = useAccount();
   const { chains } = useConfig();
   const { switchChain } = useSwitchChain();
+  const { primaryWallet } = useDynamicContext();
   const { disconnect } = useDisconnect({
     mutation: {
       onSuccess() {
@@ -160,10 +161,6 @@ const ConnectWallet = ({
     if (!network) return false;
     return true;
   };
-
-  useEffect(() => {
-    dispatch(fetchValidators());
-  }, [connector, chain, dispatch]);
 
   useEffect(() => {
     dispatch(
@@ -241,8 +238,11 @@ const ConnectWallet = ({
                   ? "cursor-auto"
                   : "cursor-pointer hover:opacity-70")
               }
-              onClick={() => {
-                switchChain({ chainId: c.id });
+              onClick={async () => {
+                if (primaryWallet?.connector.supportsNetworkSwitching()) {
+                  await primaryWallet.switchNetwork(c.id);
+                  switchChain({ chainId: c.id });
+                }
               }}
               key={c.id}
             >
@@ -276,7 +276,7 @@ const ConnectWallet = ({
       </motion.div>
     </div>
   ) : checkCorrectNetwork() ? (
-    <div className="flex justify-end md:justify-center md:me-5 relative w-[410px] md:w-fit h-9 md:h-7">
+    <div className="flex justify-end md:justify-center md:me-5 relative h-9 md:h-7">
       <div
         className="flex bg-lightest-gray px-4 py-3 md:py-3.5 rounded-full cursor-pointer items-center relative text-base/4 md:text-sm font-normal ml-2 md:ml-1"
         ref={accountsRef}
@@ -306,9 +306,8 @@ const ConnectWallet = ({
           initial="closed"
           exit="closed"
           variants={menu}
-          className={`absolute top-[120%] right-0 bg-white rounded-[20px] cursor-auto shadow-xl py-[25.5px] z-50 w-[268.22px] ${
-            pathname === "/dashboard" ? "md:left-1/2" : ""
-          }`}
+          className={`absolute top-[120%] right-0 bg-white rounded-[20px] cursor-auto shadow-xl py-[25.5px] z-50 w-[268.22px] ${pathname === "/dashboard" ? "md:left-1/2" : ""
+            }`}
         >
           <div className="flex flex-col gap-[8.35px] px-[22px]">
             <p className="text-xs/[11.6px] md:text-[8px] text-text-dark-gray font-medium">
@@ -371,17 +370,17 @@ const ConnectWallet = ({
                     $
                     {chain && chain.id === fuse.id
                       ? new Intl.NumberFormat().format(
-                          parseFloat(
-                            (
-                              parseFloat(
-                                formatUnits(
-                                  balance?.value ?? BigInt(0),
-                                  balance?.decimals ?? evmDecimals
-                                ) ?? "0"
-                              ) * balanceSlice.price
-                            ).toString()
-                          )
+                        parseFloat(
+                          (
+                            parseFloat(
+                              formatUnits(
+                                balance?.value ?? BigInt(0),
+                                balance?.decimals ?? evmDecimals
+                              ) ?? "0"
+                            ) * balanceSlice.price
+                          ).toString()
                         )
+                      )
                       : 0}
                   </p>
                 )}

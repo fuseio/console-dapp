@@ -1,7 +1,7 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { TransactionType } from "@/store/transactionsSlice";
-import { AirdropUser, NodeLicense, WalletType } from "./types";
+import { AirdropUser, NodeLicense, SubscriptionInfo, WalletType } from "./types";
 
 export const eclipseAddress = (address: string): string => {
   return (
@@ -78,7 +78,7 @@ export const path = {
   BUILD: "/build",
   BRIDGE: "/bridge",
   STAKING: "/staking",
-  DASHBOARD: "/dashboard",
+  DASHBOARD: "/build/dashboard",
   AIRDROP: "/points",
   AIRDROP_LEADERBOARD: "/points/leaderboard",
   AIRDROP_ECOSYSTEM: "/points/ecosystem",
@@ -109,6 +109,13 @@ export const splitSecretKey = (secretKey: string) => {
 export const evmDecimals = 18;
 
 export const screenMediumWidth = 768;
+
+export const subscriptionInfo: SubscriptionInfo = {
+  payment: 50,
+  advance: 12,
+  decimals: 6,
+  usdcAddress: "0x28C3d1cD466Ba22f6cae51b1a4692a831696391A"
+}
 
 export const defaultReferralCode = "EMBER";
 
