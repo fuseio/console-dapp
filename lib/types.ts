@@ -60,6 +60,8 @@ export interface CoinConfigLike {
   decimals: number;
   icon: StaticImageData;
   coinGeckoId: string;
+  isDisabled?: boolean;
+  isWithdrawStargate?: boolean;
 }
 
 export interface ExchangeConfigLike {
@@ -135,6 +137,8 @@ interface WrappedBridgeConfig {
       };
       isNative: boolean;
       isBridged: boolean;
+      isDisabled?: boolean;
+      isWithdrawStargate?: boolean;
     }[];
   };
   disabledChains: DisabledChainConfigLike[];
@@ -164,6 +168,8 @@ interface WrappedBridgeConfig {
         name: string;
       };
       isDepositPaused?: boolean;
+      isDisabled?: boolean;
+      isWithdrawStargate?: boolean;
     }[];
   }[];
 }
@@ -190,6 +196,8 @@ export const createAppConfig = (
     };
     isNative: boolean;
     isBridged: boolean;
+    isDisabled?: boolean;
+    isWithdrawStargate?: boolean;
   }[] = [];
   if (bridgeConfig.tokens.length > 0) {
     tokenConfig.coins.forEach((coin) => {
@@ -230,6 +238,8 @@ export const createAppConfig = (
             name: string;
           };
           isDepositPaused?: boolean;
+          isDisabled?: boolean;
+          isWithdrawStargate?: boolean;
         }[] = [];
         if (bridgeConfig.tokens.length > 0) {
           tokenConfig.coins.forEach((coin) => {
@@ -248,6 +258,8 @@ export const createAppConfig = (
                 coinGeckoId: coin.coinGeckoId,
                 receiveToken: token.receiveToken,
                 isDepositPaused: token.isDepositPaused,
+                isDisabled: coin.isDisabled,
+                isWithdrawStargate: coin.isWithdrawStargate,
               });
             }
           });
@@ -279,6 +291,7 @@ export const createAppConfig = (
 export type MenuItem = {
   title: string;
   link: string;
+  submenu?: MenuItem[];
 }
 
 export type MenuItems = MenuItem[];
@@ -413,4 +426,106 @@ export interface OperatorCheckout {
   successUrl: string
   cancelUrl: string
   billingCycle: string
+}
+
+export interface CompletedQuest {
+  type: string;
+  stakingType?: string;
+}
+
+export type CompletedQuests = CompletedQuest[];
+
+export interface AirdropUser {
+  id: string,
+  walletAddress: Address,
+  twitterAccountId: string,
+  points: number,
+  referrals: number,
+  referralCode: string,
+  leaderboardPosition: number
+  pointsLastUpdatedAt: string;
+  createdAt: string;
+  completedQuests: CompletedQuests;
+  walletAgeInDays?: number;
+  seasonOnePoints: number;
+  nextRewardDistributionTime: string;
+}
+
+export type AirdropButton = {
+  text: string;
+  link?: string;
+  isFunction?: boolean;
+  endpoint?: string;
+  isLoading?: boolean;
+  success?: string;
+}
+
+export type AirdropQuest = {
+  id: string;
+  title: string;
+  point: string;
+  image: string | StaticImageData;
+  frequency?: string;
+  description?: string;
+  completed?: boolean;
+  isEcosystem?: boolean;
+  buttons?: AirdropButton[];
+  comingSoon?: boolean;
+  isCustom?: boolean;
+}
+
+export type AirdropQuests = AirdropQuest[];
+
+export interface AirdropLeaderboardUser {
+  id: string;
+  walletAddress: Address;
+  twitterAccountId: string;
+  points: number;
+  referralCode: string;
+  walletAgeInDays?: number;
+}
+
+export type AirdropLeaderboardUsers = AirdropLeaderboardUser[];
+
+export interface AirdropLeaderboard {
+  users: AirdropLeaderboardUser[];
+}
+
+export type CreateAirdropUser = {
+  walletAddress: Address;
+  referralCode: string;
+}
+
+export type NodeLicense = {
+  tokenId: number;
+  balance: number;
+}
+
+export interface NodesUser {
+  licences: NodeLicense[];
+  delegations: Node[];
+}
+
+export enum Status {
+  IDLE = "idle",
+  PENDING = "pending",
+  SUCCESS = "success",
+  ERROR = "error",
+}
+
+export type Node = {
+  Address: Address;
+  TotalTime: number;
+  LastHeartbeat: Date;
+  CreatedAt: Date;
+  NFTAmount: number;
+  CommissionRate: number;
+  Status: string;
+  AllUptimePercentage: number;
+  WeeklyUptimePercentage: number;
+}
+
+export type DelegateLicenseModal = {
+  open: boolean;
+  address?: Address;
 }

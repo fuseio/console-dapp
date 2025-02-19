@@ -1,6 +1,18 @@
-import { createClient } from "viem";
+import { createClient, defineChain } from "viem";
 import { http, createConfig, Connection } from "wagmi";
 import { arbitrum, polygon, fuse, optimism, mainnet, bsc, Chain, base } from "wagmi/chains";
+
+export const flash = defineChain({
+  id: 1264453517,
+  name: 'Flash',
+  nativeCurrency: { name: 'Fuse', symbol: 'FUSE', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://rpc.flash.fuse.io'] },
+  },
+  blockExplorers: {
+    default: { name: 'Flash Explorer', url: 'https://explorer.flash.fuse.io' },
+  },
+})
 
 const chains: readonly [Chain, ...Chain[]] = [
   fuse,
@@ -10,6 +22,7 @@ const chains: readonly [Chain, ...Chain[]] = [
   mainnet,
   bsc,
   base,
+  flash,
 ]
 
 export const evmNetworks = chains.map(chain => ({

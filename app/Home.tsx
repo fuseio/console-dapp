@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import * as amplitude from '@amplitude/analytics-browser';
 
 import faucet from '@/assets/faucet.svg';
 import fusebox from '@/assets/fusebox.svg';
@@ -7,7 +8,6 @@ import mobileSdk from '@/assets/mobile-sdk.svg';
 import webSdk from '@/assets/web-sdk.svg';
 import DocumentSupport from '@/components/DocumentSupport';
 import { path } from '@/lib/helpers';
-import * as amplitude from '@amplitude/analytics-browser';
 import Wallet from '@/components/landing/Wallet';
 
 const Home = () => {

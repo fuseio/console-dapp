@@ -1,10 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
 import { ethers } from "ethers";
-import {
-  estimateNativeFee,
-  estimateOriginalNativeFee,
-} from "@/lib/originalBridge";
+import { estimateOriginalNativeFee } from "@/lib/originalBridge";
 import { estimateWrappedNativeFee } from "@/lib/wrappedBridge";
 import { Address } from "abitype";
 import { createPublicClient, http } from "viem";
@@ -126,29 +123,6 @@ export const estimateSourceFee = createAsyncThunk(
   }
 );
 
-export const estimateTransferFee = createAsyncThunk(
-  "FEE/ESTIMATE_TRANSFER_FEE",
-  async (
-    {
-      rpcUrl,
-      isNative,
-      tokenId,
-    }: { rpcUrl: string; isNative: boolean; tokenId: string },
-    thunkAPI
-  ) => {
-    return new Promise<any>(async (resolve, reject) => {
-      try {
-        thunkAPI.dispatch(fetchNativePrice(tokenId));
-        const fee = await estimateNativeFee(rpcUrl, isNative);
-        resolve(fee);
-      } catch (err) {
-        console.log(err);
-        reject(err);
-      }
-    });
-  }
-);
-
 export const fetchNativePrice = createAsyncThunk(
   "FEE/FETCH_TOKEN_PRICE",
   async (tokenId: string, thunkAPI) => {
@@ -165,48 +139,37 @@ const feeSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // .addCase(estimateOriginalFee.pending, (state) => {
-      //   state.isGasFeeLoading = true;
-      // })
-      // .addCase(estimateOriginalFee.fulfilled, (state, action) => {
-      //   state.isGasFeeLoading = false;
-      //   state.destGasFee = action.payload;
-      // })
-      // .addCase(estimateOriginalFee.rejected, (state) => {
-      //   state.isGasFeeLoading = false;
-      //   state.isError = true;
-      // })
-      // .addCase(estimateWrappedFee.pending, (state) => {
-      //   state.isGasFeeLoading = true;
-      // })
-      // .addCase(estimateWrappedFee.fulfilled, (state, action) => {
-      //   state.isGasFeeLoading = false;
-      //   state.destGasFee = action.payload;
-      // })
-      // .addCase(estimateWrappedFee.rejected, (state) => {
-      //   state.isGasFeeLoading = false;
-      //   state.isError = true;
-      // })
-      // .addCase(estimateSourceFee.pending, (state) => {
-      //   state.isSourceGasFeeLoading = true;
-      // })
-      // .addCase(estimateSourceFee.fulfilled, (state, action) => {
-      //   state.isSourceGasFeeLoading = false;
-      //   state.sourceGasFee = action.payload;
-      // })
-      // .addCase(estimateSourceFee.rejected, (state) => {
-      //   state.isSourceGasFeeLoading = false;
-      //   state.isError = true;
-      // })
-      .addCase(estimateTransferFee.pending, (state) => {
+      .addCase(estimateOriginalFee.pending, (state) => {
         state.isGasFeeLoading = true;
       })
-      .addCase(estimateTransferFee.fulfilled, (state, action) => {
+      .addCase(estimateOriginalFee.fulfilled, (state, action) => {
         state.isGasFeeLoading = false;
+        state.destGasFee = action.payload;
+      })
+      .addCase(estimateOriginalFee.rejected, (state) => {
+        state.isGasFeeLoading = false;
+        state.isError = true;
+      })
+      .addCase(estimateWrappedFee.pending, (state) => {
+        state.isGasFeeLoading = true;
+      })
+      .addCase(estimateWrappedFee.fulfilled, (state, action) => {
+        state.isGasFeeLoading = false;
+        state.destGasFee = action.payload;
+      })
+      .addCase(estimateWrappedFee.rejected, (state) => {
+        state.isGasFeeLoading = false;
+        state.isError = true;
+      })
+      .addCase(estimateSourceFee.pending, (state) => {
+        state.isSourceGasFeeLoading = true;
+      })
+      .addCase(estimateSourceFee.fulfilled, (state, action) => {
+        state.isSourceGasFeeLoading = false;
         state.sourceGasFee = action.payload;
       })
-      .addCase(estimateTransferFee.rejected, (state) => {
-        state.isGasFeeLoading = false;
+      .addCase(estimateSourceFee.rejected, (state) => {
+        state.isSourceGasFeeLoading = false;
         state.isError = true;
       })
       .addCase(fetchNativePrice.pending, (state) => {

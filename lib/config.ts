@@ -17,6 +17,8 @@ type CONFIG = {
   blockRewardAddress: Address;
   bootApi: string;
   paymasterAddress: Address;
+  delegateRegistryAddress: Address;
+  nodeLicenseAddress: Address;
 }
 
 export const CONFIG: CONFIG = {
@@ -26,6 +28,8 @@ export const CONFIG: CONFIG = {
   blockRewardAddress: "0x63D4efeD2e3dA070247bea3073BCaB896dFF6C9B",
   bootApi: "https://bot.fuse.io/api/v1",
   paymasterAddress: "0xEA1Ba4305A07cEd2bB5e42224D71aBE0BC3C3f28",
+  delegateRegistryAddress: "0xf9689022f129aEb4495f6C33bacF4bCabA1F8fca",
+  nodeLicenseAddress: "0xB42F66f690816D2B076D26B20697Aa594dc1Fd2f",
 };
 
 export const chainConfig = createChainConfig(chains);
@@ -45,8 +49,7 @@ export const NEXT_PUBLIC_WEB3AUTH_CLIENT_ID = process.env.NEXT_PUBLIC_WEB3AUTH_C
 export const NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL = process.env.NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL ?? ""
 export const NEXT_PUBLIC_FUSE_API_BASE_URL = process.env.NEXT_PUBLIC_FUSE_API_BASE_URL ?? ""
 export const NEXT_PUBLIC_COIN_GECKO_API_KEY = process.env.NEXT_PUBLIC_COIN_GECKO_API_KEY ?? ""
-export const NEXT_PUBLIC_CHARGE_BLOCKCHAIN_API_BASE_URL = process.env.NEXT_PUBLIC_CHARGE_BLOCKCHAIN_API_BASE_URL ?? ""
-export const NEXT_PUBLIC_CHARGE_PAYMENTS_API_BASE_URL = process.env.NEXT_PUBLIC_CHARGE_PAYMENTS_API_BASE_URL ?? ""
-export const NEXT_PUBLIC_CHARGE_PAYMENTS_API_KEY = process.env.NEXT_PUBLIC_CHARGE_PAYMENTS_API_KEY ?? ""
 export const NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID = process.env.NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID ?? ""
 export const NEXT_PUBLIC_PAYMASTER_FUNDER_ADDRESS = process.env.NEXT_PUBLIC_PAYMASTER_FUNDER_ADDRESS ?? ""
+export const NEXT_PUBLIC_AIRDROP_API_BASE_URL = process.env.NEXT_PUBLIC_AIRDROP_API_BASE_URL ?? ""
+export const NEXT_PUBLIC_AVAIL_MONITORING_API_URL = process.env.NEXT_PUBLIC_AVAIL_MONITORING_API_URL ?? ""
