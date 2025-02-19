@@ -337,7 +337,7 @@ const VerifierTable = () => {
       </header>
       <div className='bg-white rounded-[1.25rem] xl:overflow-auto'>
         <div className='px-8 py-7'>
-          Total of {table.getPrePaginationRowModel().rows.length} verifiers.
+          Total of {table.getPrePaginationRowModel().rows.length} nodes.
         </div>
         <table className='w-full border-spacing-2'>
           <thead className='bg-transaction-bg text-sm text-text-dark-gray'>
