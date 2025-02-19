@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import Button from "@/components/ui/Button";
-import { evmDecimals } from "@/lib/helpers";
+import { evmDecimals, path } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useBlockNumber } from "wagmi";
 import { fuse } from "wagmi/chains";
-import { checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, generateSecretApiKey, selectOperatorSlice, setIsRollSecretKeyModalOpen, setIsSubscriptionModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
+import { checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, generateSecretApiKey, selectOperatorSlice, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
@@ -25,7 +25,7 @@ import hide from "@/assets/hide.svg";
 import { formatUnits } from "viem";
 import contactSupport from "@/assets/contact-support.svg";
 import SubscriptionModal from "@/components/dashboard/SubscriptionModal";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 type OperatorAccountBalanceProps = {
   chain: any;
@@ -60,9 +60,6 @@ const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dis
           <div className="group relative cursor-pointer w-4 h-4 bg-black rounded-full flex justify-center items-center text-xs leading-none text-white">
             ?
             <div className="tooltip-text hidden bottom-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg group-hover:block text-black text-sm font-medium">
-              <p className="mb-1">
-                The operator account balance is needed in order to be able to use Paymaster and later pay for Premium subscriptions.
-              </p>
               <p>
                 You can freely deposit and withdraw any tokens available on the Fuse Network.
               </p>
@@ -125,6 +122,7 @@ const Home = () => {
     address: operatorSlice.operator.user.smartWalletAddress,
     chainId: fuse.id,
   });
+  const router = useRouter();
   const searchParams = useSearchParams()
   const checkoutSuccess = searchParams.get('checkout-success')
   const totalTransaction = operatorSlice.isActivated ? 1_000_000 : 1000;
@@ -237,7 +235,7 @@ const Home = () => {
               className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black hover:text-black hover:bg-white rounded-full"
               padding="py-3.5 px-[38px]"
               onClick={() => {
-                dispatch(setIsSubscriptionModalOpen(true));
+                router.push(path.BUILD)
               }}
             />
           </div>
