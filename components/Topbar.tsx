@@ -25,6 +25,17 @@ const AirdropSubmenu = [
   },
 ]
 
+const StakingSubmenu = [
+  {
+    title: "Fuse Staking",
+    link: path.STAKING,
+  },
+  {
+    title: "L2 Testnet Nodes",
+    link: path.TESTNET_NODES,
+  },
+]
+
 const Topbar = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const { isTransfiModalOpen, selected } = useAppSelector(selectNavbarSlice);
@@ -49,11 +60,8 @@ const Topbar = () => {
     },
     {
       title: "Staking",
-      link: "/staking",
-    },
-    {
-      title: "Nodes",
-      link: path.TESTNET_NODES,
+      link: path.STAKING,
+      submenu: StakingSubmenu,
     },
   ]);
 
