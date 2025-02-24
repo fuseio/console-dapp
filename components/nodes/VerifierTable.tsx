@@ -19,9 +19,9 @@ import { useAccount } from 'wagmi';
 
 import { Node, Status } from '@/lib/types';
 import { useOutsideClick } from '@/lib/hooks/useOutsideClick';
-import { eclipseAddress, getLicenseBalance } from '@/lib/helpers';
+import { eclipseAddress, getUserNodes } from '@/lib/helpers';
 import { useAppDispatch, useAppSelector } from '@/store/store';
-import { fetchDelegations, fetchNodes, NodesStateType, selectNodesSlice, setDelegateLicenseModal, setIsNoCapacityModalOpen, setIsNoLicenseModalOpen } from '@/store/nodesSlice';
+import { fetchDelegations, fetchNodes, NodesStateType, selectNodesSlice, setDelegateLicenseModal, setIsNoCapacityModalOpen, setIsNoLicenseModalOpen, setRevokeLicenseModal } from '@/store/nodesSlice';
 
 import nodeops from '@/assets/nodeops.svg';
 
@@ -182,8 +182,8 @@ const VerifierTable = () => {
   const [filterOpen, setFilterOpen] = useState("");
   const dispatch = useAppDispatch();
   const nodesSlice = useAppSelector(selectNodesSlice);
-  const licenseBalance = getLicenseBalance(nodesSlice.user.licences);
   const { address } = useAccount();
+  const userNodes = getUserNodes(nodesSlice.user)
 
   const columns = useMemo<ColumnDef<Node, any>[]>(
     () => [
@@ -262,28 +262,41 @@ const VerifierTable = () => {
       {
         accessorKey: 'action',
         header: () => '',
-        cell: (info) => (
-          <button
-            onClick={() => {
-              if (info.row.original.NFTAmount === 100) {
-                dispatch(setIsNoCapacityModalOpen(true));
-              } else if (!licenseBalance) {
-                dispatch(setIsNoLicenseModalOpen(true));
-              } else {
-                dispatch(setDelegateLicenseModal({ open: true, address: info.row.original.Address }));
-              }
-            }}
-            className="px-3 py-2 border border-black rounded-full leading-none font-semibold hover:bg-black hover:text-white"
-          >
-            Delegate
-          </button>
-        ),
+        cell: (info) => {
+          if (info.table.getState().globalFilter) {
+            return (
+              <button
+                onClick={() => dispatch(setRevokeLicenseModal({ open: true, address: info.row.original.Address }))}
+                className="px-3 py-2 border border-black rounded-full leading-none font-semibold hover:bg-black hover:text-white"
+              >
+                Revoke
+              </button>
+            )
+          }
+          return (
+            <button
+              onClick={() => {
+                if (info.row.original.NFTAmount === 100) {
+                  dispatch(setIsNoCapacityModalOpen(true));
+                } else if (!userNodes.canDelegate) {
+                  dispatch(setIsNoLicenseModalOpen(true));
+                } else {
+                  dispatch(setDelegateLicenseModal({ open: true, address: info.row.original.Address }));
+                }
+              }}
+              className={`px-3 py-2 border border-black rounded-full leading-none font-semibold enabled:hover:bg-black enabled:hover:text-white disabled:bg-light-gray disabled:border-light-gray disabled:opacity-50`}
+              disabled={info.row.original.Status === 'Offline'}
+            >
+              Delegate
+            </button>
+          )
+        },
         enableColumnFilter: false,
         enableGlobalFilter: false,
         enableSorting: false,
       }
     ],
-    [dispatch, licenseBalance]
+    [dispatch, userNodes.canDelegate]
   )
 
   const table = useReactTable({

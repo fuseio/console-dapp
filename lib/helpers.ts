@@ -1,7 +1,7 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { TransactionType } from "@/store/transactionsSlice";
-import { AirdropUser, NodeLicense, WalletType } from "./types";
+import { AirdropUser, NodesUser, WalletType } from "./types";
 
 export const eclipseAddress = (address: string): string => {
   return (
@@ -140,6 +140,13 @@ export const isSocialFollowed = (user: AirdropUser) => {
   .length === socialQuests.length;
 }
 
-export const getLicenseBalance = (licences: NodeLicense[]) => {
-  return licences.reduce((acc, licence) => acc + licence.balance, 0);
+export const getUserNodes = (user: NodesUser) => {
+  const balance = user.licences.reduce((acc, licence) => acc + licence.balance, 0);
+  const delegated = user.delegations.reduce((acc, node) => acc + node.NFTAmount, 0);
+  const canDelegate = balance > delegated
+  return {
+    balance,
+    delegated,
+    canDelegate
+  }
 }
