@@ -276,7 +276,7 @@ const VerifierTable = () => {
           return (
             <button
               onClick={() => {
-                if (info.row.original.NFTAmount === 100 || info.row.original.Status === 'Offline') {
+                if (info.row.original.NFTAmount === 100) {
                   dispatch(setIsNoCapacityModalOpen(true));
                 } else if (!userNodes.canDelegate) {
                   dispatch(setIsNoLicenseModalOpen(true));
@@ -284,7 +284,8 @@ const VerifierTable = () => {
                   dispatch(setDelegateLicenseModal({ open: true, address: info.row.original.Address }));
                 }
               }}
-              className="px-3 py-2 border border-black rounded-full leading-none font-semibold hover:bg-black hover:text-white"
+              className={`px-3 py-2 border border-black rounded-full leading-none font-semibold enabled:hover:bg-black enabled:hover:text-white disabled:bg-light-gray disabled:border-light-gray disabled:opacity-50`}
+              disabled={info.row.original.Status === 'Offline'}
             >
               Delegate
             </button>
