@@ -20,12 +20,13 @@ export interface NodesStateType {
   isNoLicenseModalOpen: boolean;
   isNoCapacityModalOpen: boolean;
   delegateLicenseModal: DelegateLicenseModal;
-  deligateLicenseStatus: Status;
+  delegateLicenseStatus: Status;
   user: NodesUser;
   fetchNodeLicenseBalancesStatus: Status;
   fetchNodesStatus: Status;
   nodes: Node[];
   fetchDelegationsStatus: Status;
+  revokeLicenseModal: DelegateLicenseModal;
 }
 
 const INIT_STATE: NodesStateType = {
@@ -33,12 +34,13 @@ const INIT_STATE: NodesStateType = {
   isNoLicenseModalOpen: false,
   isNoCapacityModalOpen: false,
   delegateLicenseModal: initDelegateLicenseModal,
-  deligateLicenseStatus: Status.IDLE,
+  delegateLicenseStatus: Status.IDLE,
   user: initUser,
   fetchNodeLicenseBalancesStatus: Status.IDLE,
   fetchNodesStatus: Status.IDLE,
   nodes: [],
   fetchDelegationsStatus: Status.IDLE,
+  revokeLicenseModal: initDelegateLicenseModal,
 };
 
 export const delegateLicense = createAsyncThunk(
@@ -129,18 +131,22 @@ const nodesSlice = createSlice({
     setDelegateLicenseModal: (state, action: PayloadAction<DelegateLicenseModal>) => {
       state.delegateLicenseModal = action.payload
     },
+    setRevokeLicenseModal: (state, action: PayloadAction<DelegateLicenseModal>) => {
+      state.revokeLicenseModal = action.payload
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(delegateLicense.pending, (state) => {
-        state.deligateLicenseStatus = Status.PENDING;
+        state.delegateLicenseStatus = Status.PENDING;
       })
       .addCase(delegateLicense.fulfilled, (state) => {
-        state.deligateLicenseStatus = Status.SUCCESS;
+        state.delegateLicenseStatus = Status.SUCCESS;
         state.delegateLicenseModal.open = false;
+        state.revokeLicenseModal.open = false;
       })
       .addCase(delegateLicense.rejected, (state) => {
-        state.deligateLicenseStatus = Status.ERROR;
+        state.delegateLicenseStatus = Status.ERROR;
       })
       .addCase(fetchNodeLicenseBalances.pending, (state) => {
         state.fetchNodeLicenseBalancesStatus = Status.PENDING;
@@ -182,6 +188,7 @@ export const {
   setIsNoLicenseModalOpen,
   setIsNoCapacityModalOpen,
   setDelegateLicenseModal,
+  setRevokeLicenseModal,
 } = nodesSlice.actions;
 
 export default nodesSlice.reducer;

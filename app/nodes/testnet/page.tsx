@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import NoLicenseModal from "@/components/nodes/NoLicenseModal";
 import NoCapacityModal from "@/components/nodes/NoCapacityModal";
 import DelegateLicenseModal from "@/components/nodes/DelegateLicenseModal";
+import RevokeLicenseModal from "@/components/nodes/RevokeLicenseModal";
 
 const Nodes = () => {
   const dispatch = useAppDispatch();
@@ -23,6 +24,7 @@ const Nodes = () => {
       <NoLicenseModal />
       <NoCapacityModal />
       <DelegateLicenseModal />
+      <RevokeLicenseModal />
       <Topbar />
       <Home />
       <Footer />

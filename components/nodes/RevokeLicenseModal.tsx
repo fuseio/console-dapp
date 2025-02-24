@@ -4,11 +4,12 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Address } from "viem";
 import { useEffect, useState } from 'react';
+import { useAccount } from "wagmi";
 
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { Error } from "@/components/ui/Form";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
-import { delegateLicense, selectNodesSlice, setDelegateLicenseModal } from "@/store/nodesSlice";
+import { delegateLicense, selectNodesSlice, setRevokeLicenseModal } from "@/store/nodesSlice";
 import Spinner from "@/components/ui/Spinner";
 
 import close from "@/assets/close.svg";
@@ -20,14 +21,16 @@ type DelegateLicenseFormValues = {
   amount: number;
 }
 
-const DelegateLicenseModal = (): JSX.Element => {
+const RevokeLicenseModal = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const nodesSlice = useAppSelector(selectNodesSlice);
   const [isTierDropdownOpen, setIsTierDropdownOpen] = useState(false);
+  const { address } = useAccount();
+  const delegation = nodesSlice.user.delegations.find((delegation) => delegation.Address === nodesSlice.revokeLicenseModal.address)
 
   const modalRef = useOutsideClick(() => {
-    if (nodesSlice.delegateLicenseModal.open) {
-      dispatch(setDelegateLicenseModal({ open: false }));
+    if (nodesSlice.revokeLicenseModal.open) {
+      dispatch(setRevokeLicenseModal({ open: false }));
     }
   });
 
@@ -35,7 +38,7 @@ const DelegateLicenseModal = (): JSX.Element => {
     initialValues: {
       to: '0x',
       tokenId: 0,
-      amount: 1,
+      amount: 0,
     },
     validationSchema: Yup.object({
       to: Yup.string()
@@ -51,19 +54,25 @@ const DelegateLicenseModal = (): JSX.Element => {
         .required('Required'),
     }),
     onSubmit: values => {
-      dispatch(delegateLicense(values));
+      dispatch(delegateLicense({ ...values, amount: 0 }));
     },
   });
 
   useEffect(() => {
-    if (nodesSlice.delegateLicenseModal.address && formik.values.to === '0x') {
-      formik.setFieldValue('to', nodesSlice.delegateLicenseModal.address);
+    if (nodesSlice.revokeLicenseModal.address && formik.values.to === '0x') {
+      formik.setFieldValue('to', nodesSlice.revokeLicenseModal.address);
     }
-  }, [formik, nodesSlice.delegateLicenseModal.address]);
+  }, [formik, nodesSlice.revokeLicenseModal.address]);
+
+  useEffect(() => {
+    if (delegation?.NFTAmount && !formik.values.amount) {
+      formik.setFieldValue('amount', delegation.NFTAmount);
+    }
+  }, [delegation?.NFTAmount, formik]);
 
   return (
     <AnimatePresence>
-      {nodesSlice.delegateLicenseModal.open && (
+      {nodesSlice.revokeLicenseModal.open && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -82,19 +91,19 @@ const DelegateLicenseModal = (): JSX.Element => {
           >
             <div className="flex">
               <p className="text-[34px]/[47.6px] font-bold">
-                Delegate License
+                Confirm Revocation
               </p>
               <Image
                 src={close}
                 alt="close"
                 className="cursor-pointer w-6 absolute top-[15px] right-5"
                 onClick={() => {
-                  dispatch(setDelegateLicenseModal({ open: false }));
+                  dispatch(setRevokeLicenseModal({ open: false }));
                 }}
               />
             </div>
             <p className="text-sm text-text-heading-gray pt-2 max-w-sm mr-auto">
-              Delegate license to node sale provider for running the node on your behalf.
+              You are revoking all your licenses from <strong>{address}</strong>
             </p>
             <form
               className="flex flex-col gap-3.5 w-full max-w-[441px] pt-[44.5px]"
@@ -108,10 +117,11 @@ const DelegateLicenseModal = (): JSX.Element => {
                   type="text"
                   id="to"
                   name="to"
-                  className="bg-white border-[0.5px] border-gray-alpha-40 py-[17.5px] px-[34.81px] rounded-full h-[55px] placeholder:text-text-dark-gray"
+                  className="bg-white border-[0.5px] border-gray-alpha-40 py-[17.5px] px-[34.81px] rounded-full h-[55px] placeholder:text-text-dark-gray disabled:opacity-50 disabled:cursor-not-allowed"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.to}
+                  disabled
                 />
                 <Error touched={formik.touched.to} error={formik.errors.to} />
               </div>
@@ -172,10 +182,11 @@ const DelegateLicenseModal = (): JSX.Element => {
                     name="amount"
                     min={1}
                     max={10000}
-                    className="number-input bg-white border-[0.5px] border-gray-alpha-40 py-[17.5px] px-[34.81px] rounded-full h-[55px] placeholder:text-text-dark-gray"
+                    className="number-input bg-white border-[0.5px] border-gray-alpha-40 py-[17.5px] px-[34.81px] rounded-full h-[55px] placeholder:text-text-dark-gray disabled:opacity-50 disabled:cursor-not-allowed"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.amount}
+                    disabled
                   />
                   <Error touched={formik.touched.amount} error={formik.errors.amount} />
                 </div>
@@ -183,9 +194,9 @@ const DelegateLicenseModal = (): JSX.Element => {
               <div className="mt-3 flex flex-col gap-1.5">
                 <button
                   type="submit"
-                  className={`transition-all ease-in-out flex justify-center items-center gap-2 border rounded-full font-semibold leading-none p-4 disabled:bg-iron disabled:border-iron enabled:hover:bg-[transparent] enabled:hover:border-black enabled:hover:text-black ${nodesSlice.delegateLicenseStatus === Status.ERROR ? "bg-[#FFEBE9] text-[#FD0F0F]" : "border-success bg-success"}`}
+                  className={`transition-all ease-in-out flex justify-center items-center gap-2 border rounded-full font-semibold leading-none p-4 disabled:bg-iron disabled:border-iron enabled:hover:bg-[transparent] enabled:hover:border-black enabled:hover:text-black ${nodesSlice.delegateLicenseStatus === Status.ERROR ? "bg-[#FFEBE9] text-[#FD0F0F]" : "border-black bg-black text-white"}`}
                 >
-                  {nodesSlice.delegateLicenseStatus === Status.SUCCESS ? "Delegated" : "Delegate"}
+                  {nodesSlice.delegateLicenseStatus === Status.SUCCESS ? "Revoked" : "Confirm"}
                   {nodesSlice.delegateLicenseStatus === Status.PENDING && <Spinner />}
                 </button>
               </div>
@@ -197,4 +208,4 @@ const DelegateLicenseModal = (): JSX.Element => {
   );
 };
 
-export default DelegateLicenseModal;
+export default RevokeLicenseModal;

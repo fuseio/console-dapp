@@ -5,7 +5,7 @@ import { fetchNodeLicenseBalances, selectNodesSlice, setDelegateLicenseModal, se
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import VerifierTable from "@/components/nodes/VerifierTable";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
-import { eclipseAddress, getLicenseBalance, hex } from "@/lib/helpers";
+import { eclipseAddress, getUserNodes, hex } from "@/lib/helpers";
 
 const Header = () => {
   return (
@@ -21,8 +21,7 @@ const Info = () => {
   const dispatch = useAppDispatch();
   const { address } = useAccount();
   const nodesSlice = useAppSelector(selectNodesSlice);
-  const licenseBalance = getLicenseBalance(nodesSlice.user.licences);
-  const delegates = nodesSlice.user.delegations.reduce((acc, node) => acc + node.NFTAmount, 0);
+  const userNodes = getUserNodes(nodesSlice.user)
 
   useEffect(() => {
     if (address) {
@@ -45,7 +44,7 @@ const Info = () => {
       </div>
       <div className="flex flex-col gap-4 md:gap-2">
         <div className="text-[1.25rem] font-bold">
-          {licenseBalance} ({delegates} delegated)
+          {userNodes.balance} ({userNodes.delegated} delegated)
         </div>
         <div className="text-sm">
           License Keys
@@ -53,8 +52,8 @@ const Info = () => {
       </div>
       <div className="flex justify-start">
         <div className="flex flex-col items-center gap-4 md:gap-2">
-          <div className={`rounded-full p-2 leading-none font-semibold ${delegates ? "bg-success" : "bg-light-gray"}`}>
-            {delegates ? "Active" : "Inactive"}
+          <div className={`rounded-full p-2 leading-none font-semibold ${userNodes.delegated ? "bg-success" : "bg-light-gray"}`}>
+            {userNodes.delegated ? "Active" : "Inactive"}
           </div>
           <div className="text-sm">
             Status
@@ -66,7 +65,7 @@ const Info = () => {
           if (!address) {
             return dispatch(setIsWalletModalOpen(true));
           }
-          if (!licenseBalance) {
+          if (!userNodes.canDelegate) {
             return dispatch(setIsNoLicenseModalOpen(true));
           }
           dispatch(setDelegateLicenseModal({ open: true, address: undefined }));
