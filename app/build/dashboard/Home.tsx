@@ -179,7 +179,7 @@ const Home = () => {
       <YourSecretKeyModal />
       <RollSecretKeyModal />
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
-        <div className={`flex justify-between md:flex-col gap-2 mt-[66.29px] md:mt-14 ${operatorSlice.isActivated ? "mb-[70px]" : "mb-[42px]"} md:mb-[50px]`}>
+        <div className="flex justify-between md:flex-col gap-2 mt-[66.29px] mb-[50px] md:mt-14">
           <h1 className="text-5xl md:text-[32px] text-fuse-black font-semibold leading-none md:leading-tight md:text-center">
             Operator Dashboard
           </h1>
@@ -255,7 +255,7 @@ const Home = () => {
                   Active plan
                 </p>
                 <p className="font-bold text-5xl leading-none whitespace-nowrap">
-                  Starter plan
+                  {operatorSlice.isActivated ? 'Basic' : 'Free'} plan
                 </p>
               </div>
               <div className="flex flex-col gap-[18px] w-full md:mt-[30px]">
@@ -289,17 +289,17 @@ const Home = () => {
             </div>
           </div>
           <div className="flex md:flex-col gap-[30px] md:gap-5">
-            <div className={`flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] pl-12 pt-12 pr-4 pb-[55px] md:pl-[30px] md:py-8 md:pr-[23px] ${operatorSlice.isActivated ? "bg-black" : "bg-white"}`}>
+            <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] pl-12 pt-12 pr-4 pb-[55px] md:pl-[30px] md:py-8 md:pr-[23px] bg-black">
               <div className="flex flex-col gap-4">
-                <p className={`text-[20px] leading-none font-bold ${operatorSlice.isActivated ? "text-white" : "text-black"}`}>
+                <p className="text-[20px] leading-none font-bold text-white">
                   Send your first transaction
                 </p>
-                <p className={`text-base ${operatorSlice.isActivated ? "text-white" : "text-text-dark-gray"}`}>
+                <p className="text-base text-white">
                   Learn how to submit your first transaction using a smart contract wallet
                 </p>
               </div>
               <button
-                className={`transition ease-in-out text-black leading-none font-semibold bg-modal-bg rounded-full px-7 py-4 ${operatorSlice.isActivated ? "hover:bg-success" : "border border-black/40 hover:bg-black hover:text-white hover:border-black"}`}
+                className="transition ease-in-out text-black leading-none font-semibold bg-modal-bg rounded-full px-7 py-4 hover:bg-success"
                 onClick={() => {
                   amplitude.track("Go to Tutorials");
                   window.open("https://docs.fuse.io/developers/tutorials/send-your-first-gasless-transaction", "_blank");
@@ -308,7 +308,7 @@ const Home = () => {
                 Start tutorial
               </button>
             </div>
-            <div className={`flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px] md:pl-[30px] md:py-8 md:pr-[23px] ${operatorSlice.isActivated ? "opacity-100" : "opacity-50"}`}>
+            <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px] md:pl-[30px] md:py-8 md:pr-[23px]">
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-2">
                   <p className="text-[20px] leading-none font-semibold">
@@ -329,27 +329,20 @@ const Home = () => {
                 </p>
               </div>
               <div className="w-full md:min-w-max flex justify-between items-center bg-modal-bg rounded-[31px] border border-black/40 text-sm text-black font-semibold px-5 py-[15px]">
-                {operatorSlice.isActivated ?
-                  <>
-                    <p>
-                      {operatorSlice.operator.project.publicKey}
-                    </p>
-                    <Copy
-                      src={copy}
-                      text={operatorSlice.operator.project.publicKey}
-                      tooltipText="API Key copied"
-                      alt="copy API key"
-                      width={15}
-                      height={15}
-                    />
-                  </> :
-                  <p>
-                    Account not activated
-                  </p>
-                }
+                <p>
+                  {operatorSlice.operator.project.publicKey}
+                </p>
+                <Copy
+                  src={copy}
+                  text={operatorSlice.operator.project.publicKey}
+                  tooltipText="API Key copied"
+                  alt="copy API key"
+                  width={15}
+                  height={15}
+                />
               </div>
             </div>
-            <div className={`flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px] md:pl-[30px] md:py-8 md:pr-[23px] ${operatorSlice.isActivated ? "opacity-100" : "opacity-50"}`}>
+            <div className="flex flex-col justify-between items-start gap-y-6 max-w-[407px] rounded-[20px] bg-white pl-12 pt-12 pr-[60px] pb-[55px] md:pl-[30px] md:py-8 md:pr-[23px]">
               <div className="flex flex-col gap-4">
                 <p className="text-[20px] leading-none font-semibold">
                   Your API secret key
@@ -358,59 +351,53 @@ const Home = () => {
                   You will need this API secret key for some FuseBox APIs.
                 </p>
               </div>
-              {!operatorSlice.isActivated ?
-                <div className="w-full md:min-w-max flex justify-between bg-modal-bg rounded-[31px] border border-black/40 text-sm text-black font-semibold px-5 py-[15px]">
-                  <p>
-                    Account not activated
-                  </p>
-                </div> :
-                operatorSlice.operator.project.secretLastFourChars ?
-                  <div className="w-full md:min-w-max flex justify-between items-center bg-modal-bg rounded-[31px] border border-black/40 text-xs text-black font-semibold px-5 py-[15px]">
-                    {operatorSlice.operator.project.secretKey && showSecretKey ?
-                      <p>
-                        {operatorSlice.operator.project.secretKey}
-                      </p> :
-                      <p>
-                        {operatorSlice.operator.project.secretPrefix}{new Array(20).fill("*")}{operatorSlice.operator.project.secretLastFourChars}
-                      </p>
-                    }
-                    <div className="flex items-center gap-2">
-                      {operatorSlice.operator.project.secretKey &&
-                        <Image
-                          src={showSecretKey ? show : hide}
-                          alt="display secret key"
-                          width={20}
-                          height={20}
-                          title="Display Secret Key"
-                          className="cursor-pointer"
-                          onClick={() => {
-                            setShowSecretKey(!showSecretKey)
-                          }}
-                        />
-                      }
+              {operatorSlice.operator.project.secretLastFourChars ?
+                <div className="w-full md:min-w-max flex justify-between items-center bg-modal-bg rounded-[31px] border border-black/40 text-xs text-black font-semibold px-5 py-[15px]">
+                  {operatorSlice.operator.project.secretKey && showSecretKey ?
+                    <p>
+                      {operatorSlice.operator.project.secretKey}
+                    </p> :
+                    <p>
+                      {operatorSlice.operator.project.secretPrefix}{new Array(20).fill("*")}{operatorSlice.operator.project.secretLastFourChars}
+                    </p>
+                  }
+                  <div className="flex items-center gap-2">
+                    {operatorSlice.operator.project.secretKey &&
                       <Image
-                        src={roll}
-                        alt="roll secret key"
-                        width={15}
-                        height={15}
-                        title="Roll Secret Key"
+                        src={showSecretKey ? show : hide}
+                        alt="display secret key"
+                        width={20}
+                        height={20}
+                        title="Display Secret Key"
                         className="cursor-pointer"
                         onClick={() => {
-                          dispatch(setIsRollSecretKeyModalOpen(true));
+                          setShowSecretKey(!showSecretKey)
                         }}
                       />
-                    </div>
-                  </div> :
-                  <Button
-                    text="Generate a new API secret"
-                    className="transition ease-in-out flex justify-between items-center gap-2 font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
-                    padding="py-4 px-6"
-                    onClick={() => {
-                      dispatch(withRefreshToken(() => dispatch(generateSecretApiKey())));
-                    }}
-                  >
-                    {operatorSlice.isGeneratingSecretApiKey && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
-                  </Button>
+                    }
+                    <Image
+                      src={roll}
+                      alt="roll secret key"
+                      width={15}
+                      height={15}
+                      title="Roll Secret Key"
+                      className="cursor-pointer"
+                      onClick={() => {
+                        dispatch(setIsRollSecretKeyModalOpen(true));
+                      }}
+                    />
+                  </div>
+                </div> :
+                <Button
+                  text="Generate a new API secret"
+                  className="transition ease-in-out flex justify-between items-center gap-2 font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
+                  padding="py-4 px-6"
+                  onClick={() => {
+                    dispatch(withRefreshToken(() => dispatch(generateSecretApiKey())));
+                  }}
+                >
+                  {operatorSlice.isGeneratingSecretApiKey && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
+                </Button>
               }
             </div>
           </div>
