@@ -47,7 +47,7 @@ const Topbar = () => {
       link: "/wallet",
     },
     {
-      title: "Points",
+      title: "Rewards",
       link: path.AIRDROP,
     },
     {
