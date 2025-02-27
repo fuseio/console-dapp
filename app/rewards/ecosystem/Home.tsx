@@ -220,7 +220,7 @@ const Home = () => {
 
   function referralLink() {
     const host = !IS_SERVER ? window?.location?.host : ""
-    return `${host}/points?ref=${user.referralCode}`
+    return `${host}/rewards?ref=${user.referralCode}`
   }
 
   useEffect(() => {
@@ -269,13 +269,13 @@ const Home = () => {
       >
         <Image
           src={leftArrow}
-          alt="back to Points"
+          alt="back to Rewards"
           width={7}
           height={13}
           className="transition ease-in-out group-hover:-translate-x-0.5"
         />
         <div className="leading-none font-semibold">
-          Points
+          Rewards
         </div>
       </Link>
       <div className="flex justify-between items-center mt-4">
@@ -290,7 +290,7 @@ const Home = () => {
           </div>
           <div className="md:shrink">
             <p className="text-lg leading-none text-text-dark-gray font-medium">
-              My points
+              My rewards
             </p>
             <div className="flex items-center gap-1.5 mt-6 xl:mt-2 mb-2">
               <Image
@@ -317,7 +317,7 @@ const Home = () => {
                   />
                   <div className="tooltip-text-up hidden top-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg group-hover:block text-black text-sm font-medium">
                     <p>
-                      Points calculation updated every 24 hours. Next update {convertTimestampToUTC(user.nextRewardDistributionTime)}
+                      Rewards calculation updated every 24 hours. Next update {convertTimestampToUTC(user.nextRewardDistributionTime)}
                     </p>
                   </div>
                 </div>
@@ -377,7 +377,7 @@ const Home = () => {
       </div>
       <div className="flex flex-col gap-8 xl:gap-6">
         <h2 className="text-3xl font-semibold">
-          Start earning points
+          Start earning rewards
         </h2>
         <div className="flex flex-row md:flex-col gap-[30px] xl:gap-5">
           <CardContainer containerClassName="block p-0 w-1/2 md:w-auto min-h-[283px] xl:min-h-56" className="block h-full">

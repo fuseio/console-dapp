@@ -41,20 +41,20 @@ const Home = () => {
         <div className="flex justify-between items-center gap-x-4 gap-6 bg-black rounded-[1.25rem] mt-[99.5px] px-16 py-10 md:p-7 md:mt-[78px] md:flex-col">
           <div className="flex flex-col justify-between items-start gap-5 md:gap-3">
             <p className="text-2xl text-white font-semibold md:text-lg">
-              Fuse Points
+              Fuse Rewards
             </p>
             <p className="bg-linear-gradient-green-thumb bg-clip-text text-[transparent] text-[3.5rem] leading-none font-bold max-w-96 md:text-3xl">
-              Explore Fuse Ember & Earn Points
+              Explore Fuse Ember & Earn Rewards
             </p>
             <Link
               href={path.AIRDROP}
               className="transition ease-in-out px-12 py-3 bg-white border border-white rounded-full text-lg leading-none font-semibold hover:bg-[transparent] hover:text-white"
-              onClick={() => amplitude.track("Home: Ember Points")}
+              onClick={() => amplitude.track("Home: Ember Rewards")}
             >
               Explore & Earn
             </Link>
           </div>
-          <Image src={pointsPhases} alt="points phases" width={650} height={180} />
+          <Image src={pointsPhases} alt="rewards phases" width={650} height={180} />
         </div>
         <div className="grid grid-cols-3 lg:grid-cols-1 gap-[31px] md:gap-5 mt-10 md:mt-5">
           <Link

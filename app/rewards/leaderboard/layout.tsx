@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Leaderboard - Fuse Console Points',
-  description: 'View all participants ranks in the Fuse Points Leaderboard!',
+  title: 'Leaderboard - Fuse Console Rewards',
+  description: 'View all participants ranks in the Fuse Rewards Leaderboard!',
 }
 
 export default function AirdropLeaderboardLayout({

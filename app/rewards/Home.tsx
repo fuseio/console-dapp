@@ -32,8 +32,8 @@ const Hero = () => {
         <span className="text-3xl font-semibold md:text-xl">
           Welcome to
         </span>
-        <span className="bg-linear-gradient-pale-green bg-clip-text text-[10.625rem] leading-none text-[transparent] font-black md:text-4xl">
-          Ember Points
+        <span className="bg-linear-gradient-pale-green bg-clip-text text-[10rem] leading-none text-[transparent] font-black md:text-4xl">
+          Ember Rewards
         </span>
       </h1>
       <p className="text-lg max-w-xl">
@@ -52,7 +52,7 @@ const Hero = () => {
               }
             }}
           >
-            Earn Points
+            Earn Rewards
             {isLoading ? <Spinner /> : <RightCaret />}
           </button>
           <div className="transition-all ease-in-out duration-300 absolute inset-8 bg-linear-gradient-dark-orange rounded-[inherit] blur-[25px] -z-[1] group-hover:inset-0"></div>
@@ -345,7 +345,7 @@ const Phases = () => {
               Fuse Ember
             </p>
             <p className="text-lg max-w-[37rem]">
-              Migrate all your funds from old L1 Fuse Network mainnet to L2 Fuse Ember mainnet and earn airdrop points. The more funds you migrate, the more points you get.
+              Migrate all your funds from old L1 Fuse Network mainnet to L2 Fuse Ember mainnet and earn rewards. The more funds you migrate, the more rewards you get.
             </p>
             <Link
               className="transition ease-in-out w-fit px-12 py-4 mt-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
