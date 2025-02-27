@@ -1,5 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/points',
+        destination: '/rewards',
+        permanent: true,
+      },
+      {
+        source: '/points/:path*',
+        destination: '/rewards/:path*',
+        permanent: true,
+      },
+    ];
+  },
   images: {
     unoptimized: true
   },
