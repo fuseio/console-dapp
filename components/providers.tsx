@@ -49,7 +49,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
         walletConnectors: [EthereumWalletConnectors],
         overrides: {
           evmNetworks: (networks) => mergeNetworks(evmNetworks, networks)
-        }
+        },
+        initialAuthenticationMode: 'connect-only',
       }}
     >
       <Provider store={store}>

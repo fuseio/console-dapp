@@ -331,6 +331,7 @@ export interface User {
   email: string;
   auth0Id: string;
   smartWalletAddress: Address;
+  isActivated: boolean;
 }
 
 export interface Project {

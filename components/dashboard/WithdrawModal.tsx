@@ -15,6 +15,7 @@ import { Address } from "viem";
 import gasIcon from "@/assets/gas.svg";
 import { ethers } from "ethers";
 import { useWalletClient } from "wagmi";
+import { Status } from "@/lib/types";
 
 type WithdrawModalProps = {
   balance: string;
@@ -81,12 +82,12 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
   const { data: walletClient } = useWalletClient()
 
   function handleWithdraw() {
-    if(!walletClient) {
+    if (!walletClient) {
       console.log("WalletClient not found")
       return;
     }
 
-    if(!toAddress) {
+    if (!toAddress) {
       console.log("toAddress not found")
       return;
     }
@@ -239,7 +240,7 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
                 onChange={e => setToAddress(e.target.value as Address)}
                 className="px-7 py[16.5px] border-[0.5px] border-gray-alpha-40 h-[55px] rounded-full mb-6 text-2xl text-text-dark-gray font-medium w-full focus:outline-none"
               />
-              {operatorSlice.isActivated &&
+              {operatorSlice.operator.user.isActivated &&
                 <div
                   title="Gas Estimate"
                   className="w-full flex justify-end items-center gap-1 text-text-dark-gray mb-2"
@@ -269,8 +270,13 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
                   }
                 }}
               >
-                {operatorSlice.isWithdrawing && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
+                {operatorSlice.withdrawStatus === Status.PENDING && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
               </Button>
+              {operatorSlice.withdrawStatus === Status.ERROR && (
+                <p className="mt-4 text-center max-w-md">
+                  An error occurred. Please try to Deposit more funds or change Amount.
+                </p>
+              )}
             </div>
           </motion.div>
         </motion.div>

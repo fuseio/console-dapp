@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useBlockNumber } from "wagmi";
 import { fuse } from "wagmi/chains";
-import { checkIsActivated, fetchSponsorIdBalance, fetchSponsoredTransactions, generateSecretApiKey, selectOperatorSlice, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
+import { fetchOperator, fetchSponsoredTransactions, fetchSponsorIdBalance, generateSecretApiKey, selectOperatorSlice, setIsRollSecretKeyModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
@@ -26,32 +26,16 @@ import { formatUnits } from "viem";
 import contactSupport from "@/assets/contact-support.svg";
 import SubscriptionModal from "@/components/dashboard/SubscriptionModal";
 import { useSearchParams, useRouter } from "next/navigation";
+import { Status } from "@/lib/types";
 
 type OperatorAccountBalanceProps = {
   chain: any;
   balanceSlice: BalanceStateType;
   balance: any;
-  isActivated: boolean;
   dispatch: ThunkDispatch<any, undefined, AnyAction> & Dispatch<AnyAction>;
 }
 
-const OperatorAccountBalance = ({ chain, balanceSlice, balance, isActivated, dispatch }: OperatorAccountBalanceProps) => {
-  useEffect(() => {
-    const fiveSecondInMillisecond = 5000;
-
-    const intervalId = setInterval(() => {
-      if (isActivated) {
-        dispatch(withRefreshToken(() => dispatch(fetchSponsoredTransactions())));
-      } else {
-        dispatch(withRefreshToken(() => dispatch(checkIsActivated())));
-      }
-    }, fiveSecondInMillisecond);
-
-    return () => {
-      clearInterval(intervalId);
-    }
-  }, [dispatch, isActivated])
-
+const OperatorAccountBalance = ({ chain, balanceSlice, balance, dispatch }: OperatorAccountBalanceProps) => {
   return (
     <div className="flex flex-col justify-between items-start">
       <div className="flex flex-col gap-[18px] md:mb-4">
@@ -125,7 +109,7 @@ const Home = () => {
   const router = useRouter();
   const searchParams = useSearchParams()
   const checkoutSuccess = searchParams.get('checkout-success')
-  const totalTransaction = operatorSlice.isActivated ? 1_000_000 : 1000;
+  const totalTransaction = operatorSlice.operator.user.isActivated ? 1_000_000 : 1000;
 
   useEffect(() => {
     dispatch(fetchUsdPrice({
@@ -144,7 +128,7 @@ const Home = () => {
 
   useEffect(() => {
     (async () => {
-      if (operatorSlice.isWithdrawn && operatorSlice.withdraw.amount) {
+      if (operatorSlice.withdrawStatus === Status.SUCCESS && operatorSlice.withdraw.amount) {
         const priceUSD = await fetchTokenPrice(operatorSlice.withdraw.coinGeckoId);
         const amountUSD = parseFloat(operatorSlice.withdraw.amount) * (typeof priceUSD === "string" ? parseFloat(priceUSD) : priceUSD);
 
@@ -155,7 +139,7 @@ const Home = () => {
         });
       }
     })();
-  }, [operatorSlice.isWithdrawn, operatorSlice.withdraw.amount, operatorSlice.withdraw.coinGeckoId, operatorSlice.withdraw.token])
+  }, [operatorSlice.withdrawStatus, operatorSlice.withdraw.amount, operatorSlice.withdraw.coinGeckoId, operatorSlice.withdraw.token])
 
   useEffect(() => {
     if (operatorSlice.isAuthenticated) {
@@ -164,9 +148,12 @@ const Home = () => {
   }, [blockNumber, operatorSlice.isAuthenticated, refetch])
 
   useEffect(() => {
+    dispatch(withRefreshToken(() => dispatch(fetchOperator())));
+  }, [dispatch])
+
+  useEffect(() => {
     if (operatorSlice.isAuthenticated) {
       dispatch(withRefreshToken(() => dispatch(fetchSponsoredTransactions())));
-      dispatch(withRefreshToken(() => dispatch(checkIsActivated())));
     }
   }, [dispatch, operatorSlice.isAuthenticated])
 
@@ -217,7 +204,7 @@ const Home = () => {
             </p>
           </div>
         )}
-        {!operatorSlice.isActivated &&
+        {!operatorSlice.operator.user.isActivated &&
           <div className="flex flex-row md:flex-col gap-4 justify-between items-center bg-lemon-chiffon rounded-[20px] px-[30px] py-[18px] mb-[30px] border-[0.5px] border-star-dust-alpha-70">
             <div className="flex flex-row md:flex-col items-center md:text-center gap-7 md:gap-2">
               <Image
@@ -246,7 +233,6 @@ const Home = () => {
               chain={chain}
               balanceSlice={balanceSlice}
               balance={balance}
-              isActivated={operatorSlice.isActivated}
               dispatch={dispatch}
             />
             <div className="flex flex-col justify-between w-[361px] md:w-auto">
@@ -255,7 +241,7 @@ const Home = () => {
                   Active plan
                 </p>
                 <p className="font-bold text-5xl leading-none whitespace-nowrap">
-                  {operatorSlice.isActivated ? 'Basic' : 'Free'} plan
+                  {operatorSlice.operator.user.isActivated ? 'Basic' : 'Free'} plan
                 </p>
               </div>
               <div className="flex flex-col gap-[18px] w-full md:mt-[30px]">

@@ -4,7 +4,7 @@ import { Signer, ethers } from "ethers";
 import { FuseSDK, OwnerWalletClient } from "@fuseio/fusebox-web-sdk";
 import { SmartAccountClient } from "permissionless";
 import { hex, splitSecretKey, subscriptionInfo } from "@/lib/helpers";
-import { Operator, OperatorCheckout, OperatorContactDetail, SignData, Withdraw } from "@/lib/types";
+import { Operator, OperatorCheckout, OperatorContactDetail, SignData, Status, Withdraw } from "@/lib/types";
 import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreateOperatorWallet, postCreatePaymaster, postOperatorCheckout, postOperatorSubscription, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
@@ -23,6 +23,7 @@ const initOperator: Operator = {
     email: "",
     auth0Id: "",
     smartWalletAddress: hex,
+    isActivated: false,
   },
   project: {
     id: "",
@@ -57,8 +58,6 @@ export interface OperatorStateType {
   isAuthenticated: boolean;
   isHydrated: boolean;
   isValidated: boolean;
-  isActivated: boolean;
-  isWithdrawn: boolean;
   isCheckingOperator: boolean;
   isValidatingOperator: boolean;
   isFetchingOperator: boolean;
@@ -75,7 +74,7 @@ export interface OperatorStateType {
   isFetchingErc20Balance: boolean;
   isCreatingPaymaster: boolean;
   isFundingPaymaster: boolean;
-  isWithdrawing: boolean;
+  withdrawStatus: Status;
   isCheckingActivation: boolean;
   isFetchingSponsoredTransactions: boolean;
   sponsoredTransactions: number;
@@ -99,8 +98,6 @@ const INIT_STATE: OperatorStateType = {
   isOperatorExist: false,
   isHydrated: false,
   isValidated: false,
-  isActivated: false,
-  isWithdrawn: false,
   isCheckingOperator: false,
   isValidatingOperator: false,
   isFetchingOperator: false,
@@ -117,7 +114,7 @@ const INIT_STATE: OperatorStateType = {
   isFetchingErc20Balance: false,
   isCreatingPaymaster: false,
   isFundingPaymaster: false,
-  isWithdrawing: false,
+  withdrawStatus: Status.IDLE,
   isCheckingActivation: false,
   isFetchingSponsoredTransactions: false,
   sponsoredTransactions: 0,
@@ -510,7 +507,7 @@ export const withdraw = createAsyncThunk<
         }
       }
 
-      if (operatorState.isActivated) {
+      if (operatorState.operator.user.isActivated) {
         withPaymaster = true;
       }
 
@@ -530,6 +527,8 @@ export const withdraw = createAsyncThunk<
       const userOpReceipt = await fuseClient.waitForUserOperationReceipt({
         hash: userOpHash,
       })
+
+      thunkAPI.dispatch(fetchSponsoredTransactions());
 
       const transactionHash = userOpReceipt.receipt.transactionHash;
       if (transactionHash) {
@@ -712,7 +711,6 @@ const operatorSlice = createSlice({
       state.operator = initOperator;
       state.isAuthenticated = false;
       state.operatorContactDetail = initOperatorContactDetail;
-      state.isActivated = false;
       state.sponsoredTransactions = 0;
       localStorage.removeItem("Fuse-isOperatorExist");
       localStorage.removeItem("Fuse-isValidated");
@@ -729,13 +727,11 @@ const operatorSlice = createSlice({
       const operator = localStorage.getItem("Fuse-operator");
       const isAuthenticated = localStorage.getItem("Fuse-isOperatorAuthenticated");
       const operatorContactDetail = localStorage.getItem("Fuse-operatorContactDetail");
-      const isActivated = localStorage.getItem("Fuse-isActivated");
       state.isOperatorExist = isOperatorExist ? JSON.parse(isOperatorExist) : false;
       state.isValidated = isValidated ? JSON.parse(isValidated) : false;
       state.operator = operator ? JSON.parse(operator) : initOperator;
       state.isAuthenticated = isAuthenticated ? JSON.parse(isAuthenticated) : false;
       state.operatorContactDetail = operatorContactDetail ? JSON.parse(operatorContactDetail) : initOperatorContactDetail;
-      state.isActivated = isActivated ? JSON.parse(isActivated) : false;
       state.isHydrated = true;
     }
   },
@@ -864,28 +860,15 @@ const operatorSlice = createSlice({
         state.isFetchingErc20Balance = false;
       })
       .addCase(withdraw.pending, (state) => {
-        state.isWithdrawing = true;
+        state.withdrawStatus = Status.PENDING;
       })
       .addCase(withdraw.fulfilled, (state, action) => {
-        state.isWithdrawing = false;
-        state.isWithdrawn = true;
+        state.withdrawStatus = Status.SUCCESS;
         state.withdraw = action.payload;
         state.isWithdrawModalOpen = false;
       })
       .addCase(withdraw.rejected, (state) => {
-        state.isWithdrawing = false;
-        state.isWithdrawModalOpen = false;
-      })
-      .addCase(checkIsActivated.pending, (state) => {
-        state.isCheckingActivation = true;
-      })
-      .addCase(checkIsActivated.fulfilled, (state) => {
-        state.isCheckingActivation = false;
-        state.isActivated = true;
-        localStorage.setItem("Fuse-isActivated", "true");
-      })
-      .addCase(checkIsActivated.rejected, (state) => {
-        state.isCheckingActivation = false;
+        state.withdrawStatus = Status.ERROR;
       })
       .addCase(fetchSponsoredTransactions.pending, (state) => {
         state.isFetchingSponsoredTransactions = true;
@@ -904,8 +887,7 @@ const operatorSlice = createSlice({
         state.isSubscribing = false;
         state.isSubscriptionModalOpen = false;
         state.isSubscribed = true;
-        state.isActivated = true;
-        localStorage.setItem("Fuse-isActivated", "true");
+        state.operator.user.isActivated = true;
       })
       .addCase(subscription.rejected, (state) => {
         state.isSubscribing = false;
