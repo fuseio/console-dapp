@@ -13,6 +13,7 @@ import WaitlistModal from "@/components/airdrop/WaitlistModal";
 import { retrieveAirdropUser, selectAirdropSlice } from "@/store/airdropSlice";
 import QuestModal from "@/components/airdrop/QuestModal";
 import ClaimTestnetFuseModal from "@/components/airdrop/ClaimTestnetFuseModal";
+import TwitterErrorModal from "@/components/airdrop/TwitterErrorModal";
 
 const AirdropEcosystem = () => {
   const dispatch = useAppDispatch();
@@ -35,6 +36,7 @@ const AirdropEcosystem = () => {
       <QuestModal />
       <WaitlistModal />
       <ClaimTestnetFuseModal />
+      <TwitterErrorModal />
       <Topbar />
       <Home />
       <Footer />
