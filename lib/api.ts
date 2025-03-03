@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { CONFIG, NEXT_PUBLIC_AGENT_API_URL, NEXT_PUBLIC_AGENT_ID, NEXT_PUBLIC_AIRDROP_API_BASE_URL, NEXT_PUBLIC_AVAIL_MONITORING_API_URL, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL, NEXT_PUBLIC_FUSE_API_BASE_URL } from './config'
-import { AirdropUser, CreateAirdropUser, DelegatedAmountsByDelegators, DelegatedAmountsRequest, AirdropLeaderboard, Operator, OperatorContactDetail, Paymaster, SignData, ValidatorResponse, TextResponse } from "./types";
+import { AirdropLeaderboard, AirdropUser, CreateAirdropUser, DelegatedAmountsByDelegators, DelegatedAmountsRequest, Invoice, Operator, OperatorCheckout, OperatorContactDetail, OperatorWallet, Paymaster, SignData, ValidatorResponse, TextResponse } from "./types";
 import { Address } from "viem";
 
 export const fetchAllNodes = () =>
@@ -86,6 +86,16 @@ export const postCreateOperator = async (operatorContactDetail: OperatorContactD
     return response.data
 }
 
+export const postCreateOperatorWallet = async (operatorWallet: OperatorWallet): Promise<OperatorWallet> => {
+    const response = await axios.post(
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/wallet`,
+        operatorWallet,
+        {
+            withCredentials: true
+        }
+    )
+    return response.data
+}
 
 export const postCreateApiSecretKey = async (projectId: string): Promise<{ secretKey: string }> => {
     const response = await axios.post(
@@ -133,6 +143,28 @@ export const checkActivated = async (): Promise<AxiosResponse<any, any>> => {
 export const fetchSponsoredTransactionCount = async (): Promise<{ sponsoredTransactions: number }> => {
     const response = await axios.get(
         `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/sponsored-transaction`,
+        {
+            withCredentials: true
+        }
+    )
+    return response.data
+}
+
+export const postOperatorSubscription = async (): Promise<Invoice> => {
+    const response = await axios.post(
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/subscriptions`,
+        {},
+        {
+            withCredentials: true
+        }
+    )
+    return response.data
+}
+
+export const postOperatorCheckout = async (operatorCheckout: OperatorCheckout): Promise<string> => {
+    const response = await axios.post(
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/checkout/sessions`,
+        operatorCheckout,
         {
             withCredentials: true
         }
