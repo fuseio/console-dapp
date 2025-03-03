@@ -11,7 +11,7 @@ const Airdrop = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(setSelectedNavbar("points"));
+    dispatch(setSelectedNavbar("rewards"));
   }, [dispatch])
 
   return (

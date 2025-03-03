@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Points - Fuse Console',
-  description: 'Join the Fuse Points! Get into the Fuse, connect your wallet and earn Rewards with ease',
+  title: 'Rewards - Fuse Console',
+  description: 'Join the Fuse Rewards! Get into the Fuse, connect your wallet and earn Rewards with ease',
 }
 
 export default function AirdropLayout({

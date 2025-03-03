@@ -20,7 +20,7 @@ const AirdropEcosystem = () => {
   const router = useRouter();
 
   useEffect(() => {
-    dispatch(setSelectedNavbar("points"));
+    dispatch(setSelectedNavbar("rewards"));
     dispatch(retrieveAirdropUser());
   }, [dispatch])
 

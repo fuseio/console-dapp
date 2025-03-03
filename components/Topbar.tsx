@@ -45,7 +45,7 @@ const Topbar = () => {
       link: path.HOME,
     },
     {
-      title: "Points",
+      title: "Rewards",
       link: path.AIRDROP,
     },
     {
