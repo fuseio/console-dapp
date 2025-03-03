@@ -4,6 +4,11 @@ export const ERC20ABI = narrow([
   {
     inputs: [
       {
+        internalType: "address",
+        name: "_bridge",
+        type: "address",
+      },
+      {
         internalType: "string",
         name: "_name",
         type: "string",

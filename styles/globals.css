@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --red-berry: #8E0B0B;
+}
+
 .tooltip-text::after {
   content: "";
   position: absolute;
@@ -11,6 +15,28 @@
   border-width: 9px;
   border-style: solid;
   border-color: white transparent transparent transparent;
+}
+
+.tooltip-text-black::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -10px;
+  border-width: 9px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+.tooltip-text-up::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -10px;
+  border-width: 9px;
+  border-style: solid;
+  border-color: transparent transparent white transparent;
 }
 
 .copy-tooltip::after {
@@ -38,4 +64,14 @@
 
 .message-animate {
   animation: slideUpFade 0.3s ease-out forwards;
+}
+
+.number-input::-webkit-outer-spin-button,
+.number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.number-input[type=number] {
+  -moz-appearance: textfield;
 }

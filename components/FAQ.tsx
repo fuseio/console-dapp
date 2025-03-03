@@ -3,7 +3,7 @@ import FaqQuestion from "./FaqQuestion";
 
 type FAQProps = {
   questions: string[];
-  answers: JSX.Element[];
+  answers: JSX.Element[] | string[];
   className?: string;
 };
 

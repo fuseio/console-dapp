@@ -78,6 +78,19 @@ const config: Config = {
       "gray-goose": "#CFCFCF",
       "dune": "#333333",
       "dove-gray": "#6B6B6B",
+      "red-berry": "var(--red-berry)",
+      "sundown": "#F9B4B4",
+      "bean-red": "#F65D51",
+      "antique-white": "#FFECDA",
+      "ash-gray": "#B9B9B9",
+      "pale-slate": "#BFBFBF",
+      "stoplight-go-green": "#66E070",
+      "charcoal-gray": "#434343",
+      "peach-orange": "#EBD08B",
+      "atomic-tangerine": "#FCA06D",
+      "sunset-orange": "#F66851",
+      sand: "#EDC765",
+      marzipan: "#F5DC99"
     },
     fontFamily: {
       mona: ["var(--font-mona-sans)"],
@@ -100,6 +113,7 @@ const config: Config = {
       },
       animation: {
         "fade-in": "fadeIn 0.5s ease-in-out",
+        'blink-underline': 'blink 1s linear infinite',
       },
       transform: ["group-hover"],
       gridTemplateColumns: {
@@ -111,6 +125,23 @@ const config: Config = {
       },
       boxShadow: {
         'inner-black': 'inset 0px 0px 0px 3px rgba(0,0,0,0.3)',
+        'marzipan': '0px 8px 50px 0px #F5DC99',
+      },
+      dropShadow: {
+        'light-tan': '0px 4px 2px #FFE9AD',
+      },
+      backgroundImage: {
+        'linear-gradient-orange': "linear-gradient(122deg, rgba(246, 93, 81, 0.20) 5.66%, rgba(246, 93, 81, 0.00) 24.99%)",
+        'linear-gradient-dark-orange': 'linear-gradient(92deg, #F7A454 0%, #F66957 100%)',
+        'linear-gradient-green': "linear-gradient(122deg, rgba(102, 224, 112, 0.20) 5.66%, rgba(102, 224, 112, 0.00) 24.99%)",
+        'linear-gradient-black': 'linear-gradient(180deg, #585858 0%, #000 81.5%)',
+        'linear-gradient-gray': 'linear-gradient(180deg, #C7C7C7 0%, #F2F2F2 100%)',
+        'linear-gradient-green-red': 'linear-gradient(45deg, #B7F5B5 0%, #F6A051 50%, #F65D51 100%)',
+        'linear-gradient-green-red-bottom': 'linear-gradient(180deg, #B7F5B5 11%, #F6A051 49%, #F65D51 89%)',
+        'linear-gradient-sand': 'linear-gradient(0deg, #EDC765 50.29%, #AD8213 100.29%)',
+        'linear-gradient-pale-green': 'linear-gradient(180deg, #66E070 0%, #A3F5AA 100%)',
+        'linear-gradient-green-thumb': "linear-gradient(180deg, #98F1A0 0%, #68E172 82%)",
+        'linear-gradient-yellow': "linear-gradient(122deg, rgba(237, 199, 101, 0.20) 5.66%, rgba(237, 199, 101, 0.00) 24.99%)",
       }
     },
   },

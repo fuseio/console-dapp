@@ -21,6 +21,19 @@ import { metaMask } from 'wagmi/connectors';
 import { hex, detectDevice, IS_ETHEREUM_OBJECT_DETECTED } from "./helpers";
 import { Web3AuthSocialConnector } from "./connectors/social";
 import { Web3AuthEmailConnector } from "./connectors/email";
+import { defineChain } from "viem";
+
+export const flash = defineChain({
+  id: 1264453517,
+  name: 'Flash',
+  nativeCurrency: { name: 'Fuse', symbol: 'FUSE', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://rpc.flash.fuse.io'] },
+  },
+  blockExplorers: {
+    default: { name: 'Flash Explorer', url: 'https://explorer.flash.fuse.io' },
+  },
+})
 
 const chains: readonly [Chain, ...Chain[]] = [
   fuse,
@@ -30,6 +43,7 @@ const chains: readonly [Chain, ...Chain[]] = [
   mainnet,
   bsc,
   base,
+  flash,
 ]
 
 export const config = createConfig({
@@ -60,12 +74,13 @@ export const config = createConfig({
   ],
   transports: {
     [fuse.id]: http(),
-    [polygon.id]: http(),
-    [optimism.id]: http(),
-    [arbitrum.id]: http(),
-    [mainnet.id]: http(),
+    [polygon.id]: http(`https://polygon-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`),
+    [optimism.id]: http(`https://opt-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_OPTIMISM_API_KEY}`),
+    [arbitrum.id]: http(`https://arb-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ARBITRUM_API_KEY}`),
+    [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ETHEREUM_API_KEY}`),
     [bsc.id]: http(),
-    [base.id]: http(),
+    [base.id]: http(`https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_BASE_API_KEY}`),
+    [flash.id]: http(),
   },
 })
 

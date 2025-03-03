@@ -7,39 +7,7 @@ import Image from "next/image";
 import close from "@/assets/close.svg";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-
-type ErrorProps = {
-  touched: boolean | undefined;
-  error: string | undefined;
-}
-
-const Error = ({ touched, error }: ErrorProps) => {
-  return (
-    <div className="h-3.5">
-      <AnimatePresence>
-        {touched && error ? (
-          <motion.div
-            initial={{
-              y: -2,
-              opacity: 0
-            }}
-            animate={{
-              y: 0,
-              opacity: 1
-            }}
-            exit={{
-              y: 2,
-              opacity: 0
-            }}
-            className="text-sm text-[#FD0F0F]"
-          >
-            {error}
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
-    </div>
-  )
-}
+import { Error } from "@/components/ui/Form";
 
 const ContactDetailsModal = (): JSX.Element => {
   const dispatch = useAppDispatch();
