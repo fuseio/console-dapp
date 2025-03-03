@@ -6,7 +6,7 @@ import Link from "next/link";
 import Copy from "@/components/ui/Copy";
 import { convertTimestampToUTC, IS_SERVER, isFloat, isSocialFollowed, path } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { selectAirdropSlice, setIsClaimTestnetFuseModalOpen, setIsQuestModalOpen, setSelectedQuest } from "@/store/airdropSlice";
+import { selectAirdropSlice, setIsClaimTestnetFuseModalOpen, setIsQuestModalOpen, setIsTwitterErrorModalOpen, setSelectedQuest } from "@/store/airdropSlice";
 import Avatar from "@/components/ui/Avatar";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/Card3D";
 import Quest from "@/components/airdrop/Quest";
@@ -252,6 +252,12 @@ const Home = () => {
         dispatch(setIsClaimTestnetFuseModalOpen(true));
         localStorage.removeItem("airdrop-isClaimTestnetFuse");
       }
+    } else if (twitterConnected === "false") {
+      dispatch(setIsTwitterErrorModalOpen(true));
+    }
+
+    if (twitterConnected) {
+      router.replace(path.AIRDROP_ECOSYSTEM);
     }
   }, [dispatch, router, twitterConnected])
 

@@ -54,6 +54,7 @@ export interface AirdropStateType {
   isClaimingTestnetFuse: boolean;
   referrals: number;
   isFetchingReferral: boolean;
+  isTwitterErrorModalOpen: boolean;
 }
 
 const INIT_STATE: AirdropStateType = {
@@ -81,6 +82,7 @@ const INIT_STATE: AirdropStateType = {
   isClaimingTestnetFuse: false,
   referrals: 0,
   isFetchingReferral: false,
+  isTwitterErrorModalOpen: false,
 }
 
 export const authenticateAirdropUser = createAsyncThunk<
@@ -375,6 +377,9 @@ const airdropSlice = createSlice({
     setIsClaimTestnetFuseModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isClaimTestnetFuseModalOpen = action.payload
     },
+    setIsTwitterErrorModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isTwitterErrorModalOpen = action.payload
+    },
     setLogoutAirdrop: (state) => {
       state.inviteCode = "";
       state.accessToken = "";
@@ -545,6 +550,7 @@ export const {
   setSelectedQuest,
   setIsWaitlistModalOpen,
   setIsClaimTestnetFuseModalOpen,
+  setIsTwitterErrorModalOpen,
   setLogoutAirdrop,
   setHydrateAirdrop
 } = airdropSlice.actions;
