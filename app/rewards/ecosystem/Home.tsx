@@ -255,6 +255,10 @@ const Home = () => {
     } else if (twitterConnected === "false") {
       dispatch(setIsTwitterErrorModalOpen(true));
     }
+
+    if (twitterConnected) {
+      router.replace(path.AIRDROP_ECOSYSTEM);
+    }
   }, [dispatch, router, twitterConnected])
 
   useEffect(() => {
