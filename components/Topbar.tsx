@@ -46,19 +46,11 @@ const Topbar = () => {
     },
     {
       title: "AI Agent",
-      link: "/ai-agent",
+      link: path.AI_AGENT,
     },
     {
       title: "Rewards",
       link: path.AIRDROP,
-    },
-    {
-      title: "AI Agent",
-      link: "/ai-agent",
-    },
-    {
-      title: "Build",
-      link: "/build",
     },
     {
       title: "Bridge",

@@ -88,8 +88,6 @@ export const path = {
   NODES: "/nodes",
   TESTNET_NODES: "/nodes/testnet",
   EMBER_NODES: "/nodes/ember",
-  AI_AGENT: "/ai-agent",
-  AI_AGENT_CHAT: "/ai-agent/chat",
 };
 
 export const buildSubMenuItems = [

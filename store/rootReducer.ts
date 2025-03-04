@@ -18,7 +18,6 @@ import selectedChainReducer from "./selectedChainSlice";
 import aiReducer from "./aiSlice";
 import nodesReducer from "./nodesSlice";
 import airdropReducer from "./airdropSlice";
-import aiReducer from "./aiSlice";
 
 const appReducer = combineReducers({
   validator: validatorReducer,
@@ -36,7 +35,6 @@ const appReducer = combineReducers({
   ai: aiReducer,
   nodes: nodesReducer,
   airdrop: airdropReducer,
-  ai: aiReducer,
 });
 
 export type AppState = {
@@ -55,7 +53,6 @@ export type AppState = {
   ai: ReturnType<typeof aiReducer>;
   nodes: ReturnType<typeof nodesReducer>;
   airdrop: ReturnType<typeof airdropReducer>;
-  ai: ReturnType<typeof aiReducer>;
 };
 
 const rootReducer: Reducer = (state: AppState, action: UnknownAction) => {
