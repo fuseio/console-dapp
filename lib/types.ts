@@ -538,3 +538,7 @@ export type DelegateLicenseModal = {
   open: boolean;
   address?: Address;
 }
+
+export type OperatorRegistrationClassNames = {
+  pricingArticle: string;
+}
