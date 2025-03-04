@@ -2,11 +2,12 @@ import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-import { path } from "@/lib/helpers";
+import { cn, path } from "@/lib/helpers";
 import checkmark from "@/assets/checkmark-white.svg";
 import Spinner from "../ui/Spinner";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { checkout, selectOperatorSlice } from "@/store/operatorSlice";
+import { OperatorRegistrationClassNames } from "@/lib/types";
 
 export enum BillingCycle {
   MONTHLY = "monthly",
@@ -32,6 +33,10 @@ type PlanProps = {
   isBorder?: boolean;
   isPopular?: boolean;
 };
+
+type OperatorPricing = {
+  classNames?: OperatorRegistrationClassNames;
+}
 
 const Billing = ({
   title,
@@ -116,7 +121,7 @@ const Plan = ({
   )
 }
 
-const OperatorPricing = () => {
+const OperatorPricing = ({ classNames }: OperatorPricing) => {
   const dispatch = useAppDispatch();
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const router = useRouter();
@@ -171,7 +176,10 @@ const OperatorPricing = () => {
             onClick={() => setSelectedBillingCycle(BillingCycle.YEARLY)}
           />
         </div>
-        <article className="bg-dune rounded-[1.25rem] text-white py-10 grid grid-cols-3 md:grid-cols-1 gap-y-4">
+        <article className={cn(
+          "bg-dune rounded-[1.25rem] text-white py-10 grid grid-cols-3 md:grid-cols-1 gap-y-4",
+          classNames?.pricingArticle
+        )}>
           <Plan
             title="Free plan"
             description="Start receiving crypto payments in just a few clicks"
