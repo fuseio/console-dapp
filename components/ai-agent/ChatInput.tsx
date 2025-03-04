@@ -31,6 +31,10 @@ const actions: Action[] = [
     title: "Create an ERC20 token",
     description: "Create a new ERC20 token with the following details: NAME, SYMBOL, OWNER_ADDRESS",
   },
+  {
+    title: "Create an Operator account",
+    description: "Create an Operator account",
+  },
 ];
 
 const ChatInput = () => {

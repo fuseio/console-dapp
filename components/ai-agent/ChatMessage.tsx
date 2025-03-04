@@ -1,17 +1,21 @@
 import Image from "next/image";
-import { useEffect } from "react";
+import { createElement, useEffect } from "react";
 import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
 import { Address, parseEther } from "viem";
 import { fuse } from "viem/chains";
 import { Check, Copy, ThumbsUp, ThumbsDown } from 'lucide-react'
 
-import { useAppDispatch } from "@/store/store";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import { TextResponse } from "@/lib/types";
+import { updateMessage } from "@/store/aiSlice";
+import Spinner from "@/components/ui/Spinner";
+import OperatorRegistrationSection from "../build/OperatorRegistrationSection";
+import { selectOperatorSlice } from "@/store/operatorSlice";
+import useOperatorRegistration from "@/lib/hooks/useOperatorRegistration";
 
 import ExternalArrow from "@/assets/ExternalArrow";
 import edisonGradient from "@/assets/edison-gradient.png"
-import { updateMessage } from "@/store/aiSlice";
 
 type ChatMessageProps = {
   message: TextResponse;
@@ -33,12 +37,6 @@ const AssistantIcon = () => (
     />
   </div>
 )
-
-const Spinner = () => {
-  return (
-    <span className="animate-spin border-2 border-gray border-t-2 border-t-dark-gray rounded-full w-4 h-4"></span>
-  )
-}
 
 const Button = ({ message }: ChatMessageProps) => {
   const dispatch = useAppDispatch();
@@ -93,9 +91,32 @@ const Button = ({ message }: ChatMessageProps) => {
   );
 };
 
+const CreateOperatorAccount = () => {
+  const operatorSlice = useAppSelector(selectOperatorSlice);
+  const { isConnected } = useAccount();
+  const { isSigningMessage, isSignMessageError, checkoutCancel } = useOperatorRegistration();
+  const classNames = {
+    pricingArticle: "grid-cols-1"
+  }
+
+  return (
+    <OperatorRegistrationSection
+      operatorSlice={operatorSlice}
+      isConnected={isConnected}
+      isSigningMessage={isSigningMessage}
+      isSignMessageError={isSignMessageError}
+      checkoutCancel={checkoutCancel}
+      classNames={classNames}
+    />
+  )
+}
+
 const ChatMessage = ({ message }: ChatMessageProps) => {
   const isUser = message.user === "user";
-  const isButton = message.action === "SEND_TOKENS";
+  const actionComponents: Record<string, React.ComponentType<ChatMessageProps>> = {
+    "SEND_TOKENS": Button,
+    "CREATE_OPERATOR_ACCOUNT": CreateOperatorAccount
+  };
 
   return (
     <div className={`flex gap-3 md:gap-0 ${isUser ? 'justify-end' : 'justify-start'}`}>
@@ -127,9 +148,9 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
                   View transaction &gt;
                 </a>
               </div>
-            ) : (
-              isButton && <Button message={message} />
-            )}
+            ) : (message.action && actionComponents[message.action]) ? (
+              createElement(actionComponents[message.action], { message })
+            ) : null}
             {!isUser && (
               <div className="flex items-center gap-2 mt-2">
                 <button className="p-1 hover:bg-lightest-gray rounded">
