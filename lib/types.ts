@@ -409,6 +409,14 @@ export interface ValidatorResponse {
   validatorsMetadata: Record<Address, ValidatorTypeResponse>
 }
 
+export type TextResponse = {
+  text: string;
+  user: 'user' | 'Fuse Network';
+  action?: string;
+  hash?: string;
+  [key: string]: unknown;
+};
+
 export interface Invoice {
   ownerId: string;
   amount: string;

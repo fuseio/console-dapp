@@ -79,6 +79,8 @@ export const path = {
   BRIDGE: "/bridge",
   STAKING: "/staking",
   DASHBOARD: "/build/dashboard",
+  AI_AGENT: "/ai-agent",
+  AI_AGENT_CHAT: "/ai-agent/chat",
   AIRDROP: "/rewards",
   AIRDROP_LEADERBOARD: "/rewards/leaderboard",
   AIRDROP_ECOSYSTEM: "/rewards/ecosystem",

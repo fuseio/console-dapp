@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
-import { CONFIG, NEXT_PUBLIC_AIRDROP_API_BASE_URL, NEXT_PUBLIC_AVAIL_MONITORING_API_URL, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL, NEXT_PUBLIC_FUSE_API_BASE_URL } from './config'
-import { AirdropLeaderboard, AirdropUser, CreateAirdropUser, DelegatedAmountsByDelegators, DelegatedAmountsRequest, Invoice, Operator, OperatorCheckout, OperatorContactDetail, OperatorWallet, Paymaster, SignData, ValidatorResponse } from "./types";
+import { CONFIG, NEXT_PUBLIC_AGENT_API_URL, NEXT_PUBLIC_AGENT_ID, NEXT_PUBLIC_AIRDROP_API_BASE_URL, NEXT_PUBLIC_AVAIL_MONITORING_API_URL, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL, NEXT_PUBLIC_FUSE_API_BASE_URL } from './config'
+import { AirdropLeaderboard, AirdropUser, CreateAirdropUser, DelegatedAmountsByDelegators, DelegatedAmountsRequest, Invoice, Operator, OperatorCheckout, OperatorContactDetail, OperatorWallet, Paymaster, SignData, ValidatorResponse, TextResponse } from "./types";
 import { Address } from "viem";
 
 export const fetchAllNodes = () =>
@@ -182,6 +182,15 @@ export const postConsensusDelegatedAmounts = async (delegatedAmounts: DelegatedA
         `https://${NEXT_PUBLIC_FUSE_API_BASE_URL}/api/v0/consensus/delegated_amounts`,
         delegatedAmounts
     )
+    return response.data
+}
+
+export const postAiMessage = async (text: string): Promise<TextResponse> => {
+    const response = await axios.post(`${NEXT_PUBLIC_AGENT_API_URL}/api/${NEXT_PUBLIC_AGENT_ID}/message`, {
+        text,
+        userId: "user", // You might want to get this from your auth system
+        roomId: `default-room-${NEXT_PUBLIC_AGENT_ID}`, // You can implement room management later
+    })
     return response.data
 }
 
