@@ -37,7 +37,7 @@ export const Wallet = ({
   const { connectWithEmail, verifyOneTimePassword } = useConnectWithOtp();
   const [isProcessingEmail, setIsProcessingEmail] = useState(false);
   const dispatch = useAppDispatch();
-  const { address, isDisconnected } = useAccount();
+  const { address } = useAccount();
   const { signInWithSocialAccount } = useSocialAccounts();
   const { selectWalletOption } = useWalletOptions();
   const { isLogin, isOperatorWalletModalOpen } = useAppSelector(selectOperatorSlice);
@@ -97,13 +97,6 @@ export const Wallet = ({
       dispatch(authenticateAirdropUser({ walletAddress: address, referralCode }));
     }
   }, [isConnectedWallet, address, dispatch, referralCode])
-
-  useEffect(() => {
-    if (isDisconnected) {
-      dispatch(setLogout());
-      dispatch(setLogoutAirdrop());
-    }
-  }, [dispatch, isDisconnected])
 
   const connectionEvent = (id: string) => {
     ReactGA.event({
@@ -290,13 +283,20 @@ export const Wallet = ({
 const WalletModal = () => {
   const dispatch = useAppDispatch();
   const { isWalletModalOpen } = useAppSelector(selectNavbarSlice);
-  const { isConnected } = useAccount();
+  const { isConnected, isDisconnected } = useAccount();
 
   useEffect(() => {
     if (isConnected) {
       toggleModal(dispatch, false);
     }
   }, [isConnected, dispatch])
+
+  useEffect(() => {
+    if (isDisconnected) {
+      dispatch(setLogout());
+      dispatch(setLogoutAirdrop());
+    }
+  }, [dispatch, isDisconnected])
 
   const toggleModal = (dispatch: Dispatch, isOpen: boolean) => {
     dispatch(setIsWalletModalOpen(isOpen));

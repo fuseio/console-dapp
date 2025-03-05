@@ -10,7 +10,6 @@ import {
   useBalance,
   useBlockNumber,
   useConfig,
-  useDisconnect,
   useSwitchChain,
 } from "wagmi";
 import {
@@ -49,7 +48,6 @@ import { usePathname } from "next/navigation";
 import switchNetworkIcon from "@/assets/switch-network.svg";
 import Copy from "./ui/Copy";
 import { formatUnits } from "viem";
-import { resetConnection } from "@/lib/wagmi";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 
@@ -123,14 +121,7 @@ const ConnectWallet = ({
   const { address, isConnected, chain } = useAccount();
   const { chains } = useConfig();
   const { switchChain } = useSwitchChain();
-  const { primaryWallet } = useDynamicContext();
-  const { disconnect } = useDisconnect({
-    mutation: {
-      onSuccess() {
-        resetConnection();
-      },
-    },
-  });
+  const { primaryWallet, handleLogOut } = useDynamicContext();
   const { data: blockNumber } = useBlockNumber({ watch: true });
   const { data: balance, refetch } = useBalance({
     address,
@@ -263,7 +254,7 @@ const ConnectWallet = ({
         <hr className="border-border-dark-gray mt-[19.99px] mb-[18.53px]" />
         <div
           className="flex items-center gap-[17.7px] cursor-pointer px-[22px]"
-          onClick={() => disconnect()}
+          onClick={() => handleLogOut()}
         >
           <Image
             src={disconnectIcon}
@@ -302,11 +293,11 @@ const ConnectWallet = ({
         </div>
         <motion.div
           animate={isQrCodeOpen ? "closed" : isAccountsOpen ? "open" : "closed"}
-          custom={!matches && pathname === "/dashboard"}
+          custom={!matches && pathname === `${path.BUILD}/`}
           initial="closed"
           exit="closed"
           variants={menu}
-          className={`absolute top-[120%] right-0 bg-white rounded-[20px] cursor-auto shadow-xl py-[25.5px] z-50 w-[268.22px] ${pathname === "/dashboard" ? "md:left-1/2" : ""
+          className={`absolute top-[120%] right-0 bg-white rounded-[20px] cursor-auto shadow-xl py-[25.5px] z-50 w-[268.22px] ${pathname === `${path.BUILD}/` ? "md:left-1/2" : ""
             }`}
         >
           <div className="flex flex-col gap-[8.35px] px-[22px]">
@@ -406,7 +397,7 @@ const ConnectWallet = ({
           <hr className="border-border-dark-gray mt-[25.62px] mb-[18.5px]" />
           <div
             className="flex items-center gap-[17.7px] cursor-pointer px-[22px]"
-            onClick={() => disconnect()}
+            onClick={() => handleLogOut()}
           >
             <Image
               src={disconnectIcon}
@@ -499,7 +490,7 @@ const ConnectWallet = ({
         <hr className="border-border-dark-gray mt-[19.99px] mb-[18.53px]" />
         <div
           className="flex items-center gap-[17.7px] cursor-pointer px-[22px]"
-          onClick={() => disconnect()}
+          onClick={() => handleLogOut()}
         >
           <Image
             src={disconnectIcon}

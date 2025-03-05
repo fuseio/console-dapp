@@ -78,7 +78,9 @@ export const path = {
   BUILD: "/build",
   BRIDGE: "/bridge",
   STAKING: "/staking",
-  DASHBOARD: "/build/dashboard",
+  DASHBOARD: "/build/overview",
+  BUILD_API_KEYS: "/build/keys",
+  BUILD_BILLING: "/build/billing",
   AIRDROP: "/rewards",
   AIRDROP_LEADERBOARD: "/rewards/leaderboard",
   AIRDROP_ECOSYSTEM: "/rewards/ecosystem",
@@ -90,12 +92,12 @@ export const path = {
 
 export const buildSubMenuItems = [
   {
-    title: "Welcome",
-    link: "/build",
+    title: "Overview",
+    link: path.DASHBOARD,
   },
   {
-    title: "Dashboard",
-    link: "/dashboard",
+    title: "Api Keys",
+    link: path.BUILD_API_KEYS,
   },
 ];
 
