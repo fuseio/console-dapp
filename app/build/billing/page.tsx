@@ -12,7 +12,7 @@ import ChainModal from "@/components/ChainModal";
 import { selectOperatorSlice } from "@/store/operatorSlice";
 import { path } from "@/lib/helpers";
 
-const Keys = () => {
+const Billing = () => {
   const dispatch = useAppDispatch();
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const router = useRouter();
@@ -40,4 +40,4 @@ const Keys = () => {
   );
 };
 
-export default Keys;
+export default Billing;

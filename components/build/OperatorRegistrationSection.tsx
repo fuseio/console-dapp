@@ -27,7 +27,7 @@ const OperatorRegistrationSection = ({
 }: OperatorRegistrationSectionProps) => {
   if (operatorSlice.isAuthenticated || checkoutCancel) {
     return (
-      <OperatorPricing classNames={classNames} />
+      <OperatorPricing classNames={classNames} isHeader={true} />
     );
   }
 

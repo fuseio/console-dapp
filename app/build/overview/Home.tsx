@@ -1,23 +1,19 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import Button from "@/components/ui/Button";
-import { evmDecimals, path } from "@/lib/helpers";
+import { getTotalTransaction, path } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
-import { useAccount, useBalance, useBlockNumber } from "wagmi";
-import { fuse } from "wagmi/chains";
-import { fetchOperator, fetchSponsoredTransactions, fetchSponsorIdBalance, selectOperatorSlice, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
+import { selectBalanceSlice } from "@/store/balanceSlice";
+import { fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import RollSecretKeyModal from "@/components/dashboard/RollSecretKeyModal";
 import YourSecretKeyModal from "@/components/dashboard/YourSecretKeyModal";
 import TopupPaymasterModal from "@/components/dashboard/TopupPaymasterModal";
 import WithdrawModal from "@/components/dashboard/WithdrawModal";
-import { AnyAction, Dispatch, ThunkDispatch } from "@reduxjs/toolkit";
 import info from "@/assets/info.svg"
 import DocumentSupport from "@/components/DocumentSupport";
 import * as amplitude from "@amplitude/analytics-browser";
 import { fetchTokenPrice } from "@/lib/api";
-import { formatUnits } from "viem";
 import SubscriptionModal from "@/components/dashboard/SubscriptionModal";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Status } from "@/lib/types";
@@ -28,47 +24,37 @@ import walletModal from "@/assets/wallet-modal.svg";
 import edison from "@/assets/edison.svg";
 import edisonChat from "@/assets/edison-chat.svg";
 import SubMenu from "@/components/build/SubMenu";
+import useTokenUsdBalance from "@/lib/hooks/useTokenUsdBalance";
+import { TokenUsdBalance } from "@/lib/types";
+import Info from "@/components/ui/Info";
 
 type OperatorAccountBalanceProps = {
-  chain: any;
-  balanceSlice: BalanceStateType;
-  balance: any;
-  dispatch: ThunkDispatch<any, undefined, AnyAction> & Dispatch<AnyAction>;
+  balance: TokenUsdBalance;
 }
 
-const OperatorAccountBalance = ({ chain, balanceSlice, balance, dispatch }: OperatorAccountBalanceProps) => {
+const OperatorAccountBalance = ({ balance }: OperatorAccountBalanceProps) => {
+  const dispatch = useAppDispatch();
+  const balanceSlice = useAppSelector(selectBalanceSlice);
+
   return (
     <div className="flex flex-col justify-between items-start">
       <div className="flex flex-col gap-[18px] md:mb-4">
         <div className="flex items-center gap-3.5 text-lg text-text-dark-gray">
           Operator account balance
-          <div className="group relative cursor-pointer w-4 h-4 bg-black rounded-full flex justify-center items-center text-xs leading-none text-white">
-            ?
-            <div className="tooltip-text hidden bottom-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg group-hover:block text-black text-sm font-medium">
-              <p>
-                You can freely deposit and withdraw any tokens available on the Fuse Network.
-              </p>
-            </div>
-          </div>
+          <Info>
+            <p>
+              You can freely deposit and withdraw any tokens available on the Fuse Network.
+            </p>
+          </Info>
         </div>
         <div className="flex items-end md:flex-wrap gap-x-[30px] md:gap-x-4">
           <h1 className="font-bold text-5xl leading-none whitespace-nowrap">
-            {(chain && chain.id === fuse.id) ?
-              new Intl.NumberFormat().format(
-                parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0")
-              ) :
-              0
-            } FUSE
+            {balance.token} FUSE
           </h1>
           {balanceSlice.isUsdPriceLoading ?
             <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
             <p className="text-[20px]/7 font-medium">
-              ${(chain && chain.id === fuse.id) ?
-                new Intl.NumberFormat().format(
-                  parseFloat((parseFloat(formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0.00") * balanceSlice.price).toString())
-                ) :
-                "0.00"
-              }
+              ${balance.usd}
             </p>
           }
         </div>
@@ -179,34 +165,14 @@ const GetStarted = () => {
 
 const Home = () => {
   const dispatch = useAppDispatch();
-  const balanceSlice = useAppSelector(selectBalanceSlice);
   const operatorSlice = useAppSelector(selectOperatorSlice);
-  const controller = useMemo(() => new AbortController(), []);
-  const { isConnected, chain } = useAccount();
-  const { data: blockNumber } = useBlockNumber({ watch: true });
-  const { data: balance, refetch } = useBalance({
+  const balance = useTokenUsdBalance({
     address: operatorSlice.operator.user.smartWalletAddress,
-    chainId: fuse.id,
   });
   const router = useRouter();
   const searchParams = useSearchParams()
   const checkoutSuccess = searchParams.get('checkout-success')
-  const totalTransaction = operatorSlice.operator.user.isActivated ? 1_000_000 : 1000;
-
-  useEffect(() => {
-    dispatch(fetchUsdPrice({
-      tokenId: "fuse-network-token",
-      controller
-    }))
-
-    return () => {
-      controller.abort();
-    }
-  }, [controller, dispatch, isConnected])
-
-  useEffect(() => {
-    dispatch(fetchSponsorIdBalance());
-  }, [operatorSlice.isHydrated, operatorSlice.isFundingPaymaster, operatorSlice.isCreatingPaymaster, dispatch])
+  const totalTransaction = getTotalTransaction(operatorSlice.operator.user.isActivated)
 
   useEffect(() => {
     (async () => {
@@ -224,12 +190,6 @@ const Home = () => {
   }, [operatorSlice.withdrawStatus, operatorSlice.withdraw.amount, operatorSlice.withdraw.coinGeckoId, operatorSlice.withdraw.token])
 
   useEffect(() => {
-    if (operatorSlice.isAuthenticated) {
-      refetch();
-    }
-  }, [blockNumber, operatorSlice.isAuthenticated, refetch])
-
-  useEffect(() => {
     dispatch(withRefreshToken(() => dispatch(fetchOperator())));
   }, [dispatch])
 
@@ -243,8 +203,8 @@ const Home = () => {
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TopupAccountModal />
       <SubscriptionModal />
-      <WithdrawModal balance={formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0"} />
-      <TopupPaymasterModal balance={formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals) ?? "0"} />
+      <WithdrawModal balance={balance.token} />
+      <TopupPaymasterModal balance={balance.token} />
       <YourSecretKeyModal />
       <RollSecretKeyModal />
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
@@ -296,10 +256,7 @@ const Home = () => {
         <div className="flex flex-col gap-y-[30px] md:gap-y-[21px]">
           <div className="flex flex-row md:flex-col gap-x-4 gap-y-12 bg-lightest-gray justify-between rounded-[20px] p-12 md:p-8 min-h-[297px]">
             <OperatorAccountBalance
-              chain={chain}
-              balanceSlice={balanceSlice}
               balance={balance}
-              dispatch={dispatch}
             />
             <div className="flex flex-col justify-between w-[361px] md:w-auto">
               <div className="flex flex-col gap-[18px]">
@@ -313,18 +270,15 @@ const Home = () => {
               <div className="flex flex-col gap-[18px] w-full md:mt-[30px]">
                 <div className="flex items-center gap-2.5 text-lg text-text-dark-gray font-medium">
                   Sponsored Transactions
-                  <div className="group relative cursor-pointer w-4 h-4 bg-black rounded-full flex justify-center items-center text-xs leading-none text-white">
-                    ?
-                    <div className="tooltip-text hidden bottom-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg group-hover:block text-black text-sm font-medium">
-                      <p className="mb-1">
-                        Sponsored transactions are a feature that allows you to pay for your customers gas fees.
-                      </p>
-                      <p>
-                        Since the gas cost in the Fuse Network is very low, your customers will not have to solve
-                        the gas issue on their own, you can easily take on these very small costs yourself.
-                      </p>
-                    </div>
-                  </div>
+                  <Info>
+                    <p className="mb-1">
+                      Sponsored transactions are a feature that allows you to pay for your customers gas fees.
+                    </p>
+                    <p>
+                      Since the gas cost in the Fuse Network is very low, your customers will not have to solve
+                      the gas issue on their own, you can easily take on these very small costs yourself.
+                    </p>
+                  </Info>
                 </div>
                 <div className="flex flex-col gap-[10.5px]">
                   <p className="text-lg font-bold">

@@ -99,6 +99,10 @@ export const buildSubMenuItems = [
     title: "Api Keys",
     link: path.BUILD_API_KEYS,
   },
+  {
+    title: "Billing & Usage",
+    link: path.BUILD_BILLING,
+  },
 ];
 
 export const splitSecretKey = (secretKey: string) => {
@@ -158,4 +162,8 @@ export const getUserNodes = (user: NodesUser) => {
     delegated,
     canDelegate
   }
+}
+
+export const getTotalTransaction = (isActivated: boolean) => {
+  return isActivated ? 1_000_000 : 1000;
 }

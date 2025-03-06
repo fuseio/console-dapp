@@ -423,10 +423,23 @@ export interface SubscriptionInfo {
   usdcAddress: Address,
 }
 
+export enum BillingCycle {
+  MONTHLY = "monthly",
+  YEARLY = "yearly"
+}
+
 export interface OperatorCheckout {
   successUrl: string
   cancelUrl: string
   billingCycle: string
+}
+
+export interface OperatorCheckoutSession {
+  billingCycle: string
+  status: string
+  paymentStatus: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface CompletedQuest {
@@ -532,5 +545,14 @@ export type DelegateLicenseModal = {
 }
 
 export type OperatorRegistrationClassNames = {
-  pricingArticle: string;
+  pricingSection?: string;
+  pricingArticle?: string;
+  pricingBillingContainer?: string;
+  pricingBilling?: string;
+  pricingBillingRadio?: string;
+}
+
+export type TokenUsdBalance = {
+  token: string;
+  usd: string;
 }
