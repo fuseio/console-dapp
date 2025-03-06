@@ -1,7 +1,7 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { TransactionType } from "@/store/transactionsSlice";
-import { AirdropUser, NodesUser, WalletType } from "./types";
+import { AirdropUser, NodesUser, SubscriptionInfo, WalletType } from "./types";
 
 export const eclipseAddress = (address: string): string => {
   return (
@@ -78,7 +78,9 @@ export const path = {
   BUILD: "/build",
   BRIDGE: "/bridge",
   STAKING: "/staking",
-  DASHBOARD: "/dashboard",
+  DASHBOARD: "/build/overview",
+  BUILD_API_KEYS: "/build/keys",
+  BUILD_BILLING: "/build/billing",
   AIRDROP: "/rewards",
   AIRDROP_LEADERBOARD: "/rewards/leaderboard",
   AIRDROP_ECOSYSTEM: "/rewards/ecosystem",
@@ -90,12 +92,16 @@ export const path = {
 
 export const buildSubMenuItems = [
   {
-    title: "Welcome",
-    link: "/build",
+    title: "Overview",
+    link: path.DASHBOARD,
   },
   {
-    title: "Dashboard",
-    link: "/dashboard",
+    title: "Api Keys",
+    link: path.BUILD_API_KEYS,
+  },
+  {
+    title: "Billing & Usage",
+    link: path.BUILD_BILLING,
   },
 ];
 
@@ -109,6 +115,13 @@ export const splitSecretKey = (secretKey: string) => {
 export const evmDecimals = 18;
 
 export const screenMediumWidth = 768;
+
+export const subscriptionInfo: SubscriptionInfo = {
+  payment: 50,
+  advance: 12,
+  decimals: 6,
+  usdcAddress: "0x28C3d1cD466Ba22f6cae51b1a4692a831696391A"
+}
 
 export const defaultReferralCode = "EMBER";
 
@@ -149,4 +162,8 @@ export const getUserNodes = (user: NodesUser) => {
     delegated,
     canDelegate
   }
+}
+
+export const getTotalTransaction = (isActivated: boolean) => {
+  return isActivated ? 1_000_000 : 1000;
 }

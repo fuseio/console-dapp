@@ -1,5 +1,7 @@
 import React from "react";
 
+import Spinner from "./Spinner";
+
 type ButtonProps = {
   className?: string;
   onClick?: () => void;
@@ -10,6 +12,7 @@ type ButtonProps = {
   disabledClassName?: string;
   isLeft?: boolean;
   children?: React.ReactNode;
+  isLoading?: boolean;
 };
 
 const Button = ({
@@ -22,6 +25,7 @@ const Button = ({
   disabledClassName = className,
   isLeft = false,
   children,
+  isLoading = false,
 }: ButtonProps) => {
   return (
     <button
@@ -35,6 +39,7 @@ const Button = ({
       {isLeft ? children : null}
       {text}
       {!isLeft ? children : null}
+      {isLoading && <Spinner />}
     </button>
   );
 };

@@ -11,7 +11,7 @@ const Console = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(setSelectedNavbar(""));
+    dispatch(setSelectedNavbar("home"));
   }, [dispatch])
 
   return (

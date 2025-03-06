@@ -620,7 +620,7 @@ const Deposit = ({
                       selectedTokenItem
                     ].coinGeckoId
                   );
-                  window.ethereum.request({
+                  window?.ethereum?.request({
                     method: "wallet_watchAsset",
                     params: {
                       type: "ERC20",

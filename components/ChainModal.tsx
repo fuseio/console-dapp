@@ -3,10 +3,10 @@ import React, { useEffect, useState } from "react";
 import close from "@/assets/close.svg";
 import fuseGray from "@/assets/fuse-gray.svg";
 import Button from "@/components/ui/Button";
-import { useAccount, useDisconnect, useSwitchChain } from "wagmi";
+import { useAccount, useSwitchChain } from "wagmi";
 import { fuse } from "viem/chains";
 import Image from "next/image";
-import { resetConnection } from "@/lib/web3Auth";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 
 type ChainModalProps = {
   description?: string;
@@ -18,13 +18,7 @@ const ChainModal = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { switchChain } = useSwitchChain()
   const { isConnected, chain } = useAccount();
-  const { disconnect } = useDisconnect({
-    mutation: {
-      onSuccess() {
-        resetConnection();
-      }
-    }
-  });
+  const { handleLogOut } = useDynamicContext();
 
   useEffect(() => {
     if (isConnected && chain?.id !== fuse.id) setIsOpen(true);
@@ -79,7 +73,7 @@ const ChainModal = ({
               className="transition ease-in-out w-full bg-dune text-lg font-bold text-white rounded-xl hover:bg-[#FFEBE9] hover:text-[#FD0F0F]"
               padding="py-3.5"
               onClick={() => {
-                disconnect();
+                handleLogOut();
                 setIsOpen(false);
               }}
             />

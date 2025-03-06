@@ -313,6 +313,12 @@ export interface OperatorContactDetail {
   name?: string;
 }
 
+export interface OperatorWallet {
+  ownerId: string;
+  smartWalletAddress: Address;
+  isActivated?: boolean;
+}
+
 export interface Withdraw {
   amount: string;
   token: string;
@@ -320,10 +326,12 @@ export interface Withdraw {
 }
 
 export interface User {
+  id: string;
   name: string;
   email: string;
   auth0Id: string;
   smartWalletAddress: Address;
+  isActivated: boolean;
 }
 
 export interface Project {
@@ -399,6 +407,39 @@ export interface ValidatorResponse {
   jailedValidators: Address[]
   pendingValidators: Address[]
   validatorsMetadata: Record<Address, ValidatorTypeResponse>
+}
+
+export interface Invoice {
+  ownerId: string;
+  amount: string;
+  currency: string;
+  txHash: string;
+}
+
+export interface SubscriptionInfo {
+  payment: number,
+  advance: number,
+  decimals: number
+  usdcAddress: Address,
+}
+
+export enum BillingCycle {
+  MONTHLY = "monthly",
+  YEARLY = "yearly"
+}
+
+export interface OperatorCheckout {
+  successUrl: string
+  cancelUrl: string
+  billingCycle: string
+}
+
+export interface OperatorCheckoutSession {
+  billingCycle: string
+  status: string
+  paymentStatus: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface CompletedQuest {
@@ -501,4 +542,17 @@ export type Node = {
 export type DelegateLicenseModal = {
   open: boolean;
   address?: Address;
+}
+
+export type OperatorRegistrationClassNames = {
+  pricingSection?: string;
+  pricingArticle?: string;
+  pricingBillingContainer?: string;
+  pricingBilling?: string;
+  pricingBillingRadio?: string;
+}
+
+export type TokenUsdBalance = {
+  token: string;
+  usd: string;
 }
