@@ -20,8 +20,9 @@ const Build = () => {
   }, [dispatch])
 
   useEffect(() => {
-    if (operatorSlice.isHydrated && operatorSlice.operator.user.isActivated) {
-      router.push(path.DASHBOARD)
+    if (!operatorSlice.isHydrated) return;
+    if (operatorSlice.operator.user.isActivated) {
+      router.replace(path.DASHBOARD)
     }
   }, [operatorSlice.isHydrated, operatorSlice.operator.user.isActivated, router]);
 

@@ -1,19 +1,17 @@
 import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
-import { buildSubMenuItems } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchOperator, generateSecretApiKey, selectOperatorSlice, setIsRollSecretKeyModalOpen, withRefreshToken } from "@/store/operatorSlice";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
-import NavMenu from "@/components/NavMenu";
 import roll from "@/assets/roll.svg";
 import Copy from "@/components/ui/Copy";
 import DocumentSupport from "@/components/DocumentSupport";
 import * as amplitude from "@amplitude/analytics-browser";
 import show from "@/assets/show.svg";
 import hide from "@/assets/hide.svg";
-import contactSupport from "@/assets/contact-support.svg";
 import DeveloperTools from "@/components/DeveloperTools";
+import SubMenu from "@/components/build/SubMenu";
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -27,29 +25,7 @@ const Home = () => {
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
-        <div className="flex justify-between items-center">
-          <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="api keys" className="md:flex md:justify-center" />
-          <div className="flex items-center gap-px md:hidden">
-            <Image
-              src={contactSupport}
-              alt="contact support"
-            />
-            <div className="flex items-center gap-1">
-              <p>
-                Not sure what&apos;s next?
-              </p>
-              <button
-                className="underline font-bold"
-                onClick={() => {
-                  amplitude.track("Contact us - Operators");
-                  window.open("https://calendly.com/magali-fuse", "_blank");
-                }}
-              >
-                Contact Us
-              </button>
-            </div>
-          </div>
-        </div>
+        <SubMenu selected="api keys" />
         <div className="flex flex-col gap-4 mt-14 mb-10">
           <h1 className="text-5xl md:text-[32px] text-fuse-black font-semibold leading-none md:leading-tight md:text-center">
             API Keys

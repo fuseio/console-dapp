@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import Button from "@/components/ui/Button";
-import { buildSubMenuItems, evmDecimals, path } from "@/lib/helpers";
+import { evmDecimals, path } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { BalanceStateType, fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
 import { useAccount, useBalance, useBlockNumber } from "wagmi";
@@ -8,7 +8,6 @@ import { fuse } from "wagmi/chains";
 import { fetchOperator, fetchSponsoredTransactions, fetchSponsorIdBalance, selectOperatorSlice, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
-import NavMenu from "@/components/NavMenu";
 import RollSecretKeyModal from "@/components/dashboard/RollSecretKeyModal";
 import YourSecretKeyModal from "@/components/dashboard/YourSecretKeyModal";
 import TopupPaymasterModal from "@/components/dashboard/TopupPaymasterModal";
@@ -19,7 +18,6 @@ import DocumentSupport from "@/components/DocumentSupport";
 import * as amplitude from "@amplitude/analytics-browser";
 import { fetchTokenPrice } from "@/lib/api";
 import { formatUnits } from "viem";
-import contactSupport from "@/assets/contact-support.svg";
 import SubscriptionModal from "@/components/dashboard/SubscriptionModal";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Status } from "@/lib/types";
@@ -29,6 +27,7 @@ import Link from "next/link";
 import walletModal from "@/assets/wallet-modal.svg";
 import edison from "@/assets/edison.svg";
 import edisonChat from "@/assets/edison-chat.svg";
+import SubMenu from "@/components/build/SubMenu";
 
 type OperatorAccountBalanceProps = {
   chain: any;
@@ -249,29 +248,7 @@ const Home = () => {
       <YourSecretKeyModal />
       <RollSecretKeyModal />
       <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
-        <div className="flex justify-between items-center">
-          <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="overview" className="md:flex md:justify-center" />
-          <div className="flex items-center gap-px md:hidden">
-            <Image
-              src={contactSupport}
-              alt="contact support"
-            />
-            <div className="flex items-center gap-1">
-              <p>
-                Not sure what&apos;s next?
-              </p>
-              <button
-                className="underline font-bold"
-                onClick={() => {
-                  amplitude.track("Contact us - Operators");
-                  window.open("https://calendly.com/magali-fuse", "_blank");
-                }}
-              >
-                Contact Us
-              </button>
-            </div>
-          </div>
-        </div>
+        <SubMenu selected="overview" />
         <div className="flex flex-col gap-4 mt-14 mb-10">
           <h1 className="text-5xl md:text-[32px] text-fuse-black font-semibold leading-none md:leading-tight">
             Welcome!
