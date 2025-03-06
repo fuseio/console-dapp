@@ -24,6 +24,10 @@ import { Dispatch } from "@reduxjs/toolkit";
 import { authenticateAirdropUser, setLogoutAirdrop } from "@/store/airdropSlice";
 import { useSearchParams } from "next/navigation";
 
+type WalletModalProps = {
+  isDisconnected: boolean;
+}
+
 type WalletProps = {
   className?: string;
 }
@@ -280,10 +284,10 @@ export const Wallet = ({
   );
 };
 
-const WalletModal = () => {
+const WalletModal = ({ isDisconnected }: WalletModalProps) => {
   const dispatch = useAppDispatch();
   const { isWalletModalOpen } = useAppSelector(selectNavbarSlice);
-  const { isConnected, isDisconnected } = useAccount();
+  const { isConnected } = useAccount();
 
   useEffect(() => {
     if (isConnected) {
