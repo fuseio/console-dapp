@@ -1,7 +1,7 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { TransactionType } from "@/store/transactionsSlice";
-import { AirdropUser, NodesUser, SubscriptionInfo, WalletType } from "./types";
+import { AirdropUser, BillingCycle, NodesUser, SubscriptionInfo, WalletType } from "./types";
 
 export const eclipseAddress = (address: string): string => {
   return (
@@ -78,9 +78,11 @@ export const path = {
   BUILD: "/build",
   BRIDGE: "/bridge",
   STAKING: "/staking",
-  DASHBOARD: "/build/dashboard",
+  DASHBOARD: "/build/overview",
   AI_AGENT: "/ai-agent",
   AI_AGENT_CHAT: "/ai-agent/chat",
+  BUILD_API_KEYS: "/build/keys",
+  BUILD_BILLING: "/build/billing",
   AIRDROP: "/rewards",
   AIRDROP_LEADERBOARD: "/rewards/leaderboard",
   AIRDROP_ECOSYSTEM: "/rewards/ecosystem",
@@ -92,12 +94,16 @@ export const path = {
 
 export const buildSubMenuItems = [
   {
-    title: "Welcome",
-    link: "/build",
+    title: "Overview",
+    link: path.DASHBOARD,
   },
   {
-    title: "Dashboard",
-    link: "/dashboard",
+    title: "Api Keys",
+    link: path.BUILD_API_KEYS,
+  },
+  {
+    title: "Billing & Usage",
+    link: path.BUILD_BILLING,
   },
 ];
 
@@ -158,4 +164,36 @@ export const getUserNodes = (user: NodesUser) => {
     delegated,
     canDelegate
   }
+}
+
+export const getTotalTransaction = (isActivated: boolean) => {
+  return isActivated ? 1_000_000 : 1000;
+}
+
+export const operatorPricing = () => {
+  const percentageOff = 30;
+  const basicPrice = 50;
+  const premiumPrice = 500;
+  const prices = {
+    [BillingCycle.MONTHLY]: {
+      free: 0,
+      basic: basicPrice,
+      premium: premiumPrice
+    },
+    [BillingCycle.YEARLY]: {
+      free: 0,
+      basic: basicPrice - (basicPrice * percentageOff / 100),
+      premium: premiumPrice - (premiumPrice * percentageOff / 100)
+    }
+  }
+  return prices;
+}
+
+export const operatorInvoiceUntilTime = (createdAt: string | number, billingCycle: BillingCycle) => {
+  const date = new Date(createdAt);
+  date.setDate(1);
+  if (billingCycle === BillingCycle.MONTHLY) {
+    return new Date(date.setMonth(date.getMonth() + 1)).toLocaleDateString();
+  }
+  return new Date(date.setFullYear(date.getFullYear() + 1)).toLocaleDateString();
 }

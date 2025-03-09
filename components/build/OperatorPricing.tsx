@@ -2,23 +2,19 @@ import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-import { cn, path } from "@/lib/helpers";
+import { cn, operatorPricing, path } from "@/lib/helpers";
 import checkmark from "@/assets/checkmark-white.svg";
 import Spinner from "../ui/Spinner";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { checkout, selectOperatorSlice } from "@/store/operatorSlice";
-import { OperatorRegistrationClassNames } from "@/lib/types";
-
-export enum BillingCycle {
-  MONTHLY = "monthly",
-  YEARLY = "yearly"
-}
+import { BillingCycle, OperatorRegistrationClassNames } from "@/lib/types";
 
 type BillingProps = {
   title: string;
   cycle: BillingCycle;
   selected: boolean;
   onClick: () => void;
+  classNames?: OperatorRegistrationClassNames;
 }
 
 type PlanProps = {
@@ -36,6 +32,8 @@ type PlanProps = {
 
 type OperatorPricing = {
   classNames?: OperatorRegistrationClassNames;
+  isHeader?: boolean;
+  isOperator?: boolean;
 }
 
 const Billing = ({
@@ -43,15 +41,16 @@ const Billing = ({
   cycle,
   selected,
   onClick,
+  classNames
 }: BillingProps) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className={cn("flex items-center gap-2", classNames?.pricingBilling)}>
       <div className="relative flex items-center justify-center">
         <input
           type="radio"
           name="billing"
           id={cycle}
-          className="appearance-none w-5 h-5 rounded-full bg-white border border-iron checked:border-[3px] checked:border-black cursor-pointer"
+          className={cn("appearance-none w-5 h-5 rounded-full bg-white border border-iron checked:border-[3px] checked:border-black cursor-pointer", classNames?.pricingBillingRadio)}
           checked={selected}
           onChange={onClick}
         />
@@ -121,26 +120,17 @@ const Plan = ({
   )
 }
 
-const OperatorPricing = ({ classNames }: OperatorPricing) => {
+const OperatorPricing = ({
+  classNames,
+  isHeader = false,
+  isOperator = false
+}: OperatorPricing) => {
   const dispatch = useAppDispatch();
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const router = useRouter();
   const [selectedBillingCycle, setSelectedBillingCycle] = useState<BillingCycle>(BillingCycle.MONTHLY);
-  const percentageOff = selectedBillingCycle === BillingCycle.YEARLY ? 30 : 0;
-  const basicPrice = 50;
-  const premiumPrice = 500;
-  const prices = {
-    [BillingCycle.MONTHLY]: {
-      free: 0,
-      basic: basicPrice,
-      premium: premiumPrice
-    },
-    [BillingCycle.YEARLY]: {
-      free: 0,
-      basic: basicPrice - (basicPrice * percentageOff / 100),
-      premium: premiumPrice - (premiumPrice * percentageOff / 100)
-    }
-  }
+  const prices = operatorPricing();
+  const isActivated = operatorSlice.operator.user.isActivated
 
   function handleCheckout() {
     const origin = window?.location?.origin ?? "";
@@ -153,31 +143,35 @@ const OperatorPricing = ({ classNames }: OperatorPricing) => {
 
   return (
     <div className="flex flex-col items-center gap-10">
-      <div className="flex flex-col gap-2.5 text-center">
-        <h1 className="text-5xl md:text-3xl leading-tight text-fuse-black font-semibold">
-          Choose a plan
-        </h1>
-        <p className="text-text-heading-gray max-w-md">
-          Please select your proffered plan and press the “Continue” button to proceed to your account
-        </p>
-      </div>
-      <section className="flex flex-col gap-6">
-        <div className="flex justify-end items-center gap-x-6 gap-y-4 md:flex-col md:items-start">
+      {isHeader && (
+        <div className="flex flex-col gap-2.5 text-center">
+          <h1 className="text-5xl md:text-3xl leading-tight text-fuse-black font-semibold">
+            Choose a plan
+          </h1>
+          <p className="text-text-heading-gray max-w-md">
+            Please select your proffered plan and press the “Continue” button to proceed to your account
+          </p>
+        </div>
+      )}
+      <section className={cn("flex flex-col gap-6", classNames?.pricingSection)}>
+        <div className={cn("flex justify-end items-center gap-x-6 gap-y-4 md:flex-col md:items-start", classNames?.pricingBillingContainer)}>
           <Billing
             title="Monthly Billing"
             cycle={BillingCycle.MONTHLY}
             selected={selectedBillingCycle === BillingCycle.MONTHLY}
             onClick={() => setSelectedBillingCycle(BillingCycle.MONTHLY)}
+            classNames={classNames}
           />
           <Billing
             title="Annual Billing (30% off)"
             cycle={BillingCycle.YEARLY}
             selected={selectedBillingCycle === BillingCycle.YEARLY}
             onClick={() => setSelectedBillingCycle(BillingCycle.YEARLY)}
+            classNames={classNames}
           />
         </div>
         <article className={cn(
-          "bg-dune rounded-[1.25rem] text-white py-10 grid grid-cols-3 md:grid-cols-1 gap-y-4",
+          "bg-dune rounded-[1.25rem] text-white py-10 md:py-0 grid grid-cols-3 md:grid-cols-1 gap-y-4",
           classNames?.pricingArticle
         )}>
           <Plan
@@ -185,19 +179,21 @@ const OperatorPricing = ({ classNames }: OperatorPricing) => {
             description="Start receiving crypto payments in just a few clicks"
             price={0}
             features={["Up to 1000 monthly transactions"]}
-            buttonText="Select"
+            buttonText={isActivated ? "Free plan" : isOperator ? "Current plan" : "Select"}
             onClick={() => router.push(path.DASHBOARD)}
+            isDisabled={isOperator}
           />
           <Plan
             title="Basic plan"
             description="Robust service. Low price."
             price={prices[selectedBillingCycle].basic}
             features={["1M transactions", "Access to all services on Fuse", "Reliable and fast support"]}
-            buttonText="Select"
+            buttonText={isActivated ? "Current plan" : isOperator ? "Upgrade" : "Select"}
             onClick={handleCheckout}
             isLoading={operatorSlice.isCheckingout}
             isBorder
             isPopular
+            isDisabled={isOperator && isActivated}
           />
           <Plan
             title="Premium Plan"

@@ -22,8 +22,9 @@ const Operator = () => {
   }, [dispatch])
 
   useEffect(() => {
-    if (operatorSlice.isHydrated && !operatorSlice.isAuthenticated) {
-      router.push(path.BUILD)
+    if (!operatorSlice.isHydrated) return;
+    if (!operatorSlice.isAuthenticated) {
+      router.replace(path.BUILD)
     }
   }, [operatorSlice.isHydrated, operatorSlice.isAuthenticated, router]);
 

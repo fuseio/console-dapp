@@ -24,6 +24,7 @@ import WalletModal from './WalletModal';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [isClient, setIsClient] = useState(false);
+  const [isDisconnected, setIsDisconnected] = useState(false);
   const queryClient = new QueryClient();
 
   useEffect(() => {
@@ -51,6 +52,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
           evmNetworks: (networks) => mergeNetworks(evmNetworks, networks)
         },
         initialAuthenticationMode: 'connect-only',
+        events: {
+          onLogout: () => {
+            setIsDisconnected(true)
+          }
+        }
       }}
     >
       <Provider store={store}>
@@ -66,7 +72,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
               }}
             />
             <DynamicWagmiConnector>
-              <WalletModal />
+              <WalletModal isDisconnected={isDisconnected} />
               {children}
             </DynamicWagmiConnector>
           </QueryClientProvider>

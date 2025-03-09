@@ -21,8 +21,12 @@ import { selectOperatorSlice, setHydrate, setIsLogin, setIsOperatorWalletModalOp
 import { useConnectWithOtp, useSocialAccounts, useWalletOptions } from "@dynamic-labs/sdk-react-core";
 import Modal from "./ui/Modal";
 import { Dispatch } from "@reduxjs/toolkit";
-import { authenticateAirdropUser, setLogoutAirdrop } from "@/store/airdropSlice";
+import { authenticateAirdropUser, setHydrateAirdrop, setLogoutAirdrop } from "@/store/airdropSlice";
 import { useSearchParams } from "next/navigation";
+
+type WalletModalProps = {
+  isDisconnected: boolean;
+}
 
 type WalletProps = {
   className?: string;
@@ -37,7 +41,7 @@ export const Wallet = ({
   const { connectWithEmail, verifyOneTimePassword } = useConnectWithOtp();
   const [isProcessingEmail, setIsProcessingEmail] = useState(false);
   const dispatch = useAppDispatch();
-  const { address, isDisconnected } = useAccount();
+  const { address } = useAccount();
   const { signInWithSocialAccount } = useSocialAccounts();
   const { selectWalletOption } = useWalletOptions();
   const { isLogin, isOperatorWalletModalOpen } = useAppSelector(selectOperatorSlice);
@@ -97,13 +101,6 @@ export const Wallet = ({
       dispatch(authenticateAirdropUser({ walletAddress: address, referralCode }));
     }
   }, [isConnectedWallet, address, dispatch, referralCode])
-
-  useEffect(() => {
-    if (isDisconnected) {
-      dispatch(setLogout());
-      dispatch(setLogoutAirdrop());
-    }
-  }, [dispatch, isDisconnected])
 
   const connectionEvent = (id: string) => {
     ReactGA.event({
@@ -287,7 +284,7 @@ export const Wallet = ({
   );
 };
 
-const WalletModal = () => {
+const WalletModal = ({ isDisconnected }: WalletModalProps) => {
   const dispatch = useAppDispatch();
   const { isWalletModalOpen } = useAppSelector(selectNavbarSlice);
   const { isConnected } = useAccount();
@@ -298,11 +295,22 @@ const WalletModal = () => {
     }
   }, [isConnected, dispatch])
 
+  useEffect(() => {
+    if (isDisconnected) {
+      dispatch(setLogout());
+      dispatch(setLogoutAirdrop());
+    }
+  }, [dispatch, isDisconnected])
+
+  useEffect(() => {
+    dispatch(setHydrate());
+    dispatch(setHydrateAirdrop());
+  }, [dispatch])
+
   const toggleModal = (dispatch: Dispatch, isOpen: boolean) => {
     dispatch(setIsWalletModalOpen(isOpen));
     dispatch(setIsOperatorWalletModalOpen(isOpen));
     dispatch(setIsLogin(isOpen));
-    dispatch(setHydrate());
   }
 
   return (

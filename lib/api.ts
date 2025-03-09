@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { CONFIG, NEXT_PUBLIC_AGENT_API_URL, NEXT_PUBLIC_AGENT_ID, NEXT_PUBLIC_AIRDROP_API_BASE_URL, NEXT_PUBLIC_AVAIL_MONITORING_API_URL, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL, NEXT_PUBLIC_FUSE_API_BASE_URL } from './config'
-import { AirdropLeaderboard, AirdropUser, CreateAirdropUser, DelegatedAmountsByDelegators, DelegatedAmountsRequest, Invoice, Operator, OperatorCheckout, OperatorContactDetail, OperatorWallet, Paymaster, SignData, ValidatorResponse, TextResponse } from "./types";
+import { AirdropLeaderboard, AirdropUser, CreateAirdropUser, DelegatedAmountsByDelegators, DelegatedAmountsRequest, Invoice, Operator, OperatorCheckoutSession, OperatorCheckout, OperatorContactDetail, OperatorWallet, Paymaster, SignData, ValidatorResponse, TextResponse } from "./types";
 import { Address } from "viem";
 
 export const fetchAllNodes = () =>
@@ -165,6 +165,16 @@ export const postOperatorCheckout = async (operatorCheckout: OperatorCheckout): 
     const response = await axios.post(
         `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/checkout/sessions`,
         operatorCheckout,
+        {
+            withCredentials: true
+        }
+    )
+    return response.data
+}
+
+export const fetchOperatorCheckoutSessions = async (): Promise<OperatorCheckoutSession[]> => {
+    const response = await axios.get(
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/checkout/sessions`,
         {
             withCredentials: true
         }

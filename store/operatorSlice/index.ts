@@ -4,8 +4,8 @@ import { Signer, ethers } from "ethers";
 import { FuseSDK, OwnerWalletClient } from "@fuseio/fusebox-web-sdk";
 import { SmartAccountClient } from "permissionless";
 import { hex, splitSecretKey, subscriptionInfo } from "@/lib/helpers";
-import { Operator, OperatorCheckout, OperatorContactDetail, SignData, Status, Withdraw } from "@/lib/types";
-import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreateOperatorWallet, postCreatePaymaster, postOperatorCheckout, postOperatorSubscription, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
+import { Operator, OperatorCheckout, OperatorCheckoutSession, OperatorContactDetail, SignData, Status, Withdraw } from "@/lib/types";
+import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchOperatorCheckoutSessions, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreateOperatorWallet, postCreatePaymaster, postOperatorCheckout, postOperatorSubscription, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
 import { CONFIG, NEXT_PUBLIC_FUSE_API_BASE_URL, NEXT_PUBLIC_PAYMASTER_FUNDER_ADDRESS } from "@/lib/config";
@@ -88,6 +88,8 @@ export interface OperatorStateType {
   isSubscribing: boolean;
   isSubscribed: boolean;
   isCheckingout: boolean;
+  checkoutSessions: OperatorCheckoutSession[];
+  checkoutSessionStatus: Status;
 }
 
 const INIT_STATE: OperatorStateType = {
@@ -128,6 +130,8 @@ const INIT_STATE: OperatorStateType = {
   isSubscribing: false,
   isSubscribed: false,
   isCheckingout: false,
+  checkoutSessions: [],
+  checkoutSessionStatus: Status.IDLE,
 };
 
 export const checkOperator = createAsyncThunk(
@@ -658,6 +662,19 @@ export const checkout = createAsyncThunk(
   }
 );
 
+export const fetchCheckoutSessions = createAsyncThunk(
+  "OPERATOR/FETCH_CHECKOUT_SESSIONS",
+  async () => {
+    try {
+      const checkoutSessions = await fetchOperatorCheckoutSessions()
+      return checkoutSessions
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
 const operatorSlice = createSlice({
   name: "OPERATOR_STATE",
   initialState: INIT_STATE,
@@ -706,12 +723,7 @@ const operatorSlice = createSlice({
       state.isSubscriptionModalOpen = action.payload
     },
     setLogout: (state) => {
-      state.isOperatorExist = false;
-      state.isValidated = false;
-      state.operator = initOperator;
-      state.isAuthenticated = false;
-      state.operatorContactDetail = initOperatorContactDetail;
-      state.sponsoredTransactions = 0;
+      Object.assign(state, INIT_STATE);
       localStorage.removeItem("Fuse-isOperatorExist");
       localStorage.removeItem("Fuse-isValidated");
       localStorage.removeItem("Fuse-operator");
@@ -720,6 +732,7 @@ const operatorSlice = createSlice({
       localStorage.removeItem("Fuse-connectedWalletType");
       localStorage.removeItem("Fuse-operatorContactDetail");
       localStorage.removeItem("Fuse-isActivated");
+      state.isHydrated = true;
     },
     setHydrate: (state) => {
       const isOperatorExist = localStorage.getItem("Fuse-isOperatorExist");
@@ -901,6 +914,16 @@ const operatorSlice = createSlice({
       })
       .addCase(checkout.rejected, (state) => {
         state.isCheckingout = false;
+      })
+      .addCase(fetchCheckoutSessions.pending, (state) => {
+        state.checkoutSessionStatus = Status.PENDING;
+      })
+      .addCase(fetchCheckoutSessions.fulfilled, (state, action) => {
+        state.checkoutSessionStatus = Status.SUCCESS;
+        state.checkoutSessions = action.payload;
+      })
+      .addCase(fetchCheckoutSessions.rejected, (state) => {
+        state.checkoutSessionStatus = Status.ERROR;
       })
   },
 });
