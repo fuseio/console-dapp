@@ -63,13 +63,14 @@ const Rows = ({ table, operatorSlice }: RowsProps) => {
 const OperatorInvoiceTable = () => {
   const dispatch = useAppDispatch();
   const operatorSlice = useAppSelector(selectOperatorSlice);
+  const data = useMemo(() => operatorSlice.checkoutSessions.filter(session => session.paymentStatus !== OperatorCheckoutPaymentStatus.UNPAID), [operatorSlice.checkoutSessions]);
 
   const columns = useMemo<ColumnDef<OperatorCheckoutSession, any>[]>(
     () => [
       {
         accessorKey: 'createdAt',
         header: () => 'Created',
-        cell: (info) => new Date(info.getValue()).toLocaleDateString(),
+        cell: (info) => new Date(info.getValue()).toLocaleDateString('en-GB'),
       },
       {
         accessorKey: 'until',
@@ -99,7 +100,7 @@ const OperatorInvoiceTable = () => {
   )
 
   const table = useReactTable({
-    data: operatorSlice.checkoutSessions,
+    data,
     columns,
     initialState: {
       pagination: {

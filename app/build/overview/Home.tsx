@@ -100,7 +100,7 @@ const GetStarted = () => {
               Make blockchain accessible to all with our Account Abstraction Infrastructure.
             </p>
             <Link
-              href="https://docs.fuse.io/developers/fusebox"
+              href="https://docs.fuse.io/developers/fusebox/sdk/"
               target="_blank"
               className="group flex items-center gap-1 font-semibold"
             >
