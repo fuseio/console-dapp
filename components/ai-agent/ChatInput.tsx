@@ -16,14 +16,6 @@ const actions: Action[] = [
     description: "What's the balance of WALLET_ADDRESS?"
   },
   {
-    title: "Balance of Agent",
-    description: "What's your balance?"
-  },
-  {
-    title: "Block number",
-    description: "What's the current block number?"
-  },
-  {
     title: "Transfer Fuse token to address",
     description: "Transfer AMOUNT to WALLET_ADDRESS"
   },
@@ -119,7 +111,7 @@ const ChatInput = () => {
               <Paperclip className="w-5 h-5" />
             </button>
             <textarea
-              placeholder="Type your message or use / slash command"
+              placeholder="Type your message or use / slash command to see all available actions"
               value={prompt}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
