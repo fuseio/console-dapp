@@ -6,11 +6,11 @@ import SubMenu from "@/components/build/SubMenu";
 import { selectBalanceSlice } from "@/store/balanceSlice";
 import useTokenUsdBalance from "@/lib/hooks/useTokenUsdBalance";
 import Info from "@/components/ui/Info";
-import { getTotalTransaction, path } from "@/lib/helpers";
+import { getTotalTransaction, operatorPricing, path } from "@/lib/helpers";
 import Button from "@/components/ui/Button";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import WithdrawModal from "@/components/dashboard/WithdrawModal";
-import { BillingCycle, TokenUsdBalance } from "@/lib/types";
+import { BillingCycle, OperatorCheckoutPaymentStatus, TokenUsdBalance } from "@/lib/types";
 import OperatorPricing from "@/components/build/OperatorPricing";
 import OperatorInvoiceTable from "@/components/build/OperatorInvoiceTable";
 
@@ -23,6 +23,9 @@ const YourPlan = ({ balance }: YourPlanProps) => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const totalTransaction = getTotalTransaction(operatorSlice.operator.user.isActivated)
+  const paidInvoices = operatorSlice.checkoutSessions.filter(session => session.paymentStatus === OperatorCheckoutPaymentStatus.PAID);
+  const lastPaidInvoice = paidInvoices.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+  const prices = operatorPricing();
 
   function handleCheckout() {
     const origin = window?.location?.origin ?? "";
@@ -65,7 +68,7 @@ const YourPlan = ({ balance }: YourPlanProps) => {
           {operatorSlice.operator.user.isActivated ? "Basic" : "Free"} plan
         </div>
         <p className="text-[1.25rem] leading-none">
-          {operatorSlice.operator.user.isActivated ? 50 : 0}$ per month
+          {operatorSlice.operator.user.isActivated ? prices[lastPaidInvoice.billingCycle].basic : prices[lastPaidInvoice.billingCycle].free}$ per month
         </p>
       </div>
       <div className="flex flex-col items-start gap-2">
@@ -82,7 +85,7 @@ const YourPlan = ({ balance }: YourPlanProps) => {
           </Info>
         </div>
         <div className="font-bold text-5xl leading-none whitespace-nowrap mt-1">
-          {totalTransaction}
+          {new Intl.NumberFormat().format(totalTransaction)}
         </div>
         <p className="text-[1.25rem] leading-none">
           per month
@@ -96,7 +99,10 @@ const YourPlan = ({ balance }: YourPlanProps) => {
           Monthly
         </div>
         <p className="text-[1.25rem] leading-none">
-          Until 05/02/2026
+          {lastPaidInvoice ?
+            `Until ${new Date(lastPaidInvoice.createdAt).toLocaleDateString()}` :
+            "N/A"
+          }
         </p>
       </div>
       <div className="flex flex-row md:flex-wrap gap-2.5">

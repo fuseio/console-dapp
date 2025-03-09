@@ -2,7 +2,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-import { cn, path } from "@/lib/helpers";
+import { cn, operatorPricing, path } from "@/lib/helpers";
 import checkmark from "@/assets/checkmark-white.svg";
 import Spinner from "../ui/Spinner";
 import { useAppDispatch, useAppSelector } from "@/store/store";
@@ -129,21 +129,7 @@ const OperatorPricing = ({
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const router = useRouter();
   const [selectedBillingCycle, setSelectedBillingCycle] = useState<BillingCycle>(BillingCycle.MONTHLY);
-  const percentageOff = selectedBillingCycle === BillingCycle.YEARLY ? 30 : 0;
-  const basicPrice = 50;
-  const premiumPrice = 500;
-  const prices = {
-    [BillingCycle.MONTHLY]: {
-      free: 0,
-      basic: basicPrice,
-      premium: premiumPrice
-    },
-    [BillingCycle.YEARLY]: {
-      free: 0,
-      basic: basicPrice - (basicPrice * percentageOff / 100),
-      premium: premiumPrice - (premiumPrice * percentageOff / 100)
-    }
-  }
+  const prices = operatorPricing();
   const isActivated = operatorSlice.operator.user.isActivated
 
   function handleCheckout() {

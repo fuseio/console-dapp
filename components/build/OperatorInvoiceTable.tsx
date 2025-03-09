@@ -9,10 +9,11 @@ import {
   Table,
 } from '@tanstack/react-table'
 
-import { OperatorCheckoutSession, Status } from '@/lib/types';
+import { BillingCycle, OperatorCheckoutPaymentStatus, OperatorCheckoutSession, Status } from '@/lib/types';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { fetchCheckoutSessions, OperatorStateType, selectOperatorSlice, withRefreshToken } from '@/store/operatorSlice';
 import { Notice, renderPageNumbers, Skeleton } from '@/components/ui/Table';
+import { cn } from '@/lib/helpers';
 
 type RowsProps = {
   table: Table<OperatorCheckoutSession>
@@ -66,24 +67,38 @@ const OperatorInvoiceTable = () => {
   const columns = useMemo<ColumnDef<OperatorCheckoutSession, any>[]>(
     () => [
       {
-        accessorKey: 'billingCycle',
-        header: () => 'Billing Cycle',
+        accessorKey: 'createdAt',
+        header: () => 'Created',
+        cell: (info) => new Date(info.getValue()).toLocaleDateString(),
       },
       {
-        accessorKey: 'status',
-        header: () => 'Status',
+        accessorKey: 'until',
+        header: () => 'Until',
+        cell: (info) => {
+          const date = new Date(info.row.original.createdAt);
+          if (info.row.original.billingCycle === BillingCycle.MONTHLY) {
+            return new Date(date.setMonth(date.getMonth() + 1)).toLocaleDateString();
+          }
+          return new Date(date.setFullYear(date.getFullYear() + 1)).toLocaleDateString();
+        },
+      },
+      {
+        accessorKey: 'billingCycle',
+        header: () => 'Billing Cycle',
+        cell: (info) => <div className='first-letter:capitalize'>{info.getValue()}</div>,
       },
       {
         accessorKey: 'paymentStatus',
         header: () => 'Payment Status',
-      },
-      {
-        accessorKey: 'createdAt',
-        header: () => 'Created',
-      },
-      {
-        accessorKey: 'updatedAt',
-        header: () => 'Until',
+        cell: (info) => (
+          <div className={cn('p-2 rounded-full text-center leading-none font-semibold w-28 first-letter:capitalize',
+            info.getValue() === OperatorCheckoutPaymentStatus.PAID && 'bg-success',
+            info.getValue() === OperatorCheckoutPaymentStatus.UNPAID && 'bg-light-gray',
+            info.getValue() === OperatorCheckoutPaymentStatus.REFUNDED && 'bg-error',
+          )}>
+            {info.getValue()}
+          </div>
+        ),
       },
     ],
     []

@@ -431,13 +431,19 @@ export enum BillingCycle {
 export interface OperatorCheckout {
   successUrl: string
   cancelUrl: string
-  billingCycle: string
+  billingCycle: BillingCycle
+}
+
+export enum OperatorCheckoutPaymentStatus {
+  UNPAID = 'unpaid',
+  PAID = 'paid',
+  REFUNDED = 'refunded'
 }
 
 export interface OperatorCheckoutSession {
-  billingCycle: string
+  billingCycle: BillingCycle
   status: string
-  paymentStatus: string
+  paymentStatus: OperatorCheckoutPaymentStatus
   createdAt: string
   updatedAt: string
 }

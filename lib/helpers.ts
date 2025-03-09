@@ -1,7 +1,7 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { TransactionType } from "@/store/transactionsSlice";
-import { AirdropUser, NodesUser, SubscriptionInfo, WalletType } from "./types";
+import { AirdropUser, BillingCycle, NodesUser, SubscriptionInfo, WalletType } from "./types";
 
 export const eclipseAddress = (address: string): string => {
   return (
@@ -166,4 +166,23 @@ export const getUserNodes = (user: NodesUser) => {
 
 export const getTotalTransaction = (isActivated: boolean) => {
   return isActivated ? 1_000_000 : 1000;
+}
+
+export const operatorPricing = () => {
+  const percentageOff = 30;
+  const basicPrice = 50;
+  const premiumPrice = 500;
+  const prices = {
+    [BillingCycle.MONTHLY]: {
+      free: 0,
+      basic: basicPrice,
+      premium: premiumPrice
+    },
+    [BillingCycle.YEARLY]: {
+      free: 0,
+      basic: basicPrice - (basicPrice * percentageOff / 100),
+      premium: premiumPrice - (premiumPrice * percentageOff / 100)
+    }
+  }
+  return prices;
 }
