@@ -21,7 +21,7 @@ import { selectOperatorSlice, setHydrate, setIsLogin, setIsOperatorWalletModalOp
 import { useConnectWithOtp, useSocialAccounts, useWalletOptions } from "@dynamic-labs/sdk-react-core";
 import Modal from "./ui/Modal";
 import { Dispatch } from "@reduxjs/toolkit";
-import { authenticateAirdropUser, setLogoutAirdrop } from "@/store/airdropSlice";
+import { authenticateAirdropUser, setHydrateAirdrop, setLogoutAirdrop } from "@/store/airdropSlice";
 import { useSearchParams } from "next/navigation";
 
 type WalletModalProps = {
@@ -302,11 +302,15 @@ const WalletModal = ({ isDisconnected }: WalletModalProps) => {
     }
   }, [dispatch, isDisconnected])
 
+  useEffect(() => {
+    dispatch(setHydrate());
+    dispatch(setHydrateAirdrop());
+  }, [dispatch])
+
   const toggleModal = (dispatch: Dispatch, isOpen: boolean) => {
     dispatch(setIsWalletModalOpen(isOpen));
     dispatch(setIsOperatorWalletModalOpen(isOpen));
     dispatch(setIsLogin(isOpen));
-    dispatch(setHydrate());
   }
 
   return (

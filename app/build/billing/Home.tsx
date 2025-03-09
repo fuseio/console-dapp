@@ -6,7 +6,7 @@ import SubMenu from "@/components/build/SubMenu";
 import { selectBalanceSlice } from "@/store/balanceSlice";
 import useTokenUsdBalance from "@/lib/hooks/useTokenUsdBalance";
 import Info from "@/components/ui/Info";
-import { getTotalTransaction, operatorPricing, path } from "@/lib/helpers";
+import { getTotalTransaction, operatorInvoiceUntilTime, operatorPricing, path } from "@/lib/helpers";
 import Button from "@/components/ui/Button";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import WithdrawModal from "@/components/dashboard/WithdrawModal";
@@ -68,7 +68,7 @@ const YourPlan = ({ balance }: YourPlanProps) => {
           {operatorSlice.operator.user.isActivated ? "Basic" : "Free"} plan
         </div>
         <p className="text-[1.25rem] leading-none">
-          {operatorSlice.operator.user.isActivated ? prices[lastPaidInvoice.billingCycle].basic : prices[lastPaidInvoice.billingCycle].free}$ per month
+          {lastPaidInvoice ? prices[lastPaidInvoice.billingCycle].basic : 0}$ per month
         </p>
       </div>
       <div className="flex flex-col items-start gap-2">
@@ -99,9 +99,9 @@ const YourPlan = ({ balance }: YourPlanProps) => {
           Monthly
         </div>
         <p className="text-[1.25rem] leading-none">
-          {lastPaidInvoice ?
-            `Until ${new Date(lastPaidInvoice.createdAt).toLocaleDateString()}` :
-            "N/A"
+          Until {lastPaidInvoice ?
+            operatorInvoiceUntilTime(lastPaidInvoice.createdAt, lastPaidInvoice.billingCycle) :
+            operatorInvoiceUntilTime(new Date().getTime(), BillingCycle.MONTHLY)
           }
         </p>
       </div>

@@ -9,11 +9,11 @@ import {
   Table,
 } from '@tanstack/react-table'
 
-import { BillingCycle, OperatorCheckoutPaymentStatus, OperatorCheckoutSession, Status } from '@/lib/types';
+import { OperatorCheckoutPaymentStatus, OperatorCheckoutSession, Status } from '@/lib/types';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { fetchCheckoutSessions, OperatorStateType, selectOperatorSlice, withRefreshToken } from '@/store/operatorSlice';
 import { Notice, renderPageNumbers, Skeleton } from '@/components/ui/Table';
-import { cn } from '@/lib/helpers';
+import { cn, operatorInvoiceUntilTime } from '@/lib/helpers';
 
 type RowsProps = {
   table: Table<OperatorCheckoutSession>
@@ -74,13 +74,7 @@ const OperatorInvoiceTable = () => {
       {
         accessorKey: 'until',
         header: () => 'Until',
-        cell: (info) => {
-          const date = new Date(info.row.original.createdAt);
-          if (info.row.original.billingCycle === BillingCycle.MONTHLY) {
-            return new Date(date.setMonth(date.getMonth() + 1)).toLocaleDateString();
-          }
-          return new Date(date.setFullYear(date.getFullYear() + 1)).toLocaleDateString();
-        },
+        cell: (info) => operatorInvoiceUntilTime(info.row.original.createdAt, info.row.original.billingCycle),
       },
       {
         accessorKey: 'billingCycle',

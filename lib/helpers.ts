@@ -186,3 +186,12 @@ export const operatorPricing = () => {
   }
   return prices;
 }
+
+export const operatorInvoiceUntilTime = (createdAt: string | number, billingCycle: BillingCycle) => {
+  const date = new Date(createdAt);
+  date.setDate(1);
+  if (billingCycle === BillingCycle.MONTHLY) {
+    return new Date(date.setMonth(date.getMonth() + 1)).toLocaleDateString();
+  }
+  return new Date(date.setFullYear(date.getFullYear() + 1)).toLocaleDateString();
+}
