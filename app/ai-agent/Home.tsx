@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAccount } from "wagmi";
 import { Coins, LinkIcon, Gift, ChevronRight } from 'lucide-react'
+import * as amplitude from "@amplitude/analytics-browser";
 
 import { useAppDispatch } from "@/store/store";
 import { addMessage, sendMessage } from "@/store/aiSlice";
@@ -26,6 +27,7 @@ const Home = () => {
 
     dispatch(addMessage({ message: { user: "user", text }, address }))
     dispatch(sendMessage({ text, address }))
+    amplitude.track("Edison Prompt", { promptText: text });
     router.push(path.AI_AGENT_CHAT)
   }
 

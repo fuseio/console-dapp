@@ -1,6 +1,7 @@
 import { useState, KeyboardEvent } from "react";
 import { ArrowUp, Paperclip } from "lucide-react";
 import { useAccount } from "wagmi";
+import * as amplitude from "@amplitude/analytics-browser";
 
 import { useAppDispatch } from "@/store/store";
 import { addMessage, sendMessage } from "@/store/aiSlice";
@@ -44,6 +45,7 @@ const ChatInput = () => {
 
     dispatch(addMessage({ message: { user: "user", text }, address }))
     dispatch(sendMessage({ text, address }))
+    amplitude.track("Edison Prompt", { promptText: text });
     setPrompt("")
   }
 
