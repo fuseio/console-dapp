@@ -21,6 +21,7 @@ import { DynamicContextProvider, mergeNetworks } from '@dynamic-labs/sdk-react-c
 import { DynamicWagmiConnector } from '@dynamic-labs/wagmi-connector';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import WalletModal from './WalletModal';
+import TransfiModal from './wallet/TransfiModal';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [isClient, setIsClient] = useState(false);
@@ -73,6 +74,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             />
             <DynamicWagmiConnector>
               <WalletModal isDisconnected={isDisconnected} />
+              <TransfiModal />
               {children}
             </DynamicWagmiConnector>
           </QueryClientProvider>

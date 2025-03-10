@@ -570,3 +570,7 @@ export type TokenUsdBalance = {
   token: string;
   usd: string;
 }
+
+export type ChatMessageProps = {
+  message: TextResponse;
+};

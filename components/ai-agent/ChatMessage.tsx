@@ -1,30 +1,17 @@
 import Image from "next/image";
-import { createElement, useEffect } from "react";
-import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
-import { Address, parseEther } from "viem";
+import { createElement } from "react";
 import { fuse } from "viem/chains";
 import { Check, Copy, ThumbsUp, ThumbsDown } from 'lucide-react'
 
-import { useAppDispatch, useAppSelector } from "@/store/store";
-import { setIsWalletModalOpen } from "@/store/navbarSlice";
-import { TextResponse } from "@/lib/types";
-import { updateMessage } from "@/store/aiSlice";
-import Spinner from "@/components/ui/Spinner";
-import OperatorRegistrationSection from "../build/OperatorRegistrationSection";
-import { selectOperatorSlice } from "@/store/operatorSlice";
-import useOperatorRegistration from "@/lib/hooks/useOperatorRegistration";
+import { ChatMessageProps } from "@/lib/types";
+import CreateOperatorAccount from "./actions/CreateOperatorAccount";
+import SendToken from "./actions/SendToken";
+import BuyFuseToken from "./actions/BuyFuseToken";
+import AddFuseNetwork from "./actions/AddFuseNetwork";
+import CheckConnectionWrapper from "../CheckConnectionWrapper";
+import AcceptCryptoPayment from "./actions/AcceptCryptoPayment";
 
-import ExternalArrow from "@/assets/ExternalArrow";
 import edisonGradient from "@/assets/edison-gradient.png"
-
-type ChatMessageProps = {
-  message: TextResponse;
-};
-
-type SendTokensContent = {
-  amount: string;
-  toAddress: Address;
-}
 
 const AssistantIcon = () => (
   <div className="relative shrink-0 w-[58px] h-[58px] -mt-[10px]">
@@ -38,84 +25,14 @@ const AssistantIcon = () => (
   </div>
 )
 
-const Button = ({ message }: ChatMessageProps) => {
-  const dispatch = useAppDispatch();
-  const { isConnected } = useAccount();
-  const content = message.content as SendTokensContent;
-
-  const {
-    data: hash,
-    error,
-    isPending,
-    sendTransaction
-  } = useSendTransaction()
-
-  const { isLoading: isConfirming, isSuccess: isConfirmed } =
-    useWaitForTransactionReceipt({
-      hash,
-    })
-
-  const isLoading = isPending || isConfirming;
-
-  useEffect(() => {
-    if (isConfirmed && hash) {
-      dispatch(updateMessage({
-        message: {
-          ...message,
-          hash
-        }
-      }));
-    }
-  }, [dispatch, hash, isConfirmed, message]);
-
-  return (
-    <button
-      className={`transition ease-in-out flex items-center gap-2 w-fit px-4 py-3 text-lg leading-none font-semibold rounded-full hover:bg-[transparent] hover:text-black ${error?.message ? "bg-[#FFEBE9] border border-[#FD0F0F] text-[#FD0F0F]" : "bg-black border border-black text-white"}`}
-      onClick={() => {
-        if (message.hash) {
-          window.open(`${fuse.blockExplorers.default.url}/tx/${hash}`, "_blank");
-        } else if (isConnected) {
-          sendTransaction({
-            to: content.toAddress,
-            value: parseEther(content.amount),
-          });
-        } else {
-          dispatch(setIsWalletModalOpen(true));
-        }
-      }}
-    >
-      {isConnected ? "Sign Transaction" : "Connect Wallet"}
-      {isLoading && <Spinner />}
-      {message.hash && <ExternalArrow />}
-    </button>
-  );
-};
-
-const CreateOperatorAccount = () => {
-  const operatorSlice = useAppSelector(selectOperatorSlice);
-  const { isConnected } = useAccount();
-  const { isSigningMessage, isSignMessageError, checkoutCancel } = useOperatorRegistration();
-  const classNames = {
-    pricingArticle: "grid-cols-1"
-  }
-
-  return (
-    <OperatorRegistrationSection
-      operatorSlice={operatorSlice}
-      isConnected={isConnected}
-      isSigningMessage={isSigningMessage}
-      isSignMessageError={isSignMessageError}
-      checkoutCancel={checkoutCancel}
-      classNames={classNames}
-    />
-  )
-}
-
 const ChatMessage = ({ message }: ChatMessageProps) => {
   const isUser = message.user === "user";
   const actionComponents: Record<string, React.ComponentType<ChatMessageProps>> = {
-    "SEND_TOKENS": Button,
-    "CREATE_OPERATOR_ACCOUNT": CreateOperatorAccount
+    "SEND_TOKENS": SendToken,
+    "CREATE_OPERATOR_ACCOUNT": CreateOperatorAccount,
+    "BUY_FUSE_TOKEN": BuyFuseToken,
+    "ADD_FUSE_NETWORK": () => CheckConnectionWrapper({ children: <AddFuseNetwork /> }),
+    "ACCEPT_CRYPTO_PAYMENT": AcceptCryptoPayment,
   };
 
   return (

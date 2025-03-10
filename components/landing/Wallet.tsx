@@ -8,7 +8,6 @@ import copy from "@/assets/copy-white.svg";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchUsdPrice, selectBalanceSlice } from "@/store/balanceSlice";
-import TransfiModal from "@/components/wallet/TransfiModal";
 import { useAccount, useBalance, useBlockNumber } from "wagmi";
 import { fuse } from "wagmi/chains";
 import { setIsTransfiModalOpen } from "@/store/navbarSlice";
@@ -50,7 +49,6 @@ const Wallet = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <TransfiModal />
       {isQrModalOpen && <QrModal value={address ? address : ''} size={200} setIsQrModalOpen={setIsQrModalOpen} />}
       <div>
         <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">

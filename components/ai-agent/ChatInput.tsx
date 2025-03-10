@@ -28,6 +28,18 @@ const actions: Action[] = [
     title: "Create an Operator account",
     description: "Create an Operator account",
   },
+  {
+    title: "Buy FUSE token",
+    description: "Buy FUSE token",
+  },
+  {
+    title: "Add Fuse Network",
+    description: "Add Fuse Network to my wallet",
+  },
+  {
+    title: "Accept crypto payment",
+    description: "Accept crypto payment right now",
+  },
 ];
 
 const ChatInput = () => {
