@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAccount } from "wagmi";
-import { Coins, LinkIcon, Gift, ChevronRight } from 'lucide-react'
+import { Coins, LinkIcon, DollarSign, ChevronRight } from 'lucide-react'
 import * as amplitude from "@amplitude/analytics-browser";
 
 import { useAppDispatch } from "@/store/store";
@@ -95,31 +95,24 @@ const Home = () => {
       <div className="flex flex-wrap justify-center gap-4">
         <button
           className="flex items-center gap-2 h-10 px-4 py-2 bg-lightest-gray hover:bg-selected-gray rounded-[50px] text-sm font-medium"
-          onClick={() => handleSend("I would like to mint a branded Stablecoin")}
+          onClick={() => handleSend("Buy FUSE token")}
         >
           <Coins className="w-4 h-4" />
-          Mint a branded Stablecoin
+          Buy FUSE token
         </button>
         <button
           className="flex items-center gap-2 h-10 px-4 py-2 bg-lightest-gray hover:bg-selected-gray rounded-[50px] text-sm font-medium"
-          onClick={() => handleSend("I would like to create a payment link")}
+          onClick={() => handleSend("Add Fuse Network to my wallet")}
         >
           <LinkIcon className="w-4 h-4" />
-          Create a payment link
+          Add Fuse Network to my wallet
         </button>
         <button
           className="flex items-center gap-2 h-10 px-4 py-2 bg-lightest-gray hover:bg-selected-gray rounded-[50px] text-sm font-medium"
-          onClick={() => handleSend("I would like to create an Airdrop")}
+          onClick={() => handleSend("Accept crypto payment right now")}
         >
-          <Gift className="w-4 h-4" />
-          Create an Airdrop
-        </button>
-        <button
-          className="flex items-center gap-2 h-10 px-4 py-2 bg-lightest-gray hover:bg-selected-gray rounded-[50px] text-sm font-medium"
-          onClick={() => handleSend("I would like to summarize my Rewards")}
-        >
-          <Gift className="w-4 h-4" />
-          Summarize my Rewards
+          <DollarSign className="w-4 h-4" />
+          Accept crypto payment right now
         </button>
       </div>
     </main>

@@ -33,11 +33,11 @@ const actions: Action[] = [
     description: "Buy FUSE token",
   },
   {
-    title: "Add Fuse Network",
+    title: "Add Fuse Network to my wallet",
     description: "Add Fuse Network to my wallet",
   },
   {
-    title: "Accept crypto payment",
+    title: "Accept crypto payment right now",
     description: "Accept crypto payment right now",
   },
 ];
