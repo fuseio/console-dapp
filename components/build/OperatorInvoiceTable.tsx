@@ -7,6 +7,7 @@ import {
   getPaginationRowModel,
   useReactTable,
   Table,
+  getSortedRowModel,
 } from '@tanstack/react-table'
 
 import { OperatorCheckoutPaymentStatus, OperatorCheckoutSession, Status } from '@/lib/types';
@@ -68,6 +69,11 @@ const OperatorInvoiceTable = () => {
   const columns = useMemo<ColumnDef<OperatorCheckoutSession, any>[]>(
     () => [
       {
+        accessorKey: 'amount',
+        header: () => 'Amount',
+        cell: (info) => <div>${info.getValue()}</div>,
+      },
+      {
         accessorKey: 'createdAt',
         header: () => 'Created',
         cell: (info) => new Date(info.getValue()).toLocaleDateString('en-GB'),
@@ -75,7 +81,7 @@ const OperatorInvoiceTable = () => {
       {
         accessorKey: 'until',
         header: () => 'Until',
-        cell: (info) => operatorInvoiceUntilTime(info.row.original.createdAt, info.row.original.billingCycle),
+        cell: (info) => operatorInvoiceUntilTime(info.row.original.createdAt, info.row.original.billingCycle).toLocaleDateString('en-GB'),
       },
       {
         accessorKey: 'billingCycle',
@@ -106,9 +112,16 @@ const OperatorInvoiceTable = () => {
       pagination: {
         pageSize: 25,
       },
+      sorting: [
+        {
+          id: 'createdAt',
+          desc: true,
+        },
+      ],
     },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
   })
 
   useEffect(() => {

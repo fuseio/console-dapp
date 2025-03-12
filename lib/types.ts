@@ -446,6 +446,7 @@ export interface OperatorCheckoutSession {
   paymentStatus: OperatorCheckoutPaymentStatus
   createdAt: string
   updatedAt: string
+  amount: number
 }
 
 export interface CompletedQuest {

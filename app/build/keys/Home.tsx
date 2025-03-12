@@ -24,9 +24,9 @@ const Home = () => {
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
-      <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
+      <div className="w-8/9 flex flex-col gap-10 mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
         <SubMenu selected="api keys" />
-        <div className="flex flex-col gap-4 mt-14 mb-10">
+        <div className="flex flex-col gap-4 mt-4">
           <h1 className="text-5xl md:text-[32px] text-fuse-black font-semibold leading-none md:leading-tight md:text-center">
             API Keys
           </h1>
@@ -144,10 +144,8 @@ const Home = () => {
             }
           </div>
         </div>
-        <div className="flex flex-col gap-28 mt-28 md:gap-20 md:mt-20">
-          <DeveloperTools />
-          <DocumentSupport />
-        </div>
+        <DeveloperTools className="mt-16" />
+        <DocumentSupport className="mt-16" />
       </div>
     </div>
   );

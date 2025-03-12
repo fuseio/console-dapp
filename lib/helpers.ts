@@ -1,7 +1,7 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { TransactionType } from "@/store/transactionsSlice";
-import { AirdropUser, BillingCycle, NodesUser, SubscriptionInfo, WalletType } from "./types";
+import { AirdropUser, BillingCycle, NodesUser, OperatorCheckoutPaymentStatus, OperatorCheckoutSession, SubscriptionInfo, WalletType } from "./types";
 
 export const eclipseAddress = (address: string): string => {
   return (
@@ -191,7 +191,17 @@ export const operatorInvoiceUntilTime = (createdAt: string | number, billingCycl
   const date = new Date(createdAt);
   date.setDate(1);
   if (billingCycle === BillingCycle.MONTHLY) {
-    return new Date(date.setMonth(date.getMonth() + 1)).toLocaleDateString('en-GB');
+    return new Date(date.setMonth(date.getMonth() + 1));
   }
-  return new Date(date.setFullYear(date.getFullYear() + 1)).toLocaleDateString('en-GB');
+  return new Date(date.setFullYear(date.getFullYear() + 1));
+}
+
+export const operatorLastInvoice = (checkoutSessions: OperatorCheckoutSession[]) => {
+  const paidInvoices = checkoutSessions.filter(session => session.paymentStatus === OperatorCheckoutPaymentStatus.PAID);
+  const paid = paidInvoices.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+  const valid = paid ? operatorInvoiceUntilTime(paid.createdAt, paid.billingCycle) > new Date() : false;
+  return {
+    paid,
+    valid
+  };
 }

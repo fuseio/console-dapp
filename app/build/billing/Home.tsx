@@ -6,13 +6,14 @@ import SubMenu from "@/components/build/SubMenu";
 import { selectBalanceSlice } from "@/store/balanceSlice";
 import useTokenUsdBalance from "@/lib/hooks/useTokenUsdBalance";
 import Info from "@/components/ui/Info";
-import { getTotalTransaction, operatorInvoiceUntilTime, operatorPricing, path } from "@/lib/helpers";
+import { getTotalTransaction, operatorInvoiceUntilTime, operatorLastInvoice, operatorPricing, path } from "@/lib/helpers";
 import Button from "@/components/ui/Button";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import WithdrawModal from "@/components/dashboard/WithdrawModal";
-import { BillingCycle, OperatorCheckoutPaymentStatus, TokenUsdBalance } from "@/lib/types";
+import { BillingCycle, TokenUsdBalance } from "@/lib/types";
 import OperatorPricing from "@/components/build/OperatorPricing";
 import OperatorInvoiceTable from "@/components/build/OperatorInvoiceTable";
+import OperatorNotice from "@/components/build/OperatorNotice";
 
 type YourPlanProps = {
   balance: TokenUsdBalance;
@@ -23,8 +24,7 @@ const YourPlan = ({ balance }: YourPlanProps) => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const totalTransaction = getTotalTransaction(operatorSlice.operator.user.isActivated)
-  const paidInvoices = operatorSlice.checkoutSessions.filter(session => session.paymentStatus === OperatorCheckoutPaymentStatus.PAID);
-  const lastPaidInvoice = paidInvoices.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+  const lastInvoice = operatorLastInvoice(operatorSlice.checkoutSessions);
   const prices = operatorPricing();
 
   function handleCheckout() {
@@ -68,7 +68,7 @@ const YourPlan = ({ balance }: YourPlanProps) => {
           {operatorSlice.operator.user.isActivated ? "Basic" : "Free"} plan
         </div>
         <p className="text-[1.25rem] leading-none">
-          {lastPaidInvoice ? prices[lastPaidInvoice.billingCycle].basic : 0}$ per month
+          {lastInvoice.paid ? prices[lastInvoice.paid.billingCycle].basic : 0}$ per month
         </p>
       </div>
       <div className="flex flex-col items-start gap-2">
@@ -99,9 +99,9 @@ const YourPlan = ({ balance }: YourPlanProps) => {
           Monthly
         </div>
         <p className="text-[1.25rem] leading-none">
-          Until {lastPaidInvoice ?
-            operatorInvoiceUntilTime(lastPaidInvoice.createdAt, lastPaidInvoice.billingCycle) :
-            operatorInvoiceUntilTime(new Date().getTime(), BillingCycle.MONTHLY)
+          Until {lastInvoice.paid ?
+            operatorInvoiceUntilTime(lastInvoice.paid.createdAt, lastInvoice.paid.billingCycle).toLocaleDateString('en-GB') :
+            operatorInvoiceUntilTime(new Date().getTime(), BillingCycle.MONTHLY).toLocaleDateString('en-GB')
           }
         </p>
       </div>
@@ -127,7 +127,7 @@ const YourPlan = ({ balance }: YourPlanProps) => {
         <Button
           text="Upgrade plan"
           className="transition ease-in-out flex items-center gap-2 text-lg leading-none text-white font-semibold bg-black rounded-full enabled:hover:text-black enabled:hover:bg-success disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={operatorSlice.operator.user.isActivated}
+          disabled={lastInvoice.valid}
           padding="py-[18.5px] px-[29.5px]"
           onClick={handleCheckout}
           isLoading={operatorSlice.isCheckingout}
@@ -143,6 +143,7 @@ const Home = () => {
   const balance = useTokenUsdBalance({
     address: operatorSlice.operator.user.smartWalletAddress,
   });
+  const lastInvoice = operatorLastInvoice(operatorSlice.checkoutSessions);
 
   useEffect(() => {
     dispatch(withRefreshToken(() => dispatch(fetchOperator())));
@@ -162,6 +163,7 @@ const Home = () => {
             What are you building today?
           </p>
         </div>
+        {(operatorSlice.operator.user.isActivated && !lastInvoice.valid) && <OperatorNotice title="Invoice period has ended, please recharge your plan" />}
         <YourPlan balance={balance} />
         <OperatorInvoiceTable />
         <OperatorPricing
