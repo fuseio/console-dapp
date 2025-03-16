@@ -414,6 +414,8 @@ export interface Invoice {
   amount: string;
   currency: string;
   txHash: string;
+  createdAt: string
+  updatedAt: string
 }
 
 export interface SubscriptionInfo {

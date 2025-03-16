@@ -1,5 +1,5 @@
 import { useMemo, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Ghost } from 'lucide-react';
+import { ArrowUpRight, ChevronLeft, ChevronRight, Ghost } from 'lucide-react';
 import {
   ColumnDef,
   flexRender,
@@ -9,15 +9,17 @@ import {
   Table,
   getSortedRowModel,
 } from '@tanstack/react-table'
+import Link from 'next/link';
+import { fuse } from 'viem/chains';
 
-import { OperatorCheckoutPaymentStatus, OperatorCheckoutSession, Status } from '@/lib/types';
+import { BillingCycle, Invoice, Status } from '@/lib/types';
 import { useAppDispatch, useAppSelector } from '@/store/store';
-import { fetchCheckoutSessions, OperatorStateType, selectOperatorSlice, withRefreshToken } from '@/store/operatorSlice';
+import { fetchSubscriptionInvoices, OperatorStateType, selectOperatorSlice, withRefreshToken } from '@/store/operatorSlice';
 import { Notice, renderPageNumbers, Skeleton } from '@/components/ui/Table';
-import { cn, operatorInvoiceUntilTime } from '@/lib/helpers';
+import { eclipseAddress, operatorInvoiceUntilTime } from '@/lib/helpers';
 
 type RowsProps = {
-  table: Table<OperatorCheckoutSession>
+  table: Table<Invoice>
   operatorSlice: OperatorStateType
 }
 
@@ -43,7 +45,7 @@ const Rows = ({ table, operatorSlice }: RowsProps) => {
     )
   }
 
-  if (operatorSlice.checkoutSessionStatus === Status.PENDING) {
+  if (operatorSlice.subscriptionInvoicesStatus === Status.PENDING) {
     return (
       <Skeleton
         length={3}
@@ -64,14 +66,31 @@ const Rows = ({ table, operatorSlice }: RowsProps) => {
 const OperatorInvoiceTable = () => {
   const dispatch = useAppDispatch();
   const operatorSlice = useAppSelector(selectOperatorSlice);
-  const data = useMemo(() => operatorSlice.checkoutSessions.filter(session => session.paymentStatus !== OperatorCheckoutPaymentStatus.UNPAID), [operatorSlice.checkoutSessions]);
 
-  const columns = useMemo<ColumnDef<OperatorCheckoutSession, any>[]>(
+  const columns = useMemo<ColumnDef<Invoice, any>[]>(
     () => [
       {
         accessorKey: 'amount',
         header: () => 'Amount',
         cell: (info) => <div>${info.getValue()}</div>,
+      },
+      {
+        accessorKey: 'currency',
+        header: () => 'Token',
+      },
+      {
+        accessorKey: 'txHash',
+        header: () => 'Transaction',
+        cell: (info) => (
+          <Link
+            href={`${fuse.blockExplorers.default.url}/tx/${info.getValue()}`}
+            target='_blank'
+            className="flex items-center gap-1 hover:opacity-50"
+          >
+            {eclipseAddress(info.getValue())}
+            <ArrowUpRight size={16} />
+          </Link>
+        ),
       },
       {
         accessorKey: 'createdAt',
@@ -81,32 +100,14 @@ const OperatorInvoiceTable = () => {
       {
         accessorKey: 'until',
         header: () => 'Until',
-        cell: (info) => operatorInvoiceUntilTime(info.row.original.createdAt, info.row.original.billingCycle).toLocaleDateString('en-GB'),
-      },
-      {
-        accessorKey: 'billingCycle',
-        header: () => 'Billing Cycle',
-        cell: (info) => <div className='first-letter:capitalize'>{info.getValue()}</div>,
-      },
-      {
-        accessorKey: 'paymentStatus',
-        header: () => 'Payment Status',
-        cell: (info) => (
-          <div className={cn('p-2 rounded-full text-center leading-none font-semibold w-28 first-letter:capitalize',
-            info.getValue() === OperatorCheckoutPaymentStatus.PAID && 'bg-success',
-            info.getValue() === OperatorCheckoutPaymentStatus.UNPAID && 'bg-light-gray',
-            info.getValue() === OperatorCheckoutPaymentStatus.REFUNDED && 'bg-error',
-          )}>
-            {info.getValue()}
-          </div>
-        ),
+        cell: (info) => operatorInvoiceUntilTime(info.row.original.createdAt, BillingCycle.MONTHLY).toLocaleDateString('en-GB'),
       },
     ],
     []
   )
 
   const table = useReactTable({
-    data,
+    data: operatorSlice.subscriptionInvoices,
     columns,
     initialState: {
       pagination: {
@@ -125,7 +126,7 @@ const OperatorInvoiceTable = () => {
   })
 
   useEffect(() => {
-    dispatch(withRefreshToken(() => dispatch(fetchCheckoutSessions())));
+    dispatch(withRefreshToken(() => dispatch(fetchSubscriptionInvoices())));
   }, [dispatch]);
 
   return (

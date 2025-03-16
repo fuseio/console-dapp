@@ -21,10 +21,10 @@ const Build = () => {
 
   useEffect(() => {
     if (!operatorSlice.isHydrated) return;
-    if (operatorSlice.operator.user.isActivated) {
+    if (operatorSlice.isAuthenticated) {
       router.replace(path.DASHBOARD)
     }
-  }, [operatorSlice.isHydrated, operatorSlice.operator.user.isActivated, router]);
+  }, [operatorSlice.isHydrated, operatorSlice.isAuthenticated, router]);
 
   return (
     <div className="font-mona w-full min-h-screen flex-col flex items-center bg-light-gray">

@@ -1,17 +1,14 @@
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 import info from "@/assets/info.svg"
 import Button from "../ui/Button";
-import { path } from "@/lib/helpers";
 
 type OperatorNoticeProps = {
   title: string;
+  onClick: () => void;
 }
 
-const OperatorNotice = ({ title }: OperatorNoticeProps) => {
-  const router = useRouter();
-
+const OperatorNotice = ({ title, onClick }: OperatorNoticeProps) => {
   return (
     <div className="flex flex-row md:flex-col gap-4 justify-between items-center bg-lemon-chiffon rounded-[20px] px-[30px] py-[18px] border-[0.5px] border-star-dust-alpha-70">
       <div className="flex flex-row md:flex-col items-center md:text-center gap-7 md:gap-2">
@@ -29,9 +26,7 @@ const OperatorNotice = ({ title }: OperatorNoticeProps) => {
         text="Upgrade"
         className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black hover:text-black hover:bg-white rounded-full"
         padding="py-3.5 px-[38px]"
-        onClick={() => {
-          router.push(path.BUILD_BILLING)
-        }}
+        onClick={onClick}
       />
     </div>
   )

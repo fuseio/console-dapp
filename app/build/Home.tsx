@@ -8,7 +8,7 @@ import useOperatorRegistration from "@/lib/hooks/useOperatorRegistration";
 const Home = () => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const { isConnected } = useAccount();
-  const { isSigningMessage, isSignMessageError, checkoutCancel } = useOperatorRegistration();
+  const { isSigningMessage, isSignMessageError } = useOperatorRegistration();
 
   return (
     <main className="grow w-8/9 max-w-7xl mx-auto my-28 flex justify-center gap-4">
@@ -17,7 +17,6 @@ const Home = () => {
         isConnected={isConnected}
         isSigningMessage={isSigningMessage}
         isSignMessageError={isSignMessageError}
-        checkoutCancel={checkoutCancel}
       />
     </main>
   )

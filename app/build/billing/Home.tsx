@@ -1,12 +1,11 @@
 import { useEffect } from "react";
 
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { checkout, fetchOperator, selectOperatorSlice, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
+import { fetchOperator, selectOperatorSlice, setIsSubscriptionModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
 import SubMenu from "@/components/build/SubMenu";
 import { selectBalanceSlice } from "@/store/balanceSlice";
 import useTokenUsdBalance from "@/lib/hooks/useTokenUsdBalance";
-import Info from "@/components/ui/Info";
-import { getTotalTransaction, operatorInvoiceUntilTime, operatorLastInvoice, operatorPricing, path } from "@/lib/helpers";
+import { getTotalTransaction, operatorInvoiceUntilTime, operatorLastInvoice, operatorPricing } from "@/lib/helpers";
 import Button from "@/components/ui/Button";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import WithdrawModal from "@/components/dashboard/WithdrawModal";
@@ -14,6 +13,8 @@ import { BillingCycle, TokenUsdBalance } from "@/lib/types";
 import OperatorPricing from "@/components/build/OperatorPricing";
 import OperatorInvoiceTable from "@/components/build/OperatorInvoiceTable";
 import OperatorNotice from "@/components/build/OperatorNotice";
+import { AccountBalanceInfo, SponsoredTransactionInfo } from "@/components/build/OperatorInfo";
+import SubscriptionModal from "@/components/dashboard/SubscriptionModal";
 
 type YourPlanProps = {
   balance: TokenUsdBalance;
@@ -24,17 +25,8 @@ const YourPlan = ({ balance }: YourPlanProps) => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const balanceSlice = useAppSelector(selectBalanceSlice);
   const totalTransaction = getTotalTransaction(operatorSlice.operator.user.isActivated)
-  const lastInvoice = operatorLastInvoice(operatorSlice.checkoutSessions);
+  const lastInvoice = operatorLastInvoice(operatorSlice.subscriptionInvoices);
   const prices = operatorPricing();
-
-  function handleCheckout() {
-    const origin = window?.location?.origin ?? "";
-    dispatch(checkout({
-      successUrl: `${origin}${path.DASHBOARD}`,
-      cancelUrl: `${origin}${path.BUILD}?checkout-cancel=true`,
-      billingCycle: BillingCycle.MONTHLY
-    }));
-  }
 
   return (
     <section className="grid grid-cols-4 gap-14 bg-lightest-gray rounded-[20px] p-12 md:grid-cols-1 md:p-8">
@@ -44,11 +36,7 @@ const YourPlan = ({ balance }: YourPlanProps) => {
       <div className="flex flex-col items-start gap-2">
         <div className="flex items-center gap-3.5 text-lg text-text-dark-gray">
           Account balance
-          <Info>
-            <p>
-              You can freely deposit and withdraw any tokens available on the Fuse Network.
-            </p>
-          </Info>
+          <AccountBalanceInfo />
         </div>
         <div className="font-bold text-5xl leading-none whitespace-nowrap mt-1">
           {balance.token} FUSE
@@ -68,21 +56,13 @@ const YourPlan = ({ balance }: YourPlanProps) => {
           {operatorSlice.operator.user.isActivated ? "Basic" : "Free"} plan
         </div>
         <p className="text-[1.25rem] leading-none">
-          {lastInvoice.paid ? prices[lastInvoice.paid.billingCycle].basic : 0}$ per month
+          {lastInvoice.paid ? prices[BillingCycle.MONTHLY].basic : 0}$ per month
         </p>
       </div>
       <div className="flex flex-col items-start gap-2">
         <div className="flex items-center gap-3.5 text-lg text-text-dark-gray">
           Transactions
-          <Info>
-            <p className="mb-1">
-              Sponsored transactions are a feature that allows you to pay for your customers gas fees.
-            </p>
-            <p>
-              Since the gas cost in the Fuse Network is very low, your customers will not have to solve
-              the gas issue on their own, you can easily take on these very small costs yourself.
-            </p>
-          </Info>
+          <SponsoredTransactionInfo />
         </div>
         <div className="font-bold text-5xl leading-none whitespace-nowrap mt-1">
           {new Intl.NumberFormat().format(totalTransaction)}
@@ -99,10 +79,7 @@ const YourPlan = ({ balance }: YourPlanProps) => {
           Monthly
         </div>
         <p className="text-[1.25rem] leading-none">
-          Until {lastInvoice.paid ?
-            operatorInvoiceUntilTime(lastInvoice.paid.createdAt, lastInvoice.paid.billingCycle).toLocaleDateString('en-GB') :
-            operatorInvoiceUntilTime(new Date().getTime(), BillingCycle.MONTHLY).toLocaleDateString('en-GB')
-          }
+          Until {operatorInvoiceUntilTime(lastInvoice.paid?.createdAt ?? new Date().getTime(), BillingCycle.MONTHLY).toLocaleDateString('en-GB')}
         </p>
       </div>
       <div className="flex flex-row md:flex-wrap gap-2.5">
@@ -129,7 +106,7 @@ const YourPlan = ({ balance }: YourPlanProps) => {
           className="transition ease-in-out flex items-center gap-2 text-lg leading-none text-white font-semibold bg-black rounded-full enabled:hover:text-black enabled:hover:bg-success disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={lastInvoice.valid}
           padding="py-[18.5px] px-[29.5px]"
-          onClick={handleCheckout}
+          onClick={() => dispatch(setIsSubscriptionModalOpen(true))}
           isLoading={operatorSlice.isCheckingout}
         />
       </div>
@@ -143,7 +120,7 @@ const Home = () => {
   const balance = useTokenUsdBalance({
     address: operatorSlice.operator.user.smartWalletAddress,
   });
-  const lastInvoice = operatorLastInvoice(operatorSlice.checkoutSessions);
+  const lastInvoice = operatorLastInvoice(operatorSlice.subscriptionInvoices);
 
   useEffect(() => {
     dispatch(withRefreshToken(() => dispatch(fetchOperator())));
@@ -153,6 +130,7 @@ const Home = () => {
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TopupAccountModal />
       <WithdrawModal balance={balance.token} />
+      <SubscriptionModal />
       <div className="w-8/9 flex flex-col gap-10 mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
         <SubMenu selected="billing & usage" />
         <div className="flex flex-col gap-4 mt-4">
@@ -163,7 +141,12 @@ const Home = () => {
             What are you building today?
           </p>
         </div>
-        {(operatorSlice.operator.user.isActivated && !lastInvoice.valid) && <OperatorNotice title="Invoice period has ended, please recharge your plan" />}
+        {(operatorSlice.operator.user.isActivated && !lastInvoice.valid) && (
+          <OperatorNotice
+            title="Subscription allowance has been consumed, please recharge your plan"
+            onClick={() => dispatch(setIsSubscriptionModalOpen(true))}
+          />
+        )}
         <YourPlan balance={balance} />
         <OperatorInvoiceTable />
         <OperatorPricing

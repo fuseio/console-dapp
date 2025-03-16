@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import Button from "@/components/ui/Button";
-import { getTotalTransaction } from "@/lib/helpers";
+import { getTotalTransaction, path } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectBalanceSlice } from "@/store/balanceSlice";
 import { fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
@@ -14,7 +14,7 @@ import DocumentSupport from "@/components/DocumentSupport";
 import * as amplitude from "@amplitude/analytics-browser";
 import { fetchTokenPrice } from "@/lib/api";
 import SubscriptionModal from "@/components/dashboard/SubscriptionModal";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Status } from "@/lib/types";
 import DeveloperTools from "@/components/DeveloperTools";
 import rightCaret from "@/assets/right-caret-black.svg";
@@ -25,9 +25,9 @@ import edisonChat from "@/assets/edison-chat.svg";
 import SubMenu from "@/components/build/SubMenu";
 import useTokenUsdBalance from "@/lib/hooks/useTokenUsdBalance";
 import { TokenUsdBalance } from "@/lib/types";
-import Info from "@/components/ui/Info";
 import CheckoutSuccess from "@/components/build/CheckoutSuccess";
 import OperatorNotice from "@/components/build/OperatorNotice";
+import { AccountBalanceInfo, SponsoredTransactionInfo } from "@/components/build/OperatorInfo";
 
 type OperatorAccountBalanceProps = {
   balance: TokenUsdBalance;
@@ -42,11 +42,7 @@ const OperatorAccountBalance = ({ balance }: OperatorAccountBalanceProps) => {
       <div className="flex flex-col gap-[18px] md:mb-4">
         <div className="flex items-center gap-3.5 text-lg text-text-dark-gray">
           Operator account balance
-          <Info>
-            <p>
-              You can freely deposit and withdraw any tokens available on the Fuse Network.
-            </p>
-          </Info>
+          <AccountBalanceInfo />
         </div>
         <div className="flex items-end md:flex-wrap gap-x-[30px] md:gap-x-4">
           <h1 className="font-bold text-5xl leading-none whitespace-nowrap">
@@ -173,6 +169,7 @@ const Home = () => {
   const searchParams = useSearchParams()
   const checkoutSuccess = searchParams.get('checkout-success')
   const totalTransaction = getTotalTransaction(operatorSlice.operator.user.isActivated)
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -218,7 +215,7 @@ const Home = () => {
           </p>
         </div>
         {checkoutSuccess && <CheckoutSuccess />}
-        {!operatorSlice.operator.user.isActivated && <OperatorNotice title="Get access to all services on Fuse" />}
+        {!operatorSlice.operator.user.isActivated && <OperatorNotice title="Get access to all services on Fuse" onClick={() => router.push(path.BUILD_BILLING)} />}
         <div className="flex flex-col gap-y-[30px] md:gap-y-[21px]">
           <div className="flex flex-row md:flex-col gap-x-4 gap-y-12 bg-lightest-gray justify-between rounded-[20px] p-12 md:p-8 min-h-[297px]">
             <OperatorAccountBalance
@@ -236,15 +233,7 @@ const Home = () => {
               <div className="flex flex-col gap-[18px] w-full md:mt-[30px]">
                 <div className="flex items-center gap-2.5 text-lg text-text-dark-gray font-medium">
                   Sponsored Transactions
-                  <Info>
-                    <p className="mb-1">
-                      Sponsored transactions are a feature that allows you to pay for your customers gas fees.
-                    </p>
-                    <p>
-                      Since the gas cost in the Fuse Network is very low, your customers will not have to solve
-                      the gas issue on their own, you can easily take on these very small costs yourself.
-                    </p>
-                  </Info>
+                  <SponsoredTransactionInfo />
                 </div>
                 <div className="flex flex-col gap-[10.5px]">
                   <p className="text-lg font-bold">
