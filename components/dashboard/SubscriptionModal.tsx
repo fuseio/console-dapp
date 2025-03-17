@@ -51,7 +51,7 @@ const SubscriptionModal = (): JSX.Element => {
       )
       setUsdcBalance(Number(balance))
     })()
-  }, [smartWalletAddress])
+  }, [smartWalletAddress, subscriptionInfo.usdcAddress])
 
   return (
     <AnimatePresence>

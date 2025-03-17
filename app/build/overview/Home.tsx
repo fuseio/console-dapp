@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import Button from "@/components/ui/Button";
-import { getTotalTransaction, path, subscriptionInformation } from "@/lib/helpers";
+import { getTotalTransaction, subscriptionInformation } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectBalanceSlice } from "@/store/balanceSlice";
-import { fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
+import { fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setIsSubscriptionModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import RollSecretKeyModal from "@/components/dashboard/RollSecretKeyModal";
@@ -14,7 +14,7 @@ import DocumentSupport from "@/components/DocumentSupport";
 import * as amplitude from "@amplitude/analytics-browser";
 import { fetchTokenPrice } from "@/lib/api";
 import SubscriptionModal from "@/components/dashboard/SubscriptionModal";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Status } from "@/lib/types";
 import DeveloperTools from "@/components/DeveloperTools";
 import rightCaret from "@/assets/right-caret-black.svg";
@@ -172,7 +172,6 @@ const Home = () => {
   const searchParams = useSearchParams()
   const checkoutSuccess = searchParams.get('checkout-success')
   const totalTransaction = getTotalTransaction(operatorSlice.operator.user.isActivated)
-  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -218,7 +217,12 @@ const Home = () => {
           </p>
         </div>
         {checkoutSuccess && <CheckoutSuccess />}
-        {!operatorSlice.operator.user.isActivated && <OperatorNotice title="Get access to all services on Fuse" onClick={() => router.push(path.BUILD_BILLING)} />}
+        {!operatorSlice.operator.user.isActivated && (
+          <OperatorNotice
+            title="Get access to all services on Fuse"
+            onClick={() => dispatch(setIsSubscriptionModalOpen(true))}
+          />
+        )}
         <div className="flex flex-col gap-y-[30px] md:gap-y-[21px]">
           <div className="flex flex-row md:flex-col gap-x-4 gap-y-12 bg-lightest-gray justify-between rounded-[20px] p-12 md:p-8 min-h-[297px]">
             <OperatorAccountBalance

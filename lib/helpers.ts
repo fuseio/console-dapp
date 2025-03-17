@@ -107,15 +107,11 @@ export const buildVisitorSubMenuItems = [
 
 export const buildSubMenuItems = [
   {
-    title: "Welcome",
-    link: path.BUILD,
-  },
-  {
     title: "Overview",
     link: path.DASHBOARD,
   },
   {
-    title: "Api Keys",
+    title: "API Keys",
     link: path.BUILD_API_KEYS,
   },
   {
@@ -202,11 +198,11 @@ export function cn(...inputs: ClassValue[]) {
 
 export const isSocialFollowed = (user: AirdropUser) => {
   const socialQuests = ["followFuseOnTwitter"];
-  
+
   return user
-  .completedQuests
-  ?.filter((quest) => socialQuests.includes(quest.type))
-  .length === socialQuests.length;
+    .completedQuests
+    ?.filter((quest) => socialQuests.includes(quest.type))
+    .length === socialQuests.length;
 }
 
 export const getUserNodes = (user: NodesUser) => {
