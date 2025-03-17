@@ -194,7 +194,7 @@ const OperatorPricing = ({
             title="Premium Plan"
             description="Get more. Maximize your business potential"
             price={prices[selectedBillingCycle].premium}
-            features={["Everything in the Premium plan +", "Unlimited transactions", "Individual support approach"]}
+            features={["Everything in the Basic plan +", "Unlimited transactions", "Individual support approach"]}
             buttonText="Coming soon"
             isDisabled
           />

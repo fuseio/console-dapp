@@ -5,7 +5,7 @@ import { fetchOperator, selectOperatorSlice, setIsSubscriptionModalOpen, setIsTo
 import SubMenu from "@/components/build/SubMenu";
 import { selectBalanceSlice } from "@/store/balanceSlice";
 import useTokenUsdBalance from "@/lib/hooks/useTokenUsdBalance";
-import { getTotalTransaction, operatorInvoiceUntilTime, operatorLastInvoice, operatorPricing } from "@/lib/helpers";
+import { getTotalTransaction, operatorInvoiceUntilTime, operatorLastInvoice, operatorPricing, subscriptionInformation } from "@/lib/helpers";
 import Button from "@/components/ui/Button";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import WithdrawModal from "@/components/dashboard/WithdrawModal";
@@ -39,7 +39,7 @@ const YourPlan = ({ balance }: YourPlanProps) => {
           <AccountBalanceInfo />
         </div>
         <div className="font-bold text-5xl leading-none whitespace-nowrap mt-1">
-          {balance.token} FUSE
+          {balance.token} USDC
         </div>
         {balanceSlice.isUsdPriceLoading ?
           <span className="px-10 py-2.5 rounded-md animate-pulse bg-white/80"></span> :
@@ -117,8 +117,11 @@ const YourPlan = ({ balance }: YourPlanProps) => {
 const Home = () => {
   const dispatch = useAppDispatch();
   const operatorSlice = useAppSelector(selectOperatorSlice);
+  const subscriptionInfo = subscriptionInformation();
   const balance = useTokenUsdBalance({
     address: operatorSlice.operator.user.smartWalletAddress,
+    tokenId: "bridged-usdc-fuse",
+    contractAddress: subscriptionInfo.usdcAddress
   });
   const lastInvoice = operatorLastInvoice(operatorSlice.subscriptionInvoices);
 
@@ -129,7 +132,7 @@ const Home = () => {
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TopupAccountModal />
-      <WithdrawModal balance={balance.token} />
+      <WithdrawModal balance={balance.coin} />
       <SubscriptionModal />
       <div className="w-8/9 flex flex-col gap-10 mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
         <SubMenu selected="billing & usage" />

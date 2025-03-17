@@ -562,6 +562,7 @@ export type OperatorRegistrationClassNames = {
 }
 
 export type TokenUsdBalance = {
+  coin: string;
   token: string;
   usd: string;
 }

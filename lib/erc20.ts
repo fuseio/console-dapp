@@ -70,3 +70,16 @@ export const approveSpend = async (
   }
   return tx;
 };
+
+export const getERC20Decimals = async (
+  contractAddress: Address,
+  rpcUrl: string = fuse.rpcUrls.default.http[0]
+) => {
+  const decimals = await publicClient(rpcUrl).readContract({
+    address: contractAddress,
+    abi: ERC20ABI,
+    functionName: "decimals",
+    args: [],
+  });
+  return decimals;
+};

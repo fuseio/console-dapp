@@ -91,9 +91,25 @@ export const path = {
   NODES: "/nodes",
   TESTNET_NODES: "/nodes/testnet",
   EMBER_NODES: "/nodes/ember",
+  BUILD_REGISTER: "/build/register",
 };
 
+export const buildVisitorSubMenuItems = [
+  {
+    title: "Welcome",
+    link: path.BUILD,
+  },
+  {
+    title: "Register",
+    link: path.BUILD_REGISTER,
+  },
+];
+
 export const buildSubMenuItems = [
+  {
+    title: "Welcome",
+    link: path.BUILD,
+  },
   {
     title: "Overview",
     link: path.DASHBOARD,

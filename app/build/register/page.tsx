@@ -3,16 +3,14 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+import Topbar from "@/components/Topbar";
 import Home from "./Home";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { setSelectedNavbar } from "@/store/navbarSlice";
-import Footer from "@/components/Footer";
-import Topbar from "@/components/Topbar";
-import ChainModal from "@/components/ChainModal";
 import { selectOperatorSlice } from "@/store/operatorSlice";
 import { path } from "@/lib/helpers";
 
-const Billing = () => {
+const Build = () => {
   const dispatch = useAppDispatch();
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const router = useRouter();
@@ -23,21 +21,17 @@ const Billing = () => {
 
   useEffect(() => {
     if (!operatorSlice.isHydrated) return;
-    if (!operatorSlice.isAuthenticated) {
-      router.replace(path.BUILD_REGISTER)
+    if (operatorSlice.isAuthenticated) {
+      router.replace(path.DASHBOARD)
     }
   }, [operatorSlice.isHydrated, operatorSlice.isAuthenticated, router]);
 
   return (
-    <div className="w-full font-mona justify-end min-h-screen">
-      <div className="flex-col flex items-center bg-light-gray h-screen">
-        <ChainModal description="To work with the Operator account you must be connected to the Fuse Network" />
-        <Topbar />
-        <Home />
-        <Footer />
-      </div>
+    <div className="font-mona w-full min-h-screen flex-col flex items-center bg-light-gray">
+      <Topbar />
+      <Home />
     </div>
   );
 };
 
-export default Billing;
+export default Build;

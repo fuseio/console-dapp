@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import Button from "@/components/ui/Button";
-import { getTotalTransaction, path } from "@/lib/helpers";
+import { getTotalTransaction, path, subscriptionInformation } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectBalanceSlice } from "@/store/balanceSlice";
 import { fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
@@ -46,7 +46,7 @@ const OperatorAccountBalance = ({ balance }: OperatorAccountBalanceProps) => {
         </div>
         <div className="flex items-end md:flex-wrap gap-x-[30px] md:gap-x-4">
           <h1 className="font-bold text-5xl leading-none whitespace-nowrap">
-            {balance.token} FUSE
+            {balance.token} USDC
           </h1>
           {balanceSlice.isUsdPriceLoading ?
             <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
@@ -163,8 +163,11 @@ const GetStarted = () => {
 const Home = () => {
   const dispatch = useAppDispatch();
   const operatorSlice = useAppSelector(selectOperatorSlice);
+  const subscriptionInfo = subscriptionInformation();
   const balance = useTokenUsdBalance({
     address: operatorSlice.operator.user.smartWalletAddress,
+    tokenId: "bridged-usdc-fuse",
+    contractAddress: subscriptionInfo.usdcAddress
   });
   const searchParams = useSearchParams()
   const checkoutSuccess = searchParams.get('checkout-success')
@@ -200,8 +203,8 @@ const Home = () => {
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TopupAccountModal />
       <SubscriptionModal />
-      <WithdrawModal balance={balance.token} />
-      <TopupPaymasterModal balance={balance.token} />
+      <WithdrawModal balance={balance.coin} />
+      <TopupPaymasterModal balance={balance.coin} />
       <YourSecretKeyModal />
       <RollSecretKeyModal />
       <div className="w-8/9 flex flex-col gap-10 mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
