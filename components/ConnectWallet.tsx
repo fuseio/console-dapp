@@ -51,7 +51,7 @@ import { usePathname } from "next/navigation";
 import switchNetworkIcon from "@/assets/switch-network.svg";
 import Copy from "./ui/Copy";
 import { formatUnits } from "viem";
-import { resetConnection } from "@/lib/web3Auth";
+import { flash, resetConnection } from "@/lib/web3Auth";
 
 const menu: Variants = {
   closed: (isCenter) => ({
@@ -90,6 +90,7 @@ const icons: Icons = {
   [mainnet.id]: ethLogo,
   [bsc.id]: bscLogo,
   [base.id]: baseIcon,
+  [flash.id]: fuseIcon,
 };
 
 type UsdTokens = {

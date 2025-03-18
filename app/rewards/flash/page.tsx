@@ -11,7 +11,7 @@ import Footer from "@/components/Footer";
 import Topbar from "@/components/Topbar";
 import { retrieveAirdropUser, selectAirdropSlice } from "@/store/airdropSlice";
 
-const AirdropGrant = () => {
+const AirdropFlash = () => {
   const dispatch = useAppDispatch();
   const airdropSlice = useAppSelector(selectAirdropSlice);
   const router = useRouter();
@@ -28,13 +28,12 @@ const AirdropGrant = () => {
   }, [airdropSlice.isHydrated, airdropSlice.isUser, router]);
 
   return (
-    <div className="font-mona w-full min-h-screen bg-modal-bg isolate">
-      <div className="absolute top-0 left-0 bg-linear-gradient-gray w-full h-[64.688rem] -z-10"></div>
-      <Topbar />
+    <div className="font-mona w-full min-h-screen bg-light-gray isolate">
+      <Topbar className="fixed backdrop-blur-sm md:mt-0" />
       <Home />
       <Footer />
     </div>
   );
 };
 
-export default AirdropGrant;
+export default AirdropFlash;

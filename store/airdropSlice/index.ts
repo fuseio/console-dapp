@@ -381,18 +381,12 @@ const airdropSlice = createSlice({
       state.isTwitterErrorModalOpen = action.payload
     },
     setLogoutAirdrop: (state) => {
-      state.inviteCode = "";
-      state.accessToken = "";
-      state.isAuthenticated = false;
-      state.isUser = false;
-      state.user = initUser;
-      state.leaderboardUsers = [];
-      state.lastLeaderboardUserId = "";
-      state.isLeaderboardUsersFinished = false;
+      Object.assign(state, INIT_STATE);
       localStorage.removeItem("airdrop-inviteCode");
       localStorage.removeItem("airdrop-accessToken");
       localStorage.removeItem("airdrop-isUser");
       localStorage.removeItem("airdrop-user");
+      state.isHydrated = true;
     },
     setHydrateAirdrop: (state) => {
       const inviteCode = localStorage.getItem("airdrop-inviteCode");

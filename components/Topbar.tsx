@@ -6,7 +6,7 @@ import NavButton from "./NavButton";
 import { useAppSelector } from "@/store/store";
 import { selectNavbarSlice } from "@/store/navbarSlice";
 import { selectOperatorSlice } from "@/store/operatorSlice";
-import { path } from "@/lib/helpers";
+import { cn, path } from "@/lib/helpers";
 import Image from "next/image";
 import { selectAirdropSlice } from "@/store/airdropSlice";
 
@@ -20,8 +20,8 @@ const AirdropSubmenu = [
     link: path.AIRDROP_ECOSYSTEM,
   },
   {
-    title: "Builder Grant",
-    link: path.AIRDROP_GRANT,
+    title: "FUSE Flash Testnet",
+    link: path.AIRDROP_FLASH,
   },
 ]
 
@@ -36,7 +36,11 @@ const StakingSubmenu = [
   },
 ]
 
-const Topbar = () => {
+type TopbarProps = {
+  className?: string;
+}
+
+const Topbar = ({ className }: TopbarProps) => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const { isTransfiModalOpen, selected } = useAppSelector(selectNavbarSlice);
   const { isAuthenticated } = useAppSelector(selectOperatorSlice);
@@ -81,7 +85,10 @@ const Topbar = () => {
   }, [isAuthenticated, airdropSlice.isUser]);
 
   return (
-    <nav className={`w-full h-20 sticky top-0 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-pastel-gray md:border-0 ${isTransfiModalOpen ? "z-0" : "z-40"}`}>
+    <nav className={cn("w-full h-20 sticky top-0 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-pastel-gray md:border-0",
+      isTransfiModalOpen ? "z-0" : "z-40",
+      className
+    )}>
       <div className="flex justify-between h-full items-center w-8/9 md:w-9/10 max-w-7xl relative">
         <span>
           <a href="/">

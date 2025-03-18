@@ -86,6 +86,7 @@ export const path = {
   NODES: "/nodes",
   TESTNET_NODES: "/nodes/testnet",
   EMBER_NODES: "/nodes/ember",
+  AIRDROP_FLASH: "/rewards/flash",
 };
 
 export const buildSubMenuItems = [
@@ -133,11 +134,11 @@ export function cn(...inputs: ClassValue[]) {
 
 export const isSocialFollowed = (user: AirdropUser) => {
   const socialQuests = ["followFuseOnTwitter"];
-  
+
   return user
-  .completedQuests
-  ?.filter((quest) => socialQuests.includes(quest.type))
-  .length === socialQuests.length;
+    .completedQuests
+    ?.filter((quest) => socialQuests.includes(quest.type))
+    .length === socialQuests.length;
 }
 
 export const getUserNodes = (user: NodesUser) => {
