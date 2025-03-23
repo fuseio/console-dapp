@@ -13,7 +13,7 @@ type SubMenuProps = {
 const SubMenu = ({ selected }: SubMenuProps) => {
   return (
     <div className="flex justify-between items-center">
-      <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected={selected} className="md:flex md:justify-center" />
+      <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected={selected} className="md:flex" isResponsive />
       <div className="flex items-center gap-px md:hidden">
         <Image
           src={contactSupport}

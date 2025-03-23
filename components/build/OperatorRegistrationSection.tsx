@@ -1,20 +1,17 @@
 import { Wallet } from "@/components/WalletModal";
 import ContactDetails from "@/components/build/ContactDetails";
 import AccountCreation from "@/components/build/AccountCreation";
-import OperatorPricing from "@/components/build/OperatorPricing";
 import EoaValidation from "@/components/build/EoaValidation";
 import ValidateEoa from "@/components/build/ValidateEoa";
 import OperatorRegistrationError from "@/components/build/OperatorRegistrationError";
 import { OperatorStateType } from "@/store/operatorSlice";
-import { OperatorRegistrationClassNames } from "@/lib/types";
+import RedirectingToDashboard from "@/components/build/RedirectingToDashboard";
 
 type OperatorRegistrationSectionProps = {
   operatorSlice: OperatorStateType;
   isConnected: boolean;
   isSigningMessage: boolean;
   isSignMessageError: boolean;
-  checkoutCancel: string | null
-  classNames?: OperatorRegistrationClassNames
 }
 
 const OperatorRegistrationSection = ({
@@ -22,13 +19,11 @@ const OperatorRegistrationSection = ({
   isConnected,
   isSigningMessage,
   isSignMessageError,
-  checkoutCancel,
-  classNames
 }: OperatorRegistrationSectionProps) => {
-  if (operatorSlice.isAuthenticated || checkoutCancel) {
+  if (operatorSlice.isAuthenticated) {
     return (
-      <OperatorPricing classNames={classNames} isHeader={true} />
-    );
+      <RedirectingToDashboard />
+    )
   }
 
   if (operatorSlice.isCreatingOperator) {

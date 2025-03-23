@@ -6,14 +6,17 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectOperatorSlice, setIsSubscriptionModalOpen, setIsTopupAccountModalOpen, subscription } from "@/store/operatorSlice";
 import Spinner from "../ui/Spinner";
 import { getERC20Balance } from "@/lib/erc20";
-import { hex, subscriptionInfo } from "@/lib/helpers";
+import { cn, hex, subscriptionInformation } from "@/lib/helpers";
+import { BillingCycle, Status } from "@/lib/types";
 
 const SubscriptionModal = (): JSX.Element => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const dispatch = useAppDispatch();
   const { data: walletClient } = useWalletClient()
   const [usdcBalance, setUsdcBalance] = useState(0)
-  const isSufficientBalance = usdcBalance >= subscriptionInfo.payment
+  const subscriptionInfo = subscriptionInformation()
+  const proratedAmount = subscriptionInfo.calculateProrated(BillingCycle.MONTHLY)
+  const isSufficientBalance = usdcBalance >= proratedAmount
   const smartWalletAddress = operatorSlice.operator?.user?.smartWalletAddress
 
   function handleClick() {
@@ -48,7 +51,7 @@ const SubscriptionModal = (): JSX.Element => {
       )
       setUsdcBalance(Number(balance))
     })()
-  }, [smartWalletAddress])
+  }, [smartWalletAddress, subscriptionInfo.usdcAddress])
 
   return (
     <AnimatePresence>
@@ -72,7 +75,7 @@ const SubscriptionModal = (): JSX.Element => {
             <p className="text-2xl leading-none font-bold">
               Subscription
             </p>
-            <div className="flex gap-8">
+            <div className="flex gap-6">
               <div className="flex flex-col items-start gap-2">
                 <p>
                   Plan
@@ -89,23 +92,35 @@ const SubscriptionModal = (): JSX.Element => {
                   Monthly
                 </div>
               </div>
+              {subscriptionInfo.payment !== proratedAmount && (
+                <div className="flex flex-col items-start gap-2">
+                  <p>
+                    Prorated
+                  </p>
+                  <div className="border-[3px] border-success rounded-full px-3 py-2 text-sm leading-none font-bold">
+                    ${proratedAmount}
+                  </div>
+                </div>
+              )}
             </div>
             <hr className="w-full h-[0.5px] border-white/50" />
             <div className="flex flex-col gap-6">
               <div className="flex items-baseline gap-2">
                 <span className="text-[3.125rem] leading-none font-semibold">
-                  $50
+                  ${subscriptionInfo.payment}
                 </span>
                 <span className="text-sm leading-none text-white/60">
                   Per month / Annual allowance
                 </span>
               </div>
               <button
-                className={`transition ease-in-out flex justify-center items-center gap-2 p-3 leading-none font-semibold border rounded-full hover:bg-[transparent] ${isSufficientBalance ? 'bg-white border-white text-black hover:text-white' : 'bg-[#FD0F0F] border-[#FD0F0F] text-white hover:text-[#FD0F0F]'}`}
+                className={cn("transition ease-in-out flex justify-center items-center gap-2 p-3 leading-none font-semibold border rounded-full hover:bg-[transparent]",
+                  (!isSufficientBalance || operatorSlice.subscriptionStatus === Status.ERROR) ? 'bg-[#FD0F0F] border-[#FD0F0F] text-white hover:text-[#FD0F0F]' : 'bg-white border-white text-black hover:text-white'
+                )}
                 onClick={handleClick}
               >
-                {isSufficientBalance ? 'Pay Now' : 'Insufficient USDC in smart wallet'}
-                {operatorSlice.isSubscribing && <Spinner />}
+                {operatorSlice.subscriptionStatus === Status.ERROR ? 'Error while subscribing' : isSufficientBalance ? 'Pay Now' : 'Insufficient USDC in smart wallet'}
+                {operatorSlice.subscriptionStatus === Status.PENDING && <Spinner />}
               </button>
             </div>
           </motion.div>

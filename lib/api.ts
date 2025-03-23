@@ -182,6 +182,16 @@ export const fetchOperatorCheckoutSessions = async (): Promise<OperatorCheckoutS
     return response.data
 }
 
+export const fetchOperatorSubscriptionInvoices = async (): Promise<Invoice[]> => {
+    const response = await axios.get(
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/subscriptions`,
+        {
+            withCredentials: true
+        }
+    )
+    return response.data
+}
+
 export const fetchConsensusValidators = async (): Promise<ValidatorResponse> => {
     const response = await axios.get(`https://${NEXT_PUBLIC_FUSE_API_BASE_URL}/api/v0/consensus/validators`)
     return response.data

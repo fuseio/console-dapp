@@ -3,9 +3,9 @@ import { AppState } from "../rootReducer";
 import { Signer, ethers } from "ethers";
 import { FuseSDK, OwnerWalletClient } from "@fuseio/fusebox-web-sdk";
 import { SmartAccountClient } from "permissionless";
-import { hex, splitSecretKey, subscriptionInfo } from "@/lib/helpers";
-import { Operator, OperatorCheckout, OperatorCheckoutSession, OperatorContactDetail, SignData, Status, Withdraw } from "@/lib/types";
-import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchOperatorCheckoutSessions, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreateOperatorWallet, postCreatePaymaster, postOperatorCheckout, postOperatorSubscription, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
+import { hex, splitSecretKey, subscriptionInformation } from "@/lib/helpers";
+import { Invoice, Operator, OperatorCheckout, OperatorCheckoutSession, OperatorContactDetail, SignData, Status, Withdraw } from "@/lib/types";
+import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchOperatorCheckoutSessions, fetchOperatorSubscriptionInvoices, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreateOperatorWallet, postCreatePaymaster, postOperatorCheckout, postOperatorSubscription, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
 import { CONFIG, NEXT_PUBLIC_FUSE_API_BASE_URL, NEXT_PUBLIC_PAYMASTER_FUNDER_ADDRESS } from "@/lib/config";
@@ -85,11 +85,12 @@ export interface OperatorStateType {
   operatorContactDetail: OperatorContactDetail;
   operator: Operator;
   isSubscriptionModalOpen: boolean;
-  isSubscribing: boolean;
-  isSubscribed: boolean;
+  subscriptionStatus: Status;
   isCheckingout: boolean;
   checkoutSessions: OperatorCheckoutSession[];
   checkoutSessionStatus: Status;
+  subscriptionInvoices: Invoice[];
+  subscriptionInvoicesStatus: Status;
 }
 
 const INIT_STATE: OperatorStateType = {
@@ -127,11 +128,12 @@ const INIT_STATE: OperatorStateType = {
   operatorContactDetail: initOperatorContactDetail,
   operator: initOperator,
   isSubscriptionModalOpen: false,
-  isSubscribing: false,
-  isSubscribed: false,
+  subscriptionStatus: Status.IDLE,
   isCheckingout: false,
   checkoutSessions: [],
   checkoutSessionStatus: Status.IDLE,
+  subscriptionInvoices: [],
+  subscriptionInvoicesStatus: Status.IDLE,
 };
 
 export const checkOperator = createAsyncThunk(
@@ -602,6 +604,7 @@ export const subscription = createAsyncThunk<
       const state = thunkAPI.getState();
       const operatorState: OperatorStateType = state.operator;
       const recipient = NEXT_PUBLIC_PAYMASTER_FUNDER_ADDRESS as Address;
+      const subscriptionInfo = subscriptionInformation()
       const amount = parseUnits(
         (subscriptionInfo.payment * subscriptionInfo.advance).toString(),
         subscriptionInfo.decimals
@@ -668,6 +671,19 @@ export const fetchCheckoutSessions = createAsyncThunk(
     try {
       const checkoutSessions = await fetchOperatorCheckoutSessions()
       return checkoutSessions
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
+export const fetchSubscriptionInvoices = createAsyncThunk(
+  "OPERATOR/FETCH_SUBSCRIPTION_INVOICES",
+  async () => {
+    try {
+      const subscriptionInvoices = await fetchOperatorSubscriptionInvoices()
+      return subscriptionInvoices
     } catch (error) {
       console.log(error);
       throw error;
@@ -894,16 +910,16 @@ const operatorSlice = createSlice({
         state.isFetchingSponsoredTransactions = false;
       })
       .addCase(subscription.pending, (state) => {
-        state.isSubscribing = true;
+        state.subscriptionStatus = Status.PENDING;
       })
-      .addCase(subscription.fulfilled, (state) => {
-        state.isSubscribing = false;
+      .addCase(subscription.fulfilled, (state, action) => {
+        state.subscriptionStatus = Status.SUCCESS;
         state.isSubscriptionModalOpen = false;
-        state.isSubscribed = true;
         state.operator.user.isActivated = true;
+        state.subscriptionInvoices = [...state.subscriptionInvoices, action.payload];
       })
       .addCase(subscription.rejected, (state) => {
-        state.isSubscribing = false;
+        state.subscriptionStatus = Status.ERROR;
       })
       .addCase(checkout.pending, (state) => {
         state.isCheckingout = true;
@@ -924,6 +940,16 @@ const operatorSlice = createSlice({
       })
       .addCase(fetchCheckoutSessions.rejected, (state) => {
         state.checkoutSessionStatus = Status.ERROR;
+      })
+      .addCase(fetchSubscriptionInvoices.pending, (state) => {
+        state.subscriptionInvoicesStatus = Status.PENDING;
+      })
+      .addCase(fetchSubscriptionInvoices.fulfilled, (state, action) => {
+        state.subscriptionInvoicesStatus = Status.SUCCESS;
+        state.subscriptionInvoices = action.payload;
+      })
+      .addCase(fetchSubscriptionInvoices.rejected, (state) => {
+        state.subscriptionInvoicesStatus = Status.ERROR;
       })
   },
 });

@@ -1,21 +1,20 @@
 import { useEffect } from "react";
 import Button from "@/components/ui/Button";
-import { getTotalTransaction, path } from "@/lib/helpers";
+import { getTotalTransaction, subscriptionInformation } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectBalanceSlice } from "@/store/balanceSlice";
-import { fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
+import { fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setIsSubscriptionModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import RollSecretKeyModal from "@/components/dashboard/RollSecretKeyModal";
 import YourSecretKeyModal from "@/components/dashboard/YourSecretKeyModal";
 import TopupPaymasterModal from "@/components/dashboard/TopupPaymasterModal";
 import WithdrawModal from "@/components/dashboard/WithdrawModal";
-import info from "@/assets/info.svg"
 import DocumentSupport from "@/components/DocumentSupport";
 import * as amplitude from "@amplitude/analytics-browser";
 import { fetchTokenPrice } from "@/lib/api";
 import SubscriptionModal from "@/components/dashboard/SubscriptionModal";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Status } from "@/lib/types";
 import DeveloperTools from "@/components/DeveloperTools";
 import rightCaret from "@/assets/right-caret-black.svg";
@@ -26,7 +25,9 @@ import edisonChat from "@/assets/edison-chat.svg";
 import SubMenu from "@/components/build/SubMenu";
 import useTokenUsdBalance from "@/lib/hooks/useTokenUsdBalance";
 import { TokenUsdBalance } from "@/lib/types";
-import Info from "@/components/ui/Info";
+import CheckoutSuccess from "@/components/build/CheckoutSuccess";
+import OperatorNotice from "@/components/build/OperatorNotice";
+import { AccountBalanceInfo, SponsoredTransactionInfo } from "@/components/build/OperatorInfo";
 
 type OperatorAccountBalanceProps = {
   balance: TokenUsdBalance;
@@ -41,15 +42,11 @@ const OperatorAccountBalance = ({ balance }: OperatorAccountBalanceProps) => {
       <div className="flex flex-col gap-[18px] md:mb-4">
         <div className="flex items-center gap-3.5 text-lg text-text-dark-gray">
           Operator account balance
-          <Info>
-            <p>
-              You can freely deposit and withdraw any tokens available on the Fuse Network.
-            </p>
-          </Info>
+          <AccountBalanceInfo />
         </div>
         <div className="flex items-end md:flex-wrap gap-x-[30px] md:gap-x-4">
           <h1 className="font-bold text-5xl leading-none whitespace-nowrap">
-            {balance.token} FUSE
+            {balance.token} USDC
           </h1>
           {balanceSlice.isUsdPriceLoading ?
             <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
@@ -83,7 +80,7 @@ const OperatorAccountBalance = ({ balance }: OperatorAccountBalanceProps) => {
 
 const GetStarted = () => {
   return (
-    <section className="flex flex-col gap-10">
+    <section className="flex flex-col gap-10 mt-16">
       <h2 className="text-[2.5rem] md:text-3xl leading-tight text-fuse-black font-semibold">
         Get Started
       </h2>
@@ -100,7 +97,7 @@ const GetStarted = () => {
               Make blockchain accessible to all with our Account Abstraction Infrastructure.
             </p>
             <Link
-              href="https://docs.fuse.io/developers/fusebox"
+              href="https://docs.fuse.io/developers/fusebox/sdk/"
               target="_blank"
               className="group flex items-center gap-1 font-semibold"
             >
@@ -166,10 +163,12 @@ const GetStarted = () => {
 const Home = () => {
   const dispatch = useAppDispatch();
   const operatorSlice = useAppSelector(selectOperatorSlice);
+  const subscriptionInfo = subscriptionInformation();
   const balance = useTokenUsdBalance({
     address: operatorSlice.operator.user.smartWalletAddress,
+    tokenId: "bridged-usdc-fuse",
+    contractAddress: subscriptionInfo.usdcAddress
   });
-  const router = useRouter();
   const searchParams = useSearchParams()
   const checkoutSuccess = searchParams.get('checkout-success')
   const totalTransaction = getTotalTransaction(operatorSlice.operator.user.isActivated)
@@ -203,13 +202,13 @@ const Home = () => {
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TopupAccountModal />
       <SubscriptionModal />
-      <WithdrawModal balance={balance.token} />
-      <TopupPaymasterModal balance={balance.token} />
+      <WithdrawModal balance={balance.coin} />
+      <TopupPaymasterModal balance={balance.coin} />
       <YourSecretKeyModal />
       <RollSecretKeyModal />
-      <div className="w-8/9 flex flex-col mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
+      <div className="w-8/9 flex flex-col gap-10 mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
         <SubMenu selected="overview" />
-        <div className="flex flex-col gap-4 mt-14 mb-10">
+        <div className="flex flex-col gap-4 mt-4">
           <h1 className="text-5xl md:text-[32px] text-fuse-black font-semibold leading-none md:leading-tight">
             Welcome!
           </h1>
@@ -217,42 +216,13 @@ const Home = () => {
             What are you building today?
           </p>
         </div>
-        {checkoutSuccess && (
-          <div className="flex flex-row md:flex-col items-center md:text-center gap-7 md:gap-2 bg-success rounded-[20px] px-[30px] py-[18px] mb-[30px] border-[0.5px] border-star-dust-alpha-70">
-            <Image
-              src={info}
-              alt="info"
-              width={32}
-              height={32}
-            />
-            <p className="font-medium">
-              Congratulations! your operator account basic plan is active
-            </p>
-          </div>
+        {checkoutSuccess && <CheckoutSuccess />}
+        {!operatorSlice.operator.user.isActivated && (
+          <OperatorNotice
+            title="Get access to all services on Fuse"
+            onClick={() => dispatch(setIsSubscriptionModalOpen(true))}
+          />
         )}
-        {!operatorSlice.operator.user.isActivated &&
-          <div className="flex flex-row md:flex-col gap-4 justify-between items-center bg-lemon-chiffon rounded-[20px] px-[30px] py-[18px] mb-[30px] border-[0.5px] border-star-dust-alpha-70">
-            <div className="flex flex-row md:flex-col items-center md:text-center gap-7 md:gap-2">
-              <Image
-                src={info}
-                alt="info"
-                width={32}
-                height={32}
-              />
-              <p className="font-medium">
-                Get access to all services on Fuse
-              </p>
-            </div>
-            <Button
-              text="Upgrade"
-              className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black hover:text-black hover:bg-white rounded-full"
-              padding="py-3.5 px-[38px]"
-              onClick={() => {
-                router.push(path.BUILD)
-              }}
-            />
-          </div>
-        }
         <div className="flex flex-col gap-y-[30px] md:gap-y-[21px]">
           <div className="flex flex-row md:flex-col gap-x-4 gap-y-12 bg-lightest-gray justify-between rounded-[20px] p-12 md:p-8 min-h-[297px]">
             <OperatorAccountBalance
@@ -270,15 +240,7 @@ const Home = () => {
               <div className="flex flex-col gap-[18px] w-full md:mt-[30px]">
                 <div className="flex items-center gap-2.5 text-lg text-text-dark-gray font-medium">
                   Sponsored Transactions
-                  <Info>
-                    <p className="mb-1">
-                      Sponsored transactions are a feature that allows you to pay for your customers gas fees.
-                    </p>
-                    <p>
-                      Since the gas cost in the Fuse Network is very low, your customers will not have to solve
-                      the gas issue on their own, you can easily take on these very small costs yourself.
-                    </p>
-                  </Info>
+                  <SponsoredTransactionInfo />
                 </div>
                 <div className="flex flex-col gap-[10.5px]">
                   <p className="text-lg font-bold">
@@ -295,11 +257,9 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-28 mt-28 md:gap-20 md:mt-20">
-          <GetStarted />
-          <DeveloperTools />
-          <DocumentSupport />
-        </div>
+        <GetStarted />
+        <DeveloperTools className="mt-16" />
+        <DocumentSupport className="mt-16" />
       </div>
     </div>
   );

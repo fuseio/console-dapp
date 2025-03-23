@@ -2,11 +2,11 @@ import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-import { cn, operatorPricing, path } from "@/lib/helpers";
+import { cn, operatorLastInvoice, operatorPricing, path } from "@/lib/helpers";
 import checkmark from "@/assets/checkmark-white.svg";
 import Spinner from "../ui/Spinner";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { checkout, selectOperatorSlice } from "@/store/operatorSlice";
+import { selectOperatorSlice, setIsSubscriptionModalOpen } from "@/store/operatorSlice";
 import { BillingCycle, OperatorRegistrationClassNames } from "@/lib/types";
 
 type BillingProps = {
@@ -131,15 +131,8 @@ const OperatorPricing = ({
   const [selectedBillingCycle, setSelectedBillingCycle] = useState<BillingCycle>(BillingCycle.MONTHLY);
   const prices = operatorPricing();
   const isActivated = operatorSlice.operator.user.isActivated
-
-  function handleCheckout() {
-    const origin = window?.location?.origin ?? "";
-    dispatch(checkout({
-      successUrl: `${origin}${path.DASHBOARD}`,
-      cancelUrl: `${origin}${path.BUILD}?checkout-cancel=true`,
-      billingCycle: selectedBillingCycle
-    }));
-  }
+  const lastInvoice = operatorLastInvoice(operatorSlice.subscriptionInvoices);
+  const isBillingSwitch = false;
 
   return (
     <div className="flex flex-col items-center gap-10">
@@ -153,23 +146,25 @@ const OperatorPricing = ({
           </p>
         </div>
       )}
-      <section className={cn("flex flex-col gap-6", classNames?.pricingSection)}>
-        <div className={cn("flex justify-end items-center gap-x-6 gap-y-4 md:flex-col md:items-start", classNames?.pricingBillingContainer)}>
-          <Billing
-            title="Monthly Billing"
-            cycle={BillingCycle.MONTHLY}
-            selected={selectedBillingCycle === BillingCycle.MONTHLY}
-            onClick={() => setSelectedBillingCycle(BillingCycle.MONTHLY)}
-            classNames={classNames}
-          />
-          <Billing
-            title="Annual Billing (30% off)"
-            cycle={BillingCycle.YEARLY}
-            selected={selectedBillingCycle === BillingCycle.YEARLY}
-            onClick={() => setSelectedBillingCycle(BillingCycle.YEARLY)}
-            classNames={classNames}
-          />
-        </div>
+      <section className={cn("flex flex-col", classNames?.pricingSection)}>
+        {isBillingSwitch && (
+          <div className={cn("flex justify-end items-center gap-x-6 gap-y-4 md:flex-col md:items-start", classNames?.pricingBillingContainer)}>
+            <Billing
+              title="Monthly Billing"
+              cycle={BillingCycle.MONTHLY}
+              selected={selectedBillingCycle === BillingCycle.MONTHLY}
+              onClick={() => setSelectedBillingCycle(BillingCycle.MONTHLY)}
+              classNames={classNames}
+            />
+            <Billing
+              title="Annual Billing (30% off)"
+              cycle={BillingCycle.YEARLY}
+              selected={selectedBillingCycle === BillingCycle.YEARLY}
+              onClick={() => setSelectedBillingCycle(BillingCycle.YEARLY)}
+              classNames={classNames}
+            />
+          </div>
+        )}
         <article className={cn(
           "bg-dune rounded-[1.25rem] text-white py-10 md:py-0 grid grid-cols-3 md:grid-cols-1 gap-y-4",
           classNames?.pricingArticle
@@ -188,22 +183,36 @@ const OperatorPricing = ({
             description="Robust service. Low price."
             price={prices[selectedBillingCycle].basic}
             features={["1M transactions", "Access to all services on Fuse", "Reliable and fast support"]}
-            buttonText={isActivated ? "Current plan" : isOperator ? "Upgrade" : "Select"}
-            onClick={handleCheckout}
+            buttonText={lastInvoice.valid ? "Current plan" : isOperator ? "Upgrade" : "Select"}
+            onClick={() => dispatch(setIsSubscriptionModalOpen(true))}
             isLoading={operatorSlice.isCheckingout}
             isBorder
             isPopular
-            isDisabled={isOperator && isActivated}
+            isDisabled={isOperator && lastInvoice.valid}
           />
           <Plan
             title="Premium Plan"
             description="Get more. Maximize your business potential"
             price={prices[selectedBillingCycle].premium}
-            features={["Everything in the Premium plan +", "Unlimited transactions", "Individual support approach"]}
+            features={["Everything in the Basic plan +", "Unlimited transactions", "Individual support approach"]}
             buttonText="Coming soon"
             isDisabled
           />
         </article>
+        <footer className="text-end text-sm text-white/60 px-10 pb-4">
+          <ul>
+            <li>
+              <p>
+                * Billed 1st day of the month
+              </p>
+            </li>
+            <li>
+              <p>
+                ** Prorated billing applied
+              </p>
+            </li>
+          </ul>
+        </footer>
       </section>
     </div>
   );

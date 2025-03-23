@@ -1,7 +1,10 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { TransactionType } from "@/store/transactionsSlice";
-import { AirdropUser, BillingCycle, NodesUser, SubscriptionInfo, WalletType } from "./types";
+import { AirdropUser, BillingCycle, Invoice, NodesUser, WalletType } from "./types";
+import { getDate, getDaysInMonth } from 'date-fns'
+import { monthsInYear } from "date-fns/constants";
+import { Address } from "viem";
 
 export const eclipseAddress = (address: string): string => {
   return (
@@ -90,7 +93,19 @@ export const path = {
   NODES: "/nodes",
   TESTNET_NODES: "/nodes/testnet",
   EMBER_NODES: "/nodes/ember",
+  BUILD_REGISTER: "/build/register",
 };
+
+export const buildVisitorSubMenuItems = [
+  {
+    title: "Welcome",
+    link: path.BUILD,
+  },
+  {
+    title: "Register",
+    link: path.BUILD_REGISTER,
+  },
+];
 
 export const buildSubMenuItems = [
   {
@@ -98,7 +113,7 @@ export const buildSubMenuItems = [
     link: path.DASHBOARD,
   },
   {
-    title: "Api Keys",
+    title: "API Keys",
     link: path.BUILD_API_KEYS,
   },
   {
@@ -118,11 +133,48 @@ export const evmDecimals = 18;
 
 export const screenMediumWidth = 768;
 
-export const subscriptionInfo: SubscriptionInfo = {
-  payment: 50,
-  advance: 12,
-  decimals: 6,
-  usdcAddress: "0x28C3d1cD466Ba22f6cae51b1a4692a831696391A"
+export const subscriptionInformation = () => {
+  const payment = 50
+  const decimals = 6
+  const advance = 12
+  const usdcAddress: Address = "0x28C3d1cD466Ba22f6cae51b1a4692a831696391A"
+
+  const today = new Date()
+  const daysInMonth = getDaysInMonth(today)
+  const dayOfMonth = getDate(today)
+  const remainingDays = daysInMonth - dayOfMonth + 1
+  const proratedFactor = remainingDays / daysInMonth
+
+  const tiers = {
+    [BillingCycle.YEARLY]: {
+      percentageOff: 30,
+      multiplier: monthsInYear
+    },
+    [BillingCycle.MONTHLY]: {
+      percentageOff: 0,
+      multiplier: 1
+    }
+  }
+
+  function calculateAmount(billingCycle: BillingCycle) {
+    const { percentageOff, multiplier } = tiers[billingCycle]
+    const discount = payment * (percentageOff / 100)
+    return (payment - discount) * multiplier
+  }
+
+  function calculateProrated(billingCycle: BillingCycle) {
+    const calculatedAmount = calculateAmount(billingCycle)
+    return Math.round(payment * proratedFactor + calculatedAmount - payment)
+  }
+
+  return {
+    payment,
+    decimals,
+    advance,
+    usdcAddress,
+    calculateAmount,
+    calculateProrated
+  }
 }
 
 export const defaultReferralCode = "EMBER";
@@ -148,11 +200,11 @@ export function cn(...inputs: ClassValue[]) {
 
 export const isSocialFollowed = (user: AirdropUser) => {
   const socialQuests = ["followFuseOnTwitter"];
-  
+
   return user
-  .completedQuests
-  ?.filter((quest) => socialQuests.includes(quest.type))
-  .length === socialQuests.length;
+    .completedQuests
+    ?.filter((quest) => socialQuests.includes(quest.type))
+    .length === socialQuests.length;
 }
 
 export const getUserNodes = (user: NodesUser) => {
@@ -193,7 +245,16 @@ export const operatorInvoiceUntilTime = (createdAt: string | number, billingCycl
   const date = new Date(createdAt);
   date.setDate(1);
   if (billingCycle === BillingCycle.MONTHLY) {
-    return new Date(date.setMonth(date.getMonth() + 1)).toLocaleDateString();
+    return new Date(date.setMonth(date.getMonth() + 1));
   }
-  return new Date(date.setFullYear(date.getFullYear() + 1)).toLocaleDateString();
+  return new Date(date.setFullYear(date.getFullYear() + 1));
+}
+
+export const operatorLastInvoice = (invoices: Invoice[]) => {
+  const paid = invoices.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+  const valid = paid ? operatorInvoiceUntilTime(paid.createdAt, BillingCycle.MONTHLY) > new Date() : false;
+  return {
+    paid,
+    valid
+  };
 }

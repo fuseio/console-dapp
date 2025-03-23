@@ -422,6 +422,8 @@ export interface Invoice {
   amount: string;
   currency: string;
   txHash: string;
+  createdAt: string
+  updatedAt: string
 }
 
 export interface SubscriptionInfo {
@@ -454,6 +456,7 @@ export interface OperatorCheckoutSession {
   paymentStatus: OperatorCheckoutPaymentStatus
   createdAt: string
   updatedAt: string
+  amount: number
 }
 
 export interface CompletedQuest {
@@ -567,6 +570,7 @@ export type OperatorRegistrationClassNames = {
 }
 
 export type TokenUsdBalance = {
+  coin: string;
   token: string;
   usd: string;
 }

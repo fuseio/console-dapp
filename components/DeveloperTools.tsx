@@ -4,10 +4,11 @@ import faucet from '@/assets/faucet.svg';
 import fusebox from '@/assets/fusebox.svg';
 import mobileSdk from '@/assets/mobile-sdk.svg';
 import webSdk from '@/assets/web-sdk.svg';
+import { cn } from '@/lib/helpers';
 
-const DeveloperTools = () => {
+const DeveloperTools = ({ className }: { className?: string }) => {
   return (
-    <div className="flex flex-col gap-8 md:gap-5">
+    <div className={cn("flex flex-col gap-8 md:gap-5", className)}>
       <h2 className="text-[2.5rem] md:text-3xl leading-tight text-fuse-black font-semibold">
         Developer tools
       </h2>
