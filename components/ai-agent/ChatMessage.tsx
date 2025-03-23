@@ -1,15 +1,18 @@
 import Image from "next/image";
-import { createElement } from "react";
+import { createElement, useState } from "react";
 import { fuse } from "viem/chains";
 import { Check, Copy, ThumbsUp, ThumbsDown } from 'lucide-react'
+import * as amplitude from "@amplitude/analytics-browser";
 
-import { ChatMessageProps } from "@/lib/types";
-import CreateOperatorAccount from "./actions/CreateOperatorAccount";
+import { ChatMessageProps, Reaction } from "@/lib/types";
 import SendToken from "./actions/SendToken";
 import BuyFuseToken from "./actions/BuyFuseToken";
 import AddFuseNetwork from "./actions/AddFuseNetwork";
 import CheckConnectionWrapper from "../CheckConnectionWrapper";
 import AcceptCryptoPayment from "./actions/AcceptCryptoPayment";
+import { updateMessage } from "@/store/aiSlice";
+import { useAppDispatch } from "@/store/store";
+import { cn } from "@/lib/helpers";
 
 import edisonGradient from "@/assets/edison-gradient.png"
 
@@ -29,12 +32,35 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
   const isUser = message.user === "user";
   const actionComponents: Record<string, React.ComponentType<ChatMessageProps>> = {
     "SEND_TOKENS": SendToken,
-    "CREATE_OPERATOR_ACCOUNT": CreateOperatorAccount,
     "BUY_FUSE_TOKEN": BuyFuseToken,
     "ADD_FUSE_NETWORK": () => CheckConnectionWrapper({ children: <AddFuseNetwork /> }),
     "ACCEPT_CRYPTO_PAYMENT": AcceptCryptoPayment,
   };
+  const dispatch = useAppDispatch();
+  const [isCopied, setIsCopied] = useState(false);
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(message.text);
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1000);
+  }
+
+  const handleReaction = (reaction: Reaction) => {
+    dispatch(updateMessage({
+      message: {
+        ...message,
+        reaction
+      }
+    }));
+    amplitude.track("Edison Response Rated",
+      {
+        responseRating: reaction,
+        responseText: message.text
+      }
+    );
+  }
   return (
     <div className={`flex gap-3 md:gap-0 ${isUser ? 'justify-end' : 'justify-start'}`}>
       {!isUser && <AssistantIcon />}
@@ -70,13 +96,27 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
             ) : null}
             {!isUser && (
               <div className="flex items-center gap-2 mt-2">
-                <button className="p-1 hover:bg-lightest-gray rounded">
-                  <Copy className="w-4 h-4 text-text-dark-gray" />
+                <button
+                  type="button"
+                  className="p-1 hover:bg-lightest-gray rounded"
+                  onClick={handleCopy}
+                >
+                  <Copy className={cn("w-4 h-4 text-text-dark-gray", isCopied && "text-black")} />
                 </button>
-                <button className="p-1 hover:bg-lightest-gray rounded">
+                <button
+                  type="button"
+                  className={cn("flex items-center gap-1 p-1 enabled:hover:bg-lightest-gray rounded", message?.reaction === Reaction.LIKE && "bg-lightest-gray")}
+                  onClick={() => handleReaction(Reaction.LIKE)}
+                  disabled={Boolean(message?.reaction)}
+                >
                   <ThumbsUp className="w-4 h-4 text-text-dark-gray" />
                 </button>
-                <button className="p-1 hover:bg-lightest-gray rounded">
+                <button
+                  type="button"
+                  className={cn("flex items-center gap-1 p-1 enabled:hover:bg-lightest-gray rounded", message?.reaction === Reaction.DISLIKE && "bg-lightest-gray")}
+                  onClick={() => handleReaction(Reaction.DISLIKE)}
+                  disabled={Boolean(message?.reaction)}
+                >
                   <ThumbsDown className="w-4 h-4 text-text-dark-gray" />
                 </button>
               </div>

@@ -1,5 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Address } from "viem";
+import { v4 as uuidv4 } from 'uuid';
 
 import { AppState } from "../rootReducer";
 import { postAiMessage } from "@/lib/api";
@@ -49,11 +50,15 @@ const aiSlice = createSlice({
   initialState: INIT_STATE,
   reducers: {
     addMessage: (state, action: PayloadAction<{ message: TextResponse, address?: Address }>) => {
-      state.messages = [...state.messages, action.payload.message];
+      const message = {
+        ...action.payload.message,
+        id: uuidv4()
+      }
+      state.messages = [...state.messages, message];
       localStorage.setItem(`chat_history_${action.payload.address}`, JSON.stringify(state.messages));
     },
     updateMessage: (state, action: PayloadAction<{ message: TextResponse, address?: Address }>) => {
-      state.messages = state.messages.map((message) => message.text === action.payload.message.text ? action.payload.message : message);
+      state.messages = state.messages.map((message) => message.id === action.payload.message.id ? action.payload.message : message);
       localStorage.setItem(`chat_history_${action.payload.address}`, JSON.stringify(state.messages));
     },
     setHydrate: (state, action: PayloadAction<{ address?: Address }>) => {
@@ -66,6 +71,7 @@ const aiSlice = createSlice({
     builder
       .addCase(sendMessage.pending, (state) => {
         const message: TextResponse = {
+          id: uuidv4(),
           user: "Fuse Network",
           text: "Thinking...",
           isLoading: true
@@ -74,11 +80,15 @@ const aiSlice = createSlice({
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
         if (Array.isArray(action.payload.message)) {
-          state.messages[state.messages.length - 1] = action.payload.message[0];
+          const firstMessage = action.payload.message[0];
+          firstMessage.id = uuidv4();
+          state.messages[state.messages.length - 1] = firstMessage;
           action.payload.message.slice(1).forEach((message: TextResponse) => {
+            message.id = uuidv4();
             state.messages = [...state.messages, message];
           });
         } else {
+          action.payload.message.id = uuidv4();
           state.messages[state.messages.length - 1] = action.payload.message;
         }
         localStorage.setItem(`chat_history_${action.payload.address}`, JSON.stringify(state.messages));

@@ -13,20 +13,12 @@ type Action = {
 
 const actions: Action[] = [
   {
-    title: "Balance of address",
-    description: "What's the balance of WALLET_ADDRESS?"
-  },
-  {
     title: "Transfer Fuse token to address",
     description: "Transfer AMOUNT to WALLET_ADDRESS"
   },
   {
     title: "Create an ERC20 token",
     description: "Create a new ERC20 token with the following details: NAME, SYMBOL, OWNER_ADDRESS",
-  },
-  {
-    title: "Create an Operator account",
-    description: "Create an Operator account",
   },
   {
     title: "Buy FUSE token",

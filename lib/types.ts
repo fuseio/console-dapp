@@ -409,11 +409,17 @@ export interface ValidatorResponse {
   validatorsMetadata: Record<Address, ValidatorTypeResponse>
 }
 
+export enum Reaction {
+  LIKE = "like",
+  DISLIKE = "dislike",
+}
+
 export type TextResponse = {
   text: string;
   user: 'user' | 'Fuse Network';
   action?: string;
   hash?: string;
+  reaction?: Reaction;
   [key: string]: unknown;
 };
 

@@ -53,6 +53,7 @@
     "tailwindcss-animate": "^1.0.7",
     "use-deep-compare-effect": "^1.8.1",
     "usehooks-ts": "^3.1.0",
+    "uuid": "^11.1.0",
     "viem": "^2.21.57",
     "wagmi": "^2.14.6",
     "yup": "^1.6.1"
