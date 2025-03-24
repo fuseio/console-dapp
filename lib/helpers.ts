@@ -82,6 +82,8 @@ export const path = {
   BRIDGE: "/bridge",
   STAKING: "/staking",
   DASHBOARD: "/build/overview",
+  AI_AGENT: "/ai-agent",
+  AI_AGENT_CHAT: "/ai-agent/chat",
   BUILD_API_KEYS: "/build/keys",
   BUILD_BILLING: "/build/billing",
   AIRDROP: "/rewards",

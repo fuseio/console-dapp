@@ -32,6 +32,7 @@
     "holy-loader": "^2.3.11",
     "jazzicon": "^1.5.0",
     "lodash": "^4.17.21",
+    "lottie-react": "^2.4.1",
     "lucide-react": "^0.473.0",
     "next": "^14.2.21",
     "react": "^18",
@@ -49,8 +50,10 @@
     "sharp": "^0.33.5",
     "swiper": "^11.2.1",
     "tailwind-merge": "^2.5.5",
+    "tailwindcss-animate": "^1.0.7",
     "use-deep-compare-effect": "^1.8.1",
     "usehooks-ts": "^3.1.0",
+    "uuid": "^11.1.0",
     "viem": "^2.21.57",
     "wagmi": "^2.14.6",
     "yup": "^1.6.1"
