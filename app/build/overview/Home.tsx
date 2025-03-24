@@ -221,7 +221,7 @@ const Home = () => {
           </p>
         </div>
         {checkoutSuccess && <CheckoutSuccess />}
-        {!operatorSlice.operator.user.isActivated && (
+        {(operatorSlice.isHydrated && !operatorSlice.operator.user.isActivated) && (
           <OperatorNotice
             title="Get access to all services on Fuse"
             onClick={() => dispatch(setIsSubscriptionModalOpen(true))}

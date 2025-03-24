@@ -69,11 +69,13 @@ const useWithdrawToken = ({ address }: { address?: Address }) => {
   const [isBalance, setIsBalance] = useState(false);
 
   useEffect(() => {
+    let isBal = false;
     Object.values(coins).forEach(async (coin) => {
-      if (!address || !coin.address) return;
+      if (!address || !coin.address || isBal) return;
       const value = formatUnits(await getERC20Balance(coin.address, address), coin.decimals);
-      setIsBalance(parseFloat(value) > 0);
+      isBal = parseFloat(value) > 0;
     });
+    setIsBalance(isBal);
   }, [address]);
 
   useEffect(() => {

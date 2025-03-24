@@ -247,7 +247,6 @@ export const fetchOperator = createAsyncThunk<
       const operator = await fetchCurrentOperator()
       if (operator) {
         try {
-          console.log("fetchOperator", new Date(operator.user.createdAt), operator.user.etherspotSmartWalletAddress, account)
           if (
             new Date(operator.user.createdAt) < consoleV2LaunchDate &&
             !operator.user.etherspotSmartWalletAddress &&
