@@ -133,9 +133,9 @@ export const screenMediumWidth = 768;
 
 export const subscriptionInformation = () => {
   const payment = 50
-  const decimals = 6
+  const decimals = 18
   const advance = 12
-  const usdcAddress: Address = "0x28C3d1cD466Ba22f6cae51b1a4692a831696391A"
+  const tokenAddress: Address = "0x0BE9e53fd7EDaC9F859882AfdDa116645287C629"
 
   const today = new Date()
   const daysInMonth = getDaysInMonth(today)
@@ -169,7 +169,7 @@ export const subscriptionInformation = () => {
     payment,
     decimals,
     advance,
-    usdcAddress,
+    tokenAddress,
     calculateAmount,
     calculateProrated
   }
@@ -256,3 +256,5 @@ export const operatorLastInvoice = (invoices: Invoice[]) => {
     valid
   };
 }
+
+export const consoleV2LaunchDate = new Date('2025-02-01')

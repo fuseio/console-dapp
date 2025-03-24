@@ -1,107 +1,126 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { fetchErc20Balance, selectOperatorSlice, setIsWithdrawModalOpen, withdraw } from "@/store/operatorSlice";
-import Button from "../ui/Button";
-import Image, { StaticImageData } from "next/image";
+import { selectOperatorSlice, setWithdrawModal, withdraw } from "@/store/operatorSlice";
+import Image from "next/image";
 import down from "@/assets/down-arrow.svg";
-import usdc from "@/assets/usdc.svg";
-import sFuse from "@/assets/sFuse.svg";
-import weth from "@/assets/weth.svg";
-import usdt from "@/assets/usdt-logo.svg";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import { Address } from "viem";
 // import { hex } from "@/lib/helpers";
 import gasIcon from "@/assets/gas.svg";
-import { ethers } from "ethers";
-import { useWalletClient } from "wagmi";
+import { useSignMessage, useWalletClient } from "wagmi";
 import { Status } from "@/lib/types";
+import useTokenUsdBalance from "@/lib/hooks/useTokenUsdBalance";
+import { cn } from "@/lib/helpers";
+import Spinner from "../ui/Spinner";
+import { coins } from "@/lib/hooks/useWithdrawToken";
+import { useEthersSigner } from "@/lib/ethersAdapters/signer";
+import { useFormik } from "formik";
+import * as Yup from 'yup';
 
-type WithdrawModalProps = {
-  balance: string;
-}
-
-type Coin = {
-  name: string;
-  decimals: number;
-  icon: StaticImageData;
-  coinGeckoId: string;
-  address?: Address;
-  isNative?: boolean;
-}
-
-type Coins = {
-  [k: string]: Coin
+type WithdrawFormValues = {
+  to: Address | '';
+  amount: string;
 }
 
 const gas = {
-  "NATIVE": "1500000000000000",
-  "CONTRACT": "1336577000000000"
+  "NATIVE": {
+    gwei: "1500000",
+    ether: "0.0015"
+  },
+  "CONTRACT": {
+    gwei: "1336577",
+    ether: "0.001336577"
+  }
 }
 
-const coins: Coins = {
-  "USDC": {
-    name: "USD Coin",
-    decimals: 6,
-    icon: usdc,
-    coinGeckoId: "usd-coin",
-    address: "0x28C3d1cD466Ba22f6cae51b1a4692a831696391A",
-  },
-  "USDT": {
-    name: "Tether USD",
-    decimals: 6,
-    icon: usdt,
-    coinGeckoId: "tether",
-    address: "0x68c9736781E9316ebf5c3d49FE0C1f45D2D104Cd",
-  },
-  "WETH": {
-    name: "Wrapped Ether",
-    decimals: 18,
-    icon: weth,
-    coinGeckoId: "weth",
-    address: "0x5622F6dC93e08a8b717B149677930C38d5d50682",
-  },
-  "FUSE": {
-    name: "Fuse",
-    decimals: 18,
-    icon: sFuse,
-    coinGeckoId: "fuse-network-token",
-    isNative: true,
-  },
-}
-
-const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
+const WithdrawModal = (): JSX.Element => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const dispatch = useAppDispatch();
-  const [amount, setAmount] = useState("");
-  const [toAddress, setToAddress] = useState<Address>();
   const [selectedCoin, setSelectedCoin] = useState("FUSE");
   const [isCoinDropdownOpen, setIsCoinDropdownOpen] = useState(false);
-  const [gasEstimateGwei, setGasEstimateGwei] = useState(ethers.utils.formatUnits(gas.NATIVE, "gwei"));
-  const [gasEstimate, setGasEstimate] = useState(ethers.utils.formatEther(gas.NATIVE));
   const { data: walletClient } = useWalletClient()
+  const signer = useEthersSigner();
+  const balance = useTokenUsdBalance({
+    address: operatorSlice.operator.user.smartWalletAddress,
+    contractAddress: coins[selectedCoin].address
+  });
+  const balanceFormatted = coins[selectedCoin].isNative ? balance.coin.formatted : balance.token.formatted;
+  const balanceValue = coins[selectedCoin].isNative ? balance.coin.value : balance.token.value;
 
-  function handleWithdraw() {
+  const formik = useFormik<WithdrawFormValues>({
+    initialValues: {
+      to: '',
+      amount: '',
+    },
+    validationSchema: Yup.object({
+      to: Yup.string().required('Required'),
+      amount: Yup.string().required('Required'),
+    }),
+    onSubmit: values => {
+      if (
+        parseFloat(values.amount) > balanceValue ||
+        parseFloat(values.amount) <= 0
+      ) {
+        return;
+      }
+
+      if (operatorSlice.withdrawModal.from?.address) {
+        signMessage({ message: "Verify your wallet ownership to migrate" });
+      } else {
+        handleWithdraw(values);
+      }
+    },
+  });
+
+  function handleWithdraw({ to, amount }: WithdrawFormValues) {
     if (!walletClient) {
       console.log("WalletClient not found")
       return;
     }
 
-    if (!toAddress) {
-      console.log("toAddress not found")
+    if (!to) {
+      console.log("To address not found")
       return;
     }
 
     dispatch(withdraw({
       walletClient,
       amount,
-      to: toAddress,
+      to,
       decimals: coins[selectedCoin].decimals,
       token: selectedCoin,
       coinGeckoId: coins[selectedCoin].coinGeckoId,
       contractAddress: coins[selectedCoin].address
     }));
   }
+
+  const { signMessage } = useSignMessage({
+    mutation: {
+      onSuccess(data) {
+        if (!signer) {
+          console.log("Signer not found")
+          return;
+        }
+
+        if (!formik.values.to) {
+          console.log("To address not found")
+          return;
+        }
+
+        dispatch(withdraw({
+          walletClient: signer,
+          signature: data,
+          amount: formik.values.amount,
+          to: formik.values.to,
+          decimals: coins[selectedCoin].decimals,
+          token: selectedCoin,
+          coinGeckoId: coins[selectedCoin].coinGeckoId,
+          contractAddress: coins[selectedCoin].address
+        }));
+      }
+    }
+  })
 
   const coinDropdownRef = useOutsideClick<HTMLButtonElement>(() => {
     if (isCoinDropdownOpen) {
@@ -112,14 +131,22 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
   useEffect(() => {
     window.addEventListener("click", (e) => {
       if ((e.target as HTMLElement).id === "withdraw-modal-bg") {
-        dispatch(setIsWithdrawModalOpen(false));
+        dispatch(setWithdrawModal({
+          open: false
+        }));
       }
     });
   }, [dispatch]);
 
+  useEffect(() => {
+    if(operatorSlice.withdrawModal.to?.address && !formik.values.to) {
+      formik.setFieldValue("to", operatorSlice.withdrawModal.to.address)
+    }
+  }, [formik, operatorSlice.withdrawModal.to?.address])
+
   return (
     <AnimatePresence>
-      {operatorSlice.isWithdrawModalOpen && (
+      {operatorSlice.withdrawModal.open && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -136,114 +163,130 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
             }}
             className="bg-white min-h-[203px] w-[525px] max-w-[95%] z-50 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-2xl"
           >
-            <div className="pt-[60px] px-8 pb-[66px] flex flex-col">
+            <div className="px-8 py-10 flex flex-col gap-8">
               <div className="flex flex-col gap-5 items-center text-center">
                 <p className="text-3xl leading-none font-bold">
-                  Withdraw funds
+                  {operatorSlice.withdrawModal.title ?? "Withdraw funds"}
                 </p>
                 <p className="text-text-heading-gray max-w-[302px]">
-                  You can withdraw funds to any wallet address on the Fuse Network
+                  {operatorSlice.withdrawModal.description ?? "You can withdraw funds to any wallet address on the Fuse Network"}
                 </p>
               </div>
-              <div className="flex justify-between items-center mt-9 text-text-dark-gray">
-                <p>
-                  Amount
-                </p>
-                <p>
-                  Balance: {new Intl.NumberFormat().format(parseFloat(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance))} {selectedCoin}
-                </p>
-              </div>
-              <div className="flex justify-between gap-2.5 mt-4 mb-6">
-                <div className="flex justify-between items-center gap-4 px-7 py[16.5px] border-[0.5px] border-gray-alpha-40 h-[55px] rounded-full">
+              <form
+                onSubmit={formik.handleSubmit}
+                className="flex flex-col gap-4"
+              >
+                <div className="flex flex-col gap-2">
+                  <div className="flex justify-between items-center text-text-dark-gray">
+                    <p>
+                      Amount
+                    </p>
+                    <p>
+                      Balance: {balanceFormatted} {selectedCoin}
+                    </p>
+                  </div>
+                  <div className="flex justify-between gap-2.5">
+                    <div className={cn("flex justify-between items-center gap-4 px-7 py[16.5px] border-[0.5px] border-gray-alpha-40 h-[55px] rounded-full",
+                      (formik.errors.amount && formik.touched.amount) && "border-[#FD0F0F]"
+                    )}>
+                      <input
+                        type="text"
+                        name="amount"
+                        placeholder="0.00"
+                        max={balanceValue}
+                        value={formik.values.amount}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        className={"text-2xl text-text-dark-gray font-medium w-full focus:outline-none"}
+                      />
+                      <button
+                        type="button"
+                        className="bg-lightest-gray text-sm leading-none font-medium px-3 py-2 rounded-full"
+                        onClick={() => formik.setFieldValue("amount", balanceValue)}
+                      >
+                        Max
+                      </button>
+                    </div>
+                    <button
+                      type="button"
+                      className="relative flex items-center gap-2 bg-soft-peach rounded-full px-3.5 py-3 w-40 md:w-60"
+                      onClick={() => setIsCoinDropdownOpen(!isCoinDropdownOpen)}
+                      ref={coinDropdownRef}
+                    >
+                      <Image
+                        src={coins[selectedCoin].icon}
+                        alt={coins[selectedCoin].name}
+                        width={30}
+                        height={30}
+                      />
+                      <p className="text-sm leading-none font-semibold">
+                        {selectedCoin}
+                      </p>
+                      <Image
+                        src={down}
+                        alt="down"
+                        className={`${isCoinDropdownOpen && "rotate-180"}`}
+                        width={10}
+                        height={10}
+                      />
+                      {isCoinDropdownOpen &&
+                        <div className="absolute z-10 top-[120%] left-1/2 -translate-x-1/2 bg-soft-peach rounded-[20px] px-2 py-4 flex flex-col items-start gap-4 w-max">
+                          {Object.entries(coins).map(([key, coin]) => (
+                            <div
+                              key={key}
+                              onClick={() => setSelectedCoin(key)}
+                              className="flex gap-2 items-center"
+                            >
+                              <Image
+                                src={coins[key].icon}
+                                alt={coins[key].name}
+                                width={30}
+                                height={30}
+                              />
+                              <p>
+                                {coin.name}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      }
+                    </button>
+                  </div>
+                </div>
+                {operatorSlice.withdrawModal?.from?.address && (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-text-dark-gray">
+                      {operatorSlice.withdrawModal.from.title}
+                    </p>
+                    <input
+                      type="text"
+                      name="from"
+                      value={operatorSlice.withdrawModal.from.address}
+                      className="px-7 py[16.5px] border-[0.5px] border-gray-alpha-40 h-[55px] rounded-full text-2xl text-text-dark-gray font-medium w-full focus:outline-none disabled:bg-inactive"
+                      disabled
+                    />
+                  </div>
+                )}
+                <div className="flex flex-col gap-2">
+                  <p className="text-text-dark-gray">
+                    {operatorSlice.withdrawModal.to?.title ?? "Wallet address on Fuse Network"}
+                  </p>
                   <input
                     type="text"
-                    name="amount"
-                    placeholder="0.00"
-                    max={balance}
-                    value={amount}
-                    onChange={e => setAmount(e.target.value)}
-                    className="text-2xl text-text-dark-gray font-medium w-full focus:outline-none"
-                  />
-                  <Button
-                    text="Max"
-                    className="bg-lightest-gray text-sm leading-none font-medium px-2 py-1 rounded-full"
-                    onClick={() => {
-                      setAmount((parseFloat(balance) - parseFloat(gasEstimate)).toString())
-                    }}
+                    name="to"
+                    placeholder={"0x"}
+                    value={formik.values.to}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className={cn("px-7 py[16.5px] border-[0.5px] border-gray-alpha-40 h-[55px] rounded-full text-2xl text-text-dark-gray font-medium w-full focus:outline-none disabled:bg-inactive",
+                      (formik.errors.to && formik.touched.to) && "border-[#FD0F0F]"
+                    )}
+                    disabled={!!operatorSlice.withdrawModal.from?.address}
                   />
                 </div>
-                <button
-                  className="relative flex items-center gap-2 bg-soft-peach rounded-full px-3.5 py-3 w-40 md:w-60"
-                  onClick={() => setIsCoinDropdownOpen(!isCoinDropdownOpen)}
-                  ref={coinDropdownRef}
-                >
-                  <Image
-                    src={coins[selectedCoin].icon}
-                    alt={coins[selectedCoin].name}
-                    width={30}
-                    height={30}
-                  />
-                  <p className="text-sm leading-none font-semibold">
-                    {selectedCoin}
-                  </p>
-                  <Image
-                    src={down}
-                    alt="down"
-                    className={`${isCoinDropdownOpen && "rotate-180"}`}
-                    width={10}
-                    height={10}
-                  />
-                  {isCoinDropdownOpen &&
-                    <div className="absolute z-10 top-[120%] left-1/2 -translate-x-1/2 bg-soft-peach rounded-[20px] px-2 py-4 flex flex-col items-start gap-4 w-max">
-                      {Object.entries(coins).map(([key, coin]) => (
-                        <div
-                          key={key}
-                          onClick={() => {
-                            if (!coins[key].isNative) {
-                              dispatch(fetchErc20Balance({
-                                contractAddress: coins[key].address!,
-                                address: operatorSlice.operator.user.smartWalletAddress,
-                                decimals: coins[key].decimals,
-                              }))
-                              setGasEstimateGwei(ethers.utils.formatUnits(gas.CONTRACT, "gwei"));
-                              setGasEstimate(ethers.utils.formatEther(gas.CONTRACT));
-                            }
-                            setSelectedCoin(key);
-                            setGasEstimateGwei(ethers.utils.formatUnits(gas.NATIVE, "gwei"));
-                            setGasEstimate(ethers.utils.formatEther(gas.NATIVE));
-                          }}
-                          className="flex gap-2 items-center"
-                        >
-                          <Image
-                            src={coins[key].icon}
-                            alt={coins[key].name}
-                            width={30}
-                            height={30}
-                          />
-                          <p>
-                            {coin.name}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  }
-                </button>
-              </div>
-              <p className="text-text-dark-gray">
-                Wallet address on Fuse Network
-              </p>
-              <input
-                type="text"
-                name="address"
-                placeholder="0x"
-                value={toAddress}
-                onChange={e => setToAddress(e.target.value as Address)}
-                className="px-7 py[16.5px] border-[0.5px] border-gray-alpha-40 h-[55px] rounded-full mb-6 text-2xl text-text-dark-gray font-medium w-full focus:outline-none"
-              />
-              {operatorSlice.operator.user.isActivated &&
                 <div
                   title="Gas Estimate"
-                  className="w-full flex justify-end items-center gap-1 text-text-dark-gray mb-2"
+                  className="w-full flex justify-end items-center gap-1 text-sm text-text-dark-gray mb-2"
                 >
                   <Image
                     src={gasIcon}
@@ -252,31 +295,34 @@ const WithdrawModal = ({ balance }: WithdrawModalProps): JSX.Element => {
                     height={12}
                   />
                   <p>
-                    {new Intl.NumberFormat().format(parseFloat(gasEstimateGwei))} Gwei
+                    {coins[selectedCoin].isNative ? gas.NATIVE.gwei : gas.CONTRACT.gwei} Gwei (sponsored)
                   </p>
                 </div>
-              }
-              <Button
-                text={(parseFloat(amount) + parseFloat(gasEstimate)) > parseFloat(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) ? "Insufficient balance" : parseFloat(amount) < 0 ? "Incorrect amount" : "Withdraw"}
-                disabled={(parseFloat(amount) + parseFloat(gasEstimate)) > parseFloat(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) || parseFloat(amount) <= 0 ? true : false}
-                className={`transition ease-in-out w-full flex justify-center items-center gap-4 text-lg leading-none font-semibold rounded-full ${(parseFloat(amount) + parseFloat(gasEstimate)) > parseFloat(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) ? "bg-[#FFEBE9] text-[#FD0F0F]" : parseFloat(amount) < 0 ? "bg-gray text-white" : "bg-black text-white hover:bg-success hover:text-black"}`}
-                padding="px-12 py-4"
-                onClick={() => {
-                  if (
-                    (parseFloat(amount) + parseFloat(gasEstimate)) <= parseFloat(coins[selectedCoin].isNative ? balance : operatorSlice.erc20Balance) &&
-                    parseFloat(amount) > 0
-                  ) {
-                    handleWithdraw();
+                <button
+                  type="submit"
+                  className={cn("transition ease-in-out w-full flex justify-center items-center gap-4 text-lg leading-none font-semibold rounded-full px-12 py-4",
+                    parseFloat(formik.values.amount) > balanceValue ? "bg-[#FFEBE9] text-[#FD0F0F]" :
+                      parseFloat(formik.values.amount) < 0 ? "bg-gray text-white" :
+                        "bg-black text-white hover:bg-success hover:text-black"
+                  )}
+                  disabled={parseFloat(formik.values.amount) > balanceValue || parseFloat(formik.values.amount) <= 0}
+                >
+                  {parseFloat(formik.values.amount) > balanceValue ?
+                    "Insufficient balance" :
+                    parseFloat(formik.values.amount) < 0 ?
+                      "Incorrect amount" :
+                      operatorSlice.withdrawModal.from?.address ?
+                        "Migrate" :
+                        "Withdraw"
                   }
-                }}
-              >
-                {operatorSlice.withdrawStatus === Status.PENDING && <span className="animate-spin border-2 border-light-gray border-t-2 border-t-[#555555] rounded-full w-4 h-4"></span>}
-              </Button>
-              {operatorSlice.withdrawStatus === Status.ERROR && (
-                <p className="mt-4 text-center max-w-md">
-                  An error occurred. Please try to Deposit more funds or change Amount.
-                </p>
-              )}
+                  {operatorSlice.withdrawStatus === Status.PENDING && <Spinner />}
+                </button>
+                {operatorSlice.withdrawStatus === Status.ERROR && (
+                  <p className="mt-4 text-center max-w-md">
+                    An error occurred. Please try to Deposit more funds or change Amount.
+                  </p>
+                )}
+              </form>
             </div>
           </motion.div>
         </motion.div>

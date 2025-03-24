@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { fetchOperator, selectOperatorSlice, setIsSubscriptionModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
+import { fetchOperator, selectOperatorSlice, setIsSubscriptionModalOpen, setIsTopupAccountModalOpen, setWithdrawModal, withRefreshToken } from "@/store/operatorSlice";
 import SubMenu from "@/components/build/SubMenu";
 import { selectBalanceSlice } from "@/store/balanceSlice";
 import useTokenUsdBalance from "@/lib/hooks/useTokenUsdBalance";
@@ -39,12 +39,12 @@ const YourPlan = ({ balance }: YourPlanProps) => {
           <AccountBalanceInfo />
         </div>
         <div className="font-bold text-5xl leading-none whitespace-nowrap mt-1">
-          {balance.token} USDC
+          {balance.token.formatted} WFUSE
         </div>
         {balanceSlice.isUsdPriceLoading ?
           <span className="px-10 py-2.5 rounded-md animate-pulse bg-white/80"></span> :
           <p className="text-[1.25rem] leading-none">
-            ${balance.usd}
+            ${balance.usd.formatted}
           </p>
         }
       </div>
@@ -96,7 +96,9 @@ const YourPlan = ({ balance }: YourPlanProps) => {
           className="transition ease-in-out text-lg leading-none text-black font-semibold bg-[transparent] rounded-full hover:bg-success"
           padding="py-[18.5px] px-[29.5px]"
           onClick={() => {
-            dispatch(setIsWithdrawModalOpen(true));
+            dispatch(setWithdrawModal({
+              open: true
+            }));
           }}
         />
       </div>
@@ -120,8 +122,7 @@ const Home = () => {
   const subscriptionInfo = subscriptionInformation();
   const balance = useTokenUsdBalance({
     address: operatorSlice.operator.user.smartWalletAddress,
-    tokenId: "bridged-usdc-fuse",
-    contractAddress: subscriptionInfo.usdcAddress
+    contractAddress: subscriptionInfo.tokenAddress
   });
   const lastInvoice = operatorLastInvoice(operatorSlice.subscriptionInvoices);
 
@@ -132,7 +133,7 @@ const Home = () => {
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TopupAccountModal />
-      <WithdrawModal balance={balance.coin} />
+      <WithdrawModal />
       <SubscriptionModal />
       <div className="w-8/9 flex flex-col gap-10 mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
         <SubMenu selected="billing & usage" />

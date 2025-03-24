@@ -1,23 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useWalletClient } from "wagmi";
 
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectOperatorSlice, setIsSubscriptionModalOpen, setIsTopupAccountModalOpen, subscription } from "@/store/operatorSlice";
 import Spinner from "../ui/Spinner";
-import { getERC20Balance } from "@/lib/erc20";
-import { cn, hex, subscriptionInformation } from "@/lib/helpers";
+import { cn, subscriptionInformation } from "@/lib/helpers";
 import { BillingCycle, Status } from "@/lib/types";
+import useTokenUsdBalance from "@/lib/hooks/useTokenUsdBalance";
 
 const SubscriptionModal = (): JSX.Element => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const dispatch = useAppDispatch();
   const { data: walletClient } = useWalletClient()
-  const [usdcBalance, setUsdcBalance] = useState(0)
   const subscriptionInfo = subscriptionInformation()
+  const balance = useTokenUsdBalance({
+    address: operatorSlice.operator.user.smartWalletAddress,
+    contractAddress: subscriptionInfo.tokenAddress
+  });
   const proratedAmount = subscriptionInfo.calculateProrated(BillingCycle.MONTHLY)
-  const isSufficientBalance = usdcBalance >= proratedAmount
-  const smartWalletAddress = operatorSlice.operator?.user?.smartWalletAddress
+  const isSufficientBalance = balance.token.value >= (proratedAmount / balance.usd.value)
 
   function handleClick() {
     if (!isSufficientBalance) {
@@ -29,7 +31,7 @@ const SubscriptionModal = (): JSX.Element => {
     if (!walletClient) {
       return
     }
-    dispatch(subscription({ walletClient }))
+    dispatch(subscription({ walletClient, tokenPrice: balance.usd.value }))
   }
 
   useEffect(() => {
@@ -39,19 +41,6 @@ const SubscriptionModal = (): JSX.Element => {
       }
     });
   }, [dispatch]);
-
-  useEffect(() => {
-    (async () => {
-      if (!smartWalletAddress || smartWalletAddress === hex) {
-        return
-      }
-      const balance = await getERC20Balance(
-        subscriptionInfo.usdcAddress,
-        smartWalletAddress
-      )
-      setUsdcBalance(Number(balance))
-    })()
-  }, [smartWalletAddress, subscriptionInfo.usdcAddress])
 
   return (
     <AnimatePresence>
@@ -119,7 +108,7 @@ const SubscriptionModal = (): JSX.Element => {
                 )}
                 onClick={handleClick}
               >
-                {operatorSlice.subscriptionStatus === Status.ERROR ? 'Error while subscribing' : isSufficientBalance ? 'Pay Now' : 'Insufficient USDC in smart wallet'}
+                {operatorSlice.subscriptionStatus === Status.ERROR ? 'Error while subscribing' : isSufficientBalance ? 'Pay Now' : 'Insufficient WFUSE in smart wallet'}
                 {operatorSlice.subscriptionStatus === Status.PENDING && <Spinner />}
               </button>
             </div>

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
-import { CONFIG, NEXT_PUBLIC_AIRDROP_API_BASE_URL, NEXT_PUBLIC_AVAIL_MONITORING_API_URL, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL, NEXT_PUBLIC_FUSE_API_BASE_URL } from './config'
-import { AirdropLeaderboard, AirdropUser, CreateAirdropUser, DelegatedAmountsByDelegators, DelegatedAmountsRequest, Invoice, Operator, OperatorCheckoutSession, OperatorCheckout, OperatorContactDetail, OperatorWallet, Paymaster, SignData, ValidatorResponse } from "./types";
+import { CONFIG, NEXT_PUBLIC_AIRDROP_API_BASE_URL, NEXT_PUBLIC_AVAIL_MONITORING_API_URL, NEXT_PUBLIC_CHARGE_PAYMENTS_API_BASE_URL, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL, NEXT_PUBLIC_FUSE_API_BASE_URL } from './config'
+import { AirdropLeaderboard, AirdropUser, CreateAirdropUser, DelegatedAmountsByDelegators, DelegatedAmountsRequest, Invoice, Operator, OperatorCheckoutSession, OperatorCheckout, OperatorContactDetail, OperatorWallet, Paymaster, SignData, ValidatorResponse, ChargeBridgeSupportedTokens, ChargeBridge, ChargeBridgeResponse } from "./types";
 import { Address } from "viem";
 
 export const fetchAllNodes = () =>
@@ -97,6 +97,17 @@ export const postCreateOperatorWallet = async (operatorWallet: OperatorWallet): 
     return response.data
 }
 
+export const postMigrateOperatorWallet = async (operatorWallet: OperatorWallet): Promise<OperatorWallet> => {
+    const response = await axios.post(
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/migrate-wallet`,
+        operatorWallet,
+        {
+            withCredentials: true
+        }
+    )
+    return response.data
+}
+
 export const postCreateApiSecretKey = async (projectId: string): Promise<{ secretKey: string }> => {
     const response = await axios.post(
         `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/projects/secret/${projectId}`,
@@ -185,6 +196,22 @@ export const fetchOperatorCheckoutSessions = async (): Promise<OperatorCheckoutS
 export const fetchOperatorSubscriptionInvoices = async (): Promise<Invoice[]> => {
     const response = await axios.get(
         `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/subscriptions`,
+        {
+            withCredentials: true
+        }
+    )
+    return response.data
+}
+
+export const fetchChargeBridgeSupportedTokens = async (): Promise<ChargeBridgeSupportedTokens> => {
+    const response = await axios.get(`${NEXT_PUBLIC_CHARGE_PAYMENTS_API_BASE_URL}/payments/bridge/supported-tokens`)
+    return response.data
+}
+
+export const postChargeBridge = async (chargeBridge: ChargeBridge): Promise<ChargeBridgeResponse> => {
+    const response = await axios.post(
+        `${NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL}/accounts/v1/operators/bridge`,
+        chargeBridge,
         {
             withCredentials: true
         }
