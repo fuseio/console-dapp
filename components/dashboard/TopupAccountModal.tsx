@@ -53,6 +53,14 @@ type OtherNetworkProps = {
   setQrCode: (qrCode: Address) => void;
 }
 
+const chains: Record<string, string> = {
+  "10": "Optimism",
+  "56": "BSC",
+  "137": "Polygon",
+  "8453": "Base",
+  "42161": "Arbitrum",
+}
+
 function filterTokens(data: ChargeBridgeSupportedTokens, tokenSymbol = "FUSE") {
   const filteredData: ChargeBridgeSupportedTokens = {};
   
@@ -123,7 +131,7 @@ const Select = ({ formik }: { formik: FormikProps<TopupFormValues> }) => {
         ref={selectRef}
       >
         <span className="text-sm">
-          {formik.values.chainId || "Chain"}
+          {chains[formik.values.chainId] || "Chain"}
         </span>
         {isOpen ? (
           <ChevronUp size={16} />
@@ -157,7 +165,7 @@ const Select = ({ formik }: { formik: FormikProps<TopupFormValues> }) => {
                     setIsOpen(false);
                   }}
                 >
-                  {chainId}
+                  {chains[chainId]}
                 </button>
               ))}
             {operatorSlice.bridgeSupportedTokensStatus === Status.ERROR && (
@@ -298,7 +306,7 @@ const OtherNetwork = ({ setQrCode }: OtherNetworkProps) => {
       ) && (
           <div className="flex flex-col gap-2">
             <p>
-              Transfer FUSE tokens to the following bridge address on your selected network
+              Transfer FUSE tokens to the following address on {chains[formik.values.chainId]} network. It will be transfered to your Operator account.
             </p>
             <CopyAddress
               setQrCode={setQrCode}
