@@ -39,7 +39,7 @@ const Home = () => {
   };
 
   return (
-    <main className="flex-1 container mx-auto px-4 py-12 max-w-4xl mt-12">
+    <main className="flex-1 container mx-auto px-4 py-12 max-w-4xl">
       <div className="text-center mb-16">
         <div className="flex items-center justify-center mb-6">
           <Image

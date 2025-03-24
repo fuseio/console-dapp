@@ -1,16 +1,21 @@
-import { MenuItems } from "@/lib/types";
-import { useAppSelector } from "@/store/store";
-
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import dynamic from 'next/dynamic';
 import { useMediaQuery } from "usehooks-ts";
 import * as amplitude from "@amplitude/analytics-browser";
-import { path, walletType } from "@/lib/helpers";
 import { useAccount } from "wagmi";
-import { selectOperatorSlice } from "@/store/operatorSlice";
-import Link from "next/link";
 import { motion, Variants } from "framer-motion";
-import { useState } from "react";
-import Image from "next/image";
+
+import { MenuItems } from "@/lib/types";
+import { useAppSelector } from "@/store/store";
+import { path, walletType } from "@/lib/helpers";
+import { selectOperatorSlice } from "@/store/operatorSlice";
+
 import rightCaret from "@/assets/right-caret-black.svg";
+import aiStarAnimation from "@/assets/ai-star-animation.json";
+
+const Lottie = dynamic(() => import('lottie-react'), { ssr: false });
 
 type NavMenuProps = {
   menuItems?: MenuItems;
@@ -104,6 +109,11 @@ const NavMenu = ({
                       height={10}
                       className="transition-transform duration-300 rotate-90 group-hover:-rotate-90"
                     />
+                  )}
+                  {item.title.toLowerCase().includes("edison") && (
+                    <div className="transition-all duration-300 absolute -top-2 -right-2 w-6 h-6 scale-0 group-hover:scale-100">
+                      <Lottie animationData={aiStarAnimation} loop={true} />
+                    </div>
                   )}
                 </Link>
                 {item.submenu && (

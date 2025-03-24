@@ -180,18 +180,20 @@ export const validateOperator = createAsyncThunk<
   any,
   {
     signData: SignData;
+    account?: Account;
   }
 >(
   "OPERATOR/VALIDATE_OPERATOR",
   async (
     {
-      signData
+      signData,
+      account
     },
     thunkAPI
   ) => {
     try {
       await postValidateOperator(signData);
-      thunkAPI.dispatch(fetchOperator());
+      thunkAPI.dispatch(fetchOperator({ account }));
       return true;
     } catch (error) {
       console.error(error);
@@ -229,20 +231,43 @@ export const withRefreshToken = createAsyncThunk<
   }
 );
 
-export const fetchOperator = createAsyncThunk(
+export const fetchOperator = createAsyncThunk<
+  any,
+  {
+    account?: Account;
+  }
+>(
   "OPERATOR/FETCH_OPERATOR",
-  async () => {
+  async ({
+    account
+  }: {
+    account?: Account;
+  }) => {
     try {
       const operator = await fetchCurrentOperator()
       if (operator) {
         try {
           if (
             new Date(operator.user.createdAt) < consoleV2LaunchDate &&
-            !operator.user.etherspotSmartWalletAddress
+            !operator.user.etherspotSmartWalletAddress &&
+            account
           ) {
+            const fuseSDK = await FuseSDK.init(
+              operator.project.publicKey,
+              account,
+              {
+                baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
+              }
+            );
+            const fuseClient = fuseSDK.client as SmartAccountClient
+            const smartWalletAddress = fuseClient.account?.address
+            if (!smartWalletAddress) {
+              throw new Error("Smart wallet address not found");
+            }
+            
             const operatorWallet = await postMigrateOperatorWallet({
               ownerId: operator.user.id,
-              smartWalletAddress: operator.user.smartWalletAddress
+              smartWalletAddress
             })
             operator.user.etherspotSmartWalletAddress = operatorWallet.etherspotSmartWalletAddress
             operator.user.smartWalletAddress = operatorWallet.smartWalletAddress

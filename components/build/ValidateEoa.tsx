@@ -1,5 +1,5 @@
 import React from "react";
-import { useAccount, useSignMessage } from "wagmi";
+import { useAccount, useSignMessage, useWalletClient } from "wagmi";
 
 import { signDataMessage } from "@/lib/helpers";
 import { validateOperator } from "@/store/operatorSlice";
@@ -9,6 +9,7 @@ import Spinner from "../ui/Spinner";
 const ValidateEoa = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const { address } = useAccount()
+  const walletClient = useWalletClient()
   const { signMessage, isPending } = useSignMessage({
     mutation: {
       onSuccess(data) {
@@ -21,6 +22,7 @@ const ValidateEoa = (): JSX.Element => {
             message: signDataMessage,
             signature: data
           },
+          account: walletClient.data?.account
         }));
       }
     }

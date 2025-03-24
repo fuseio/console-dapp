@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import Button from "@/components/ui/Button";
-import { getTotalTransaction, subscriptionInformation } from "@/lib/helpers";
+import { getTotalTransaction, path, subscriptionInformation } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectBalanceSlice } from "@/store/balanceSlice";
 import { fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setIsSubscriptionModalOpen, setIsTopupAccountModalOpen, setWithdrawModal, withRefreshToken } from "@/store/operatorSlice";
@@ -136,11 +136,10 @@ const GetStarted = () => {
               Our AI agent Edison will help you build your idea from A to Z
             </p>
             <Link
-              href="https://www.fuse.io/edison#waitlist"
-              target="_blank"
+              href={path.AI_AGENT}
               className="group flex items-center gap-1 font-semibold"
             >
-              Join the waitlist
+              Try Edison
               <Image
                 src={rightCaret}
                 alt="right caret"
@@ -193,7 +192,7 @@ const Home = () => {
   }, [operatorSlice.withdrawStatus, operatorSlice.withdraw.amount, operatorSlice.withdraw.coinGeckoId, operatorSlice.withdraw.token])
 
   useEffect(() => {
-    dispatch(withRefreshToken(() => dispatch(fetchOperator())));
+    dispatch(withRefreshToken(() => dispatch(fetchOperator({}))));
   }, [dispatch])
 
   useEffect(() => {

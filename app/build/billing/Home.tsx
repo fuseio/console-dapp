@@ -127,7 +127,7 @@ const Home = () => {
   const lastInvoice = operatorLastInvoice(operatorSlice.subscriptionInvoices);
 
   useEffect(() => {
-    dispatch(withRefreshToken(() => dispatch(fetchOperator())));
+    dispatch(withRefreshToken(() => dispatch(fetchOperator({}))));
   }, [dispatch])
 
   return (

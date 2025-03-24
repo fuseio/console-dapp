@@ -19,7 +19,7 @@ const Home = () => {
   const [showSecretKey, setShowSecretKey] = useState(false);
 
   useEffect(() => {
-    dispatch(withRefreshToken(() => dispatch(fetchOperator())));
+    dispatch(withRefreshToken(() => dispatch(fetchOperator({}))));
   }, [dispatch])
 
   return (

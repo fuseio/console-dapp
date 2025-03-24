@@ -82,8 +82,8 @@ export const path = {
   BRIDGE: "/bridge",
   STAKING: "/staking",
   DASHBOARD: "/build/overview",
-  AI_AGENT: "/ai-agent",
-  AI_AGENT_CHAT: "/ai-agent/chat",
+  AI_AGENT: "/build/edison",
+  AI_AGENT_CHAT: "/build/edison/chat",
   BUILD_API_KEYS: "/build/keys",
   BUILD_BILLING: "/build/billing",
   AIRDROP: "/rewards",
@@ -111,6 +111,10 @@ export const buildSubMenuItems = [
   {
     title: "Overview",
     link: path.DASHBOARD,
+  },
+  {
+    title: "Use Edison AI",
+    link: path.AI_AGENT,
   },
   {
     title: "API Keys",
