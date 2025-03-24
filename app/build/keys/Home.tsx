@@ -12,15 +12,17 @@ import show from "@/assets/show.svg";
 import hide from "@/assets/hide.svg";
 import DeveloperTools from "@/components/DeveloperTools";
 import SubMenu from "@/components/build/SubMenu";
+import { useWalletClient } from "wagmi";
 
 const Home = () => {
   const dispatch = useAppDispatch();
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const [showSecretKey, setShowSecretKey] = useState(false);
+  const walletClient = useWalletClient()
 
   useEffect(() => {
-    dispatch(withRefreshToken(() => dispatch(fetchOperator({}))));
-  }, [dispatch])
+    dispatch(withRefreshToken(() => dispatch(fetchOperator({ account: walletClient.data?.account }))));
+  }, [dispatch, walletClient.data?.account])
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">

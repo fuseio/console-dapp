@@ -15,6 +15,7 @@ import OperatorInvoiceTable from "@/components/build/OperatorInvoiceTable";
 import OperatorNotice from "@/components/build/OperatorNotice";
 import { AccountBalanceInfo, SponsoredTransactionInfo } from "@/components/build/OperatorInfo";
 import SubscriptionModal from "@/components/dashboard/SubscriptionModal";
+import { useWalletClient } from "wagmi";
 
 type YourPlanProps = {
   balance: TokenUsdBalance;
@@ -125,10 +126,11 @@ const Home = () => {
     contractAddress: subscriptionInfo.tokenAddress
   });
   const lastInvoice = operatorLastInvoice(operatorSlice.subscriptionInvoices);
+  const walletClient = useWalletClient()
 
   useEffect(() => {
-    dispatch(withRefreshToken(() => dispatch(fetchOperator({}))));
-  }, [dispatch])
+    dispatch(withRefreshToken(() => dispatch(fetchOperator({ account: walletClient.data?.account }))));
+  }, [dispatch, walletClient.data?.account])
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
