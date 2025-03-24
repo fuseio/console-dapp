@@ -28,17 +28,28 @@ const useTokenUsdBalance = ({
     address,
     chainId,
   });
-  const [tokenBalance, setTokenBalance] = useState("0");
+  const [tokenBalance, setTokenBalance] = useState({
+    value: 0,
+    formatted: "0"
+  });
 
   const coinBalance = useMemo(() => {
     const value = formatUnits(balance?.value ?? BigInt(0), balance?.decimals ?? evmDecimals);
-    return new Intl.NumberFormat().format(Number(value)) || "0";
+    const formatted = new Intl.NumberFormat().format(Number(value)) || "0";
+    return {
+      value: parseFloat(value),
+      formatted
+    };
   }, [balance?.decimals, balance?.value]);
 
   const usdBalance = useMemo(() => {
-    const usdValue = Number(tokenBalance) * balanceSlice.price;
-    return new Intl.NumberFormat().format(usdValue) || "0.00";
-  }, [balanceSlice.price, tokenBalance]);
+    const value = tokenBalance.value * balanceSlice.price;
+    const formatted = new Intl.NumberFormat().format(value) || "0.00";
+    return {
+      value,
+      formatted
+    };
+  }, [balanceSlice.price, tokenBalance.value]);
 
   useEffect(() => {
     (async () => {
@@ -47,7 +58,11 @@ const useTokenUsdBalance = ({
       }
       const decimals = await getERC20Decimals(contractAddress);
       const value = formatUnits(await getERC20Balance(contractAddress, address), decimals);
-      setTokenBalance(new Intl.NumberFormat().format(Number(value)) || "0");
+      const formatted = new Intl.NumberFormat().format(Number(value)) || "0";
+      setTokenBalance({
+        value: parseFloat(value),
+        formatted
+      });
     })()
   }, [address, contractAddress]);
 

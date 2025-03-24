@@ -317,6 +317,7 @@ export interface OperatorWallet {
   ownerId: string;
   smartWalletAddress: Address;
   isActivated?: boolean;
+  etherspotSmartWalletAddress?: Address;
 }
 
 export interface Withdraw {
@@ -332,6 +333,8 @@ export interface User {
   auth0Id: string;
   smartWalletAddress: Address;
   isActivated: boolean;
+  createdAt: string;
+  etherspotSmartWalletAddress?: Address;
 }
 
 export interface Project {
@@ -426,6 +429,7 @@ export type TextResponse = {
 export interface Invoice {
   ownerId: string;
   amount: string;
+  amountUsd?: string;
   currency: string;
   txHash: string;
   createdAt: string
@@ -575,10 +579,57 @@ export type OperatorRegistrationClassNames = {
   pricingBillingRadio?: string;
 }
 
+export type TokenBalance = {
+  value: number;
+  formatted: string;
+}
+
 export type TokenUsdBalance = {
-  coin: string;
-  token: string;
-  usd: string;
+  coin: TokenBalance;
+  token: TokenBalance;
+  usd: TokenBalance;
+}
+
+export type ChargeToken = {
+  symbol: string;
+  name: string;
+  address: string;
+  decimals: number;
+  coinGeckoId: string;
+  isNative: boolean;
+  icon: string;
+};
+
+export type ChargeBridgeToken = ChargeToken & {
+  recieveTokens: ChargeToken[];
+};
+
+export type ChargeBridgeSupportedTokens = {
+  [chainId: string]: ChargeBridgeToken[];
+};
+
+export type ChargeBridge = {
+  chainId: string;
+  amount: string;
+};
+
+export type ChargeBridgeResponse = {
+  walletAddress: Address;
+  startTime: number;
+  endTime: number;
+}
+
+export type WithdrawModalInput = {
+  title?: string;
+  address?: Address;
+}
+
+export type WithdrawModal = {
+  open: boolean;
+  title?: string;
+  description?: string;
+  from?: WithdrawModalInput;
+  to?: WithdrawModalInput;
 }
 
 export type ChatMessageProps = {

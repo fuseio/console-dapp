@@ -3,12 +3,11 @@ import Button from "@/components/ui/Button";
 import { getTotalTransaction, subscriptionInformation } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectBalanceSlice } from "@/store/balanceSlice";
-import { fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setIsSubscriptionModalOpen, setIsTopupAccountModalOpen, setIsWithdrawModalOpen, withRefreshToken } from "@/store/operatorSlice";
+import { fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setIsSubscriptionModalOpen, setIsTopupAccountModalOpen, setWithdrawModal, withRefreshToken } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import RollSecretKeyModal from "@/components/dashboard/RollSecretKeyModal";
 import YourSecretKeyModal from "@/components/dashboard/YourSecretKeyModal";
-import TopupPaymasterModal from "@/components/dashboard/TopupPaymasterModal";
 import WithdrawModal from "@/components/dashboard/WithdrawModal";
 import DocumentSupport from "@/components/DocumentSupport";
 import * as amplitude from "@amplitude/analytics-browser";
@@ -28,6 +27,7 @@ import { TokenUsdBalance } from "@/lib/types";
 import CheckoutSuccess from "@/components/build/CheckoutSuccess";
 import OperatorNotice from "@/components/build/OperatorNotice";
 import { AccountBalanceInfo, SponsoredTransactionInfo } from "@/components/build/OperatorInfo";
+import useWithdrawToken from "@/lib/hooks/useWithdrawToken";
 
 type OperatorAccountBalanceProps = {
   balance: TokenUsdBalance;
@@ -46,12 +46,12 @@ const OperatorAccountBalance = ({ balance }: OperatorAccountBalanceProps) => {
         </div>
         <div className="flex items-end md:flex-wrap gap-x-[30px] md:gap-x-4">
           <h1 className="font-bold text-5xl leading-none whitespace-nowrap">
-            {balance.token} USDC
+            {balance.token.formatted} WFUSE
           </h1>
           {balanceSlice.isUsdPriceLoading ?
             <span className="px-10 py-2 ml-2 rounded-md animate-pulse bg-white/80"></span> :
             <p className="text-[20px]/7 font-medium">
-              ${balance.usd}
+              ${balance.usd.formatted}
             </p>
           }
         </div>
@@ -70,7 +70,9 @@ const OperatorAccountBalance = ({ balance }: OperatorAccountBalanceProps) => {
           className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black rounded-full hover:text-black hover:bg-success"
           padding="py-[18.5px] px-[29.5px]"
           onClick={() => {
-            dispatch(setIsWithdrawModalOpen(true));
+            dispatch(setWithdrawModal({
+              open: true
+            }));
           }}
         />
       </div>
@@ -166,12 +168,14 @@ const Home = () => {
   const subscriptionInfo = subscriptionInformation();
   const balance = useTokenUsdBalance({
     address: operatorSlice.operator.user.smartWalletAddress,
-    tokenId: "bridged-usdc-fuse",
-    contractAddress: subscriptionInfo.usdcAddress
+    contractAddress: subscriptionInfo.tokenAddress
   });
   const searchParams = useSearchParams()
   const checkoutSuccess = searchParams.get('checkout-success')
   const totalTransaction = getTotalTransaction(operatorSlice.operator.user.isActivated)
+  const { isBalance } = useWithdrawToken({
+    address: operatorSlice.operator.user.etherspotSmartWalletAddress
+  });
 
   useEffect(() => {
     (async () => {
@@ -202,8 +206,7 @@ const Home = () => {
     <div className="w-full bg-light-gray flex flex-col items-center">
       <TopupAccountModal />
       <SubscriptionModal />
-      <WithdrawModal balance={balance.coin} />
-      <TopupPaymasterModal balance={balance.coin} />
+      <WithdrawModal />
       <YourSecretKeyModal />
       <RollSecretKeyModal />
       <div className="w-8/9 flex flex-col gap-10 mt-[30.84px] mb-[104.95px] md:mt-12 md:w-9/10 max-w-7xl">
@@ -221,6 +224,25 @@ const Home = () => {
           <OperatorNotice
             title="Get access to all services on Fuse"
             onClick={() => dispatch(setIsSubscriptionModalOpen(true))}
+          />
+        )}
+        {(operatorSlice.operator.user.etherspotSmartWalletAddress && isBalance) && (
+          <OperatorNotice
+            title="Migrate Operator account funds from old Etherspot to new Safe wallet"
+            buttonText="Migrate"
+            onClick={() => dispatch(setWithdrawModal({
+              open: true,
+              title: "Migrate funds",
+              description: "You can migrate funds from old Etherspot to new Safe wallet",
+              from: {
+                title: "From old Etherspot wallet",
+                address: operatorSlice.operator.user.etherspotSmartWalletAddress
+              },
+              to: {
+                title: "To new Safe wallet",
+                address: operatorSlice.operator.user.smartWalletAddress
+              }
+            }))}
           />
         )}
         <div className="flex flex-col gap-y-[30px] md:gap-y-[21px]">

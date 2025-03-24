@@ -72,6 +72,10 @@ const OperatorInvoiceTable = () => {
       {
         accessorKey: 'amount',
         header: () => 'Amount',
+      },
+      {
+        accessorKey: 'amountUsd',
+        header: () => 'Amount (USD)',
         cell: (info) => <div>${info.getValue()}</div>,
       },
       {

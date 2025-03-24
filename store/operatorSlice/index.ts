@@ -3,9 +3,9 @@ import { AppState } from "../rootReducer";
 import { Signer, ethers } from "ethers";
 import { FuseSDK, OwnerWalletClient } from "@fuseio/fusebox-web-sdk";
 import { SmartAccountClient } from "permissionless";
-import { hex, splitSecretKey, subscriptionInformation } from "@/lib/helpers";
-import { Invoice, Operator, OperatorCheckout, OperatorCheckoutSession, OperatorContactDetail, SignData, Status, Withdraw } from "@/lib/types";
-import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchOperatorCheckoutSessions, fetchOperatorSubscriptionInvoices, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreateOperatorWallet, postCreatePaymaster, postOperatorCheckout, postOperatorSubscription, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
+import { consoleV2LaunchDate, hex, splitSecretKey, subscriptionInformation } from "@/lib/helpers";
+import { ChargeBridge, ChargeBridgeResponse, ChargeBridgeSupportedTokens, Invoice, Operator, OperatorCheckout, OperatorCheckoutSession, OperatorContactDetail, SignData, Status, Withdraw, WithdrawModal } from "@/lib/types";
+import { checkActivated, checkOperatorExist, fetchChargeBridgeSupportedTokens, fetchCurrentOperator, fetchOperatorCheckoutSessions, fetchOperatorSubscriptionInvoices, fetchSponsoredTransactionCount, postChargeBridge, postCreateApiSecretKey, postCreateOperator, postCreateOperatorWallet, postCreatePaymaster, postMigrateOperatorWallet, postOperatorCheckout, postOperatorSubscription, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
 import { CONFIG, NEXT_PUBLIC_FUSE_API_BASE_URL, NEXT_PUBLIC_PAYMASTER_FUNDER_ADDRESS } from "@/lib/config";
@@ -24,6 +24,7 @@ const initOperator: Operator = {
     auth0Id: "",
     smartWalletAddress: hex,
     isActivated: false,
+    createdAt: "",
   },
   project: {
     id: "",
@@ -50,6 +51,16 @@ const initWithdraw: Withdraw = {
   coinGeckoId: "",
 }
 
+const initChargeBridge: ChargeBridgeResponse = {
+  walletAddress: hex,
+  startTime: 0,
+  endTime: 0,
+}
+
+const initWithdrawModal: WithdrawModal = {
+  open: false,
+}
+
 export interface OperatorStateType {
   isLogin: boolean;
   isLoggedIn: boolean;
@@ -65,7 +76,7 @@ export interface OperatorStateType {
   isCreatingOperator: boolean;
   isCreatedOperator: boolean;
   isTopupAccountModalOpen: boolean;
-  isWithdrawModalOpen: boolean;
+  withdrawModal: WithdrawModal;
   isTopupPaymasterModalOpen: boolean;
   isGeneratingSecretApiKey: boolean;
   isYourSecretKeyModalOpen: boolean;
@@ -91,6 +102,10 @@ export interface OperatorStateType {
   checkoutSessionStatus: Status;
   subscriptionInvoices: Invoice[];
   subscriptionInvoicesStatus: Status;
+  bridgeSupportedTokens: ChargeBridgeSupportedTokens;
+  bridgeSupportedTokensStatus: Status;
+  chargeBridgeStatus: Status;
+  chargeBridge: ChargeBridgeResponse;
 }
 
 const INIT_STATE: OperatorStateType = {
@@ -108,7 +123,7 @@ const INIT_STATE: OperatorStateType = {
   isCreatingOperator: false,
   isCreatedOperator: false,
   isTopupAccountModalOpen: false,
-  isWithdrawModalOpen: false,
+  withdrawModal: initWithdrawModal,
   isTopupPaymasterModalOpen: false,
   isGeneratingSecretApiKey: false,
   isYourSecretKeyModalOpen: false,
@@ -134,6 +149,10 @@ const INIT_STATE: OperatorStateType = {
   checkoutSessionStatus: Status.IDLE,
   subscriptionInvoices: [],
   subscriptionInvoicesStatus: Status.IDLE,
+  bridgeSupportedTokens: {},
+  bridgeSupportedTokensStatus: Status.IDLE,
+  chargeBridgeStatus: Status.IDLE,
+  chargeBridge: initChargeBridge,
 };
 
 export const checkOperator = createAsyncThunk(
@@ -216,6 +235,21 @@ export const fetchOperator = createAsyncThunk(
     try {
       const operator = await fetchCurrentOperator()
       if (operator) {
+        try {
+          if (
+            new Date(operator.user.createdAt) < consoleV2LaunchDate &&
+            !operator.user.etherspotSmartWalletAddress
+          ) {
+            const operatorWallet = await postMigrateOperatorWallet({
+              ownerId: operator.user.id,
+              smartWalletAddress: operator.user.smartWalletAddress
+            })
+            operator.user.etherspotSmartWalletAddress = operatorWallet.etherspotSmartWalletAddress
+            operator.user.smartWalletAddress = operatorWallet.smartWalletAddress
+          }
+        } catch (error) {
+          console.log(error)
+        }
         return operator;
       } else {
         throw new Error("Operator not found");
@@ -460,10 +494,121 @@ export const fetchErc20Balance = createAsyncThunk(
   }
 );
 
+const withdrawEtherspot = async ({
+  walletClient,
+  signature,
+  amount,
+  to,
+  decimals,
+  contractAddress,
+  publicKey
+}: {
+  walletClient: Signer;
+  signature: string;
+  amount: string;
+  to: string;
+  decimals: number;
+  contractAddress?: string;
+  publicKey: string;
+}) => {
+  try {
+    let recipient = to;
+    let value = parseEther(amount);
+    let data = Uint8Array.from([]);
+
+    if (contractAddress) {
+      const erc20Contract = new ethers.Contract(contractAddress as string, ERC20ABI);
+      recipient = contractAddress;
+      value = parseEther("0");
+      data = new Uint8Array(ethers.utils.arrayify(erc20Contract.interface.encodeFunctionData(
+        "transfer",
+        [to, parseUnits(amount, decimals)]
+      )));
+    }
+
+    const fuseSDK = await FuseSDK.init(
+      publicKey,
+      walletClient,
+      {
+        withPaymaster: true,
+        baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
+        signature
+      }
+    );
+
+    const userOp = await fuseSDK.callContract(
+      recipient,
+      value,
+      data
+    );
+    const result = await userOp?.wait();
+    const transactionHash = result?.transactionHash;
+    return transactionHash as Address;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+const withdrawSafe = async ({
+  walletClient,
+  amount,
+  to,
+  decimals,
+  contractAddress,
+  publicKey
+}: {
+  walletClient: OwnerWalletClient;
+  amount: string;
+  to: string;
+  decimals: number;
+  contractAddress?: string;
+  publicKey: string;
+}) => {
+  try {
+    let call: any = {
+      to,
+      value: parseEther(amount)
+    }
+
+    if (contractAddress) {
+      call = {
+        abi: ERC20ABI,
+        functionName: 'transfer',
+        to: contractAddress,
+        args: [to, parseUnits(amount, decimals)]
+      }
+    }
+
+    const fuseSDK = await FuseSDK.init(
+      publicKey,
+      walletClient,
+      {
+        withPaymaster: true,
+        baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
+      }
+    );
+    const fuseClient = fuseSDK.client as SmartAccountClient
+
+    const userOpHash = await fuseClient.sendUserOperation({
+      calls: [call],
+    })
+    const userOpReceipt = await fuseClient.waitForUserOperationReceipt({
+      hash: userOpHash,
+    })
+
+    const transactionHash = userOpReceipt.receipt.transactionHash;
+    return transactionHash;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
 export const withdraw = createAsyncThunk<
   any,
   {
-    walletClient: OwnerWalletClient;
+    walletClient: OwnerWalletClient | Signer;
+    signature?: string;
     amount: string;
     to: string;
     decimals: number;
@@ -477,6 +622,7 @@ export const withdraw = createAsyncThunk<
   async (
     {
       walletClient,
+      signature,
       amount,
       to,
       decimals,
@@ -484,7 +630,8 @@ export const withdraw = createAsyncThunk<
       coinGeckoId,
       contractAddress,
     }: {
-      walletClient: OwnerWalletClient;
+      walletClient: OwnerWalletClient | Signer;
+      signature?: string;
       amount: string;
       to: string;
       decimals: number;
@@ -498,45 +645,29 @@ export const withdraw = createAsyncThunk<
       const state = thunkAPI.getState();
       const operatorState: OperatorStateType = state.operator;
 
-      let call: any = {
-        to,
-        value: parseEther(amount)
+      let transactionHash: Address;
+      if (signature) {
+        transactionHash = await withdrawEtherspot({
+          walletClient: walletClient as Signer,
+          signature,
+          amount,
+          to,
+          decimals,
+          contractAddress,
+          publicKey: operatorState.operator.project.publicKey
+        })
+      } else {
+        transactionHash = await withdrawSafe({
+          walletClient: walletClient as OwnerWalletClient,
+          amount,
+          to,
+          decimals,
+          contractAddress,
+          publicKey: operatorState.operator.project.publicKey
+        })
       }
-      let withPaymaster = false;
-
-      if (contractAddress) {
-        call = {
-          abi: ERC20ABI,
-          functionName: 'transfer',
-          to: contractAddress,
-          args: [to, parseUnits(amount, decimals)]
-        }
-      }
-
-      if (operatorState.operator.user.isActivated) {
-        withPaymaster = true;
-      }
-
-      const fuseSDK = await FuseSDK.init(
-        operatorState.operator.project.publicKey,
-        walletClient,
-        {
-          withPaymaster,
-          baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
-        }
-      );
-      const fuseClient = fuseSDK.client as SmartAccountClient
-
-      const userOpHash = await fuseClient.sendUserOperation({
-        calls: [call],
-      })
-      const userOpReceipt = await fuseClient.waitForUserOperationReceipt({
-        hash: userOpHash,
-      })
 
       thunkAPI.dispatch(fetchSponsoredTransactions());
-
-      const transactionHash = userOpReceipt.receipt.transactionHash;
       if (transactionHash) {
         return { amount, token, coinGeckoId };
       } else {
@@ -588,6 +719,7 @@ export const subscription = createAsyncThunk<
   any,
   {
     walletClient: OwnerWalletClient;
+    tokenPrice: number;
   },
   { state: RootState }
 >(
@@ -595,8 +727,10 @@ export const subscription = createAsyncThunk<
   async (
     {
       walletClient,
+      tokenPrice
     }: {
       walletClient: OwnerWalletClient;
+      tokenPrice: number;
     },
     thunkAPI
   ) => {
@@ -606,7 +740,7 @@ export const subscription = createAsyncThunk<
       const recipient = NEXT_PUBLIC_PAYMASTER_FUNDER_ADDRESS as Address;
       const subscriptionInfo = subscriptionInformation()
       const amount = parseUnits(
-        (subscriptionInfo.payment * subscriptionInfo.advance).toString(),
+        ((subscriptionInfo.payment / tokenPrice) * subscriptionInfo.advance).toString(),
         subscriptionInfo.decimals
       );
 
@@ -623,8 +757,8 @@ export const subscription = createAsyncThunk<
       const userOpHash = await fuseClient.sendUserOperation({
         calls: [{
           abi: ERC20ABI,
-          functionName: 'increaseAllowance',
-          to: subscriptionInfo.usdcAddress,
+          functionName: 'approve',
+          to: subscriptionInfo.tokenAddress,
           args: [recipient, amount]
         }],
       })
@@ -691,6 +825,32 @@ export const fetchSubscriptionInvoices = createAsyncThunk(
   }
 );
 
+export const fetchBridgeSupportedTokens = createAsyncThunk(
+  "OPERATOR/FETCH_BRIDGE_SUPPORTED_TOKENS",
+  async () => {
+    try {
+      const bridgeSupportedTokens = await fetchChargeBridgeSupportedTokens()
+      return bridgeSupportedTokens
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
+export const chargeBridge = createAsyncThunk(
+  "OPERATOR/CHARGE_BRIDGE",
+  async (chargeBridge: ChargeBridge) => {
+    try {
+      const chargeBridgeResponse = await postChargeBridge(chargeBridge)
+      return chargeBridgeResponse
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
 const operatorSlice = createSlice({
   name: "OPERATOR_STATE",
   initialState: INIT_STATE,
@@ -711,8 +871,8 @@ const operatorSlice = createSlice({
     setIsTopupAccountModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isTopupAccountModalOpen = action.payload
     },
-    setIsWithdrawModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isWithdrawModalOpen = action.payload
+    setWithdrawModal: (state, action: PayloadAction<WithdrawModal>) => {
+      state.withdrawModal = action.payload
     },
     setIsTopupPaymasterModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isTopupPaymasterModalOpen = action.payload
@@ -894,7 +1054,7 @@ const operatorSlice = createSlice({
       .addCase(withdraw.fulfilled, (state, action) => {
         state.withdrawStatus = Status.SUCCESS;
         state.withdraw = action.payload;
-        state.isWithdrawModalOpen = false;
+        state.withdrawModal.open = false;
       })
       .addCase(withdraw.rejected, (state) => {
         state.withdrawStatus = Status.ERROR;
@@ -951,6 +1111,26 @@ const operatorSlice = createSlice({
       .addCase(fetchSubscriptionInvoices.rejected, (state) => {
         state.subscriptionInvoicesStatus = Status.ERROR;
       })
+      .addCase(fetchBridgeSupportedTokens.pending, (state) => {
+        state.bridgeSupportedTokensStatus = Status.PENDING;
+      })
+      .addCase(fetchBridgeSupportedTokens.fulfilled, (state, action) => {
+        state.bridgeSupportedTokensStatus = Status.SUCCESS;
+        state.bridgeSupportedTokens = action.payload;
+      })
+      .addCase(fetchBridgeSupportedTokens.rejected, (state) => {
+        state.bridgeSupportedTokensStatus = Status.ERROR;
+      })
+      .addCase(chargeBridge.pending, (state) => {
+        state.chargeBridgeStatus = Status.PENDING;
+      })
+      .addCase(chargeBridge.fulfilled, (state, action) => {
+        state.chargeBridgeStatus = Status.SUCCESS;
+        state.chargeBridge = action.payload;
+      })
+      .addCase(chargeBridge.rejected, (state) => {
+        state.chargeBridgeStatus = Status.ERROR;
+      })
   },
 });
 
@@ -963,7 +1143,7 @@ export const {
   setIsValidated,
   setIsOperatorWalletModalOpen,
   setIsTopupAccountModalOpen,
-  setIsWithdrawModalOpen,
+  setWithdrawModal,
   setIsTopupPaymasterModalOpen,
   setIsYourSecretKeyModalOpen,
   setIsRollSecretKeyModalOpen,
