@@ -19,7 +19,7 @@ const NavButton = ({ isOpen, setOpen }: NavButtonProps) => {
   return (
     <div className="flex order-2 min-w-[150px] md:w-[93%] justify-end items-center gap-2">
       <Link
-        href={operatorSlice.isAuthenticated ? path.DASHBOARD : path.BUILD}
+        href={operatorSlice.isAuthenticated ? path.DASHBOARD : operatorSlice.isOperatorExist ? path.BUILD_REGISTER : path.BUILD}
         className={`flex justify-center items-center rounded-full h-9 px-4 font-medium hover:bg-lightest-gray ${selected === "build" && 'bg-lightest-gray py-2.5 pointer-events-none'}`}
       >
         Build

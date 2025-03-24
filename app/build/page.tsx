@@ -22,10 +22,13 @@ const Build = () => {
 
   useEffect(() => {
     if (!operatorSlice.isHydrated) return;
+    
     if (operatorSlice.isAuthenticated) {
       router.replace(path.DASHBOARD)
+    } else if (operatorSlice.isOperatorExist) {
+      router.replace(path.BUILD_REGISTER)
     }
-  }, [operatorSlice.isHydrated, operatorSlice.isAuthenticated, router]);
+  }, [operatorSlice.isHydrated, operatorSlice.isAuthenticated, operatorSlice.isOperatorExist, router]);
 
   return (
     <div className="w-full font-mona justify-end min-h-screen">

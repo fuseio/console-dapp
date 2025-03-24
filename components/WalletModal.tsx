@@ -17,7 +17,7 @@ import ReactGA from "react-ga4";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
 import * as amplitude from "@amplitude/analytics-browser";
-import { selectOperatorSlice, setHydrate, setIsLogin, setIsOperatorWalletModalOpen, setLogout } from "@/store/operatorSlice";
+import { checkOperator, selectOperatorSlice, setHydrate, setIsLogin, setIsOperatorWalletModalOpen, setLogout } from "@/store/operatorSlice";
 import { useConnectWithOtp, useSocialAccounts, useWalletOptions } from "@dynamic-labs/sdk-react-core";
 import Modal from "./ui/Modal";
 import { Dispatch } from "@reduxjs/toolkit";
@@ -287,7 +287,7 @@ export const Wallet = ({
 const WalletModal = ({ isDisconnected }: WalletModalProps) => {
   const dispatch = useAppDispatch();
   const { isWalletModalOpen } = useAppSelector(selectNavbarSlice);
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
 
   useEffect(() => {
     if (isConnected) {
@@ -312,6 +312,12 @@ const WalletModal = ({ isDisconnected }: WalletModalProps) => {
     dispatch(setIsOperatorWalletModalOpen(isOpen));
     dispatch(setIsLogin(isOpen));
   }
+
+  useEffect(() => {
+    if (address) {
+      dispatch(checkOperator({ address }));
+    }
+  }, [address, dispatch])
 
   return (
     <Modal
