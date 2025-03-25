@@ -61,6 +61,10 @@ const aiSlice = createSlice({
       state.messages = state.messages.map((message) => message.id === action.payload.message.id ? action.payload.message : message);
       localStorage.setItem(`chat_history_${action.payload.address}`, JSON.stringify(state.messages));
     },
+    deleteMessages: (state, action: PayloadAction<{ address?: Address }>) => {
+      localStorage.removeItem(`chat_history_${action.payload.address}`);
+      state.messages = [];
+    },
     setHydrate: (state, action: PayloadAction<{ address?: Address }>) => {
       const chatHistory = localStorage.getItem(`chat_history_${action.payload.address}`);
       state.messages = chatHistory ? JSON.parse(chatHistory) : [];
@@ -101,6 +105,7 @@ export const selectAiSlice = (state: AppState): AiStateType => state.ai;
 export const {
   addMessage,
   updateMessage,
+  deleteMessages,
   setHydrate
 } = aiSlice.actions;
 
