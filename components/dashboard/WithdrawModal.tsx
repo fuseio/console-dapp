@@ -34,8 +34,6 @@ const gas = {
   }
 }
 
-const MINIMUM_SPONSOR_ID_BALANCE = 0.01;
-
 const WithdrawModal = (): JSX.Element => {
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const dispatch = useAppDispatch();
@@ -48,7 +46,6 @@ const WithdrawModal = (): JSX.Element => {
     contractAddress: coins[selectedCoin].address
   });
   const balanceValue = coins[selectedCoin].isNative ? balance.coin.value : balance.token.value;
-  const sponsored = parseFloat(operatorSlice.sponsorIdBalance) > MINIMUM_SPONSOR_ID_BALANCE;
 
   const formik = useFormik<WithdrawFormValues>({
     initialValues: {
@@ -121,7 +118,6 @@ const WithdrawModal = (): JSX.Element => {
           token: selectedCoin,
           coinGeckoId: coins[selectedCoin].coinGeckoId,
           contractAddress: coins[selectedCoin].address,
-          withPaymaster: sponsored
         }));
       }
     }
@@ -300,7 +296,7 @@ const WithdrawModal = (): JSX.Element => {
                     height={12}
                   />
                   <p>
-                    {coins[selectedCoin].isNative ? gas.NATIVE.gwei : gas.CONTRACT.gwei} Gwei {sponsored ? '(sponsored)' : ''}
+                    {coins[selectedCoin].isNative ? gas.NATIVE.gwei : gas.CONTRACT.gwei} Gwei {operatorSlice.withdrawModal.from?.address ? '' : '(sponsored)'}
                   </p>
                 </div>
                 <button

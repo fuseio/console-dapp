@@ -527,7 +527,6 @@ const withdrawEtherspot = async ({
   decimals,
   contractAddress,
   publicKey,
-  withPaymaster
 }: {
   walletClient: Signer;
   signature: string;
@@ -536,7 +535,6 @@ const withdrawEtherspot = async ({
   decimals: number;
   contractAddress?: string;
   publicKey: string;
-  withPaymaster?: boolean;
 }) => {
   try {
     let recipient = to;
@@ -557,7 +555,6 @@ const withdrawEtherspot = async ({
       publicKey,
       walletClient,
       {
-        withPaymaster,
         baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
         signature
       }
@@ -642,7 +639,6 @@ export const withdraw = createAsyncThunk<
     token: string;
     coinGeckoId: string;
     contractAddress?: string;
-    withPaymaster?: boolean;
   },
   { state: RootState }
 >(
@@ -657,7 +653,6 @@ export const withdraw = createAsyncThunk<
       token,
       coinGeckoId,
       contractAddress,
-      withPaymaster
     }: {
       walletClient: OwnerWalletClient | Signer;
       signature?: string;
@@ -667,7 +662,6 @@ export const withdraw = createAsyncThunk<
       token: string;
       coinGeckoId: string;
       contractAddress?: string;
-      withPaymaster?: boolean;
     },
     thunkAPI
   ) => {
@@ -685,7 +679,6 @@ export const withdraw = createAsyncThunk<
           decimals,
           contractAddress,
           publicKey: operatorState.operator.project.publicKey,
-          withPaymaster
         })
       } else {
         transactionHash = await withdrawSafe({
