@@ -119,7 +119,7 @@ const Hero = () => {
     <section className="flex flex-col items-center justify-center min-h-screen bg-[url('/flash-background.png')] bg-cover bg-center">
       <div className="w-8/9 max-w-3xl mx-auto flex flex-col justify-center items-center gap-8 text-center">
         <h1 className="text-[4.375rem] leading-none text-fuse-black font-semibold md:text-4xl">
-          Test, Build, and Scale on FUSE Flash
+          Test, Build, and Earn on FUSE Flash
         </h1>
         <p className="text-[2.188rem] text-fuse-black font-semibold leading-none md:text-lg">
           The ZKEVM Testnet for Real-World Payments
