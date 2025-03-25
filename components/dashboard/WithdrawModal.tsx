@@ -42,7 +42,7 @@ const WithdrawModal = (): JSX.Element => {
   const { data: walletClient } = useWalletClient()
   const signer = useEthersSigner();
   const balance = useTokenUsdBalance({
-    address: operatorSlice.operator.user.smartWalletAddress,
+    address: operatorSlice.withdrawModal?.from?.address ?? operatorSlice.operator.user.smartWalletAddress,
     contractAddress: coins[selectedCoin].address
   });
   const balanceFormatted = coins[selectedCoin].isNative ? balance.coin.formatted : balance.token.formatted;
