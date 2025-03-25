@@ -393,7 +393,7 @@ const TopupAccountModal = (): JSX.Element => {
                     Top up account balance
                   </p>
                   <p className="text-text-heading-gray max-w-md">
-                    Deposit FUSE tokens to your account balance from Fuse network directly or from any other network using the Charge bridge. You can always withdraw the funds.
+                    Deposit {selectedTab === Tab.FUSE ? "WFUSE" : "FUSE"} tokens to your account balance from Fuse network directly or from any other network using the Charge bridge. You can always withdraw the funds.
                   </p>
                 </div>
                 <p className="text-lg font-bold">

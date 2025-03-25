@@ -264,7 +264,7 @@ export const fetchOperator = createAsyncThunk<
             if (!smartWalletAddress) {
               throw new Error("Smart wallet address not found");
             }
-            
+
             const operatorWallet = await postMigrateOperatorWallet({
               ownerId: operator.user.id,
               smartWalletAddress
@@ -526,7 +526,8 @@ const withdrawEtherspot = async ({
   to,
   decimals,
   contractAddress,
-  publicKey
+  publicKey,
+  withPaymaster
 }: {
   walletClient: Signer;
   signature: string;
@@ -535,6 +536,7 @@ const withdrawEtherspot = async ({
   decimals: number;
   contractAddress?: string;
   publicKey: string;
+  withPaymaster?: boolean;
 }) => {
   try {
     let recipient = to;
@@ -555,7 +557,7 @@ const withdrawEtherspot = async ({
       publicKey,
       walletClient,
       {
-        withPaymaster: true,
+        withPaymaster,
         baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
         signature
       }
@@ -640,6 +642,7 @@ export const withdraw = createAsyncThunk<
     token: string;
     coinGeckoId: string;
     contractAddress?: string;
+    withPaymaster?: boolean;
   },
   { state: RootState }
 >(
@@ -654,6 +657,7 @@ export const withdraw = createAsyncThunk<
       token,
       coinGeckoId,
       contractAddress,
+      withPaymaster
     }: {
       walletClient: OwnerWalletClient | Signer;
       signature?: string;
@@ -663,6 +667,7 @@ export const withdraw = createAsyncThunk<
       token: string;
       coinGeckoId: string;
       contractAddress?: string;
+      withPaymaster?: boolean;
     },
     thunkAPI
   ) => {
@@ -679,7 +684,8 @@ export const withdraw = createAsyncThunk<
           to,
           decimals,
           contractAddress,
-          publicKey: operatorState.operator.project.publicKey
+          publicKey: operatorState.operator.project.publicKey,
+          withPaymaster
         })
       } else {
         transactionHash = await withdrawSafe({
@@ -764,8 +770,10 @@ export const subscription = createAsyncThunk<
       const operatorState: OperatorStateType = state.operator;
       const recipient = NEXT_PUBLIC_PAYMASTER_FUNDER_ADDRESS as Address;
       const subscriptionInfo = subscriptionInformation()
+      const ALLOWANCE = 1000000;
+      const calculatedAllowance = (subscriptionInfo.payment / tokenPrice) * subscriptionInfo.advance;
       const amount = parseUnits(
-        ((subscriptionInfo.payment / tokenPrice) * subscriptionInfo.advance).toString(),
+        (calculatedAllowance > ALLOWANCE ? calculatedAllowance : ALLOWANCE).toString(),
         subscriptionInfo.decimals
       );
 

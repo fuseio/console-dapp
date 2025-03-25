@@ -3,7 +3,7 @@ import Button from "@/components/ui/Button";
 import { getTotalTransaction, path, subscriptionInformation } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectBalanceSlice } from "@/store/balanceSlice";
-import { fetchOperator, fetchSponsoredTransactions, selectOperatorSlice, setIsSubscriptionModalOpen, setIsTopupAccountModalOpen, setWithdrawModal, withRefreshToken } from "@/store/operatorSlice";
+import { fetchOperator, fetchSponsoredTransactions, fetchSponsorIdBalance, selectOperatorSlice, setIsSubscriptionModalOpen, setIsTopupAccountModalOpen, setWithdrawModal, withRefreshToken } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import RollSecretKeyModal from "@/components/dashboard/RollSecretKeyModal";
@@ -200,6 +200,12 @@ const Home = () => {
   useEffect(() => {
     if (operatorSlice.isAuthenticated) {
       dispatch(withRefreshToken(() => dispatch(fetchSponsoredTransactions())));
+    }
+  }, [dispatch, operatorSlice.isAuthenticated])
+
+  useEffect(() => {
+    if (operatorSlice.isAuthenticated) {
+      dispatch(withRefreshToken(() => dispatch(fetchSponsorIdBalance())));
     }
   }, [dispatch, operatorSlice.isAuthenticated])
 
