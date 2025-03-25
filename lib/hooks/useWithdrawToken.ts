@@ -73,7 +73,8 @@ const useWithdrawToken = ({ address }: { address?: Address }) => {
     Object.values(coins).forEach(async (coin) => {
       if (!address || !coin.address || isBal) return;
       const value = formatUnits(await getERC20Balance(coin.address, address), coin.decimals);
-      isBal = parseFloat(value) > 0;
+      const minBalance = 0.01;
+      isBal = parseFloat(value) > minBalance;
     });
     setIsBalance(isBal);
   }, [address]);
