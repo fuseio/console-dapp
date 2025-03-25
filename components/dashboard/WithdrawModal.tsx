@@ -45,7 +45,6 @@ const WithdrawModal = (): JSX.Element => {
     address: operatorSlice.withdrawModal?.from?.address ?? operatorSlice.operator.user.smartWalletAddress,
     contractAddress: coins[selectedCoin].address
   });
-  const balanceFormatted = coins[selectedCoin].isNative ? balance.coin.formatted : balance.token.formatted;
   const balanceValue = coins[selectedCoin].isNative ? balance.coin.value : balance.token.value;
 
   const formik = useFormik<WithdrawFormValues>({
@@ -108,10 +107,12 @@ const WithdrawModal = (): JSX.Element => {
           return;
         }
 
+        const amount = parseFloat(formik.values.amount) - parseFloat(gas.NATIVE.ether);
+
         dispatch(withdraw({
           walletClient: signer,
           signature: data,
-          amount: formik.values.amount,
+          amount: amount.toString(),
           to: formik.values.to,
           decimals: coins[selectedCoin].decimals,
           token: selectedCoin,
@@ -139,7 +140,7 @@ const WithdrawModal = (): JSX.Element => {
   }, [dispatch]);
 
   useEffect(() => {
-    if(operatorSlice.withdrawModal.to?.address && !formik.values.to) {
+    if (operatorSlice.withdrawModal.to?.address && !formik.values.to) {
       formik.setFieldValue("to", operatorSlice.withdrawModal.to.address)
     }
   }, [formik, operatorSlice.withdrawModal.to?.address])
@@ -182,7 +183,7 @@ const WithdrawModal = (): JSX.Element => {
                       Amount
                     </p>
                     <p>
-                      Balance: {balanceFormatted} {selectedCoin}
+                      Balance: {balanceValue} {selectedCoin}
                     </p>
                   </div>
                   <div className="flex justify-between gap-2.5">
