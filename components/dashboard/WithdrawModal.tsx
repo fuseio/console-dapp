@@ -107,7 +107,8 @@ const WithdrawModal = (): JSX.Element => {
           return;
         }
 
-        const amount = parseFloat(formik.values.amount) - parseFloat(gas.NATIVE.ether);
+        const gasFee = 0.01;
+        const amount = parseFloat(formik.values.amount) - gasFee;
 
         dispatch(withdraw({
           walletClient: signer,
