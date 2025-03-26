@@ -1,6 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
-import { AirdropUser, AirdropLeaderboardUsers, AirdropQuest, CreateAirdropUser } from "@/lib/types";
+import { AirdropUser, AirdropLeaderboardUsers, AirdropQuest, CreateAirdropUser, Status } from "@/lib/types";
 import { Address, getAddress } from "viem";
 import { fetchAirdropLeaderboard, fetchAirdropTwitterAuthUrl, fetchAirdropUser, fetchReferralCount, postAuthenticateAirdropUser, postAuthenticatedAirdrop, postClaimTestnetFuse, postCreateAirdropUser, postJoinAirdropWaitlist, postVerifyAirdropQuest } from "@/lib/api";
 import { RootState } from "../store";
@@ -55,6 +55,7 @@ export interface AirdropStateType {
   referrals: number;
   isFetchingReferral: boolean;
   isTwitterErrorModalOpen: boolean;
+  claimTestnetFuseByAddressStatus: Status;
 }
 
 const INIT_STATE: AirdropStateType = {
@@ -83,6 +84,7 @@ const INIT_STATE: AirdropStateType = {
   referrals: 0,
   isFetchingReferral: false,
   isTwitterErrorModalOpen: false,
+  claimTestnetFuseByAddressStatus: Status.IDLE,
 }
 
 export const authenticateAirdropUser = createAsyncThunk<
@@ -335,6 +337,25 @@ export const claimTestnetFuse = createAsyncThunk<
   }
 );
 
+export const claimTestnetFuseByAddress = createAsyncThunk(
+  "USER/CLAIM_TESTNET_FUSE_BY_ADDRESS",
+  async (
+    {
+      walletAddress
+    }: {
+      walletAddress: Address;
+    },
+  ) => {
+    try {
+      const claimed = await postClaimTestnetFuse(walletAddress);
+      return claimed;
+    } catch (error: any) {
+      console.error(error?.response?.data?.msg ?? error);
+      throw error?.response?.status;
+    }
+  }
+);
+
 export const fetchReferral = createAsyncThunk<
   any,
   undefined,
@@ -532,6 +553,15 @@ const airdropSlice = createSlice({
       })
       .addCase(fetchReferral.rejected, (state) => {
         state.isFetchingReferral = false;
+      })
+      .addCase(claimTestnetFuseByAddress.pending, (state) => {
+        state.claimTestnetFuseByAddressStatus = Status.PENDING;
+      })
+      .addCase(claimTestnetFuseByAddress.fulfilled, (state) => {
+        state.claimTestnetFuseByAddressStatus = Status.SUCCESS;
+      })
+      .addCase(claimTestnetFuseByAddress.rejected, (state) => {
+        state.claimTestnetFuseByAddressStatus = Status.ERROR;
       })
   },
 });

@@ -6,6 +6,10 @@ import { ArrowRight } from "lucide-react";
 import { useSwitchChain } from "wagmi";
 
 import { flash } from "@/lib/web3Auth";
+import { useAppDispatch, useAppSelector } from "@/store/store";
+import { claimTestnetFuseByAddress, selectAirdropSlice } from "@/store/airdropSlice";
+import { Status } from "@/lib/types";
+import Spinner from "@/components/ui/Spinner";
 
 import prizePool from "@/assets/airdrop-grant-prize-background.svg";
 import wallet from "@/assets/wallet.svg";
@@ -92,7 +96,7 @@ const joins = [
   },
   {
     title: "Submit Your Application",
-    description: "Once your app is ready, apply for the bounty program to showcase your work and earn rewards.",
+    description: "Once your app is ready, apply for the builders grant to showcase your work and earn rewards.",
     icon: uploadFile,
     button: {
       title: "Apply Now",
@@ -199,9 +203,15 @@ const Zkevm = () => {
 const Start = () => {
   const [selectedTab, setSelectedTab] = useState<"build" | "play">("build");
   const { switchChain } = useSwitchChain()
+  const dispatch = useAppDispatch();
+  const airdropSlice = useAppSelector(selectAirdropSlice);
 
   const getTestnetFuse = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const walletAddress = (e.target as HTMLFormElement).walletAddress.value;
+    dispatch(claimTestnetFuseByAddress({
+      walletAddress
+    }))
   }
 
   return (
@@ -290,19 +300,23 @@ const Start = () => {
           </div>
         </article>
         <article className="bg-white rounded-[1.25rem] flex flex-col justify-between gap-5 px-5 py-10 md:py-6">
-          <form onSubmit={getTestnetFuse} className="flex flex-col gap-10 md:gap-6">
+          <form onSubmit={getTestnetFuse} className="flex flex-col gap-6 md:gap-6">
             <p className="text-2xl font-bold md:text-lg">
               Enter wallet address
             </p>
             <div className="flex items-center gap-4 bg-light-gray rounded-lg px-6 py-4">
               <Image src={walletGray} alt="" width={17} height={16} />
-              <input type="text" placeholder="0x6bd9...480e" className="w-full bg-[transparent] outline-none placeholder:text-text-dark-gray" required />
+              <input type="text" name="walletAddress" placeholder="0x6bd9...480e" className="w-full bg-[transparent] outline-none placeholder:text-text-dark-gray" required />
             </div>
             <button
-              className="transition ease-in-out px-12 py-3 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
+              type="submit"
+              className="transition ease-in-out flex justify-center items-center gap-2 px-12 py-3 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
             >
               Get Testnet FUSE
+              {airdropSlice.claimTestnetFuseByAddressStatus === Status.PENDING && <Spinner />}
             </button>
+            {airdropSlice.claimTestnetFuseByAddressStatus === Status.ERROR && <div className="bg-[#FD0F0F] rounded-lg px-4 py-2 text-white">Failed to claim testnet FUSE</div>}
+            {airdropSlice.claimTestnetFuseByAddressStatus === Status.SUCCESS && <div className="bg-success rounded-lg px-4 py-2 text-black">Testnet FUSE claimed successfully</div>}
           </form>
           <p className="text-sm">
             <span className="font-semibold underline">Note:</span> <span className="opacity-50">{"If you're having trouble, check your existing EVM addresses - testnet tokens might already be there."}</span>
@@ -370,7 +384,7 @@ const Winner = () => {
             Be a Winner!
           </h2>
           <p className="text-white max-w-[26.5rem]">
-            At least 3 best projects will be selected and awarded. But if there are more amazing projects, everyone will get a bounty!
+            At least 3 best projects will be selected and awarded. But if there are more amazing projects, everyone will get a piece!
           </p>
         </div>
       </div>
@@ -417,7 +431,7 @@ const Community = () => {
   return (
     <section className="w-8/9 max-w-7xl mx-auto flex flex-col gap-10 py-16">
       <h2 className="text-center text-5xl text-fuse-black font-semibold md:text-2xl">
-        The Fuse Communities
+        The Fuse Community
       </h2>
       <div className="grid grid-cols-3 gap-x-12 gap-y-6 md:grid-cols-1">
         <Link
