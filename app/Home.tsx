@@ -41,7 +41,7 @@ const Home = () => {
         <div className="flex justify-between items-center gap-x-4 gap-6 bg-black rounded-[1.25rem] mt-[99.5px] px-16 py-10 md:p-7 md:mt-[78px] md:flex-col">
           <div className="flex flex-col justify-between items-start gap-5 md:gap-3">
             <p className="text-2xl text-white font-semibold md:text-lg">
-              Fuse Rewards
+              Fuse Ember
             </p>
             <p className="bg-linear-gradient-green-thumb bg-clip-text text-[transparent] text-[3.5rem] leading-none font-bold max-w-96 md:text-3xl">
               Explore Fuse Ember & Earn Rewards

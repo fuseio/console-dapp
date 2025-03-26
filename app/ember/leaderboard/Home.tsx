@@ -1,15 +1,17 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { fetchAirdropLeaderboardUsers, selectAirdropSlice } from "@/store/airdropSlice";
-import { eclipseAddress } from "@/lib/helpers";
+import { eclipseAddress, path } from "@/lib/helpers";
 import Avatar from "@/components/ui/Avatar";
 
 import star from "@/assets/star.svg";
 import starGold from "@/assets/star-gold.svg";
 import starSilver from "@/assets/star-silver.svg";
 import starBronze from "@/assets/star-bronze.svg";
+import leftArrow from "@/assets/left-arrow.svg";
 
 type PositionStar = {
   name: string;
@@ -56,7 +58,22 @@ const Home = () => {
 
   return (
     <div className="w-8/9 grow flex flex-col text-fuse-black my-16 xl:my-14 xl:w-9/12 md:w-9/10 max-w-7xl">
-      <h1 className="text-5xl xl:text-3xl font-semibold">
+      <Link
+        href={path.AIRDROP_ECOSYSTEM}
+        className="group flex items-center gap-1.5 hover:opacity-70"
+      >
+        <Image
+          src={leftArrow}
+          alt="back to points"
+          width={7}
+          height={13}
+          className="transition ease-in-out group-hover:-translate-x-0.5"
+        />
+        <div className="leading-none font-semibold">
+          Points
+        </div>
+      </Link>
+      <h1 className="text-5xl xl:text-3xl font-semibold mt-4">
         Leaderboard
       </h1>
       <p className="text-lg xl:text-base font-semibold mb-4 mt-16 xl:mb-2.5">

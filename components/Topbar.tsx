@@ -12,26 +12,15 @@ import { selectAirdropSlice } from "@/store/airdropSlice";
 
 const AirdropSubmenu = [
   {
-    title: "Leaderboard",
-    link: path.AIRDROP_LEADERBOARD,
+    title: "Builder Grant",
+    link: path.AIRDROP_GRANT,
   },
   {
-    title: "Fuse Ecosystem",
+    title: "Points",
     link: path.AIRDROP_ECOSYSTEM,
   },
   {
-    title: "FUSE Flash Testnet",
-    link: path.AIRDROP_FLASH,
-  },
-]
-
-const StakingSubmenu = [
-  {
-    title: "Fuse Staking",
-    link: path.STAKING,
-  },
-  {
-    title: "L2 Testnet Nodes",
+    title: "Ember Testnet Nodes",
     link: path.TESTNET_NODES,
   },
 ]
@@ -51,7 +40,7 @@ const Topbar = ({ className }: TopbarProps) => {
       link: "/wallet",
     },
     {
-      title: "Rewards",
+      title: "Ember",
       link: path.AIRDROP,
     },
     {
@@ -65,7 +54,6 @@ const Topbar = ({ className }: TopbarProps) => {
     {
       title: "Staking",
       link: path.STAKING,
-      submenu: StakingSubmenu,
     },
   ]);
 

@@ -12,6 +12,16 @@ const nextConfig = {
         destination: '/rewards/:path*',
         permanent: true,
       },
+      {
+        source: '/rewards',
+        destination: '/ember',
+        permanent: true,
+      },
+      {
+        source: '/rewards/:path*',
+        destination: '/ember/:path*',
+        permanent: true,
+      },
     ];
   },
   images: {

@@ -256,7 +256,7 @@ const Phases = () => {
                 className="transition ease-in-out w-fit px-12 py-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
                 onClick={() => {
                   if (isConnected) {
-                    router.push(path.AIRDROP_FLASH)
+                    router.push(path.AIRDROP_GRANT)
                   } else {
                     dispatch(setIsWalletModalOpen(true));
                   }

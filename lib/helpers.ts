@@ -79,14 +79,14 @@ export const path = {
   BRIDGE: "/bridge",
   STAKING: "/staking",
   DASHBOARD: "/dashboard",
-  AIRDROP: "/rewards",
-  AIRDROP_LEADERBOARD: "/rewards/leaderboard",
-  AIRDROP_ECOSYSTEM: "/rewards/ecosystem",
-  AIRDROP_GRANT: "/rewards/grant",
+  AIRDROP: "/ember",
+  AIRDROP_LEADERBOARD: "/ember/leaderboard",
+  AIRDROP_ECOSYSTEM: "/ember/points",
+  AIRDROP_GRANT: "/ember/grant",
   NODES: "/nodes",
   TESTNET_NODES: "/nodes/testnet",
   EMBER_NODES: "/nodes/ember",
-  AIRDROP_FLASH: "/rewards/flash",
+  AIRDROP_FLASH: "/ember/flash",
 };
 
 export const buildSubMenuItems = [
