@@ -1,7 +1,6 @@
 import Button from "@/components/ui/Button";
 import Image from "next/image";
 import checkmark from "@/assets/checkmark.svg"
-import checkmarkBg from "@/assets/checkmark-bg.svg"
 import requestFinance from "@/public/request-finance.png"
 import transak from "@/public/transak.png"
 import thirdweb from "@/public/thirdweb.png"
@@ -9,75 +8,247 @@ import cointool from "@/public/cointool.png"
 import theGraph from "@/public/the-graph.png"
 import taskOn from "@/public/taskon.png"
 import { useRouter } from "next/navigation";
-import NavMenu from "@/components/NavMenu";
-import { buildSubMenuItems } from "@/lib/helpers";
+import { cn, path } from "@/lib/helpers";
 import * as amplitude from "@amplitude/analytics-browser";
+import { useAppSelector } from "@/store/store";
+import { selectOperatorSlice } from "@/store/operatorSlice";
+import walletModal from "@/assets/wallet-modal.svg"
+import contract from "@/assets/contract.svg"
+import dollarBorder from "@/assets/dollar-border.svg"
+import wallet from "@/assets/wallet.svg"
+import cart from "@/assets/cart.svg"
+import zap from "@/assets/zap.svg"
+import currencyExchange from "@/assets/currency-exchange.svg"
+import automation from "@/assets/automation.svg"
+import shield from "@/assets/shield.svg"
+import edisonGray from "@/assets/edison-gray.svg"
+import edisonChat from "@/assets/edison-chat.svg"
+import rightArrowBold from "@/assets/right-arrow-bold.svg"
+import dollarLineBorder from "@/assets/dollar-line-border.svg"
+import verified from "@/assets/verified.svg"
+import parachute from "@/assets/parachute.svg"
+import starBorder from "@/assets/star-border.svg"
+import block from "@/assets/block.svg"
+import Link from "next/link";
 
 const apps = [
   {
-    name: "Create an invoice",
+    title: "Create an invoice",
     description: "A decentralized protocol that allows for efficient crypto payments",
     logo: requestFinance,
-    link: "https://www.fuse.io/ecosystem-project/request-finance"
+    link: "https://www.fuse.io/ecosystem-project/request-finance",
+    name: "Request",
+    tag: "Web3 Payments"
   },
   {
-    name: "Onramp from your bank",
+    title: "Onramp from your bank",
     description: "Developer integration toolkit powering the best in Web3 payments",
     logo: transak,
-    link: "https://www.fuse.io/ecosystem-project/transak"
+    link: "https://www.fuse.io/ecosystem-project/transak",
+    name: "Transak",
+    tag: "Fiat On-Ramp"
   },
   {
-    name: "Deploy a contract",
+    title: "Deploy a contract",
     description: "ThirdWeb provides a complete set of tools for building Web3 applications",
     logo: thirdweb,
-    link: "https://www.fuse.io/ecosystem-project/thirdweb"
+    link: "https://www.fuse.io/ecosystem-project/thirdweb",
+    name: "ThirdWeb",
+    tag: "Infra"
   },
   {
-    name: "Create a token",
+    title: "Create a token",
     description: "Multichain digital currency toolbox facilitating Web3 development",
     logo: cointool,
-    link: "https://www.fuse.io/ecosystem-project/cointool"
+    link: "https://www.fuse.io/ecosystem-project/cointool",
+    name: "CoinTool",
+    tag: "Dev tools"
   },
   {
-    name: "Deploy a subgraph",
+    title: "Deploy a subgraph",
     description: "Indexing protocol securing users' access to blockchain data via GraphQL",
     logo: theGraph,
-    link: "https://www.fuse.io/ecosystem-project/the-graph"
+    link: "https://www.fuse.io/ecosystem-project/the-graph",
+    name: "The Graph",
+    tag: "Indexing"
   },
   {
-    name: "Create an air drop campaign",
+    title: "Create an air drop campaign",
     description: "TaskOn is a Web3 Collaboration Platform offering rewards, exclusive Web3 project insights, and more.",
     logo: taskOn,
-    link: "https://www.fuse.io/ecosystem-project/taskon"
+    link: "https://www.fuse.io/ecosystem-project/taskon",
+    name: "TaskOn",
+    tag: "Community"
   },
+]
+
+const fuseboxPills = [
+  "Wallet",
+  "Account abstraction",
+  "Flutter SDK",
+  "ERC4337",
+  "Dedicated RPCs",
+  "Webhooks",
+  "Subgraphs"
+]
+
+const fuseboxFeatures = [
+  {
+    name: "Deploy contracts",
+    description: "Abstract away complexity Simplify user onboarding and transactions",
+    image: {
+      src: contract,
+      width: 20,
+      height: 20
+    }
+  },
+  {
+    name: "Branded stablecoins",
+    description: "Index and query blockchain data Build powerful dApp experiences",
+    image: {
+      src: dollarBorder,
+      width: 40,
+      height: 20
+    }
+  },
+  {
+    name: "Wallet as a service",
+    description: "Deploy smart contracts with ease Monitor and manage deployments",
+    image: {
+      src: wallet,
+      width: 40,
+      height: 40
+    }
+  },
+  {
+    name: "Online commerce",
+    description: "Private nodes for your dApp Fast and reliable connectivity",
+    image: {
+      src: cart,
+      width: 29,
+      height: 29
+    },
+    classNames: {
+      description: "max-w-52"
+    }
+  },
+  {
+    name: "Loyalty programs",
+    description: "Launch your own stablecoin Full control over token operations",
+    image: {
+      src: zap,
+      width: 22,
+      height: 32
+    }
+  },
+  {
+    name: "Composable yield",
+    description: "Account abstraction standard Better UX for web3 users",
+    image: {
+      src: currencyExchange,
+      width: 40,
+      height: 40
+    },
+    classNames: {
+      description: "max-w-52"
+    }
+  },
+  {
+    name: "Automations",
+    description: "Design token distributions Execute airdrops at scale",
+    image: {
+      src: automation,
+      width: 36,
+      height: 34
+    }
+  },
+  {
+    name: "Security & Cost cutting",
+    description: "Track on-chain events Get real-time notifications",
+    image: {
+      src: shield,
+      width: 28,
+      height: 35
+    },
+    classNames: {
+      description: "max-w-52"
+    }
+  }
+]
+
+const edisonFeatures = [
+  {
+    name: "Mint a branded Stablecoin",
+    description: "Create your own price-stable token on Fuse",
+    image: {
+      src: dollarLineBorder,
+      width: 40,
+      height: 40
+    },
+    classNames: {
+      description: "max-w-52"
+    }
+  },
+  {
+    name: "Create a payment link",
+    description: "Accept crypto payments with simple links",
+    image: {
+      src: verified,
+      width: 40,
+      height: 40
+    },
+    classNames: {
+      description: "max-w-52"
+    }
+  },
+  {
+    name: "Create an Airdrop",
+    description: "Distribute tokens to your community easily",
+    image: {
+      src: parachute,
+      width: 40,
+      height: 40
+    },
+    classNames: {
+      description: "max-w-52"
+    }
+  },
+  {
+    name: "Research a token",
+    description: "Get insights on any token on the Fuse ecosystem",
+    image: {
+      src: starBorder,
+      width: 40,
+      height: 40
+    },
+    classNames: {
+      description: "max-w-52"
+    }
+  }
 ]
 
 const Home = () => {
   const router = useRouter();
+  const operatorSlice = useAppSelector(selectOperatorSlice);
 
   function createAccount(eventInput: string) {
     amplitude.track(eventInput);
-    router.push("/dashboard");
+    router.push(operatorSlice.isAuthenticated ? path.DASHBOARD : path.BUILD_REGISTER);
   }
 
   return (
     <div className="w-full bg-light-gray">
       <div className="w-full flex flex-col items-center">
-        <div className="w-8/9 flex flex-col mt-[30.84px] md:mt-12 md:w-9/10 max-w-7xl">
-          <NavMenu menuItems={buildSubMenuItems} isOpen={true} selected="welcome" className="md:flex md:justify-center" liClassName="w-28" />
-        </div>
-      </div>
-      <div className="w-full flex flex-col items-center">
-        <div className="w-8/9 flex flex-col mt-[76.29px] md:mt-14 md:w-9/10 max-w-7xl">
+        <div className="w-8/9 flex flex-col py-20 md:py-16 md:w-9/10 max-w-7xl">
           <div className="flex flex-col justify-center items-center text-center">
-            <h1 className="text-[70px]/[84.35px] md:text-[32px] md:leading-tight text-fuse-black font-semibold max-w-[729.99px] mt-[13.98px] mb-[22px]">
-              Build your Web3 Project with Fuse
+            <h1 className="text-[70px] md:text-[32px] leading-tight text-fuse-black font-semibold max-w-[729.99px] mt-[13.98px] mb-[22px]">
+              Connect your Business to Web3
             </h1>
-            <p className="text-[20px]/7 text-text-dark-gray mb-[50.52px] md:mb-[18px] max-w-[455px]">
-              Your all-in-one solution for effortlessly launching your decentralized Web3 application
+            <p className="text-[20px]/7 text-text-dark-gray mb-[50.52px] md:mb-[18px]">
+              Our AI agent Edison will help you build your idea from A to Z
             </p>
             <Button
-              text="Create your project"
+              text="Start building"
               className="transition ease-in-out text-lg leading-none font-semibold bg-pale-green rounded-full hover:bg-white"
               padding="py-4 px-[52px]"
               onClick={() => createAccount("Build-Welcome: Create project - upper")}
@@ -85,484 +256,348 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <div className="w-full flex flex-col items-center">
-        <div className="w-8/9 flex flex-col md:w-9/10 max-w-7xl">
-          <div className="flex flex-row md:flex-col justify-center gap-[31px] md:gap-[21px] mt-[117.5px] mb-[119px] md:mb-[70px] md:mt-[54px]">
-            <div className="bg-white rounded-[20px] p-[51px] md:pl-[30px] md:py-[30px] md:pr-5 w-full max-w-[623px] md:max-w-none h-[800px] md:h-[578px] bg-[url('/vectors/get-mobiles.svg')] md:bg-[url('/vectors/get-mobiles-responsive.svg')] bg-no-repeat bg-bottom md:bg-contain">
-              <p className="text-[34px] md:text-[32px] md:leading-tight text-fuse-black font-bold md:font-semibold">
-                Get started
+      <section className="w-8/9 flex flex-col gap-10 md:w-9/10 max-w-7xl mx-auto py-20 md:py-16">
+        <article className="grid grid-cols-2 gap-10 bg-lightest-gray rounded-[20px] p-10 lg:grid-cols-1">
+          <div className="flex flex-col items-start gap-8">
+            <div className="text-[2.125rem] text-text-dark-gray md:text-lg">
+              FuseBox
+            </div>
+            <h2 className="text-6xl text-fuse-black font-semibold md:text-2xl">
+              Client SDKs to connect users to web3
+            </h2>
+            <p className="text-[1.25rem] text-text-dark-gray md:text-base">
+              Unleash the power of Fusebox our middleware for Account abstraction using Edison you can onboard your customers to web3 with very little coding knowledge
+            </p>
+            <div className="flex flex-wrap gap-2.5">
+              {fuseboxPills.map((pill, i) => (
+                <div key={i} className="border border-text-dark-gray rounded-full px-4 py-2 text-lg text-text-dark-gray leading-none md:text-sm">
+                  {pill}
+                </div>
+              ))}
+            </div>
+            <button
+              className="transition ease-in-out px-10 py-4 bg-fuse-black border border-fuse-black rounded-full text-lg leading-none text-white font-semibold hover:bg-[transparent] hover:text-fuse-black"
+              onClick={() => createAccount("Build-Welcome: Start building - FuseBox")}
+            >
+              Start building
+            </button>
+          </div>
+          <Image src={walletModal} alt="wallet modal" width={510} height={510} />
+        </article>
+        <div className="grid grid-cols-4 gap-10 lg:grid-cols-2 md:grid-cols-1">
+          {fuseboxFeatures.map((feature, i) => (
+            <article key={i} className="flex flex-col items-start gap-3 bg-white rounded-[20px] p-5">
+              <div className="flex items-center w-10 h-10">
+                <Image src={feature.image.src} alt={feature.name} width={feature.image.width} height={feature.image.height} />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <p className="text-[1.25rem] font-semibold">
+                  {feature.name}
+                </p>
+                <p className={cn("text-sm text-text-dark-gray", feature.classNames?.description)}>
+                  {feature.description}
+                </p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+      <section className="w-8/9 flex flex-col gap-10 md:w-9/10 max-w-7xl mx-auto py-28 md:py-16">
+        <article className="grid grid-cols-2 gap-10 bg-lightest-gray rounded-[20px] p-10 lg:grid-cols-1">
+          <div className="flex flex-col items-start gap-8">
+            <Image src={edisonGray} alt="edison gray" width={181} height={46} />
+            <h2 className="text-6xl text-fuse-black font-semibold max-w-lg md:text-2xl">
+              What can Edison do for you?
+            </h2>
+            <p className="text-[1.25rem] text-text-dark-gray md:text-base">
+              Experience the power of blockchain without the complexity. Ask the Fuse AI Agent to handle your Fuse Network transactions, manage assets, and navigate DeFi services.
+            </p>
+            <div className="flex gap-8 md:flex-col">
+              <button
+                className="transition ease-in-out px-10 py-4 bg-fuse-black border border-fuse-black rounded-full text-lg leading-none text-white font-semibold hover:bg-[transparent] hover:text-fuse-black"
+                onClick={() => createAccount("Build-Welcome: Start building - Edison")}
+              >
+                Start building
+              </button>
+              <Link
+                href="https://news.fuse.io/introducing-edison-the-first-ai-payments-agent-on-fuse/"
+                target="_blank"
+                className="group flex items-center gap-1 text-lg font-semibold"
+              >
+                Learn more
+                <Image
+                  src={rightArrowBold}
+                  alt="right arrow"
+                  width={20}
+                  height={20}
+                  className="transition ease-in-out group-hover:translate-x-0.5"
+                />
+              </Link>
+            </div>
+          </div>
+          <div className="flex justify-center items-center">
+            <Image src={edisonChat} alt="edison chat" width={453} height={300} />
+          </div>
+        </article>
+        <div className="grid grid-cols-4 gap-10 lg:grid-cols-2 md:grid-cols-1">
+          {edisonFeatures.map((feature, i) => (
+            <article key={i} className="flex flex-col items-start gap-3 bg-white rounded-[20px] p-5 pr-4">
+              <div className="flex items-center w-10 h-10">
+                <Image src={feature.image.src} alt={feature.name} width={feature.image.width} height={feature.image.height} />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <p className="text-[1.25rem] font-semibold">
+                  {feature.name}
+                </p>
+                <p className={cn("text-sm text-text-dark-gray", feature.classNames?.description)}>
+                  {feature.description}
+                </p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+      <section className="w-full py-28 bg-white text-dune md:py-16">
+        <div className="w-8/9 flex flex-col md:w-9/10 max-w-7xl mx-auto">
+          <div className="flex flex-col gap-[91px] md:gap-[52px]">
+            <div className="flex flex-col items-center text-center gap-[22px]">
+              <h2 className="text-5xl md:text-2xl md:leading-tight font-semibold">
+                Explore our Apps & Services
+              </h2>
+              <p className="text-[20px]/7 md:text-base max-w-[756.49px] md:max-w-[347.38px]">
+                Save months for building your wallet app with reliable, ready-to-use third-party solutions on Fuse Network. Integrate the services your business needs to save development time and costs.
               </p>
-              <p className="text-[20px]/7 md:text-base text-text-dark-gray mt-[30.61px] mb-[38.67px] md:mt-5 md:mb-6 max-w-[395.25px]">
-                Begin your crypto project on Fuse now, no prior experience required
-              </p>
-              <div className="rounded-[20px] pt-[35.4px] px-10 pb-[50px] md:px-0 md:py-0">
-                <div className="flex flex-col gap-[25.79px] md:gap-7">
-                  <p className="text-[50px] md:text-5xl text-fuse-black font-bold">
+            </div>
+            <div className="grid grid-cols-6 lg:grid-cols-3 md:grid-cols-1 gap-5">
+              {apps.map((app, i) =>
+                <Link
+                  key={i}
+                  href={app.link}
+                  target="_blank"
+                  className="flex flex-col gap-2.5 p-3 hover:bg-black/5 rounded-[20px]"
+                >
+                  <Image
+                    src={app.logo}
+                    alt={app.name}
+                  />
+                  <div className="flex flex-col items-start gap-1.5">
+                    <p className="text-2xl font-semibold">
+                      {app.name}
+                    </p>
+                    <div className="bg-dune/10 rounded-full px-3.5 py-2 leading-none">
+                      {app.tag}
+                    </div>
+                  </div>
+                </Link>
+              )}
+            </div>
+            <div className="flex justify-center">
+              <Link
+                href="https://www.fuse.io/ecosystem"
+                target="_blank"
+                className="transition ease-in-out px-10 py-4 bg-fuse-black border border-fuse-black rounded-full text-lg leading-none text-white font-semibold hover:bg-[transparent] hover:text-fuse-black"
+              >
+                Explore our ecosystem
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="w-8/9 flex flex-col gap-10 md:w-9/10 max-w-7xl mx-auto py-28 md:py-16">
+        <div className="flex flex-col gap-16">
+          <div className="flex flex-col justify-center items-center text-center gap-[13.25px]">
+            <h2 className="text-5xl md:text-[32px] md:leading-tight text-fuse-black font-semibold">
+              Plans & Pricing
+            </h2>
+            <p className="text-[20px]/7 md:text-base leading-[21.69px] text-text-dark-gray">
+              Here is the list of the Fuse products and solutions
+            </p>
+          </div>
+          <div className="flex grid grid-cols-3 lg:grid-cols-1 gap-[30px]">
+            <div className="flex flex-col gap-[30px] rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
+              <div className="h-[194px] md:h-auto">
+                <p className="text-3xl text-fuse-black font-semibold">
+                  Free plan
+                </p>
+                <p className="text-night opacity-60 mt-[18.82px] mb-[30.7px] max-w-[300px]">
+                  Start receiving crypto payments in just a few clicks
+                </p>
+                <div className="flex items-baseline gap-[10.63px]">
+                  <p className="text-[50px]/[60.25px] font-semibold">
                     $0
                   </p>
-                  <div className="flex flex-col gap-[18.73px] md:gap-4">
-                    <div className="flex items-center gap-[13.3px] md:gap-[9px]">
-                      <Image
-                        src={checkmarkBg}
-                        alt="checkmark with background"
-                      />
-                      <p className="text-[20px]/7 md:text-base font-bold">
-                        1M RPC calls
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-[13.3px] md:gap-[9px]">
-                      <Image
-                        src={checkmarkBg}
-                        alt="checkmark with background"
-                      />
-                      <p className="text-[20px]/7 md:text-base font-bold">
-                        1000 transactions
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-[13.3px] md:gap-[9px]">
-                      <Image
-                        src={checkmarkBg}
-                        alt="checkmark with background"
-                      />
-                      <p className="text-[20px]/7 md:text-base font-bold">
-                        10K API calls
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-[13.3px] md:gap-[9px]">
-                      <Image
-                        src={checkmarkBg}
-                        alt="checkmark with background"
-                      />
-                      <p className="text-[20px]/7 md:text-base font-bold">
-                        10K Webhook calls
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-[30px] md:gap-5 w-[626px] md:w-auto">
-              <div className="bg-white rounded-[20px] md:flex md:flex-col md:justify-end pt-[50px] px-[47.5px] md:px-6 md:py-[30px] h-[385px] md:h-[431px] bg-[url('/vectors/create-mobiles.svg')] md:bg-[url('/vectors/create-mobiles-responsive.svg')] bg-no-repeat bg-bottom md:bg-top md:bg-contain">
-                <p className="text-[34px]/[40.97px] md:text-[32px] md:leading-tight text-fuse-black font-bold md:font-semibold max-w-[473.16px]">
-                  Create programable wallets for your customers
-                </p>
-                <p className="text-[20px]/7 md:text-base text-text-dark-gray mt-[12.98px] md:mt-2.5 max-w-[352.54px]">
-                  Quickly launch a wallet for your customers
-                </p>
-              </div>
-              <div className="bg-white rounded-[20px] pt-[50px] px-[47.5px] lg:pl-[30px] lg:py-[30px] lg:pr-1.5 h-[385px] md:h-auto">
-                <p className="text-[34px]/[40.97px] md:text-[32px] md:leading-tight text-fuse-black font-bold md:font-semibold">
-                  Mobile and Web SDKs
-                </p>
-                <p className="text-[20px]/7 md:text-base text-text-dark-gray mt-[12.98px] mb-[25.31px] md:mt-[18px] md:mb-[27px] md:max-w-[257px]">
-                  Implement account abstraction out-of-the-box:
-                </p>
-                <div className="flex flex-col gap-[18.73px]">
-                  <div className="flex items-center gap-[13.3px]">
-                    <Image
-                      src={checkmarkBg}
-                      alt="checkmark with background"
-                    />
-                    <p className="text-[20px]/7 md:text-base text-text-dark-gray">
-                      Social logins
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-[13.3px]">
-                    <Image
-                      src={checkmarkBg}
-                      alt="checkmark with background"
-                    />
-                    <p className="text-[20px]/7 md:text-base text-text-dark-gray">
-                      Gasless transactions
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-[13.3px]">
-                    <Image
-                      src={checkmarkBg}
-                      alt="checkmark with background"
-                    />
-                    <p className="text-[20px]/7 md:text-base text-text-dark-gray">
-                      Business automations
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="w-full flex flex-col items-center">
-        <div className="w-8/9 flex flex-col md:w-9/10 max-w-7xl">
-          <div className="flex flex-col gap-28 md:gap-[26px]">
-            <div className="flex justify-center text-center">
-              <p className="text-[34px]/[50.32px] md:text-[32px] md:leading-tight font-bold md:font-semibold max-w-[688.35px]">
-                Introduce your users to Web3 with a cost-effective approach
-              </p>
-            </div>
-            <div className="flex flex-row md:flex-col gap-[85.15px] md:gap-[18.73px] px-[54.46px] py-[53.36px] md:pl-[30px] md:py-[30px] md:pr-[10px] min-h-[618px] md:min-h-[870px] bg-white rounded-[20px] bg-[url('/vectors/ecosystem.svg')] md:bg-[url('/vectors/ecosystem-responsive.svg')] bg-no-repeat bg-right-bottom md:bg-contain">
-              <div>
-                <p className="text-[34px]/[40.97px] md:text-[32px] md:leading-tight text-fuse-black font-bold md:font-semibold">
-                  An ecosystem for Web3 payments
-                </p>
-                <p className="text-[20px]/7 md:text-base text-text-dark-gray mt-[32.14px] mb-[90.51px] md:mt-2.5 md:mb-[31px] max-w-[395.25px] md:max-w-[340px]">
-                  Access a comprehensive suite of value-added services with a Fuse Operator account,
-                  all under a straightforward pricing model.
-                </p>
-                <div className="flex flex-col gap-[18.73px]">
-                  <div className="flex items-center gap-[13.3px] md:gap-[9px]">
-                    <Image
-                      src={checkmarkBg}
-                      alt="checkmark with background"
-                    />
-                    <p className="text-[20px]/7 md:text-base text-text-dark-gray font-bold">
-                      KYC and fiat on/off-ramping
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-[13.3px] md:gap-[9px]">
-                    <Image
-                      src={checkmarkBg}
-                      alt="checkmark with background"
-                    />
-                    <p className="text-[20px]/7 md:text-base text-text-dark-gray font-bold">
-                      Recurring payments - coming soon
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-[13.3px] md:gap-[9px]">
-                    <Image
-                      src={checkmarkBg}
-                      alt="checkmark with background"
-                    />
-                    <p className="text-[20px]/7 md:text-base text-text-dark-gray font-bold">
-                      Private business transactions - coming soon
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col gap-[18.73px]">
-                <div className="flex items-center gap-[13.3px] md:gap-[9px]">
-                  <Image
-                    src={checkmarkBg}
-                    alt="checkmark with background"
-                  />
-                  <p className="text-[20px]/7 md:text-base text-text-dark-gray font-bold">
-                    Most reliable business stack in Web3
-                  </p>
-                </div>
-                <div className="flex items-center gap-[13.3px] md:gap-[9px]">
-                  <Image
-                    src={checkmarkBg}
-                    alt="checkmark with background"
-                  />
-                  <p className="text-[20px]/7 md:text-base text-text-dark-gray font-bold">
-                    Pay as you go only if you have traction
-                  </p>
-                </div>
-                <div className="flex items-center gap-[13.3px]">
-                  <Image
-                    src={checkmarkBg}
-                    alt="checkmark with background"
-                  />
-                  <p className="text-[20px]/7 md:text-base text-text-dark-gray font-bold">
-                    High availability for real time payments
-                  </p>
-                </div>
-                <div className="flex items-center gap-[13.3px] md:gap-[9px]">
-                  <Image
-                    src={checkmarkBg}
-                    alt="checkmark with background"
-                  />
-                  <p className="text-[20px]/7 md:text-base text-text-dark-gray font-bold">
-                    Fault tolerance - build once and scale
+                  <p className="text-night opacity-60">
+                    Per month
                   </p>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="w-full bg-fuse-black pt-[122.6px] pb-[147px] md:pt-[59px] md:pb-[58px] mt-[368px] mb-[169.47px] md:mt-20 md:mb-16 bg-[url('/vectors/pluses.svg')]">
-        <div className="w-full flex flex-col items-center">
-          <div className="w-8/9 flex flex-col md:w-9/10 max-w-7xl">
-            <div className="flex flex-col gap-[91px] md:gap-[52px]">
-              <div className="flex flex-col items-center text-center gap-[22px]">
-                <p className="text-[40px]/[48.2px] md:text-[32px] md:leading-tight text-white font-bold md:max-w-[294.71px]">
-                  Explore our Apps & Services
-                </p>
-                <p className="text-[20px]/7 md:text-base text-white max-w-[756.49px] md:max-w-[347.38px]">
-                  Streamline your operations with reliable, ready-to-use third-party solutions on the Fuse Network.
-                  Find and integrate the services your business needs.
-                </p>
+              <hr className="w-full h-[0.5px] border-[#C0C0C0]" />
+              <div className="flex flex-col gap-4 h-[200px] md:h-auto">
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    Up to 1000 monthly transactions
+                  </p>
+                </div>
               </div>
-              <div className="grid grid-cols-3 md:grid-cols-1 justify-between gap-[30px] md:gap-5">
-                {apps.map((app, i) =>
-                  <a
-                    key={i}
-                    href={app.link}
-                    target="_blank"
-                    className="flex flex-col gap-2.5 justify-between min-h-[269px] px-[30px] py-7 bg-white/5 hover:bg-white/10 rounded-[20px]"
-                  >
-                    <div className="flex flex-col gap-2.5">
-                      <p className="text-2xl text-white font-semibold">
-                        {app.name}
-                      </p>
-                      <p className="text-white opacity-60 max-w-[282.15px]">
-                        {app.description}
-                      </p>
-                    </div>
-                    <Image
-                      src={app.logo}
-                      alt={app.name}
-                    />
-                  </a>
-                )}
-              </div>
-              <div className="flex justify-center">
-                <a
-                  href="https://www.fuse.io/ecosystem"
-                  target="_blank"
-                  className="transition ease-in-out bg-white rounded-full text-lg leading-none font-semibold text-center px-[36.5px] py-4 hover:bg-success"
-                >
-                  Explore more ecosystem partners
-                </a>
-              </div>
+              <Button
+                text="Get Started"
+                className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black rounded-full hover:bg-white hover:text-black"
+                padding="py-4 px-[52px] mt-[25.88px]"
+                onClick={() => createAccount("Get started: Starter")}
+              />
             </div>
-          </div>
-        </div>
-      </div>
-      <div className="w-full flex flex-col items-center md:mb-16">
-        <div className="w-8/9 flex flex-col md:w-9/10 max-w-7xl">
-          <div className="flex flex-col gap-16">
-            <div className="flex flex-col justify-center items-center text-center gap-[13.25px]">
-              <p className="text-5xl md:text-[32px] md:leading-tight text-fuse-black font-bold">
-                Plans & Pricing
-              </p>
-              <p className="text-[20px]/7 md:text-base leading-[21.69px] text-text-dark-gray">
-                Here is the list of the Fuse products and solutions
-              </p>
-            </div>
-            <div className="flex flex-row lg:flex-col lg:items-center justify-center gap-[30px]">
-              <div className="flex flex-col gap-[30px] rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
-                <div className="h-[194px] md:h-auto">
+            <div className="flex flex-col gap-[30px] bg-white rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
+              <div className="h-[194px] md:h-auto">
+                <div className="flex items-center gap-[13.46px]">
                   <p className="text-3xl text-fuse-black font-semibold">
-                    Starter Plan
+                    Basic plan
                   </p>
-                  <p className="text-night opacity-60 mt-[18.82px] mb-[30.7px] max-w-[300px]">
-                    Unleash the power of your buissiness with the Starter Plan
-                  </p>
-                  <div className="flex items-baseline gap-[10.63px]">
-                    <p className="text-[50px]/[60.25px] font-semibold">
-                      $0
-                    </p>
-                    <p className="text-night opacity-60">
-                      Per month
+                  <div className="border border-2 rounded-full px-3 py-1.5">
+                    <p className="text-base leading-none font-semibold">
+                      Popular
                     </p>
                   </div>
                 </div>
-                <hr className="w-full h-[0.5px] border-[#C0C0C0]" />
-                <div className="flex flex-col gap-4 h-[200px] md:h-auto">
-                  <div className="flex items-center gap-[13.98px]">
-                    <Image
-                      src={checkmark}
-                      alt="checkmark"
-                      width={15.64}
-                      height={10.5}
-                    />
-                    <p>
-                      1M RPC calls
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-[13.98px]">
-                    <Image
-                      src={checkmark}
-                      alt="checkmark"
-                      width={15.64}
-                      height={10.5}
-                    />
-                    <p>
-                      1000 transactions
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-[13.98px]">
-                    <Image
-                      src={checkmark}
-                      alt="checkmark"
-                      width={15.64}
-                      height={10.5}
-                    />
-                    <p>
-                      10K API calls
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-[13.98px]">
-                    <Image
-                      src={checkmark}
-                      alt="checkmark"
-                      width={15.64}
-                      height={10.5}
-                    />
-                    <p>
-                      10K Webhook calls
-                    </p>
-                  </div>
+                <p className="text-night opacity-60 mt-[18.82px] mb-[30.7px] max-w-[300px]">
+                  Robust service. Low price.
+                </p>
+                <div className="flex items-baseline gap-[10.63px]">
+                  <p className="text-[50px]/[60.25px] font-semibold">
+                    $50
+                  </p>
+                  <p className="text-night opacity-60">
+                    Per month
+                  </p>
                 </div>
-                <Button
-                  text="Get Started"
-                  className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black rounded-full hover:bg-white hover:text-black"
-                  padding="py-4 px-[52px] mt-[25.88px]"
-                  onClick={() => createAccount("Get started: Starter")}
-                />
               </div>
-              <div className="flex flex-col gap-[30px] bg-white rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
-                <div className="h-[194px] md:h-auto">
-                  <div className="flex items-center gap-[13.46px]">
-                    <p className="text-3xl text-fuse-black font-semibold">
-                      Pro Plan
-                    </p>
-                    <div className="border border-2 rounded-full px-3 py-1.5">
-                      <p className="text-base leading-none font-semibold">
-                        Popular
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-night opacity-60 mt-[18.82px] mb-[30.7px] max-w-[300px]">
-                    Elevate your business to new heights with the Pro Plan
+              <hr className="w-full h-[0.5px] border-[#C0C0C0]" />
+              <div className="flex flex-col gap-4 h-[200px] md:h-auto">
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    1M transactions
                   </p>
-                  <div className="flex items-baseline gap-[10.63px]">
-                    <p className="text-[50px]/[60.25px] font-semibold">
-                      $100
-                    </p>
-                    <p className="text-night opacity-60">
-                      Per month
-                    </p>
-                  </div>
                 </div>
-                <hr className="w-full h-[0.5px] border-[#C0C0C0]" />
-                <div className="flex flex-col gap-4 h-[200px] md:h-auto">
-                  <div className="flex items-center gap-[13.98px]">
-                    <Image
-                      src={checkmark}
-                      alt="checkmark"
-                      width={15.64}
-                      height={10.5}
-                    />
-                    <p>
-                      Everything in the Starter Plan +
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-[13.98px]">
-                    <Image
-                      src={checkmark}
-                      alt="checkmark"
-                      width={15.64}
-                      height={10.5}
-                    />
-                    <p>
-                      Unlimited transactions and RPC
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-[13.98px]">
-                    <Image
-                      src={checkmark}
-                      alt="checkmark"
-                      width={15.64}
-                      height={10.5}
-                    />
-                    <p>
-                      Private transactions
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-[13.98px]">
-                    <Image
-                      src={checkmark}
-                      alt="checkmark"
-                      width={15.64}
-                      height={10.5}
-                    />
-                    <p>
-                      Subscriptions
-                    </p>
-                  </div>
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    Access to all services on Fuse
+                  </p>
                 </div>
-                <Button
-                  text="Get Started"
-                  className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black rounded-full hover:bg-success hover:text-black"
-                  padding="py-4 px-[52px] mt-[25.88px]"
-                  onClick={() => createAccount("Get started: Pro")}
-                />
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    Reliable and fast support
+                  </p>
+                </div>
               </div>
-              <div className="flex flex-col gap-[30px] rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
-                <div className="h-[194px] md:h-auto">
-                  <p className="text-3xl text-fuse-black font-semibold">
-                    Enterprise Plan
+              <Button
+                text="Get Started"
+                className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black rounded-full hover:bg-success hover:text-black"
+                padding="py-4 px-[52px] mt-[25.88px]"
+                onClick={() => createAccount("Get started: Pro")}
+              />
+            </div>
+            <div className="flex flex-col gap-[30px] rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
+              <div className="h-[194px] md:h-auto">
+                <p className="text-3xl text-fuse-black font-semibold">
+                  Premium Plan
+                </p>
+                <p className="text-night opacity-60 mt-[18.82px] mb-[30.7px]">
+                  Get more. Maximize your business potential
+                </p>
+                <div className="flex items-baseline gap-[10.63px]">
+                  <p className="text-[50px]/[60.25px] font-semibold">
+                    $500
                   </p>
-                  <p className="text-night opacity-60 mt-[18.82px] mb-[30.7px]">
-                    Maximize your business&apos;s potential with the Enterprise Plan
+                  <p className="text-night opacity-60">
+                    Per month
                   </p>
-                  <div className="flex items-baseline gap-[10.63px]">
-                    <p className="text-3xl text-ghost font-semibold">
-                      Coming soon
-                    </p>
-                  </div>
                 </div>
-                <hr className="w-full h-[0.5px] border-[#C0C0C0]" />
-                <div className="flex flex-col gap-4 h-[200px] md:h-auto">
-                  <div className="flex items-center gap-[13.98px]">
-                    <Image
-                      src={checkmark}
-                      alt="checkmark"
-                      width={15.64}
-                      height={10.5}
-                    />
-                    <p>
-                      Everything in the Pro Plan +
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-[13.98px]">
-                    <Image
-                      src={checkmark}
-                      alt="checkmark"
-                      width={15.64}
-                      height={10.5}
-                    />
-                    <p>
-                      Dedicated support
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-[13.98px]">
-                    <Image
-                      src={checkmark}
-                      alt="checkmark"
-                      width={15.64}
-                      height={10.5}
-                    />
-                    <p>
-                      Early access to upcoming features
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  text="Coming soon"
-                  className="text-lg text-white leading-none font-semibold bg-iron rounded-full"
-                  padding="py-4 px-[52px] mt-[25.88px]"
-                />
               </div>
+              <hr className="w-full h-[0.5px] border-[#C0C0C0]" />
+              <div className="flex flex-col gap-4 h-[200px] md:h-auto">
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    Everything in the Basic plan +
+                  </p>
+                </div>
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    Unlimited transactions
+                  </p>
+                </div>
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    Individual support approach
+                  </p>
+                </div>
+              </div>
+              <Button
+                text="Coming soon"
+                className="text-lg text-white leading-none font-semibold bg-iron rounded-full"
+                padding="py-4 px-[52px] mt-[25.88px]"
+              />
             </div>
           </div>
         </div>
-      </div>
-      <div className="w-full flex flex-col items-center mt-[169.47px] mb-[187px] md:hidden">
-        <div className="w-8/9 flex flex-col justify-center items-center text-center gap-[43.53px] mt-[30.84px] md:w-9/10 max-w-7xl">
-          <p className="text-5xl leading-normal font-bold">
-            Ready to start your project?
+      </section>
+      <section className="w-full py-28 bg-success text-center md:py-16">
+        <div className="w-8/9 flex flex-col justify-center items-center gap-5 md:w-9/10 max-w-7xl mx-auto">
+          <Image src={block} alt="block" width={121} height={140} />
+          <h2 className="text-6xl leading-tight font-semibold max-w-xl md:text-2xl">
+            Ready to start building for Web3?
+          </h2>
+          <p className="text-[1.25rem] text-text-dark-gray font-medium">
+            Start using FuseBox today
           </p>
-          <Button
-            text="Create an account"
-            className="transition ease-in-out text-lg leading-none font-semibold bg-pale-green rounded-full hover:bg-black hover:text-white"
-            padding="py-4 px-[52px]"
+          <button
+            className="transition ease-in-out px-10 py-4 bg-fuse-black border border-fuse-black rounded-full text-lg leading-none text-white font-semibold hover:bg-[transparent] hover:text-fuse-black"
             onClick={() => createAccount("Build-Welcome: Create project - bottom")}
-          />
+          >
+            Get started
+          </button>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

@@ -13,7 +13,7 @@ import { Address } from "abitype";
 import { createPublicClient, http, parseUnits } from "viem";
 import { hex } from "./helpers";
 import { fuse } from "viem/chains";
-import { config } from "./web3Auth";
+import { config } from "./wagmi";
 
 const publicClient = (rpcUrl: string) => {
   return createPublicClient({
