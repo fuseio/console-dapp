@@ -5,7 +5,6 @@ import NavMenu from "./NavMenu";
 import NavButton from "./NavButton";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
-import { selectOperatorSlice } from "@/store/operatorSlice";
 import { cn, path } from "@/lib/helpers";
 import Image from "next/image";
 import { useAccount } from "wagmi";
@@ -18,7 +17,6 @@ type TopbarProps = {
 const Topbar = ({ className }: TopbarProps) => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const { isTransfiModalOpen, selected } = useAppSelector(selectNavbarSlice);
-  const { isAuthenticated } = useAppSelector(selectOperatorSlice);
   const dispatch = useAppDispatch();
   const { isConnected } = useAccount();
   const router = useRouter();
@@ -59,10 +57,6 @@ const Topbar = ({ className }: TopbarProps) => {
       submenu: AirdropSubmenu
     },
     {
-      title: "Build",
-      link: isAuthenticated ? path.DASHBOARD : "/build",
-    },
-    {
       title: "Bridge",
       link: path.BRIDGE,
     },
@@ -70,7 +64,7 @@ const Topbar = ({ className }: TopbarProps) => {
       title: "Staking",
       link: path.STAKING,
     },
-  ], [AirdropSubmenu, isAuthenticated]);
+  ], [AirdropSubmenu]);
 
   return (
     <nav className={cn("w-full h-20 sticky top-0 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-pastel-gray md:border-0",
