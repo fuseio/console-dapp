@@ -98,6 +98,7 @@ const AddToken = () => {
                 <button
                   className="bg-success rounded-full py-4 text-base font-bold w-full"
                   onClick={() => {
+                    if (!window.ethereum) return;
                     window.ethereum.request({
                       method: "wallet_watchAsset",
                       params: {

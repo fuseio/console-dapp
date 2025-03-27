@@ -5,10 +5,9 @@ import NavMenu from "./NavMenu";
 import NavButton from "./NavButton";
 import { useAppSelector } from "@/store/store";
 import { selectNavbarSlice } from "@/store/navbarSlice";
-import { selectOperatorSlice } from "@/store/operatorSlice";
-import { cn, path } from "@/lib/helpers";
 import Image from "next/image";
 import { selectAirdropSlice } from "@/store/airdropSlice";
+import { cn, path } from "@/lib/helpers";
 
 const AirdropSubmenu = [
   {
@@ -43,24 +42,19 @@ type TopbarProps = {
 const Topbar = ({ className }: TopbarProps) => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const { isTransfiModalOpen, selected } = useAppSelector(selectNavbarSlice);
-  const { isAuthenticated } = useAppSelector(selectOperatorSlice);
   const airdropSlice = useAppSelector(selectAirdropSlice);
   const [menuItems, setMenuItems] = useState([
     {
-      title: "Wallet",
-      link: "/wallet",
+      title: "Home",
+      link: path.HOME,
     },
     {
       title: "Rewards",
       link: path.AIRDROP,
     },
     {
-      title: "Build",
-      link: "/build",
-    },
-    {
       title: "Bridge",
-      link: "/bridge",
+      link: path.BRIDGE,
     },
     {
       title: "Staking",
@@ -72,9 +66,6 @@ const Topbar = ({ className }: TopbarProps) => {
   useEffect(() => {
     setMenuItems((oldMenuItems) =>
       oldMenuItems.map((item) => {
-        if (item.link === path.BUILD && isAuthenticated) {
-          return { ...item, link: path.DASHBOARD }
-        }
         if (item.link === path.AIRDROP && airdropSlice.isUser) {
           return { ...item, link: path.AIRDROP, submenu: AirdropSubmenu }
         }
@@ -82,7 +73,7 @@ const Topbar = ({ className }: TopbarProps) => {
       }
       )
     );
-  }, [isAuthenticated, airdropSlice.isUser]);
+  }, [airdropSlice.isUser]);
 
   return (
     <nav className={cn("w-full h-20 sticky top-0 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-pastel-gray md:border-0",
@@ -90,25 +81,27 @@ const Topbar = ({ className }: TopbarProps) => {
       className
     )}>
       <div className="flex justify-between h-full items-center w-8/9 md:w-9/10 max-w-7xl relative">
-        <span>
-          <a href="/">
-            <Image
-              src={fuseConsoleLogo}
-              alt="fuse console logo"
-              width={196}
-              height={28}
-              className="z-50 md:hidden"
-            />
-            <Image
-              src={fuseLogoMobile}
-              alt="fuse logo"
-              width={20}
-              height={20}
-              className="z-50 hidden md:block"
-            />
-          </a>
-        </span>
-        <NavMenu menuItems={menuItems} isOpen={isOpen} selected={selected} isResponsive />
+        <div className="flex items-center gap-10">
+          <span>
+            <a href={path.HOME}>
+              <Image
+                src={fuseConsoleLogo}
+                alt="fuse console logo"
+                width={196}
+                height={28}
+                className="z-50 md:hidden"
+              />
+              <Image
+                src={fuseLogoMobile}
+                alt="fuse logo"
+                width={20}
+                height={20}
+                className="z-50 hidden md:block"
+              />
+            </a>
+          </span>
+          <NavMenu menuItems={menuItems} isOpen={isOpen} selected={selected} isResponsive />
+        </div>
         <NavButton isOpen={isOpen} setOpen={setOpen} />
       </div>
     </nav>
