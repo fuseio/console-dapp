@@ -313,6 +313,13 @@ export interface OperatorContactDetail {
   name?: string;
 }
 
+export interface OperatorWallet {
+  ownerId: string;
+  smartWalletAddress: Address;
+  isActivated?: boolean;
+  etherspotSmartWalletAddress?: Address;
+}
+
 export interface Withdraw {
   amount: string;
   token: string;
@@ -320,10 +327,14 @@ export interface Withdraw {
 }
 
 export interface User {
+  id: string;
   name: string;
   email: string;
   auth0Id: string;
   smartWalletAddress: Address;
+  isActivated: boolean;
+  createdAt: string;
+  etherspotSmartWalletAddress?: Address;
 }
 
 export interface Project {
@@ -399,6 +410,63 @@ export interface ValidatorResponse {
   jailedValidators: Address[]
   pendingValidators: Address[]
   validatorsMetadata: Record<Address, ValidatorTypeResponse>
+}
+
+export enum Reaction {
+  LIKE = "like",
+  DISLIKE = "dislike",
+}
+
+export type TextResponse = {
+  text: string;
+  user: 'user' | 'Fuse Network';
+  action?: string;
+  hash?: string;
+  reaction?: Reaction;
+  [key: string]: unknown;
+};
+
+export interface Invoice {
+  ownerId: string;
+  amount: string;
+  amountUsd?: string;
+  currency: string;
+  txHash: string;
+  createdAt: string
+  updatedAt: string
+}
+
+export interface SubscriptionInfo {
+  payment: number,
+  advance: number,
+  decimals: number
+  usdcAddress: Address,
+}
+
+export enum BillingCycle {
+  MONTHLY = "monthly",
+  YEARLY = "yearly"
+}
+
+export interface OperatorCheckout {
+  successUrl: string
+  cancelUrl: string
+  billingCycle: BillingCycle
+}
+
+export enum OperatorCheckoutPaymentStatus {
+  UNPAID = 'unpaid',
+  PAID = 'paid',
+  REFUNDED = 'refunded'
+}
+
+export interface OperatorCheckoutSession {
+  billingCycle: BillingCycle
+  status: string
+  paymentStatus: OperatorCheckoutPaymentStatus
+  createdAt: string
+  updatedAt: string
+  amount: number
 }
 
 export interface CompletedQuest {
@@ -502,3 +570,68 @@ export type DelegateLicenseModal = {
   open: boolean;
   address?: Address;
 }
+
+export type OperatorRegistrationClassNames = {
+  pricingSection?: string;
+  pricingArticle?: string;
+  pricingBillingContainer?: string;
+  pricingBilling?: string;
+  pricingBillingRadio?: string;
+}
+
+export type TokenBalance = {
+  value: number;
+  formatted: string;
+}
+
+export type TokenUsdBalance = {
+  coin: TokenBalance;
+  token: TokenBalance;
+  usd: TokenBalance;
+}
+
+export type ChargeToken = {
+  symbol: string;
+  name: string;
+  address: string;
+  decimals: number;
+  coinGeckoId: string;
+  isNative: boolean;
+  icon: string;
+};
+
+export type ChargeBridgeToken = ChargeToken & {
+  recieveTokens: ChargeToken[];
+};
+
+export type ChargeBridgeSupportedTokens = {
+  [chainId: string]: ChargeBridgeToken[];
+};
+
+export type ChargeBridge = {
+  chainId: string;
+  amount: string;
+};
+
+export type ChargeBridgeResponse = {
+  walletAddress: Address;
+  startTime: number;
+  endTime: number;
+}
+
+export type WithdrawModalInput = {
+  title?: string;
+  address?: Address;
+}
+
+export type WithdrawModal = {
+  open: boolean;
+  title?: string;
+  description?: string;
+  from?: WithdrawModalInput;
+  to?: WithdrawModalInput;
+}
+
+export type ChatMessageProps = {
+  message: TextResponse;
+};
