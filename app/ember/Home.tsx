@@ -254,8 +254,7 @@ const Phases = () => {
             <div className="flex items-center gap-4 mt-4 md:flex-col md:items-start">
               <Link
                 className="transition ease-in-out w-fit px-12 py-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
-                href="https://docs.fuse.io/fuse-ember/airdrop/phase2"
-                target="_blank"
+                href={path.AIRDROP_GRANT}
               >
                 Learn more
               </Link>
