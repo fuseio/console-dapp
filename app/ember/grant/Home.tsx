@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useSwitchChain } from "wagmi";
 
-import { flash } from "@/lib/web3Auth";
+import { flash } from "@/lib/wagmi";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { claimTestnetFuseByAddress, selectAirdropSlice } from "@/store/airdropSlice";
 import { Status } from "@/lib/types";

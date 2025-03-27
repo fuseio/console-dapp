@@ -220,7 +220,7 @@ const Home = () => {
 
   function referralLink() {
     const host = !IS_SERVER ? window?.location?.host : ""
-    return `${host}/rewards?ref=${user.referralCode}`
+    return `${host}/ember?ref=${user.referralCode}`
   }
 
   useEffect(() => {
@@ -275,18 +275,18 @@ const Home = () => {
       >
         <Image
           src={leftArrow}
-          alt="back to Rewards"
+          alt="back to Ember"
           width={7}
           height={13}
           className="transition ease-in-out group-hover:-translate-x-0.5"
         />
         <div className="leading-none font-semibold">
-          Rewards
+          Ember
         </div>
       </Link>
       <div className="flex justify-between items-center mt-4">
         <h1 className="text-7xl font-semibold md:text-4xl">
-          Explore the Ecosystem
+          Points
         </h1>
       </div>
       <div className="flex flex-wrap justify-between gap-6 bg-lightest-gray rounded-[20px] mt-11 mb-[100px] xl:mb-11 p-8">

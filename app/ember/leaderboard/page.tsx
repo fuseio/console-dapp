@@ -17,7 +17,7 @@ const AirdropLeaderboard = () => {
   const router = useRouter();
 
   useEffect(() => {
-    dispatch(setSelectedNavbar("rewards"));
+    dispatch(setSelectedNavbar("ember"));
   }, [dispatch])
 
   useEffect(() => {

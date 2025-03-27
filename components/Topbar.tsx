@@ -1,39 +1,15 @@
-import { useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import fuseConsoleLogo from "@/assets/fuse-console-logo.svg";
 import fuseLogoMobile from "@/assets/logo-mobile.svg";
 import NavMenu from "./NavMenu";
 import NavButton from "./NavButton";
-import { useAppSelector } from "@/store/store";
-import { selectNavbarSlice } from "@/store/navbarSlice";
-import Image from "next/image";
-import { selectAirdropSlice } from "@/store/airdropSlice";
+import { useAppDispatch, useAppSelector } from "@/store/store";
+import { selectNavbarSlice, setIsWalletModalOpen } from "@/store/navbarSlice";
+import { selectOperatorSlice } from "@/store/operatorSlice";
 import { cn, path } from "@/lib/helpers";
-
-const AirdropSubmenu = [
-  {
-    title: "Leaderboard",
-    link: path.AIRDROP_LEADERBOARD,
-  },
-  {
-    title: "Fuse Ecosystem",
-    link: path.AIRDROP_ECOSYSTEM,
-  },
-  {
-    title: "FUSE Flash Testnet",
-    link: path.AIRDROP_FLASH,
-  },
-]
-
-const StakingSubmenu = [
-  {
-    title: "Fuse Staking",
-    link: path.STAKING,
-  },
-  {
-    title: "L2 Testnet Nodes",
-    link: path.TESTNET_NODES,
-  },
-]
+import Image from "next/image";
+import { useAccount } from "wagmi";
+import { useRouter } from "next/navigation";
 
 type TopbarProps = {
   className?: string;
@@ -42,15 +18,49 @@ type TopbarProps = {
 const Topbar = ({ className }: TopbarProps) => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const { isTransfiModalOpen, selected } = useAppSelector(selectNavbarSlice);
-  const airdropSlice = useAppSelector(selectAirdropSlice);
-  const [menuItems, setMenuItems] = useState([
+  const { isAuthenticated } = useAppSelector(selectOperatorSlice);
+  const dispatch = useAppDispatch();
+  const { isConnected } = useAccount();
+  const router = useRouter();
+
+  const handlePointsClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (isConnected) {
+      router.push(path.AIRDROP_ECOSYSTEM);
+    } else {
+      dispatch(setIsWalletModalOpen(true));
+    }
+  }, [dispatch, isConnected, router]);
+
+  const AirdropSubmenu = useMemo(() => [
+    {
+      title: "Builder Grant",
+      link: path.AIRDROP_GRANT,
+    },
+    {
+      title: "Points",
+      link: "#",
+      onClick: handlePointsClick
+    },
+    {
+      title: "Ember Testnet Nodes",
+      link: path.TESTNET_NODES,
+    },
+  ], [handlePointsClick]);
+
+  const menuItems = useMemo(() => [
     {
       title: "Home",
       link: path.HOME,
     },
     {
-      title: "Rewards",
+      title: "Ember",
       link: path.AIRDROP,
+      submenu: AirdropSubmenu
+    },
+    {
+      title: "Build",
+      link: isAuthenticated ? path.DASHBOARD : "/build",
     },
     {
       title: "Bridge",
@@ -59,21 +69,8 @@ const Topbar = ({ className }: TopbarProps) => {
     {
       title: "Staking",
       link: path.STAKING,
-      submenu: StakingSubmenu,
     },
-  ]);
-
-  useEffect(() => {
-    setMenuItems((oldMenuItems) =>
-      oldMenuItems.map((item) => {
-        if (item.link === path.AIRDROP && airdropSlice.isUser) {
-          return { ...item, link: path.AIRDROP, submenu: AirdropSubmenu }
-        }
-        return item
-      }
-      )
-    );
-  }, [airdropSlice.isUser]);
+  ], [AirdropSubmenu, isAuthenticated]);
 
   return (
     <nav className={cn("w-full h-20 sticky top-0 backdrop-blur-xl flex justify-center py-7 md:h-[32px] md:mt-2 border-b-[0.5px] border-pastel-gray md:border-0",
