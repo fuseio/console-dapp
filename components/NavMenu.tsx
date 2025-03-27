@@ -132,6 +132,7 @@ const NavMenu = ({
                           href={subItem.link}
                           key={subIndex}
                           className="text-base/4 text-fuse-black font-medium px-4 py-6 hover:bg-lightest-gray rounded-2xl"
+                          onClick={subItem.onClick}
                         >
                           {subItem.title}
                         </Link>

@@ -50,6 +50,7 @@ import Copy from "./ui/Copy";
 import { formatUnits } from "viem";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
+import { flash } from "@/lib/wagmi";
 
 const menu: Variants = {
   closed: (isCenter) => ({
@@ -88,6 +89,7 @@ const icons: Icons = {
   [mainnet.id]: ethLogo,
   [bsc.id]: bscLogo,
   [base.id]: baseIcon,
+  [flash.id]: fuseIcon,
 };
 
 type UsdTokens = {

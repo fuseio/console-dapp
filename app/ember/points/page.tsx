@@ -21,7 +21,7 @@ const AirdropEcosystem = () => {
   const router = useRouter();
 
   useEffect(() => {
-    dispatch(setSelectedNavbar("rewards"));
+    dispatch(setSelectedNavbar("ember"));
     dispatch(retrieveAirdropUser());
   }, [dispatch])
 
