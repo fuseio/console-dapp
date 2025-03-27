@@ -1,26 +1,30 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
 import { Signer, ethers } from "ethers";
-import { FuseSDK } from "@fuseio/fusebox-web-sdk";
-import { hex, splitSecretKey } from "@/lib/helpers";
-import { Operator, OperatorContactDetail, SignData, Withdraw } from "@/lib/types";
-import { checkActivated, checkOperatorExist, fetchCurrentOperator, fetchSponsoredTransactionCount, postCreateApiSecretKey, postCreateOperator, postCreatePaymaster, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
+import { FuseSDK, OwnerWalletClient } from "@fuseio/fusebox-web-sdk";
+import { SmartAccountClient } from "permissionless";
+import { consoleV2LaunchDate, hex, splitSecretKey, subscriptionInformation } from "@/lib/helpers";
+import { ChargeBridge, ChargeBridgeResponse, ChargeBridgeSupportedTokens, Invoice, Operator, OperatorCheckout, OperatorCheckoutSession, OperatorContactDetail, SignData, Status, Withdraw, WithdrawModal } from "@/lib/types";
+import { checkActivated, checkOperatorExist, fetchChargeBridgeSupportedTokens, fetchCurrentOperator, fetchOperatorCheckoutSessions, fetchOperatorSubscriptionInvoices, fetchSponsoredTransactionCount, postChargeBridge, postCreateApiSecretKey, postCreateOperator, postCreateOperatorWallet, postCreatePaymaster, postMigrateOperatorWallet, postOperatorCheckout, postOperatorSubscription, postValidateOperator, refreshOperatorToken, updateApiSecretKey } from "@/lib/api";
 import { RootState } from "../store";
 import { Address } from "abitype";
-import { parseEther, parseUnits } from "ethers/lib/utils";
-import { CONFIG, NEXT_PUBLIC_FUSE_API_BASE_URL } from "@/lib/config";
+import { CONFIG, NEXT_PUBLIC_FUSE_API_BASE_URL, NEXT_PUBLIC_PAYMASTER_FUNDER_ADDRESS } from "@/lib/config";
 import { PaymasterAbi } from "@/lib/abi/Paymaster";
 import { getSponsorIdBalance } from "@/lib/contractInteract";
 import * as amplitude from "@amplitude/analytics-browser";
 import { getERC20Balance } from "@/lib/erc20";
 import { ERC20ABI } from "@/lib/abi/ERC20";
+import { Account, parseEther, parseUnits } from "viem";
 
 const initOperator: Operator = {
   user: {
+    id: "",
     name: "",
     email: "",
     auth0Id: "",
     smartWalletAddress: hex,
+    isActivated: false,
+    createdAt: "",
   },
   project: {
     id: "",
@@ -47,6 +51,16 @@ const initWithdraw: Withdraw = {
   coinGeckoId: "",
 }
 
+const initChargeBridge: ChargeBridgeResponse = {
+  walletAddress: hex,
+  startTime: 0,
+  endTime: 0,
+}
+
+const initWithdrawModal: WithdrawModal = {
+  open: false,
+}
+
 export interface OperatorStateType {
   isLogin: boolean;
   isLoggedIn: boolean;
@@ -55,17 +69,14 @@ export interface OperatorStateType {
   isAuthenticated: boolean;
   isHydrated: boolean;
   isValidated: boolean;
-  isActivated: boolean;
-  isWithdrawn: boolean;
   isCheckingOperator: boolean;
   isValidatingOperator: boolean;
   isFetchingOperator: boolean;
   isOperatorWalletModalOpen: boolean;
-  isContactDetailsModalOpen: boolean;
-  isAccountCreationModalOpen: boolean;
-  isCongratulationModalOpen: boolean;
+  isCreatingOperator: boolean;
+  isCreatedOperator: boolean;
   isTopupAccountModalOpen: boolean;
-  isWithdrawModalOpen: boolean;
+  withdrawModal: WithdrawModal;
   isTopupPaymasterModalOpen: boolean;
   isGeneratingSecretApiKey: boolean;
   isYourSecretKeyModalOpen: boolean;
@@ -74,7 +85,7 @@ export interface OperatorStateType {
   isFetchingErc20Balance: boolean;
   isCreatingPaymaster: boolean;
   isFundingPaymaster: boolean;
-  isWithdrawing: boolean;
+  withdrawStatus: Status;
   isCheckingActivation: boolean;
   isFetchingSponsoredTransactions: boolean;
   sponsoredTransactions: number;
@@ -84,6 +95,17 @@ export interface OperatorStateType {
   withdraw: Withdraw;
   operatorContactDetail: OperatorContactDetail;
   operator: Operator;
+  isSubscriptionModalOpen: boolean;
+  subscriptionStatus: Status;
+  isCheckingout: boolean;
+  checkoutSessions: OperatorCheckoutSession[];
+  checkoutSessionStatus: Status;
+  subscriptionInvoices: Invoice[];
+  subscriptionInvoicesStatus: Status;
+  bridgeSupportedTokens: ChargeBridgeSupportedTokens;
+  bridgeSupportedTokensStatus: Status;
+  chargeBridgeStatus: Status;
+  chargeBridge: ChargeBridgeResponse;
 }
 
 const INIT_STATE: OperatorStateType = {
@@ -94,17 +116,14 @@ const INIT_STATE: OperatorStateType = {
   isOperatorExist: false,
   isHydrated: false,
   isValidated: false,
-  isActivated: false,
-  isWithdrawn: false,
   isCheckingOperator: false,
   isValidatingOperator: false,
   isFetchingOperator: false,
   isOperatorWalletModalOpen: false,
-  isContactDetailsModalOpen: false,
-  isAccountCreationModalOpen: false,
-  isCongratulationModalOpen: false,
+  isCreatingOperator: false,
+  isCreatedOperator: false,
   isTopupAccountModalOpen: false,
-  isWithdrawModalOpen: false,
+  withdrawModal: initWithdrawModal,
   isTopupPaymasterModalOpen: false,
   isGeneratingSecretApiKey: false,
   isYourSecretKeyModalOpen: false,
@@ -113,7 +132,7 @@ const INIT_STATE: OperatorStateType = {
   isFetchingErc20Balance: false,
   isCreatingPaymaster: false,
   isFundingPaymaster: false,
-  isWithdrawing: false,
+  withdrawStatus: Status.IDLE,
   isCheckingActivation: false,
   isFetchingSponsoredTransactions: false,
   sponsoredTransactions: 0,
@@ -123,6 +142,17 @@ const INIT_STATE: OperatorStateType = {
   withdraw: initWithdraw,
   operatorContactDetail: initOperatorContactDetail,
   operator: initOperator,
+  isSubscriptionModalOpen: false,
+  subscriptionStatus: Status.IDLE,
+  isCheckingout: false,
+  checkoutSessions: [],
+  checkoutSessionStatus: Status.IDLE,
+  subscriptionInvoices: [],
+  subscriptionInvoicesStatus: Status.IDLE,
+  bridgeSupportedTokens: {},
+  bridgeSupportedTokensStatus: Status.IDLE,
+  chargeBridgeStatus: Status.IDLE,
+  chargeBridge: initChargeBridge,
 };
 
 export const checkOperator = createAsyncThunk(
@@ -146,15 +176,24 @@ export const checkOperator = createAsyncThunk(
   }
 );
 
-export const validateOperator = createAsyncThunk(
-  "OPERATOR/VALIDATE_OPERATOR",
-  async ({
-    signData,
-  }: {
+export const validateOperator = createAsyncThunk<
+  any,
+  {
     signData: SignData;
-  }) => {
+    account?: Account;
+  }
+>(
+  "OPERATOR/VALIDATE_OPERATOR",
+  async (
+    {
+      signData,
+      account
+    },
+    thunkAPI
+  ) => {
     try {
       await postValidateOperator(signData);
+      thunkAPI.dispatch(fetchOperator({ account }));
       return true;
     } catch (error) {
       console.error(error);
@@ -192,12 +231,50 @@ export const withRefreshToken = createAsyncThunk<
   }
 );
 
-export const fetchOperator = createAsyncThunk(
+export const fetchOperator = createAsyncThunk<
+  any,
+  {
+    account?: Account;
+  }
+>(
   "OPERATOR/FETCH_OPERATOR",
-  async () => {
+  async ({
+    account
+  }: {
+    account?: Account;
+  }) => {
     try {
       const operator = await fetchCurrentOperator()
       if (operator) {
+        try {
+          if (
+            new Date(operator.user.createdAt) < consoleV2LaunchDate &&
+            !operator.user.etherspotSmartWalletAddress &&
+            account
+          ) {
+            const fuseSDK = await FuseSDK.init(
+              operator.project.publicKey,
+              account,
+              {
+                baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
+              }
+            );
+            const fuseClient = fuseSDK.client as SmartAccountClient
+            const smartWalletAddress = fuseClient.account?.address
+            if (!smartWalletAddress) {
+              throw new Error("Smart wallet address not found");
+            }
+
+            const operatorWallet = await postMigrateOperatorWallet({
+              ownerId: operator.user.id,
+              smartWalletAddress
+            })
+            operator.user.etherspotSmartWalletAddress = operatorWallet.etherspotSmartWalletAddress
+            operator.user.smartWalletAddress = operatorWallet.smartWalletAddress
+          }
+        } catch (error) {
+          console.log(error)
+        }
         return operator;
       } else {
         throw new Error("Operator not found");
@@ -213,23 +290,49 @@ export const createOperator = createAsyncThunk<
   any,
   {
     operatorContactDetail: OperatorContactDetail;
+    account: Account;
   }
 >(
   "OPERATOR/CREATE_OPERATOR",
   async (
     {
       operatorContactDetail,
+      account
     }: {
       operatorContactDetail: OperatorContactDetail;
+      account: Account;
     },
   ) => {
     try {
       const operator = await postCreateOperator(operatorContactDetail)
-      if (operator) {
-        return operator;
-      } else {
+      if (!operator) {
         throw new Error("Operator not found");
       }
+
+      const fuseSDK = await FuseSDK.init(
+        operator.project.publicKey,
+        account,
+        {
+          baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
+        }
+      );
+      const fuseClient = fuseSDK.client as SmartAccountClient
+      const smartWalletAddress = fuseClient.account?.address
+      if (!smartWalletAddress) {
+        throw new Error("Smart wallet address not found");
+      }
+
+      const operatorWallet = await postCreateOperatorWallet({
+        ownerId: operator.user.id,
+        smartWalletAddress
+      })
+      if (!operatorWallet) {
+        throw new Error("Operator wallet not found");
+      }
+
+      operator.user.smartWalletAddress = operatorWallet.smartWalletAddress
+
+      return operator;
     } catch (error) {
       console.log(error);
       throw error;
@@ -416,11 +519,120 @@ export const fetchErc20Balance = createAsyncThunk(
   }
 );
 
+const withdrawEtherspot = async ({
+  walletClient,
+  signature,
+  amount,
+  to,
+  decimals,
+  contractAddress,
+  publicKey,
+}: {
+  walletClient: Signer;
+  signature: string;
+  amount: string;
+  to: string;
+  decimals: number;
+  contractAddress?: string;
+  publicKey: string;
+}) => {
+  try {
+    let recipient = to;
+    let value = parseEther(amount);
+    let data = Uint8Array.from([]);
+
+    if (contractAddress) {
+      const erc20Contract = new ethers.Contract(contractAddress as string, ERC20ABI);
+      recipient = contractAddress;
+      value = parseEther("0");
+      data = new Uint8Array(ethers.utils.arrayify(erc20Contract.interface.encodeFunctionData(
+        "transfer",
+        [to, parseUnits(amount, decimals)]
+      )));
+    }
+
+    const fuseSDK = await FuseSDK.init(
+      publicKey,
+      walletClient,
+      {
+        baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
+        signature
+      }
+    );
+
+    const userOp = await fuseSDK.callContract(
+      recipient,
+      value,
+      data
+    );
+    const result = await userOp?.wait();
+    const transactionHash = result?.transactionHash;
+    return transactionHash as Address;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+const withdrawSafe = async ({
+  walletClient,
+  amount,
+  to,
+  decimals,
+  contractAddress,
+  publicKey
+}: {
+  walletClient: OwnerWalletClient;
+  amount: string;
+  to: string;
+  decimals: number;
+  contractAddress?: string;
+  publicKey: string;
+}) => {
+  try {
+    let call: any = {
+      to,
+      value: parseEther(amount)
+    }
+
+    if (contractAddress) {
+      call = {
+        abi: ERC20ABI,
+        functionName: 'transfer',
+        to: contractAddress,
+        args: [to, parseUnits(amount, decimals)]
+      }
+    }
+
+    const fuseSDK = await FuseSDK.init(
+      publicKey,
+      walletClient,
+      {
+        withPaymaster: true,
+        baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
+      }
+    );
+    const fuseClient = fuseSDK.client as SmartAccountClient
+
+    const userOpHash = await fuseClient.sendUserOperation({
+      calls: [call],
+    })
+    const userOpReceipt = await fuseClient.waitForUserOperationReceipt({
+      hash: userOpHash,
+    })
+
+    const transactionHash = userOpReceipt.receipt.transactionHash;
+    return transactionHash;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
 export const withdraw = createAsyncThunk<
   any,
   {
-    signer: Signer;
-    signature: string;
+    walletClient: OwnerWalletClient | Signer;
+    signature?: string;
     amount: string;
     to: string;
     decimals: number;
@@ -433,7 +645,7 @@ export const withdraw = createAsyncThunk<
   "OPERATOR/WITHDRAW",
   async (
     {
-      signer,
+      walletClient,
       signature,
       amount,
       to,
@@ -442,8 +654,8 @@ export const withdraw = createAsyncThunk<
       coinGeckoId,
       contractAddress,
     }: {
-      signer: Signer;
-      signature: string;
+      walletClient: OwnerWalletClient | Signer;
+      signature?: string;
       amount: string;
       to: string;
       decimals: number;
@@ -457,43 +669,29 @@ export const withdraw = createAsyncThunk<
       const state = thunkAPI.getState();
       const operatorState: OperatorStateType = state.operator;
 
-      let recipient = to;
-      let value = parseEther(amount);
-      let data = Uint8Array.from([]);
-      let withPaymaster = false;
-
-      if (contractAddress) {
-        const erc20Contract = new ethers.Contract(contractAddress as string, ERC20ABI);
-        recipient = contractAddress;
-        value = parseEther("0");
-        data = ethers.utils.arrayify(erc20Contract.interface.encodeFunctionData(
-          "transfer",
-          [to, parseUnits(amount, decimals)]
-        ));
+      let transactionHash: Address;
+      if (signature) {
+        transactionHash = await withdrawEtherspot({
+          walletClient: walletClient as Signer,
+          signature,
+          amount,
+          to,
+          decimals,
+          contractAddress,
+          publicKey: operatorState.operator.project.publicKey,
+        })
+      } else {
+        transactionHash = await withdrawSafe({
+          walletClient: walletClient as OwnerWalletClient,
+          amount,
+          to,
+          decimals,
+          contractAddress,
+          publicKey: operatorState.operator.project.publicKey
+        })
       }
 
-      if (operatorState.isActivated) {
-        withPaymaster = true;
-      }
-
-      const fuseSDK = await FuseSDK.init(
-        operatorState.operator.project.publicKey,
-        signer,
-        {
-          withPaymaster,
-          baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
-          signature
-        }
-      );
-
-      const userOp = await fuseSDK.callContract(
-        recipient,
-        value,
-        data
-      );
-      const result = await userOp?.wait();
-      const transactionHash = result?.transactionHash;
-
+      thunkAPI.dispatch(fetchSponsoredTransactions());
       if (transactionHash) {
         return { amount, token, coinGeckoId };
       } else {
@@ -541,6 +739,144 @@ export const fetchSponsoredTransactions = createAsyncThunk(
   }
 );
 
+export const subscription = createAsyncThunk<
+  any,
+  {
+    walletClient: OwnerWalletClient;
+    tokenPrice: number;
+  },
+  { state: RootState }
+>(
+  "OPERATOR/SUBSCRIPTION",
+  async (
+    {
+      walletClient,
+      tokenPrice
+    }: {
+      walletClient: OwnerWalletClient;
+      tokenPrice: number;
+    },
+    thunkAPI
+  ) => {
+    try {
+      const state = thunkAPI.getState();
+      const operatorState: OperatorStateType = state.operator;
+      const recipient = NEXT_PUBLIC_PAYMASTER_FUNDER_ADDRESS as Address;
+      const subscriptionInfo = subscriptionInformation()
+      const ALLOWANCE = 1000000;
+      const calculatedAllowance = (subscriptionInfo.payment / tokenPrice) * subscriptionInfo.advance;
+      const amount = parseUnits(
+        (calculatedAllowance > ALLOWANCE ? calculatedAllowance : ALLOWANCE).toString(),
+        subscriptionInfo.decimals
+      );
+
+      const fuseSDK = await FuseSDK.init(
+        operatorState.operator.project.publicKey,
+        walletClient,
+        {
+          withPaymaster: true,
+          baseUrl: NEXT_PUBLIC_FUSE_API_BASE_URL,
+        }
+      );
+      const fuseClient = fuseSDK.client as SmartAccountClient
+
+      const userOpHash = await fuseClient.sendUserOperation({
+        calls: [{
+          abi: ERC20ABI,
+          functionName: 'approve',
+          to: subscriptionInfo.tokenAddress,
+          args: [recipient, amount]
+        }],
+      })
+      const userOpReceipt = await fuseClient.waitForUserOperationReceipt({
+        hash: userOpHash,
+      })
+
+      const transactionHash = userOpReceipt.receipt.transactionHash;
+      if (!transactionHash) {
+        throw new Error("Transaction failed");
+      }
+
+      const invoice = await postOperatorSubscription()
+      if (!invoice) {
+        throw new Error("Invoice not found");
+      }
+      return invoice;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
+export const checkout = createAsyncThunk(
+  "OPERATOR/CHECKOUT",
+  async (operatorCheckout: OperatorCheckout) => {
+    try {
+      const checkoutUrl = await postOperatorCheckout(operatorCheckout)
+      if (!checkoutUrl) {
+        throw new Error("Checkout URL not found");
+      }
+      return checkoutUrl;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
+export const fetchCheckoutSessions = createAsyncThunk(
+  "OPERATOR/FETCH_CHECKOUT_SESSIONS",
+  async () => {
+    try {
+      const checkoutSessions = await fetchOperatorCheckoutSessions()
+      return checkoutSessions
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
+export const fetchSubscriptionInvoices = createAsyncThunk(
+  "OPERATOR/FETCH_SUBSCRIPTION_INVOICES",
+  async () => {
+    try {
+      const subscriptionInvoices = await fetchOperatorSubscriptionInvoices()
+      return subscriptionInvoices
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
+export const fetchBridgeSupportedTokens = createAsyncThunk(
+  "OPERATOR/FETCH_BRIDGE_SUPPORTED_TOKENS",
+  async () => {
+    try {
+      const bridgeSupportedTokens = await fetchChargeBridgeSupportedTokens()
+      return bridgeSupportedTokens
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
+export const chargeBridge = createAsyncThunk(
+  "OPERATOR/CHARGE_BRIDGE",
+  async (chargeBridge: ChargeBridge) => {
+    try {
+      const chargeBridgeResponse = await postChargeBridge(chargeBridge)
+      return chargeBridgeResponse
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
 const operatorSlice = createSlice({
   name: "OPERATOR_STATE",
   initialState: INIT_STATE,
@@ -558,20 +894,11 @@ const operatorSlice = createSlice({
       state.isValidated = action.payload
       localStorage.setItem("Fuse-isValidated", JSON.stringify(action.payload));
     },
-    setIsContactDetailsModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isContactDetailsModalOpen = action.payload
-    },
-    setIsAccountCreationModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isAccountCreationModalOpen = action.payload
-    },
-    setIsCongratulationModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isCongratulationModalOpen = action.payload
-    },
     setIsTopupAccountModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isTopupAccountModalOpen = action.payload
     },
-    setIsWithdrawModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isWithdrawModalOpen = action.payload
+    setWithdrawModal: (state, action: PayloadAction<WithdrawModal>) => {
+      state.withdrawModal = action.payload
     },
     setIsTopupPaymasterModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isTopupPaymasterModalOpen = action.payload
@@ -594,14 +921,11 @@ const operatorSlice = createSlice({
     setOperator: (state, action: PayloadAction<Operator>) => {
       state.operator = action.payload
     },
+    setIsSubscriptionModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isSubscriptionModalOpen = action.payload
+    },
     setLogout: (state) => {
-      state.isOperatorExist = false;
-      state.isValidated = false;
-      state.operator = initOperator;
-      state.isAuthenticated = false;
-      state.operatorContactDetail = initOperatorContactDetail;
-      state.isActivated = false;
-      state.sponsoredTransactions = 0;
+      Object.assign(state, INIT_STATE);
       localStorage.removeItem("Fuse-isOperatorExist");
       localStorage.removeItem("Fuse-isValidated");
       localStorage.removeItem("Fuse-operator");
@@ -610,6 +934,7 @@ const operatorSlice = createSlice({
       localStorage.removeItem("Fuse-connectedWalletType");
       localStorage.removeItem("Fuse-operatorContactDetail");
       localStorage.removeItem("Fuse-isActivated");
+      state.isHydrated = true;
     },
     setHydrate: (state) => {
       const isOperatorExist = localStorage.getItem("Fuse-isOperatorExist");
@@ -617,13 +942,11 @@ const operatorSlice = createSlice({
       const operator = localStorage.getItem("Fuse-operator");
       const isAuthenticated = localStorage.getItem("Fuse-isOperatorAuthenticated");
       const operatorContactDetail = localStorage.getItem("Fuse-operatorContactDetail");
-      const isActivated = localStorage.getItem("Fuse-isActivated");
       state.isOperatorExist = isOperatorExist ? JSON.parse(isOperatorExist) : false;
       state.isValidated = isValidated ? JSON.parse(isValidated) : false;
       state.operator = operator ? JSON.parse(operator) : initOperator;
       state.isAuthenticated = isAuthenticated ? JSON.parse(isAuthenticated) : false;
       state.operatorContactDetail = operatorContactDetail ? JSON.parse(operatorContactDetail) : initOperatorContactDetail;
-      state.isActivated = isActivated ? JSON.parse(isActivated) : false;
       state.isHydrated = true;
     }
   },
@@ -665,17 +988,16 @@ const operatorSlice = createSlice({
       .addCase(fetchOperator.rejected, (state) => {
         state.isFetchingOperator = false;
         state.isLoginError = true;
-        localStorage.setItem("Fuse-isLoginError", "true");
       })
       .addCase(createOperator.pending, (state) => {
-        state.isContactDetailsModalOpen = false;
-        state.isAccountCreationModalOpen = true;
+        state.isLoginError = false;
+        state.isCreatingOperator = true;
       })
       .addCase(createOperator.fulfilled, (state, action) => {
         state.operator = action.payload;
         state.isAuthenticated = true;
-        state.isAccountCreationModalOpen = false;
-        state.isCongratulationModalOpen = true;
+        state.isCreatingOperator = false;
+        state.isCreatedOperator = true;
         const { secretPrefix, secretLastFourChars } = splitSecretKey(action.payload.project.secretKey);
         state.operator.project.secretPrefix = secretPrefix;
         state.operator.project.secretLastFourChars = secretLastFourChars;
@@ -684,7 +1006,7 @@ const operatorSlice = createSlice({
         localStorage.removeItem("Fuse-operatorContactDetail");
       })
       .addCase(createOperator.rejected, (state) => {
-        state.isAccountCreationModalOpen = false;
+        state.isCreatingOperator = false;
       })
       .addCase(generateSecretApiKey.pending, (state) => {
         state.isGeneratingSecretApiKey = true;
@@ -753,28 +1075,15 @@ const operatorSlice = createSlice({
         state.isFetchingErc20Balance = false;
       })
       .addCase(withdraw.pending, (state) => {
-        state.isWithdrawing = true;
+        state.withdrawStatus = Status.PENDING;
       })
       .addCase(withdraw.fulfilled, (state, action) => {
-        state.isWithdrawing = false;
-        state.isWithdrawn = true;
+        state.withdrawStatus = Status.SUCCESS;
         state.withdraw = action.payload;
-        state.isWithdrawModalOpen = false;
+        state.withdrawModal.open = false;
       })
       .addCase(withdraw.rejected, (state) => {
-        state.isWithdrawing = false;
-        state.isWithdrawModalOpen = false;
-      })
-      .addCase(checkIsActivated.pending, (state) => {
-        state.isCheckingActivation = true;
-      })
-      .addCase(checkIsActivated.fulfilled, (state) => {
-        state.isCheckingActivation = false;
-        state.isActivated = true;
-        localStorage.setItem("Fuse-isActivated", "true");
-      })
-      .addCase(checkIsActivated.rejected, (state) => {
-        state.isCheckingActivation = false;
+        state.withdrawStatus = Status.ERROR;
       })
       .addCase(fetchSponsoredTransactions.pending, (state) => {
         state.isFetchingSponsoredTransactions = true;
@@ -785,6 +1094,68 @@ const operatorSlice = createSlice({
       })
       .addCase(fetchSponsoredTransactions.rejected, (state) => {
         state.isFetchingSponsoredTransactions = false;
+      })
+      .addCase(subscription.pending, (state) => {
+        state.subscriptionStatus = Status.PENDING;
+      })
+      .addCase(subscription.fulfilled, (state, action) => {
+        state.subscriptionStatus = Status.SUCCESS;
+        state.isSubscriptionModalOpen = false;
+        state.operator.user.isActivated = true;
+        state.subscriptionInvoices = [...state.subscriptionInvoices, action.payload];
+      })
+      .addCase(subscription.rejected, (state) => {
+        state.subscriptionStatus = Status.ERROR;
+      })
+      .addCase(checkout.pending, (state) => {
+        state.isCheckingout = true;
+      })
+      .addCase(checkout.fulfilled, (state, action) => {
+        state.isCheckingout = false;
+        window.location.href = action.payload
+      })
+      .addCase(checkout.rejected, (state) => {
+        state.isCheckingout = false;
+      })
+      .addCase(fetchCheckoutSessions.pending, (state) => {
+        state.checkoutSessionStatus = Status.PENDING;
+      })
+      .addCase(fetchCheckoutSessions.fulfilled, (state, action) => {
+        state.checkoutSessionStatus = Status.SUCCESS;
+        state.checkoutSessions = action.payload;
+      })
+      .addCase(fetchCheckoutSessions.rejected, (state) => {
+        state.checkoutSessionStatus = Status.ERROR;
+      })
+      .addCase(fetchSubscriptionInvoices.pending, (state) => {
+        state.subscriptionInvoicesStatus = Status.PENDING;
+      })
+      .addCase(fetchSubscriptionInvoices.fulfilled, (state, action) => {
+        state.subscriptionInvoicesStatus = Status.SUCCESS;
+        state.subscriptionInvoices = action.payload;
+      })
+      .addCase(fetchSubscriptionInvoices.rejected, (state) => {
+        state.subscriptionInvoicesStatus = Status.ERROR;
+      })
+      .addCase(fetchBridgeSupportedTokens.pending, (state) => {
+        state.bridgeSupportedTokensStatus = Status.PENDING;
+      })
+      .addCase(fetchBridgeSupportedTokens.fulfilled, (state, action) => {
+        state.bridgeSupportedTokensStatus = Status.SUCCESS;
+        state.bridgeSupportedTokens = action.payload;
+      })
+      .addCase(fetchBridgeSupportedTokens.rejected, (state) => {
+        state.bridgeSupportedTokensStatus = Status.ERROR;
+      })
+      .addCase(chargeBridge.pending, (state) => {
+        state.chargeBridgeStatus = Status.PENDING;
+      })
+      .addCase(chargeBridge.fulfilled, (state, action) => {
+        state.chargeBridgeStatus = Status.SUCCESS;
+        state.chargeBridge = action.payload;
+      })
+      .addCase(chargeBridge.rejected, (state) => {
+        state.chargeBridgeStatus = Status.ERROR;
       })
   },
 });
@@ -797,11 +1168,8 @@ export const {
   setIsLoginError,
   setIsValidated,
   setIsOperatorWalletModalOpen,
-  setIsContactDetailsModalOpen,
-  setIsAccountCreationModalOpen,
-  setIsCongratulationModalOpen,
   setIsTopupAccountModalOpen,
-  setIsWithdrawModalOpen,
+  setWithdrawModal,
   setIsTopupPaymasterModalOpen,
   setIsYourSecretKeyModalOpen,
   setIsRollSecretKeyModalOpen,
@@ -809,7 +1177,8 @@ export const {
   setOperatorContactDetail,
   setOperator,
   setLogout,
-  setHydrate
+  setHydrate,
+  setIsSubscriptionModalOpen,
 } = operatorSlice.actions;
 
 export default operatorSlice.reducer;

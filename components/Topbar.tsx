@@ -50,8 +50,8 @@ const Topbar = ({ className }: TopbarProps) => {
 
   const menuItems = useMemo(() => [
     {
-      title: "Wallet",
-      link: "/wallet",
+      title: "Home",
+      link: path.HOME,
     },
     {
       title: "Ember",
@@ -64,7 +64,7 @@ const Topbar = ({ className }: TopbarProps) => {
     },
     {
       title: "Bridge",
-      link: "/bridge",
+      link: path.BRIDGE,
     },
     {
       title: "Staking",
@@ -78,25 +78,27 @@ const Topbar = ({ className }: TopbarProps) => {
       className
     )}>
       <div className="flex justify-between h-full items-center w-8/9 md:w-9/10 max-w-7xl relative">
-        <span>
-          <a href="/">
-            <Image
-              src={fuseConsoleLogo}
-              alt="fuse console logo"
-              width={196}
-              height={28}
-              className="z-50 md:hidden"
-            />
-            <Image
-              src={fuseLogoMobile}
-              alt="fuse logo"
-              width={20}
-              height={20}
-              className="z-50 hidden md:block"
-            />
-          </a>
-        </span>
-        <NavMenu menuItems={menuItems} isOpen={isOpen} selected={selected} isResponsive />
+        <div className="flex items-center gap-10">
+          <span>
+            <a href={path.HOME}>
+              <Image
+                src={fuseConsoleLogo}
+                alt="fuse console logo"
+                width={196}
+                height={28}
+                className="z-50 md:hidden"
+              />
+              <Image
+                src={fuseLogoMobile}
+                alt="fuse logo"
+                width={20}
+                height={20}
+                className="z-50 hidden md:block"
+              />
+            </a>
+          </span>
+          <NavMenu menuItems={menuItems} isOpen={isOpen} selected={selected} isResponsive />
+        </div>
         <NavButton isOpen={isOpen} setOpen={setOpen} />
       </div>
     </nav>

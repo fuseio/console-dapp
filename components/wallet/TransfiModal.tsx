@@ -35,7 +35,7 @@ const TransfiModal = (): JSX.Element => {
             <Iframe
               height="625px"
               title="TransFi Ramp Widget"
-              url={`https://buy.transfi.com?apiKey=${NEXT_PUBLIC_TRANSFI_API_KEY}`}
+              url={`https://buy.transfi.com?apiKey=${NEXT_PUBLIC_TRANSFI_API_KEY}&cryptoTicker=FUSE`}
               styles={{ display: "block", width: "100%", maxHeight: "625px" }}
             />
           </motion.div>
