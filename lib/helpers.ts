@@ -88,7 +88,7 @@ export const path = {
   BUILD_BILLING: "/build/billing",
   AIRDROP: "/ember",
   AIRDROP_LEADERBOARD: "/ember/leaderboard",
-  AIRDROP_ECOSYSTEM: "/ember/ecosystem",
+  AIRDROP_ECOSYSTEM: "/ember/points",
   AIRDROP_GRANT: "/ember/grant",
   NODES: "/nodes",
   TESTNET_NODES: "/nodes/testnet",
