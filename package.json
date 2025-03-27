@@ -13,7 +13,7 @@
     "@dynamic-labs/ethereum": "3.9.4",
     "@dynamic-labs/sdk-react-core": "3.9.4",
     "@dynamic-labs/wagmi-connector": "3.9.4",
-    "@fuseio/fusebox-web-sdk": "0.4.0",
+    "@fuseio/fusebox-web-sdk": "^0.4.0",
     "@layerzerolabs/scan-client": "^0.0.8",
     "@layerzerolabs/ui-core": "^0.2.88",
     "@layerzerolabs/ui-erc20-sdk": "^1.0.2",
