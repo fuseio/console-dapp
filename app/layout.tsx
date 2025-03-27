@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <head>
         <Script
           src="https://cdn.markfi.xyz/scripts/analytics/0.11.21/cookie3.analytics.min.js"

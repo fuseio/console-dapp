@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Ecosystem - Fuse Console Rewards',
+  title: 'Points - Fuse Console Ember',
   description: 'Complete quests and invite friends to earn XP',
 }
 

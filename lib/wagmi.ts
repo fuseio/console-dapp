@@ -3,14 +3,14 @@ import { http, createConfig, Connection } from "wagmi";
 import { arbitrum, polygon, fuse, optimism, mainnet, bsc, Chain, base } from "wagmi/chains";
 
 export const flash = defineChain({
-  id: 1264453517,
-  name: 'Flash',
+  id: 10920,
+  name: 'Fuse Flash',
   nativeCurrency: { name: 'Fuse', symbol: 'FUSE', decimals: 18 },
   rpcUrls: {
-    default: { http: ['https://rpc.flash.fuse.io'] },
+    default: { http: ['https://lingering-lingering-pool.fuse-flash.quiknode.pro'] },
   },
   blockExplorers: {
-    default: { name: 'Flash Explorer', url: 'https://explorer.flash.fuse.io' },
+    default: { name: 'Flash Explorer', url: 'https://fuse-flash.explorer.quicknode.com' },
   },
 })
 
