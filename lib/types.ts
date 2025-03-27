@@ -292,6 +292,7 @@ export type MenuItem = {
   title: string;
   link: string;
   submenu?: MenuItem[];
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
 export type MenuItems = MenuItem[];

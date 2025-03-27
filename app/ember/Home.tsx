@@ -164,7 +164,7 @@ const Giveaway = () => {
               Ecosystem
             </p>
             <p className="text-lg leading-none font-semibold md:text-sm">
-              Flash
+              Grant
             </p>
             <p className="text-lg leading-none font-semibold md:text-sm">
               Ember
@@ -246,24 +246,12 @@ const Phases = () => {
               </p>
             </div>
             <p className="text-7xl md:text-2xl leading-none font-semibold">
-              Fuse Flash
+              Builder Grant
             </p>
             <p className="text-lg max-w-xl">
-              Build apps and play games on Fuse Flash testnet to help verify network stability and earn rewards! Get support and grants to grow your project.
+              Build apps and play games on Ember testnet to help verify network stability and earn rewards! Get support and grants to grow your project.
             </p>
             <div className="flex items-center gap-4 mt-4 md:flex-col md:items-start">
-              <button
-                className="transition ease-in-out w-fit px-12 py-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
-                onClick={() => {
-                  if (isConnected) {
-                    router.push(path.AIRDROP_GRANT)
-                  } else {
-                    dispatch(setIsWalletModalOpen(true));
-                  }
-                }}
-              >
-                Get started
-              </button>
               <Link
                 className="transition ease-in-out w-fit px-12 py-4 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
                 href="https://docs.fuse.io/fuse-ember/airdrop/phase2"
