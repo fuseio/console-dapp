@@ -185,7 +185,7 @@ const DelegateLicenseModal = (): JSX.Element => {
                   type="submit"
                   className={`transition-all ease-in-out flex justify-center items-center gap-2 border rounded-full font-semibold leading-none p-4 disabled:bg-iron disabled:border-iron enabled:hover:bg-[transparent] enabled:hover:border-black enabled:hover:text-black ${nodesSlice.delegateLicenseStatus === Status.ERROR ? "bg-[#FFEBE9] text-[#FD0F0F]" : "border-success bg-success"}`}
                 >
-                  {nodesSlice.delegateLicenseStatus === Status.SUCCESS ? "Delegated" : "Delegate"}
+                  {nodesSlice.delegateLicenseStatus === Status.SUCCESS ? "Successfully Delegated" : "Delegate"}
                   {nodesSlice.delegateLicenseStatus === Status.PENDING && <Spinner />}
                 </button>
               </div>
