@@ -34,7 +34,7 @@ const DelegateLicenseModal = (): JSX.Element => {
   const formik = useFormik<DelegateLicenseFormValues>({
     initialValues: {
       to: '0x',
-      tokenId: 0,
+      tokenId: 1,
       amount: 1,
     },
     validationSchema: Yup.object({
@@ -42,8 +42,8 @@ const DelegateLicenseModal = (): JSX.Element => {
         .matches(/^0x[a-fA-F0-9]{40}$/, 'Must start with 0x and be 42 characters long')
         .required('Required'),
       tokenId: Yup.number()
-        .max(9, 'Must be 9 or less')
-        .min(0, 'Must be 0 or more')
+        .max(10, 'Must be 10 or less')
+        .min(1, 'Must be 1 or more')
         .required('Required'),
       amount: Yup.number()
         .max(10000, 'Must be 10000 or less')
@@ -51,7 +51,7 @@ const DelegateLicenseModal = (): JSX.Element => {
         .required('Required'),
     }),
     onSubmit: values => {
-      dispatch(delegateLicense(values));
+      dispatch(delegateLicense({ ...values, tokenId: values.tokenId - 1 }));
     },
   });
 

@@ -76,7 +76,7 @@ export const fetchNodeLicenseBalances = createAsyncThunk(
       const ids = tokenIds.map((id) => BigInt(id));
       const balances = await getNodeLicenseBalances(accounts, ids);
       return balances.map((balance, index) => ({
-        tokenId: tokenIds[index],
+        tokenId: tokenIds[index] + 1,
         balance: Number(balance),
       }));
     } catch (error) {
