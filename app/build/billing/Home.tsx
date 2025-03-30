@@ -28,6 +28,10 @@ const YourPlan = ({ balance }: YourPlanProps) => {
   const totalTransaction = getTotalTransaction(operatorSlice.operator.user.isActivated)
   const lastInvoice = operatorLastInvoice(operatorSlice.subscriptionInvoices);
   const prices = operatorPricing();
+  const numberFormat = new Intl.NumberFormat('en-us', {
+    notation: 'compact',
+    maximumFractionDigits: 2,
+  });
 
   return (
     <section className="grid grid-cols-4 gap-14 bg-lightest-gray rounded-[20px] p-12 md:grid-cols-1 md:p-8">
@@ -39,8 +43,8 @@ const YourPlan = ({ balance }: YourPlanProps) => {
           Account balance
           <AccountBalanceInfo />
         </div>
-        <div className="font-bold text-5xl leading-none whitespace-nowrap mt-1">
-          {balance.token.formatted} WFUSE
+        <div className="font-bold text-4xl leading-none whitespace-nowrap mt-1">
+          {numberFormat.format(balance.token.value)} WFUSE
         </div>
         {balanceSlice.isUsdPriceLoading ?
           <span className="px-10 py-2.5 rounded-md animate-pulse bg-white/80"></span> :
@@ -53,7 +57,7 @@ const YourPlan = ({ balance }: YourPlanProps) => {
         <div className="flex items-center gap-3.5 text-lg text-text-dark-gray">
           Current plan
         </div>
-        <div className="font-bold text-5xl leading-none whitespace-nowrap mt-1">
+        <div className="font-bold text-4xl leading-none whitespace-nowrap mt-1">
           {operatorSlice.operator.user.isActivated ? "Basic" : "Free"} plan
         </div>
         <p className="text-[1.25rem] leading-none">
@@ -65,7 +69,7 @@ const YourPlan = ({ balance }: YourPlanProps) => {
           Transactions
           <SponsoredTransactionInfo />
         </div>
-        <div className="font-bold text-5xl leading-none whitespace-nowrap mt-1">
+        <div className="font-bold text-4xl leading-none whitespace-nowrap mt-1">
           {new Intl.NumberFormat().format(totalTransaction)}
         </div>
         <p className="text-[1.25rem] leading-none">
@@ -76,7 +80,7 @@ const YourPlan = ({ balance }: YourPlanProps) => {
         <div className="flex items-center gap-3.5 text-lg text-text-dark-gray">
           Billing cycle
         </div>
-        <div className="font-bold text-5xl leading-none whitespace-nowrap mt-1">
+        <div className="font-bold text-4xl leading-none whitespace-nowrap mt-1">
           Monthly
         </div>
         <p className="text-[1.25rem] leading-none">

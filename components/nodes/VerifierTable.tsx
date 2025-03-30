@@ -25,6 +25,8 @@ import { fetchDelegations, fetchNodes, NodesStateType, selectNodesSlice, setDele
 import { Notice, renderPageNumbers, Skeleton } from '@/components/ui/Table';
 
 import nodeops from '@/assets/nodeops.svg';
+import fuseIcon from '@/assets/fuse-icon.svg';
+import dappnode from '@/assets/dappnode.png';
 
 declare module '@tanstack/react-table' {
   // see: https://github.com/TanStack/table/discussions/5222
@@ -45,9 +47,27 @@ type RowsProps = {
   nodesSlice: NodesStateType
 }
 
-const verifierImages: Record<string, StaticImageData> = {
-  "NodeOps": nodeops,
+type Verifier = {
+  name: string
+  image: StaticImageData
 }
+
+const verifiers: Record<string, Verifier> = {
+  "nodeops": {
+    name: "NodeOps",
+    image: nodeops
+  },
+  "fuse_official_operator": {
+    name: "Fuse Node",
+    image: fuseIcon
+  },
+  "dappnode_operator": {
+    name: "DappNode",
+    image: dappnode
+  }
+}
+
+const defaultVerifier = "nodeops"
 
 const Rows = ({ table, nodesSlice }: RowsProps) => {
   const { address } = useAccount();
@@ -120,13 +140,18 @@ const VerifierTable = () => {
   const columns = useMemo<ColumnDef<Node, any>[]>(
     () => [
       {
-        accessorKey: 'operator',
+        accessorKey: 'OperatorName',
         header: 'Operator',
         size: 200,
-        cell: () => (
+        cell: info => (
           <div className='flex items-center gap-2 w-max'>
-            <Image src={verifierImages["NodeOps"]} alt="NodeOps" width={24} height={24} />
-            NodeOps
+            <Image
+              src={verifiers[info.getValue()] ? verifiers[info.getValue()].image : verifiers[defaultVerifier].image}
+              alt={verifiers[info.getValue()] ? verifiers[info.getValue()].name : verifiers[defaultVerifier].name}
+              width={24}
+              height={24}
+            />
+            {verifiers[info.getValue()] ? verifiers[info.getValue()].name : verifiers[defaultVerifier].name}
           </div>
         ),
         enableColumnFilter: false,
