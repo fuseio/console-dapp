@@ -5,7 +5,7 @@ import { fetchOperator, selectOperatorSlice, setIsSubscriptionModalOpen, setIsTo
 import SubMenu from "@/components/build/SubMenu";
 import { selectBalanceSlice } from "@/store/balanceSlice";
 import useTokenUsdBalance from "@/lib/hooks/useTokenUsdBalance";
-import { getTotalTransaction, operatorInvoiceUntilTime, operatorLastInvoice, operatorPricing, subscriptionInformation } from "@/lib/helpers";
+import { compactNumberFormat, getTotalTransaction, operatorInvoiceUntilTime, operatorLastInvoice, operatorPricing, subscriptionInformation } from "@/lib/helpers";
 import Button from "@/components/ui/Button";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import WithdrawModal from "@/components/dashboard/WithdrawModal";
@@ -28,10 +28,6 @@ const YourPlan = ({ balance }: YourPlanProps) => {
   const totalTransaction = getTotalTransaction(operatorSlice.operator.user.isActivated)
   const lastInvoice = operatorLastInvoice(operatorSlice.subscriptionInvoices);
   const prices = operatorPricing();
-  const numberFormat = new Intl.NumberFormat('en-us', {
-    notation: 'compact',
-    maximumFractionDigits: 2,
-  });
 
   return (
     <section className="grid grid-cols-4 gap-14 bg-lightest-gray rounded-[20px] p-12 md:grid-cols-1 md:p-8">
@@ -44,7 +40,7 @@ const YourPlan = ({ balance }: YourPlanProps) => {
           <AccountBalanceInfo />
         </div>
         <div className="font-bold text-4xl leading-none whitespace-nowrap mt-1">
-          {numberFormat.format(balance.token.value)} WFUSE
+          {compactNumberFormat.format(balance.token.value)} WFUSE
         </div>
         {balanceSlice.isUsdPriceLoading ?
           <span className="px-10 py-2.5 rounded-md animate-pulse bg-white/80"></span> :

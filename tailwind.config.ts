@@ -90,7 +90,13 @@ export default {
       "atomic-tangerine": "#FCA06D",
       "sunset-orange": "#F66851",
       sand: "#EDC765",
-      marzipan: "#F5DC99"
+      marzipan: "#F5DC99",
+      "vivid-green": "#26EE37",
+      "gainsboro": "#DEDEDE",
+      "snow-drift": "#FAFAFA",
+      "mountain-mist": "#919191",
+      "harp": "#EEEEEE",
+      "pastel-orange": "#F6A051",
     },
     fontFamily: {
       mona: ["var(--font-mona-sans)"],
