@@ -1,27 +1,15 @@
-import { StaticImageData } from "next/image";
 import { useEffect, useState } from "react";
 import { Address, formatEther, formatUnits } from "viem";
+import { useBalance } from "wagmi";
+import { fuse } from "viem/chains";
+
+import { getERC20Balance } from "../erc20";
+import { Coins } from "../types";
 
 import usdc from "@/assets/usdc.svg";
 import sFuse from "@/assets/sFuse.svg";
 import weth from "@/assets/weth.svg";
-import usdt from "@/assets/usdt-logo.svg";
-import { getERC20Balance } from "../erc20";
-import { useBalance } from "wagmi";
-import { fuse } from "viem/chains";
-
-type Coin = {
-  name: string;
-  decimals: number;
-  icon: StaticImageData;
-  coinGeckoId: string;
-  address?: Address;
-  isNative?: boolean;
-}
-
-type Coins = {
-  [k: string]: Coin
-}
+import usdt from "@/assets/usdt.svg";
 
 export const coins: Coins = {
   "USDC": {

@@ -64,6 +64,10 @@ const Topbar = ({ className }: TopbarProps) => {
       title: "Staking",
       link: path.STAKING,
     },
+    {
+      title: "Buy Node",
+      link: path.BUY_NODE,
+    }
   ], [AirdropSubmenu]);
 
   return (

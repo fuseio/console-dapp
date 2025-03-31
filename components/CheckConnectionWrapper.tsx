@@ -1,19 +1,22 @@
+import { useAccount } from "wagmi";
+
+import { cn } from "@/lib/helpers";
 import { setIsWalletModalOpen } from "@/store/navbarSlice";
 import { useAppDispatch } from "@/store/store";
-import { useAccount } from "wagmi";
 
 type CheckConnectionWrapperProps = {
   children: React.ReactNode;
+  className?: string;
 }
 
-const CheckConnectionWrapper = ({ children }: CheckConnectionWrapperProps) => {
+const CheckConnectionWrapper = ({ children, className }: CheckConnectionWrapperProps) => {
   const dispatch = useAppDispatch();
   const { isConnected } = useAccount();
 
   if (!isConnected) {
     return (
       <button
-        className="transition ease-in-out px-4 py-3 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black"
+        className={cn("transition ease-in-out px-4 py-3 bg-black border border-black text-lg leading-none text-white font-semibold rounded-full hover:bg-[transparent] hover:text-black", className)}
         onClick={() => dispatch(setIsWalletModalOpen(true))}
       >
         Connect Wallet
