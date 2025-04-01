@@ -32,7 +32,7 @@ const Topbar = ({ className }: TopbarProps) => {
 
   const AirdropSubmenu = useMemo(() => [
     {
-      title: "Builder Grant",
+      title: "Fuse Ember Testnet",
       link: path.AIRDROP_GRANT,
     },
     {
@@ -41,7 +41,7 @@ const Topbar = ({ className }: TopbarProps) => {
       onClick: handlePointsClick
     },
     {
-      title: "Ember Testnet Nodes",
+      title: "Testnet Nodes",
       link: path.TESTNET_NODES,
     },
   ], [handlePointsClick]);

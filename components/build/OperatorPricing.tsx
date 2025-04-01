@@ -173,7 +173,7 @@ const OperatorPricing = ({
             title="Free plan"
             description="Start receiving crypto payments in just a few clicks"
             price={0}
-            features={["Up to 1000 monthly transactions"]}
+            features={["Up to 1000 monthly transactions", "1M RPC calls", "10K API calls", "10K Webhook calls"]}
             buttonText={isActivated ? "Free plan" : isOperator ? "Current plan" : "Select"}
             onClick={() => router.push(path.DASHBOARD)}
             isDisabled={isOperator}
@@ -182,7 +182,7 @@ const OperatorPricing = ({
             title="Basic plan"
             description="Robust service. Low price."
             price={prices[selectedBillingCycle].basic}
-            features={["1M transactions", "Access to all services on Fuse", "Reliable and fast support"]}
+            features={["1M transactions", "Unlimited RPC calls", "1M API calls", "1M Webhook calls", "Access to all services on Fuse", "Reliable and fast support"]}
             buttonText={lastInvoice.valid ? "Current plan" : isOperator ? "Upgrade" : "Select"}
             onClick={() => dispatch(setIsSubscriptionModalOpen(true))}
             isLoading={operatorSlice.isCheckingout}
@@ -194,7 +194,7 @@ const OperatorPricing = ({
             title="Premium Plan"
             description="Get more. Maximize your business potential"
             price={prices[selectedBillingCycle].premium}
-            features={["Everything in the Basic plan +", "Unlimited transactions", "Individual support approach"]}
+            features={["Everything in the Basic plan +", "Unlimited transactions", "Unlimited API calls and Webhook calls", "Individual support approach"]}
             buttonText="Coming soon"
             isDisabled
           />

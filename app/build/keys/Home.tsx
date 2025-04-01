@@ -7,7 +7,6 @@ import copy from "@/assets/copy-black.svg";
 import roll from "@/assets/roll.svg";
 import Copy from "@/components/ui/Copy";
 import DocumentSupport from "@/components/DocumentSupport";
-import * as amplitude from "@amplitude/analytics-browser";
 import show from "@/assets/show.svg";
 import hide from "@/assets/hide.svg";
 import DeveloperTools from "@/components/DeveloperTools";
@@ -46,7 +45,6 @@ const Home = () => {
             <button
               className="transition ease-in-out text-black leading-none font-semibold bg-modal-bg rounded-full px-7 py-4 hover:bg-success"
               onClick={() => {
-                amplitude.track("Go to Tutorials");
                 window.open("https://docs.fuse.io/developers/tutorials/send-your-first-gasless-transaction", "_blank");
               }}
             >
