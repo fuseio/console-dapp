@@ -444,6 +444,39 @@ const Home = () => {
                     Up to 1000 monthly transactions
                   </p>
                 </div>
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    1M RPC calls
+                  </p>
+                </div>
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    10K API calls
+                  </p>
+                </div>
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    10K Webhook calls
+                  </p>
+                </div>
               </div>
               <Button
                 text="Get Started"
@@ -487,6 +520,39 @@ const Home = () => {
                   />
                   <p>
                     1M transactions
+                  </p>
+                </div>
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    Unlimited RPC calls
+                  </p>
+                </div>
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    1M API calls
+                  </p>
+                </div>
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    1M Webhook calls
                   </p>
                 </div>
                 <div className="flex items-center gap-[13.98px]">
@@ -558,6 +624,17 @@ const Home = () => {
                   />
                   <p>
                     Unlimited transactions
+                  </p>
+                </div>
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    Unlimited API calls and Webhook calls
                   </p>
                 </div>
                 <div className="flex items-center gap-[13.98px]">
