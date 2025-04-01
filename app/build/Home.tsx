@@ -9,7 +9,6 @@ import theGraph from "@/public/the-graph.png"
 import taskOn from "@/public/taskon.png"
 import { useRouter } from "next/navigation";
 import { cn, path } from "@/lib/helpers";
-import * as amplitude from "@amplitude/analytics-browser";
 import { useAppSelector } from "@/store/store";
 import { selectOperatorSlice } from "@/store/operatorSlice";
 import walletModal from "@/assets/wallet-modal.svg"
@@ -231,8 +230,7 @@ const Home = () => {
   const router = useRouter();
   const operatorSlice = useAppSelector(selectOperatorSlice);
 
-  function createAccount(eventInput: string) {
-    amplitude.track(eventInput);
+  function createAccount() {
     router.push(operatorSlice.isAuthenticated ? path.DASHBOARD : path.BUILD_REGISTER);
   }
 
@@ -251,7 +249,7 @@ const Home = () => {
               text="Start building"
               className="transition ease-in-out text-lg leading-none font-semibold bg-pale-green rounded-full hover:bg-white"
               padding="py-4 px-[52px]"
-              onClick={() => createAccount("Build-Welcome: Create project - upper")}
+              onClick={() => createAccount()}
             />
           </div>
         </div>
@@ -277,7 +275,7 @@ const Home = () => {
             </div>
             <button
               className="transition ease-in-out px-10 py-4 bg-fuse-black border border-fuse-black rounded-full text-lg leading-none text-white font-semibold hover:bg-[transparent] hover:text-fuse-black"
-              onClick={() => createAccount("Build-Welcome: Start building - FuseBox")}
+              onClick={() => createAccount()}
             >
               Start building
             </button>
@@ -315,7 +313,7 @@ const Home = () => {
             <div className="flex gap-8 md:flex-col">
               <button
                 className="transition ease-in-out px-10 py-4 bg-fuse-black border border-fuse-black rounded-full text-lg leading-none text-white font-semibold hover:bg-[transparent] hover:text-fuse-black"
-                onClick={() => createAccount("Build-Welcome: Start building - Edison")}
+                onClick={() => createAccount()}
               >
                 Start building
               </button>
@@ -449,7 +447,7 @@ const Home = () => {
                 text="Get Started"
                 className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black rounded-full hover:bg-white hover:text-black"
                 padding="py-4 px-[52px] mt-[25.88px]"
-                onClick={() => createAccount("Get started: Starter")}
+                onClick={() => createAccount()}
               />
             </div>
             <div className="flex flex-col gap-[30px] bg-white rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
@@ -516,7 +514,7 @@ const Home = () => {
                 text="Get Started"
                 className="transition ease-in-out text-lg leading-none text-white font-semibold bg-black rounded-full hover:bg-success hover:text-black"
                 padding="py-4 px-[52px] mt-[25.88px]"
-                onClick={() => createAccount("Get started: Pro")}
+                onClick={() => createAccount()}
               />
             </div>
             <div className="flex flex-col gap-[30px] rounded-[20px] px-10 pt-11 pb-[52.88px] max-w-[406px]">
@@ -592,7 +590,7 @@ const Home = () => {
           </p>
           <button
             className="transition ease-in-out px-10 py-4 bg-fuse-black border border-fuse-black rounded-full text-lg leading-none text-white font-semibold hover:bg-[transparent] hover:text-fuse-black"
-            onClick={() => createAccount("Build-Welcome: Create project - bottom")}
+            onClick={() => createAccount()}
           >
             Get started
           </button>
