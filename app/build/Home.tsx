@@ -393,7 +393,7 @@ const Home = () => {
                 </div>
               </div>
               <hr className="w-full h-[0.5px] border-[#C0C0C0]" />
-              <div className="flex flex-col gap-4 h-[200px] md:h-auto">
+              <div className="flex flex-col gap-4 h-[250px] md:h-auto">
                 <div className="flex items-center gap-[13.98px]">
                   <Image
                     src={checkmark}
@@ -403,6 +403,17 @@ const Home = () => {
                   />
                   <p>
                     Up to 1000 monthly transactions
+                  </p>
+                </div>
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    50 Edison AI prompts
                   </p>
                 </div>
                 <div className="flex items-center gap-[13.98px]">
@@ -471,7 +482,7 @@ const Home = () => {
                 </div>
               </div>
               <hr className="w-full h-[0.5px] border-[#C0C0C0]" />
-              <div className="flex flex-col gap-4 h-[200px] md:h-auto">
+              <div className="flex flex-col gap-4 h-[250px] md:h-auto">
                 <div className="flex items-center gap-[13.98px]">
                   <Image
                     src={checkmark}
@@ -481,6 +492,17 @@ const Home = () => {
                   />
                   <p>
                     1M transactions
+                  </p>
+                </div>
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    Up to 1000 Edison AI prompts
                   </p>
                 </div>
                 <div className="flex items-center gap-[13.98px]">
@@ -564,7 +586,7 @@ const Home = () => {
                 </div>
               </div>
               <hr className="w-full h-[0.5px] border-[#C0C0C0]" />
-              <div className="flex flex-col gap-4 h-[200px] md:h-auto">
+              <div className="flex flex-col gap-4 h-[250px] md:h-auto">
                 <div className="flex items-center gap-[13.98px]">
                   <Image
                     src={checkmark}
@@ -585,6 +607,17 @@ const Home = () => {
                   />
                   <p>
                     Unlimited transactions
+                  </p>
+                </div>
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    Unlimited Edison AI agent
                   </p>
                 </div>
                 <div className="flex items-center gap-[13.98px]">
