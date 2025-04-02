@@ -121,15 +121,15 @@ const thingsToDo = {
 const Hero = () => {
   return (
     <section className="flex flex-col items-center justify-center min-h-screen bg-[url('/flash-background.png')] bg-cover bg-center">
-      <div className="w-8/9 max-w-[47rem] mx-auto flex flex-col justify-center items-center gap-8 text-center">
+      <div className="w-8/9 max-w-3xl mx-auto flex flex-col justify-center items-center gap-8 text-center">
         <h1 className="text-[4.375rem] leading-none text-fuse-black font-semibold md:text-4xl">
-          Test and Build on Fuse Ember
+          Test, Build, and Earn on FUSE Flash
         </h1>
         <p className="text-[2.188rem] text-fuse-black font-semibold leading-none md:text-lg">
-          First blockchain for Businesses and Real-World Payments
+          The ZKEVM Testnet for Real-World Payments
         </p>
         <p className="text-[1.25rem]">
-          The zkEVM-powered Stripe of Layer 2 is almost here. Start building on the Testnet today and participate in the grant program.
+          FUSE Flash is the testnet for FUSE Ember, a ZKEVM Layer 2 blockchain designed for seamless payments, ultra-low fees, and high-speed transactions. Experiment, deploy, and earn rewards while doing it.
         </p>
         <Link
           href="#zkevm"
@@ -216,14 +216,9 @@ const Start = () => {
 
   return (
     <section className="w-8/9 max-w-7xl mx-auto flex flex-col gap-10 py-28 md:py-16">
-      <div className="flex flex-col gap-2 text-center">
-        <h2 className="text-5xl text-fuse-black font-semibold md:text-2xl">
-          Getting Started on Testnet
-        </h2>
-        <p className="text-[1.25rem]">
-          The Ember Testnet is live. Start building today.
-        </p>
-      </div>
+      <h2 className="text-center text-5xl text-fuse-black font-semibold md:text-2xl">
+        Getting Started
+      </h2>
       <div className="grid grid-cols-2 gap-10 md:grid-cols-1">
         <article className="bg-white rounded-[1.25rem] flex flex-col gap-5 px-5 py-10">
           <div className="flex justify-between items-center border border-lightest-gray p-1 rounded-2xl">
