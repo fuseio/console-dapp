@@ -528,6 +528,17 @@ const Home = () => {
                     height={10.5}
                   />
                   <p>
+                    Up to 1000 Edison AI prompts
+                  </p>
+                </div>
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
                     Unlimited RPC calls
                   </p>
                 </div>
@@ -622,6 +633,17 @@ const Home = () => {
                   />
                   <p>
                     Unlimited transactions
+                  </p>
+                </div>
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
+                    Unlimited Edison AI agent
                   </p>
                 </div>
                 <div className="flex items-center gap-[13.98px]">
