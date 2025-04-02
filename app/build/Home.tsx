@@ -20,15 +20,13 @@ import zap from "@/assets/zap.svg"
 import currencyExchange from "@/assets/currency-exchange.svg"
 import automation from "@/assets/automation.svg"
 import shield from "@/assets/shield.svg"
-import edisonGray from "@/assets/edison-gray.svg"
-import edisonChat from "@/assets/edison-chat.svg"
-import rightArrowBold from "@/assets/right-arrow-bold.svg"
 import dollarLineBorder from "@/assets/dollar-line-border.svg"
 import verified from "@/assets/verified.svg"
 import parachute from "@/assets/parachute.svg"
 import starBorder from "@/assets/star-border.svg"
 import block from "@/assets/block.svg"
 import Link from "next/link";
+import EdisonBanner from "@/components/build/EdisonBanner";
 
 const apps = [
   {
@@ -301,42 +299,7 @@ const Home = () => {
         </div>
       </section>
       <section className="w-8/9 flex flex-col gap-10 md:w-9/10 max-w-7xl mx-auto py-28 md:py-16">
-        <article className="grid grid-cols-2 gap-10 bg-lightest-gray rounded-[20px] p-10 lg:grid-cols-1">
-          <div className="flex flex-col items-start gap-8">
-            <Image src={edisonGray} alt="edison gray" width={181} height={46} />
-            <h2 className="text-6xl text-fuse-black font-semibold max-w-lg md:text-2xl">
-              What can Edison do for you?
-            </h2>
-            <p className="text-[1.25rem] text-text-dark-gray md:text-base">
-              Experience the power of blockchain without the complexity. Ask the Fuse AI Agent to handle your Fuse Network transactions, manage assets, and navigate DeFi services.
-            </p>
-            <div className="flex gap-8 md:flex-col">
-              <button
-                className="transition ease-in-out px-10 py-4 bg-fuse-black border border-fuse-black rounded-full text-lg leading-none text-white font-semibold hover:bg-[transparent] hover:text-fuse-black"
-                onClick={() => createAccount()}
-              >
-                Start building
-              </button>
-              <Link
-                href="https://news.fuse.io/introducing-edison-the-first-ai-payments-agent-on-fuse/"
-                target="_blank"
-                className="group flex items-center gap-1 text-lg font-semibold"
-              >
-                Learn more
-                <Image
-                  src={rightArrowBold}
-                  alt="right arrow"
-                  width={20}
-                  height={20}
-                  className="transition ease-in-out group-hover:translate-x-0.5"
-                />
-              </Link>
-            </div>
-          </div>
-          <div className="flex justify-center items-center">
-            <Image src={edisonChat} alt="edison chat" width={453} height={300} />
-          </div>
-        </article>
+        <EdisonBanner />
         <div className="grid grid-cols-4 gap-10 lg:grid-cols-2 md:grid-cols-1">
           {edisonFeatures.map((feature, i) => (
             <article key={i} className="flex flex-col items-start gap-3 bg-white rounded-[20px] p-5 pr-4">
