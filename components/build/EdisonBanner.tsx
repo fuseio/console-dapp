@@ -13,11 +13,13 @@ import rightArrowBold from "@/assets/right-arrow-bold.svg"
 interface EdisonBannerProps {
   title?: string;
   description?: string;
+  onClick?: () => void;
 }
 
 const EdisonBanner = ({
   title = "What can Edison do for you?",
-  description = "Experience the power of blockchain without the complexity. Ask the Fuse AI Agent to handle your Fuse Network transactions, manage assets, and navigate DeFi services."
+  description = "Experience the power of blockchain without the complexity. Ask the Fuse AI Agent to handle your Fuse Network transactions, manage assets, and navigate DeFi services.",
+  onClick
 }: EdisonBannerProps) => {
   const { isAuthenticated } = useAppSelector(selectOperatorSlice);
   const router = useRouter();
@@ -39,7 +41,7 @@ const EdisonBanner = ({
         <div className="flex gap-8 md:flex-col">
           <button
             className="transition ease-in-out px-10 py-4 bg-fuse-black border border-fuse-black rounded-full text-lg leading-none text-white font-semibold hover:bg-[transparent] hover:text-fuse-black"
-            onClick={() => redirectEdison()}
+            onClick={() => onClick ? onClick() : redirectEdison()}
           >
             Start building
           </button>

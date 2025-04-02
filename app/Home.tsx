@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import * as amplitude from '@amplitude/analytics-browser';
 import { useAccount } from 'wagmi';
+import { useRouter } from 'next/navigation';
 
 import DocumentSupport from '@/components/DocumentSupport';
 import { eclipseAddress, path } from '@/lib/helpers';
@@ -9,6 +10,7 @@ import EdisonBanner from '@/components/build/EdisonBanner';
 
 const Home = () => {
   const { isConnected, address } = useAccount();
+  const router = useRouter();
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
@@ -41,6 +43,7 @@ const Home = () => {
           <EdisonBanner
             title="Become an operator to get access to Edison"
             description="Explore how easy it is to build Web3 applications with Edison AI agent."
+            onClick={() => router.push(path.BUILD)}
           />
         </div>
         <div className="flex flex-col gap-8 md:gap-5">
