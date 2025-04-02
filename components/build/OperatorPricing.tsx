@@ -173,7 +173,7 @@ const OperatorPricing = ({
             title="Free plan"
             description="Start receiving crypto payments in just a few clicks"
             price={0}
-            features={["Up to 1000 monthly transactions", "1M RPC calls", "10K API calls", "10K Webhook calls"]}
+            features={["Up to 1000 monthly transactions", "50 Edison AI prompts", "1M RPC calls", "10K API calls", "10K Webhook calls"]}
             buttonText={isActivated ? "Free plan" : isOperator ? "Current plan" : "Select"}
             onClick={() => router.push(path.DASHBOARD)}
             isDisabled={isOperator}

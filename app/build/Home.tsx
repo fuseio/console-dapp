@@ -450,6 +450,17 @@ const Home = () => {
                     height={10.5}
                   />
                   <p>
+                    50 Edison AI prompts
+                  </p>
+                </div>
+                <div className="flex items-center gap-[13.98px]">
+                  <Image
+                    src={checkmark}
+                    alt="checkmark"
+                    width={15.64}
+                    height={10.5}
+                  />
+                  <p>
                     1M RPC calls
                   </p>
                 </div>
