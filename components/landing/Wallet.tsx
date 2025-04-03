@@ -50,14 +50,6 @@ const Wallet = () => {
   return (
     <div className="flex flex-col gap-6">
       {isQrModalOpen && <QrModal value={address ? address : ''} size={200} setIsQrModalOpen={setIsQrModalOpen} />}
-      <div>
-        <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
-          Hello{isConnected ? `, ${address ? eclipseAddress(address) : ''}` : ""}
-        </h1>
-        <p className="text-[20px]/7 font-normal mt-4 text-text-dark-gray md:text-base">
-          The one-stop-shop for all Fuse token holders.
-        </p>
-      </div>
       <div className="bg-fuse-black rounded-[20px] text-white p-12 md:p-6">
         <div className="flex flex-row justify-between md:flex-col gap-12">
           <div className="flex flex-col gap-y-[62px]">

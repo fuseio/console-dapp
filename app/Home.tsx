@@ -1,20 +1,29 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import * as amplitude from '@amplitude/analytics-browser';
+import { useAccount } from 'wagmi';
+import { useRouter } from 'next/navigation';
 
 import DocumentSupport from '@/components/DocumentSupport';
-import { path } from '@/lib/helpers';
-import Wallet from '@/components/landing/Wallet';
+import { eclipseAddress, path } from '@/lib/helpers';
 import DeveloperTools from '@/components/DeveloperTools';
-
-import pointsPhases from "@/assets/points-phases.png";
+import EdisonBanner from '@/components/build/EdisonBanner';
 
 const Home = () => {
+  const { isConnected, address } = useAccount();
+  const router = useRouter();
+
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <div className="w-8/9 flex flex-col gap-28 md:gap-20 mt-20 mb-40 md:mb-20 md:mt-10 md:w-9/10 max-w-7xl">
         <div className='flex flex-col gap-10 md:gap-5'>
-          <Wallet />
+          <div>
+            <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
+              Hello{isConnected ? `, ${address ? eclipseAddress(address) : ''}` : ""}
+            </h1>
+            <p className="text-[20px]/7 font-normal mt-4 text-text-dark-gray md:text-base">
+              The one-stop-shop for all Fuse token holders.
+            </p>
+          </div>
           <div className="transition-all ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] md:min-h-[514px] p-12 md:p-6 bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-[right_top] md:bg-[center_bottom]">
             <p className="text-[40px] md:text-[32px] leading-tight text-fuse-black font-semibold">
               Build your Web3 project with Fuse
@@ -31,24 +40,11 @@ const Home = () => {
               Create your project
             </Link>
           </div>
-          <div className="flex justify-between items-center gap-x-4 gap-6 bg-black rounded-[1.25rem] px-16 py-10 md:p-7 md:flex-col">
-            <div className="flex flex-col justify-between items-start gap-5 md:gap-3">
-              <p className="text-2xl text-white font-semibold md:text-lg">
-                Fuse Rewards
-              </p>
-              <p className="bg-linear-gradient-green-thumb bg-clip-text text-[transparent] text-[3.5rem] leading-none font-bold max-w-96 md:text-3xl">
-                Explore Fuse Ember & Earn Rewards
-              </p>
-              <Link
-                href={path.AIRDROP}
-                className="transition ease-in-out px-12 py-3 bg-white border border-white rounded-full text-lg leading-none font-semibold hover:bg-[transparent] hover:text-white"
-                onClick={() => amplitude.track("Home: Ember Rewards")}
-              >
-                Explore & Earn
-              </Link>
-            </div>
-            <Image src={pointsPhases} alt="rewards phases" width={650} height={180} />
-          </div>
+          <EdisonBanner
+            title="Become an operator to get access to Edison"
+            description="Explore how easy it is to build Web3 applications with Edison AI agent."
+            onClick={() => router.push(path.BUILD)}
+          />
         </div>
         <div className="flex flex-col gap-8 md:gap-5">
           <h2 className="text-5xl md:text-3xl leading-tight text-fuse-black font-semibold">
