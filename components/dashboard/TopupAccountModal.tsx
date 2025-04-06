@@ -301,7 +301,7 @@ const FuseNetwork = ({ setQrCode }: FuseNetworkProps) => {
             (operatorSlice.wrapTokenStatus === Status.ERROR) ? 'bg-[#FD0F0F] border-[#FD0F0F] text-white hover:text-[#FD0F0F]' : 'bg-black border-black text-white hover:text-black'
           )}
         >
-          Wrap
+          {operatorSlice.wrapTokenStatus === Status.SUCCESS ? 'Successfully wrapped' : 'Wrap'}
           {operatorSlice.wrapTokenStatus === Status.PENDING && <Spinner />}
         </button>
       </form>
