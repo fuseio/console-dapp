@@ -12,7 +12,7 @@ import { CONFIG, NEXT_PUBLIC_FUSE_API_BASE_URL, NEXT_PUBLIC_PAYMASTER_FUNDER_ADD
 import { PaymasterAbi } from "@/lib/abi/Paymaster";
 import { getSponsorIdBalance } from "@/lib/contractInteract";
 import * as amplitude from "@amplitude/analytics-browser";
-import { getERC20Balance } from "@/lib/erc20";
+import { depositToken, getERC20Balance } from "@/lib/erc20";
 import { ERC20ABI } from "@/lib/abi/ERC20";
 import { Account, parseEther, parseUnits } from "viem";
 
@@ -106,6 +106,7 @@ export interface OperatorStateType {
   bridgeSupportedTokensStatus: Status;
   chargeBridgeStatus: Status;
   chargeBridge: ChargeBridgeResponse;
+  wrapTokenStatus: Status;
 }
 
 const INIT_STATE: OperatorStateType = {
@@ -153,6 +154,7 @@ const INIT_STATE: OperatorStateType = {
   bridgeSupportedTokensStatus: Status.IDLE,
   chargeBridgeStatus: Status.IDLE,
   chargeBridge: initChargeBridge,
+  wrapTokenStatus: Status.IDLE,
 };
 
 export const checkOperator = createAsyncThunk(
@@ -877,6 +879,24 @@ export const chargeBridge = createAsyncThunk(
   }
 );
 
+export const wrapToken = createAsyncThunk(
+  "OPERATOR/WRAP_TOKEN",
+  async ({
+    amount
+  }: {
+    amount: string,
+  }) => {
+    try {
+      const subscriptionInfo = subscriptionInformation()
+      const tx = await depositToken(subscriptionInfo.tokenAddress, amount)
+      return tx;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
 const operatorSlice = createSlice({
   name: "OPERATOR_STATE",
   initialState: INIT_STATE,
@@ -1156,6 +1176,15 @@ const operatorSlice = createSlice({
       })
       .addCase(chargeBridge.rejected, (state) => {
         state.chargeBridgeStatus = Status.ERROR;
+      })
+      .addCase(wrapToken.pending, (state) => {
+        state.wrapTokenStatus = Status.PENDING;
+      })
+      .addCase(wrapToken.fulfilled, (state) => {
+        state.wrapTokenStatus = Status.SUCCESS;
+      })
+      .addCase(wrapToken.rejected, (state) => {
+        state.wrapTokenStatus = Status.ERROR;
       })
   },
 });
