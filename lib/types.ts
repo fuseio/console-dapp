@@ -636,3 +636,16 @@ export type WithdrawModal = {
 export type ChatMessageProps = {
   message: TextResponse;
 };
+
+export type Coin = {
+  name: string;
+  decimals: number;
+  icon: StaticImageData;
+  coinGeckoId: string;
+  address?: Address;
+  isNative?: boolean;
+}
+
+export type Coins = {
+  [k: string]: Coin
+}

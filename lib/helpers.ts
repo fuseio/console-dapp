@@ -95,6 +95,7 @@ export const path = {
   EMBER_NODES: "/nodes/ember",
   AIRDROP_FLASH: "/ember/flash",
   BUILD_REGISTER: "/build/register",
+  BUY_NODE: "/buy-node",
 };
 
 export const buildVisitorSubMenuItems = [
@@ -265,3 +266,8 @@ export const operatorLastInvoice = (invoices: Invoice[]) => {
 }
 
 export const consoleV2LaunchDate = new Date('2025-02-01')
+
+export const compactNumberFormat = new Intl.NumberFormat('en-us', {
+  notation: 'compact',
+  maximumFractionDigits: 2,
+});
