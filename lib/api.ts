@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { CONFIG, NEXT_PUBLIC_AGENT_API_URL, NEXT_PUBLIC_AGENT_ID, NEXT_PUBLIC_AIRDROP_API_BASE_URL, NEXT_PUBLIC_AVAIL_MONITORING_API_URL, NEXT_PUBLIC_CHARGE_PAYMENTS_API_BASE_URL, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL, NEXT_PUBLIC_FUSE_API_BASE_URL } from './config'
+import { CONFIG, NEXT_PUBLIC_AGENT_API_URL, NEXT_PUBLIC_AGENT_ID, NEXT_PUBLIC_AIRDROP_API_BASE_URL, NEXT_PUBLIC_AVAIL_MONITORING_API_URL, NEXT_PUBLIC_CHARGE_PAYMENTS_API_BASE_URL, NEXT_PUBLIC_COIN_GECKO_API_KEY, NEXT_PUBLIC_FUSE_ACCOUNT_API_BASE_URL, NEXT_PUBLIC_FUSE_API_BASE_URL, NEXT_PUBLIC_AVAIL_REWARD_API_URL } from './config'
 import { AirdropLeaderboard, AirdropUser, CreateAirdropUser, DelegatedAmountsByDelegators, DelegatedAmountsRequest, Invoice, Operator, OperatorCheckoutSession, OperatorCheckout, OperatorContactDetail, OperatorWallet, Paymaster, SignData, ValidatorResponse, ChargeBridgeSupportedTokens, ChargeBridge, ChargeBridgeResponse, TextResponse } from "./types";
 import { Address } from "viem";
 
@@ -378,5 +378,9 @@ export const fetchNodesClients = async () => {
 
 export const fetchUserDelegations = async (address: Address) => {
     const response = await axios.get(`${NEXT_PUBLIC_AVAIL_MONITORING_API_URL}/delegations?address=${address}`)
+    return response.data
+}
+export const fetchUserPoints = async (address: Address) => {
+    const response = await axios.get(`${NEXT_PUBLIC_AVAIL_REWARD_API_URL}/rewards/unclaimed?address=${address}`)
     return response.data
 }

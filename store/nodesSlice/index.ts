@@ -3,7 +3,7 @@ import { AppState } from "../rootReducer";
 import { NodesUser, Status, Node, DelegateLicenseModal } from "@/lib/types";
 import { delegateNodeLicense, getNodeLicenseBalances } from "@/lib/contractInteract";
 import { Address } from "viem";
-import { fetchNodesClients, fetchUserDelegations } from "@/lib/api";
+import { fetchNodesClients, fetchUserDelegations, fetchUserPoints } from "@/lib/api";
 
 const initUser: NodesUser = {
   licences: [],
@@ -27,6 +27,8 @@ export interface NodesStateType {
   nodes: Node[];
   fetchDelegationsStatus: Status;
   revokeLicenseModal: DelegateLicenseModal;
+  testnetPoints: number | null;
+  testnetPointsLoading: boolean;
 }
 
 const INIT_STATE: NodesStateType = {
@@ -41,6 +43,8 @@ const INIT_STATE: NodesStateType = {
   nodes: [],
   fetchDelegationsStatus: Status.IDLE,
   revokeLicenseModal: initDelegateLicenseModal,
+  testnetPoints: null,
+  testnetPointsLoading: false,
 };
 
 export const delegateLicense = createAsyncThunk(
@@ -115,6 +119,21 @@ export const fetchDelegations = createAsyncThunk(
   }
 );
 
+export const fetchTestnetPoints = createAsyncThunk(
+  'NODES/FETCH_TESTNET_REWARDS',
+  async (address: Address) => {
+    try {
+      const response = await fetchUserPoints(address);
+      return {
+        total_points: response.total_points || 0
+      };
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
 const nodesSlice = createSlice({
   name: "NODES_STATE",
   initialState: INIT_STATE,
@@ -177,6 +196,17 @@ const nodesSlice = createSlice({
       })
       .addCase(fetchDelegations.rejected, (state) => {
         state.fetchDelegationsStatus = Status.ERROR;
+      })
+      .addCase(fetchTestnetPoints.pending, (state) => {
+        state.testnetPointsLoading = true;
+      })
+      .addCase(fetchTestnetPoints.fulfilled, (state, action) => {
+        state.testnetPoints = action.payload.total_points || 0;
+        state.testnetPointsLoading = false;
+      })
+      .addCase(fetchTestnetPoints.rejected, (state) => {
+        state.testnetPoints = 0;
+        state.testnetPointsLoading = false;
       });
   },
 });
