@@ -8,7 +8,7 @@ import {
 import { CONFIG } from "./config";
 import { Consensus } from "./abi/Consensus";
 import { MULTICALL_ABI } from "./abi/MultiCall";
-import { getAccount, getWalletClient, waitForTransactionReceipt, writeContract } from "wagmi/actions";
+import { getAccount, getWalletClient, readContract, waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { fuse } from "viem/chains";
 import { PaymasterAbi } from "./abi/Paymaster";
 import { config } from "./wagmi";
@@ -127,10 +127,10 @@ export const delegateNodeLicense = async (to: Address, tokenId: number, amount: 
   const rights: Address = "0x4675736520456d626572204e6f6465204c6963656e7365000000000000000000"
   const tx = await writeContract(config, {
     account,
-    address: CONFIG.delegateRegistryAddress,
+    address: CONFIG.oldDelegateRegistryAddress,
     abi: DelegateRegistryABI,
     functionName: "delegateERC1155",
-    args: [to, CONFIG.nodeLicenseAddress, BigInt(tokenId), rights, BigInt(amount)],
+    args: [to, CONFIG.oldNodeLicenseAddress, BigInt(tokenId), rights, BigInt(amount)],
   });
   await waitForTransactionReceipt(config, {
     hash: tx,
@@ -138,12 +138,126 @@ export const delegateNodeLicense = async (to: Address, tokenId: number, amount: 
   return tx;
 };
 
+export const delegateNewNodeLicense = async (to: Address, tokenId: number, amount: number) => {
+  const walletClient = await getWalletClient(config, { chainId: fuse.id });
+  if (!walletClient) {
+    return;
+  }
+  const accounts = await walletClient.getAddresses();
+  const account = accounts[0];
+  const rights: Address = "0x4675736520456d626572204e6f6465204c6963656e7365000000000000000000"
+  const tx = await writeContract(config, {
+    account,
+    address: CONFIG.newDelegateRegistryAddress,
+    abi: DelegateRegistryABI,
+    functionName: "delegateERC1155",
+    args: [to, CONFIG.newNodeLicenseAddress, BigInt(tokenId), rights, BigInt(amount)],
+  });
+  console.log("tx", tx);
+
+  await waitForTransactionReceipt(config, {
+    hash: tx,
+  });
+  return tx;
+};
+
+export const getOutgoingDelegations = async (to: Address, tokenId: number, amount: number) => {
+  const walletClient = await getWalletClient(config, { chainId: fuse.id });
+  if (!walletClient) {
+    return;
+  }
+  const accounts = await walletClient.getAddresses();
+  const account = accounts[0];
+  const tx = await readContract(config, {
+    account,
+    address: CONFIG.newDelegateRegistryAddress,
+    abi: DelegateRegistryABI,
+    functionName: "getOutgoingDelegations",
+    args: [account],
+  });
+
+  return await tx;
+};
+
 export const getNodeLicenseBalances = async (accounts: Address[], tokenIds: bigint[]) => {
   const balances = await publicClient().readContract({
-    address: CONFIG.nodeLicenseAddress,
+    address: CONFIG.oldNodeLicenseAddress,
     abi: ERC1155ABI,
     functionName: "balanceOfBatch",
     args: [accounts, tokenIds],
   });
   return balances;
 };
+
+export const getNewNodeLicenseBalances = async (accounts: Address[], tokenIds: bigint[]) => {
+  const balances = await publicClient().readContract({
+    address: CONFIG.newNodeLicenseAddress,
+    abi: ERC1155ABI,
+    functionName: "balanceOfBatch",
+    args: [accounts, tokenIds],
+  });
+  return balances;
+};
+
+/**
+ * Fetches delegations directly from the contract with type safety and error handling
+ * @param address User wallet address
+ * @param useNewContract Whether to use the new delegation contract (default: false to use old contract)
+ * @returns Parsed delegation data with complete type information
+ */
+export const getDelegationsFromContract = async (
+  address: Address,
+  useNewContract: boolean = false // Default to the old delegation contract
+): Promise<Array<{
+  to: Address;
+  from: Address;
+  contract_: Address;
+  tokenId: number;
+  rights: string;
+  amount: number;
+  type_: number;
+}>> => {
+  try {
+    if (!address) {
+      throw new Error("No wallet address provided");
+    }
+
+    const delegationContractAddress = useNewContract
+      ? CONFIG.newDelegateRegistryAddress
+      : CONFIG.oldDelegateRegistryAddress;
+
+    console.log(`Using ${useNewContract ? 'new' : 'old'} delegation contract: ${delegationContractAddress}`);
+
+    // Get raw delegations data from contract
+    const rawDelegations = await readContract(config, {
+      address: delegationContractAddress,
+      abi: DelegateRegistryABI,
+      functionName: "getOutgoingDelegations",
+      args: [address],
+    });
+
+    console.log("Raw delegations from contract:", rawDelegations);
+
+    if (!rawDelegations || !Array.isArray(rawDelegations)) {
+      console.warn("No delegations found or invalid response format");
+      return [];
+    }
+
+    // Transform and normalize the data to match the actual contract response structure
+    return rawDelegations.map((delegation: any) => {
+      return {
+        type_: Number(delegation.type_), // Type 5 is ERC1155
+        to: delegation.to as Address,
+        from: delegation.from as Address,
+        rights: delegation.rights as string,
+        contract_: delegation.contract_ as Address, // Note: field is contract_ not contract
+        tokenId: Number(delegation.tokenId),
+        amount: Number(delegation.amount),
+      };
+    });
+  } catch (error) {
+    console.error("Error fetching delegations from contract:", error);
+    throw error;
+  }
+};
+

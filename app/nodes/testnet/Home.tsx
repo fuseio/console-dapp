@@ -1,18 +1,27 @@
-import {useEffect} from "react";
+import {useEffect, useRef, useCallback} from "react";
 import {useAccount} from "wagmi";
 import fuseIcon from "@/assets/fuse-icon.svg";
 import Image from "next/image";
 import {
   fetchNodeLicenseBalances,
+  fetchNewNodeLicenseBalances,
   selectNodesSlice,
   setDelegateLicenseModal,
   setIsNoLicenseModalOpen,
   fetchTestnetPoints,
+  setRedelegationModal,
+  fetchDelegationsFromContract,
+  allowRedelegationModalReopening,
 } from "@/store/nodesSlice";
 import {useAppDispatch, useAppSelector} from "@/store/store";
 import VerifierTable from "@/components/nodes/VerifierTable";
 import {setIsWalletModalOpen} from "@/store/navbarSlice";
-import {eclipseAddress, getUserNodes, hex} from "@/lib/helpers";
+import {
+  eclipseAddress,
+  getUserNodes,
+  needsRedelegation,
+  hex,
+} from "@/lib/helpers";
 
 const Header = () => {
   return (
@@ -76,6 +85,20 @@ const Info = () => {
   const userNodes = getUserNodes(nodesSlice.user);
 
   useEffect(() => {
+    console.log("Current user node data:", {
+      licences: nodesSlice.user.licences,
+      newLicences: nodesSlice.user.newLicences,
+      delegations: nodesSlice.user.delegations,
+      delegationStatus: nodesSlice.fetchDelegationsFromContractStatus,
+    });
+  }, [
+    nodesSlice.user.licences,
+    nodesSlice.user.newLicences,
+    nodesSlice.user.delegations,
+    nodesSlice.fetchDelegationsFromContractStatus,
+  ]);
+
+  useEffect(() => {
     if (address) {
       dispatch(
         fetchNodeLicenseBalances({
@@ -112,25 +135,151 @@ const Info = () => {
           <div className="text-sm">Status</div>
         </div>
       </div>
-      <button
-        onClick={() => {
-          if (!address) {
-            return dispatch(setIsWalletModalOpen(true));
-          }
-          if (!userNodes.canDelegate) {
-            return dispatch(setIsNoLicenseModalOpen(true));
-          }
-          dispatch(setDelegateLicenseModal({open: true, address: undefined}));
-        }}
-        className="transition-all ease-in-out border border-success bg-success rounded-full font-semibold leading-none p-3 hover:bg-[transparent] hover:border-black"
-      >
-        Delegate my License
-      </button>
+      <div className="flex flex-col gap-2">
+        <button
+          onClick={() => {
+            if (!address) {
+              return dispatch(setIsWalletModalOpen(true));
+            }
+            if (!userNodes.canDelegate) {
+              return dispatch(setIsNoLicenseModalOpen(true));
+            }
+            dispatch(setDelegateLicenseModal({open: true, address: undefined}));
+          }}
+          className="transition-all ease-in-out border border-success bg-success rounded-full font-semibold leading-none p-3 hover:bg-[transparent] hover:border-black"
+        >
+          Delegate my License
+        </button>
+      </div>
     </section>
   );
 };
 
 const Home = () => {
+  const dispatch = useAppDispatch();
+  const {address} = useAccount();
+  const nodesSlice = useAppSelector(selectNodesSlice);
+  const modalTimerRef = useRef<NodeJS.Timeout | null>(null);
+  // Track previous modal state
+  const hasModalClosedRef = useRef(false);
+
+  // Fetch user data when address is available
+  useEffect(() => {
+    if (!address) return;
+
+    // Fetch old license balances
+    dispatch(
+      fetchNodeLicenseBalances({
+        accounts: Array.from({length: 10}, () => address),
+        tokenIds: Array.from({length: 10}, (_, i) => i),
+      })
+    );
+
+    // Fetch new license balances
+    dispatch(
+      fetchNewNodeLicenseBalances({
+        accounts: Array.from({length: 10}, () => address),
+        tokenIds: Array.from({length: 10}, (_, i) => i),
+      })
+    );
+
+    // Fetch delegations using contract data for more reliability
+    dispatch(
+      fetchDelegationsFromContract({
+        address: address,
+        useNewContract: false, // Use old contract
+      })
+    );
+  }, [address, dispatch]);
+
+  useEffect(() => {
+    const {
+      fetchNodeLicenseBalancesStatus,
+      fetchNewNodeLicenseBalancesStatus,
+      fetchDelegationsFromContractStatus,
+      user,
+      redelegationModal,
+      preventRedelegationModalReopening,
+    } = nodesSlice;
+
+    const isDataLoaded =
+      fetchNodeLicenseBalancesStatus !== "pending" &&
+      fetchNewNodeLicenseBalancesStatus !== "pending" &&
+      fetchDelegationsFromContractStatus !== "pending";
+
+    if (address && isDataLoaded) {
+      // Only open the modal if:
+      // 1. Redelegation is needed
+      // 2. The modal isn't already open
+      // 3. We're not preventing reopening (user just closed it)
+      if (
+        needsRedelegation(user) &&
+        !redelegationModal.open &&
+        !preventRedelegationModalReopening
+      ) {
+        dispatch(setRedelegationModal({open: true}));
+      } else if (!needsRedelegation(user) && modalTimerRef.current) {
+        // If no redelegation needed, clear any existing timer
+        clearTimeout(modalTimerRef.current);
+        modalTimerRef.current = null;
+      }
+    }
+  }, [
+    address,
+    nodesSlice.user,
+    nodesSlice.fetchNodeLicenseBalancesStatus,
+    nodesSlice.fetchNewNodeLicenseBalancesStatus,
+    nodesSlice.fetchDelegationsFromContractStatus,
+    nodesSlice.redelegationModal.open,
+    nodesSlice.preventRedelegationModalReopening,
+    dispatch,
+  ]);
+
+  // Track modal close event and set timer
+  useEffect(() => {
+    const {redelegationModal, user, preventRedelegationModalReopening} =
+      nodesSlice;
+
+    // Only set a timer when modal is closed and we need to prevent immediate reopen
+    if (preventRedelegationModalReopening && !redelegationModal.open) {
+      // Track that modal has been closed
+      hasModalClosedRef.current = true;
+
+      // Clear any existing timer
+      if (modalTimerRef.current) {
+        clearTimeout(modalTimerRef.current);
+      }
+
+      console.log("Setting redelegation timer for 10 seconds...");
+
+      // Set new timer to allow reopening after 10 seconds
+      modalTimerRef.current = setTimeout(() => {
+        // Only allow reopening if redelegation is still needed
+        if (needsRedelegation(nodesSlice.user)) {
+          console.log("Timer completed: allowing redelegation modal to reopen");
+          dispatch(allowRedelegationModalReopening());
+        } else {
+          console.log("Timer completed: redelegation no longer needed");
+        }
+        modalTimerRef.current = null;
+      }, 100000);
+    }
+
+    // Cleanup function to clear the timer on unmount
+    return () => {
+      if (modalTimerRef.current) {
+        console.log("Clearing redelegation timer");
+        clearTimeout(modalTimerRef.current);
+        modalTimerRef.current = null;
+      }
+    };
+  }, [
+    nodesSlice.redelegationModal.open,
+    nodesSlice.preventRedelegationModalReopening,
+    nodesSlice.user,
+    dispatch,
+  ]);
+
   return (
     <main className="flex flex-col gap-10 grow w-8/9 my-20 max-w-7xl md:w-full md:my-12 md:px-4 md:overflow-hidden">
       <Header />

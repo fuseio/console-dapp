@@ -1,43 +1,48 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import ReactGA from 'react-ga4';
-import { Provider } from 'react-redux';
-import { YMInitializer } from 'react-yandex-metrika';
-import { WagmiProvider } from 'wagmi';
+import {useEffect, useState} from "react";
+import ReactGA from "react-ga4";
+import {Provider} from "react-redux";
+import {YMInitializer} from "react-yandex-metrika";
+import {WagmiProvider} from "wagmi";
 
 import {
   NEXT_PUBLIC_AMPLITUDE_API_KEY,
   NEXT_PUBLIC_AMPLITUDE_SERVER_URL,
   NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID,
   NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
-  NEXT_PUBLIC_YANDEX_METRICA_ID
-} from '@/lib/config';
-import { config, evmNetworks } from '@/lib/wagmi';
-import store from '@/store/store';
-import * as amplitude from '@amplitude/analytics-browser';
-import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
-import { DynamicContextProvider, mergeNetworks } from '@dynamic-labs/sdk-react-core';
-import { DynamicWagmiConnector } from '@dynamic-labs/wagmi-connector';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import WalletModal from './WalletModal';
-import TransfiModal from './wallet/TransfiModal';
+  NEXT_PUBLIC_YANDEX_METRICA_ID,
+} from "@/lib/config";
+import {config, evmNetworks} from "@/lib/wagmi";
+import store from "@/store/store";
+import * as amplitude from "@amplitude/analytics-browser";
+import {EthereumWalletConnectors} from "@dynamic-labs/ethereum";
+import {
+  DynamicContextProvider,
+  mergeNetworks,
+} from "@dynamic-labs/sdk-react-core";
+import {DynamicWagmiConnector} from "@dynamic-labs/wagmi-connector";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import WalletModal from "./WalletModal";
+import TransfiModal from "./wallet/TransfiModal";
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({children}: {children: React.ReactNode}) {
   const [isClient, setIsClient] = useState(false);
   const [isDisconnected, setIsDisconnected] = useState(false);
   const queryClient = new QueryClient();
 
   useEffect(() => {
     setIsClient(true);
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (isClient) {
       ReactGA.initialize(NEXT_PUBLIC_GOOGLE_ANALYTICS_ID as string);
-      amplitude.init(NEXT_PUBLIC_AMPLITUDE_API_KEY as string, { serverUrl: NEXT_PUBLIC_AMPLITUDE_SERVER_URL });
+      amplitude.init(NEXT_PUBLIC_AMPLITUDE_API_KEY as string, {
+        serverUrl: NEXT_PUBLIC_AMPLITUDE_SERVER_URL,
+      });
     }
-  }, [isClient])
+  }, [isClient]);
 
   if (!isClient) {
     return null;
@@ -50,14 +55,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
         environmentId: NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID,
         walletConnectors: [EthereumWalletConnectors],
         overrides: {
-          evmNetworks: (networks) => mergeNetworks(evmNetworks, networks)
+          evmNetworks: (networks) => mergeNetworks(evmNetworks, networks),
         },
-        initialAuthenticationMode: 'connect-only',
+        initialAuthenticationMode: "connect-only",
         events: {
           onLogout: () => {
-            setIsDisconnected(true)
-          }
-        }
+            setIsDisconnected(true);
+          },
+        },
       }}
     >
       <Provider store={store}>
@@ -69,7 +74,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 clickmap: true,
                 trackLinks: true,
                 accurateTrackBounce: true,
-                webvisor: true
+                webvisor: true,
               }}
             />
             <DynamicWagmiConnector>
@@ -81,5 +86,5 @@ export function Providers({ children }: { children: React.ReactNode }) {
         </WagmiProvider>
       </Provider>
     </DynamicContextProvider>
-  )
+  );
 }

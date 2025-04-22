@@ -223,6 +223,47 @@ export const getUserNodes = (user: NodesUser) => {
   }
 }
 
+/**
+ * Determines if a user needs to redelegate their old NFTs to new operators.
+ * Shows the redelegation modal if:
+ * 1. User has delegated old NFTs (to any operator)
+ * 2. User has new NFTs that should be redelegated
+ * 
+ * @param user The user object containing license and delegation information
+ * @returns true if redelegation is needed, false otherwise
+ */
+export const needsRedelegation = (user: NodesUser): boolean => {
+  // Early returns for edge cases
+  if (!user) {
+    return false;
+  }
+  console.log("user", user);
+
+  if (!user.licences || !user.delegations) {
+    return false;
+  }
+
+  // Handle case where newLicences might not be initialized
+  if (!user.newLicences) {
+    return false;
+  }
+
+  // No need to check if there are no delegations
+  if (user.delegations.length === 0) {
+    return false;
+  }
+
+  // Check if user has delegated NFTs (any operator with delegation amount > 0)
+  const hasOldDelegatedNFTs = user.delegations.some(delegation => delegation.NFTAmount > 0);
+  // console.log("hasOldDelegatedNFTs", hasOldDelegatedNFTs);
+
+  // Check if user has any new NFTs with positive balance
+  const hasNewNFTs = user.newLicences.some(license => license.balance > 0);
+  console.log("hasNewNFTs", hasNewNFTs);
+  // User needs redelegation if they have both old delegated NFTs and new NFTs
+  return hasOldDelegatedNFTs && hasNewNFTs;
+}
+
 export const getTotalTransaction = (isActivated: boolean) => {
   return isActivated ? 1_000_000 : 1000;
 }

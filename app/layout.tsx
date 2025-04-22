@@ -1,26 +1,26 @@
-import { Providers } from '@/components/providers'
-import '@/styles/globals.css'
-import type { Metadata } from 'next'
-import localFont from 'next/font/local'
-import Script from 'next/script'
+import {Providers} from "@/components/providers";
+import "@/styles/globals.css";
+import type {Metadata} from "next";
+import localFont from "next/font/local";
+import Script from "next/script";
 import HolyLoader from "holy-loader";
 
+import DelegateLicenseModal from "@/components/nodes/DelegateLicenseModal";
+import RevokeLicenseModal from "@/components/nodes/RevokeLicenseModal";
+import ReDelegationModal from "@/components/nodes/ReDelegationModal";
+
 const monaSans = localFont({
-  src: './MonaSans.woff2',
-  display: 'swap',
-  variable: '--font-mona-sans',
-})
+  src: "./MonaSans.woff2",
+  display: "swap",
+  variable: "--font-mona-sans",
+});
 
 export const metadata: Metadata = {
-  title: 'Fuse Console',
-  description: 'One-stop-shop for all Fuse token holders',
-}
+  title: "Fuse Console",
+  description: "One-stop-shop for all Fuse token holders",
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
     <html lang="en" className="scroll-smooth">
       <head>
@@ -34,10 +34,13 @@ export default function RootLayout({
         />
       </head>
       <body className={monaSans.className}>
-        <HolyLoader
-          color="#A3F5AA"
-        />
-        <Providers>{children}</Providers>
+        <HolyLoader color="#A3F5AA" />
+        <Providers>
+          {children}
+          <DelegateLicenseModal />
+          <RevokeLicenseModal />
+          <ReDelegationModal />
+        </Providers>
       </body>
       <Script
         src="https://widget.mava.app"
@@ -46,5 +49,5 @@ export default function RootLayout({
         data-token="6cc157a59efb2fcc926d3337298206bcbdaccd8ee26c09b374bcda0ad561f8fb"
       />
     </html>
-  )
+  );
 }
