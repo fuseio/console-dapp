@@ -135,7 +135,7 @@ const Withdraw = ({
     if (
       appConfig.wrappedBridge.chains[selectedChainItem].tokens[
         selectedTokenItem
-      ].isWithdrawStargate
+      ].isStargate
     ) {
       setIsStargate(true);
       setDisplayButton(false);

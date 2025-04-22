@@ -172,7 +172,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: true,
         isNative: false,
         address: "0xc6Bc407706B7140EE8Eef2f86F9504651b63e7f9",
-        isDepositPaused: true,
       },
       {
         chainId: 109,
@@ -182,7 +181,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
       {
         chainId: 111,
@@ -192,7 +190,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
       {
         chainId: 110,
@@ -202,7 +199,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
       {
         chainId: 101,
@@ -212,7 +208,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
       {
         chainId: 102,
@@ -222,7 +217,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
       {
         chainId: 184,
@@ -232,7 +226,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
     ],
     [
@@ -329,7 +322,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: true,
         isNative: false,
         address: "0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590",
-        isDepositPaused: true,
       },
       {
         chainId: 109,
@@ -339,7 +331,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
       {
         chainId: 111,
@@ -349,7 +340,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
       {
         chainId: 110,
@@ -359,7 +349,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
       {
         chainId: 101,
@@ -369,7 +358,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
       {
         chainId: 102,
@@ -379,7 +367,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
       {
         chainId: 184,
@@ -389,7 +376,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
     ],
     [
@@ -457,7 +443,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: true,
         isNative: false,
         address: "0x3695Dd1D1D43B794C0B13eb8be8419Eb3ac22bf7",
-        isDepositPaused: true,
       },
       {
         chainId: 109,
@@ -467,7 +452,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
       {
         chainId: 111,
@@ -477,7 +461,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
       {
         chainId: 110,
@@ -487,7 +470,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
       {
         chainId: 101,
@@ -497,7 +479,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
       {
         chainId: 102,
@@ -507,7 +488,6 @@ export const bridgeConfig: BridgeConfigLike = {
         isBridged: false,
         isNative: false,
         address: "0x",
-        isDepositPaused: true,
       },
     ],
     [

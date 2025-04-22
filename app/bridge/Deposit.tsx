@@ -133,9 +133,9 @@ const Deposit = ({
 
   useEffect(() => {
     if (
-      appConfig.wrappedBridge.chains[selectedChainItem].tokens.filter(
-        (coin) => !coin.isDepositPaused
-      )[selectedTokenItem].isDisabled
+      appConfig.wrappedBridge.chains[selectedChainItem].tokens[
+        selectedTokenItem
+      ].isStargate
     ) {
       setIsStargate(true);
       setDisplayButton(false);

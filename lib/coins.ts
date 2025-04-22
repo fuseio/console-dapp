@@ -49,7 +49,7 @@ export const coins: CoinConfigLike[] = [
     decimals: 18,
     icon: weth,
     coinGeckoId: "weth",
-    isWithdrawStargate: true,
+    isStargate: true,
   },
   {
     name: "USD Coin",
@@ -64,7 +64,7 @@ export const coins: CoinConfigLike[] = [
     decimals: 6,
     icon: usdc,
     coinGeckoId: "usde-coin",
-    isWithdrawStargate: true,
+    isStargate: true,
   },
   {
     name: "Tether USD",
@@ -79,7 +79,7 @@ export const coins: CoinConfigLike[] = [
     decimals: 6,
     icon: usdt,
     coinGeckoId: "tether-bridged",
-    isWithdrawStargate: true,
+    isStargate: true,
   },
   {
     name: "Freedom",
