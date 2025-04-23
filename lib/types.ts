@@ -61,7 +61,7 @@ export interface CoinConfigLike {
   icon: StaticImageData;
   coinGeckoId: string;
   isDisabled?: boolean;
-  isWithdrawStargate?: boolean;
+  isStargate?: boolean;
 }
 
 export interface ExchangeConfigLike {
@@ -118,6 +118,7 @@ interface TokenStateType {
     name: string;
   };
   isDepositPaused?: boolean;
+  isStargate?: boolean;
 }
 interface WrappedBridgeConfig {
   version: number;
@@ -138,7 +139,7 @@ interface WrappedBridgeConfig {
       isNative: boolean;
       isBridged: boolean;
       isDisabled?: boolean;
-      isWithdrawStargate?: boolean;
+      isStargate?: boolean;
     }[];
   };
   disabledChains: DisabledChainConfigLike[];
@@ -169,7 +170,7 @@ interface WrappedBridgeConfig {
       };
       isDepositPaused?: boolean;
       isDisabled?: boolean;
-      isWithdrawStargate?: boolean;
+      isStargate?: boolean;
     }[];
   }[];
 }
@@ -197,7 +198,7 @@ export const createAppConfig = (
     isNative: boolean;
     isBridged: boolean;
     isDisabled?: boolean;
-    isWithdrawStargate?: boolean;
+    isStargate?: boolean;
   }[] = [];
   if (bridgeConfig.tokens.length > 0) {
     tokenConfig.coins.forEach((coin) => {
@@ -239,7 +240,7 @@ export const createAppConfig = (
           };
           isDepositPaused?: boolean;
           isDisabled?: boolean;
-          isWithdrawStargate?: boolean;
+          isStargate?: boolean;
         }[] = [];
         if (bridgeConfig.tokens.length > 0) {
           tokenConfig.coins.forEach((coin) => {
@@ -259,7 +260,7 @@ export const createAppConfig = (
                 receiveToken: token.receiveToken,
                 isDepositPaused: token.isDepositPaused,
                 isDisabled: coin.isDisabled,
-                isWithdrawStargate: coin.isWithdrawStargate,
+                isStargate: coin.isStargate,
               });
             }
           });
