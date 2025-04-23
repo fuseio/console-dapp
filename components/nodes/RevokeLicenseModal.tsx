@@ -1,14 +1,12 @@
 "use client";
 import React, {useState, useEffect, useRef, useCallback} from "react";
 import Image from "next/image";
-import {AnimatePresence, motion} from "framer-motion";
 import {useFormik} from "formik";
 import * as Yup from "yup";
 import {useAccount} from "wagmi";
 import {useAppDispatch, useAppSelector} from "@/store/store";
 import {
   delegateLicense,
-  fetchDelegationsFromContract,
   selectNodesSlice,
   setRevokeLicenseModal,
   resetDelegationStatus,
@@ -24,73 +22,43 @@ type DelegateLicenseFormValues = {
   amount: number;
 };
 
-// Custom hook for detecting clicks outside the modal
-const useOutsideClick = (callback: () => void) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as HTMLElement)) {
-        callback();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [callback]);
-
-  return ref;
-};
-
 const RevokeLicenseModal = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const nodesSlice = useAppSelector(selectNodesSlice);
   const {address} = useAccount();
 
-  // Find the delegation matching the modal's address
   const delegation = nodesSlice.user.delegations.find(
     (delegation: Node) =>
       delegation.Address.toLowerCase() ===
       nodesSlice.revokeLicenseModal.address?.toLowerCase()
   );
 
-  // Internal state to control modal visibility and delegation process
   const [isVisible, setIsVisible] = useState(false);
   const [isRevoking, setIsRevoking] = useState(false);
 
-  // Sync internal visibility with Redux state
   useEffect(() => {
     setIsVisible(nodesSlice.revokeLicenseModal.open);
   }, [nodesSlice.revokeLicenseModal.open]);
 
-  // Monitor delegation status
   useEffect(() => {
-    // If we were revoking and now status is SUCCESS, don't close the modal automatically
     if (isRevoking && nodesSlice.delegateLicenseStatus === Status.SUCCESS) {
       setIsRevoking(false);
     }
 
-    // If we were revoking and got an error, reset the revoking state
     if (isRevoking && nodesSlice.delegateLicenseStatus === Status.ERROR) {
       setIsRevoking(false);
     }
   }, [nodesSlice.delegateLicenseStatus, isRevoking]);
 
-  // Handle closing the modal
   const handleCloseModal = useCallback(() => {
-    // First update our internal state
     setIsVisible(false);
 
-    // Reset the delegation status to IDLE when closing the modal
     if (nodesSlice.delegateLicenseStatus === Status.SUCCESS) {
       setTimeout(() => {
         dispatch(resetDelegationStatus());
       }, 100);
     }
 
-    // Then dispatch Redux action to actually close the modal
     setTimeout(() => {
       dispatch(setRevokeLicenseModal({open: false}));
     }, 100);
@@ -119,7 +87,6 @@ const RevokeLicenseModal = (): JSX.Element => {
         .required("Required"),
     }),
     onSubmit: (values) => {
-      // Only allow submission if we're not already pending
       if (nodesSlice.delegateLicenseStatus !== Status.PENDING && !isRevoking) {
         setIsRevoking(true);
 
@@ -127,6 +94,7 @@ const RevokeLicenseModal = (): JSX.Element => {
           to: values.to,
           tokenId: values.tokenId,
           amount: 0,
+          userAddress: address,
         });
 
         dispatch(
@@ -134,20 +102,19 @@ const RevokeLicenseModal = (): JSX.Element => {
             to: values.to as `0x${string}`,
             tokenId: values.tokenId,
             amount: 0,
+            userAddress: address,
           })
         );
       }
     },
   });
 
-  // Set the address when modal opens or changes
   useEffect(() => {
     if (nodesSlice.revokeLicenseModal.address) {
       formik.setFieldValue("to", nodesSlice.revokeLicenseModal.address);
     }
   }, [nodesSlice.revokeLicenseModal.address]);
 
-  // Set the amount and tokenId from delegation data when it's available
   useEffect(() => {
     if (delegation) {
       if (delegation.NFTAmount) {
@@ -159,7 +126,6 @@ const RevokeLicenseModal = (): JSX.Element => {
     }
   }, [delegation]);
 
-  // Early return if modal is not visible
   if (!isVisible) {
     return <React.Fragment />;
   }
@@ -173,7 +139,6 @@ const RevokeLicenseModal = (): JSX.Element => {
     <div
       className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 z-50 flex"
       onClick={(e) => {
-        // Only close if clicking the backdrop outside the modal
         if (e.target === e.currentTarget && !isPending) {
           handleCloseModal();
         }
@@ -181,7 +146,7 @@ const RevokeLicenseModal = (): JSX.Element => {
     >
       <div
         className="bg-white w-[548px] max-w-[95%] z-50 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 pt-[47.5px] px-[62px] pb-[50px] md:px-5 md:py-8 rounded-[20px] flex flex-col"
-        onClick={(e) => e.stopPropagation()} // Prevent clicks inside from closing
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex">
           <p className="text-[34px]/[47.6px] font-bold">

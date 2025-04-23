@@ -199,6 +199,10 @@ export const getNewNodeLicenseBalances = async (accounts: Address[], tokenIds: b
   return balances;
 };
 
+// Cache to store delegation results by address
+const delegationCache = new Map();
+const CACHE_EXPIRY = 10 * 1000; // 10 seconds cache expiry
+
 /**
  * Fetches delegations directly from the contract with type safety and error handling
  * @param address User wallet address
@@ -222,11 +226,18 @@ export const getDelegationsFromContract = async (
       throw new Error("No wallet address provided");
     }
 
+    // Create a cache key based on address and contract type
+    const cacheKey = `${address.toLowerCase()}_${useNewContract ? 'new' : 'old'}`;
+
+    // Check cache first
+    const cachedData = delegationCache.get(cacheKey);
+    if (cachedData && (Date.now() - cachedData.timestamp < CACHE_EXPIRY)) {
+      return cachedData.data;
+    }
+
     const delegationContractAddress = useNewContract
       ? CONFIG.newDelegateRegistryAddress
       : CONFIG.oldDelegateRegistryAddress;
-
-    console.log(`Using ${useNewContract ? 'new' : 'old'} delegation contract: ${delegationContractAddress}`);
 
     // Get raw delegations data from contract
     const rawDelegations = await readContract(config, {
@@ -236,15 +247,12 @@ export const getDelegationsFromContract = async (
       args: [address],
     });
 
-    console.log("Raw delegations from contract:", rawDelegations);
-
     if (!rawDelegations || !Array.isArray(rawDelegations)) {
-      console.warn("No delegations found or invalid response format");
       return [];
     }
 
     // Transform and normalize the data to match the actual contract response structure
-    return rawDelegations.map((delegation: any) => {
+    const result = rawDelegations.map((delegation: any) => {
       return {
         type_: Number(delegation.type_), // Type 5 is ERC1155
         to: delegation.to as Address,
@@ -255,6 +263,14 @@ export const getDelegationsFromContract = async (
         amount: Number(delegation.amount),
       };
     });
+
+    // Store in cache with timestamp
+    delegationCache.set(cacheKey, {
+      data: result,
+      timestamp: Date.now()
+    });
+
+    return result;
   } catch (error) {
     console.error("Error fetching delegations from contract:", error);
     throw error;

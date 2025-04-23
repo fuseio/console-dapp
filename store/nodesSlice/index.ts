@@ -1,7 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "../rootReducer";
 import { NodesUser, Status, Node, DelegateLicenseModal } from "@/lib/types";
-import { delegateNodeLicense, getNodeLicenseBalances, getNewNodeLicenseBalances, getDelegationsFromContract } from "@/lib/contractInteract";
+import { delegateNodeLicense, getNodeLicenseBalances, getNewNodeLicenseBalances, getDelegationsFromContract, delegateNewNodeLicense as delegateNewNodeLicenseApi } from "@/lib/contractInteract";
 import { Address } from "viem";
 import { fetchNodesClients, fetchUserDelegations, fetchUserPoints } from "@/lib/api";
 import { CONFIG } from "@/lib/config";
@@ -10,6 +10,7 @@ const initUser: NodesUser = {
   licences: [],
   newLicences: [],
   delegations: [],
+  newDelegations: [],
 }
 
 const initDelegateLicenseModal: DelegateLicenseModal = {
@@ -30,6 +31,7 @@ export interface NodesStateType {
   nodes: Node[];
   fetchDelegationsStatus: Status;
   fetchDelegationsFromContractStatus: Status;
+  fetchNewDelegationsFromContractStatus: Status;
   revokeLicenseModal: DelegateLicenseModal;
   redelegationModal: DelegateLicenseModal;
   preventRedelegationModalReopening: boolean;
@@ -50,6 +52,7 @@ const INIT_STATE: NodesStateType = {
   nodes: [],
   fetchDelegationsStatus: Status.IDLE,
   fetchDelegationsFromContractStatus: Status.IDLE,
+  fetchNewDelegationsFromContractStatus: Status.IDLE,
   revokeLicenseModal: initDelegateLicenseModal,
   redelegationModal: initDelegateLicenseModal,
   preventRedelegationModalReopening: false,
@@ -62,6 +65,43 @@ export const delegateLicense = createAsyncThunk(
   async ({
     to,
     tokenId,
+    amount,
+    userAddress
+  }: {
+    to: Address,
+    tokenId: number,
+    amount: number,
+    userAddress?: Address
+  }, { dispatch }) => {
+    try {
+      // Always use old contract (delegateNodeLicense)
+      await delegateNodeLicense(to, tokenId, amount);
+
+      // If this is a revocation (amount = 0), we need to refresh the user's delegations
+      if (amount === 0 && userAddress) {
+        await dispatch(fetchDelegationsFromContract({
+          address: userAddress,
+          useNewContract: false
+        }));
+      } else {
+        // For regular delegation, refresh the node's delegations
+        await dispatch(fetchDelegationsFromContract({
+          address: to,
+          useNewContract: false
+        }));
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+);
+
+export const delegateNewNodeLicense = createAsyncThunk(
+  "NODES/DELEGATE_NEW_NODE_LICENSE",
+  async ({
+    to,
+    tokenId,
     amount
   }: {
     to: Address,
@@ -69,16 +109,18 @@ export const delegateLicense = createAsyncThunk(
     amount: number
   }, { dispatch }) => {
     try {
-      // Always use old contract (delegateNodeLicense)
-      await delegateNodeLicense(to, tokenId, amount);
+      console.log(`Delegating new node license: to=${to}, tokenId=${tokenId}, amount=${amount}`);
 
-      // Fetch updated delegations from contract
+      await delegateNewNodeLicenseApi(to, tokenId, amount);
+
       await dispatch(fetchDelegationsFromContract({
         address: to,
-        useNewContract: false
+        useNewContract: true
       }));
+
+      return { success: true };
     } catch (error) {
-      console.log(error);
+      console.error("Error delegating new node license:", error);
       throw error;
     }
   }
@@ -133,9 +175,28 @@ export const fetchNewNodeLicenseBalances = createAsyncThunk(
 
 export const fetchNodes = createAsyncThunk(
   "NODES/FETCH_NODES",
-  async () => {
+  async (payload: { userAddress?: string } = {}, { dispatch }) => {
     try {
+      console.log("Starting nodes fetch");
       const nodes = await fetchNodesClients();
+
+      // Get user address from payload if available
+      const { userAddress } = payload;
+
+      if (userAddress) {
+        console.log("User address available in fetchNodes, immediately fetching delegations:", userAddress);
+
+        // Fetch delegations immediately after nodes
+        await dispatch(
+          fetchDelegationsFromContract({
+            address: userAddress as `0x${string}`,
+            useNewContract: false,
+          })
+        );
+      } else {
+        console.log("No user address available, skipping delegations fetch");
+      }
+
       return nodes.data ?? [];
     } catch (error) {
       console.log(error);
@@ -177,21 +238,40 @@ export const fetchTestnetPoints = createAsyncThunk(
 
 export const fetchDelegationsFromContract = createAsyncThunk(
   "NODES/FETCH_DELEGATIONS_FROM_CONTRACT",
-  async (params: { address: Address, useNewContract: boolean }) => {
+  async (params: { address: Address, useNewContract: boolean }, { getState }) => {
     try {
       const address = params.address;
       const useNewContract = params.useNewContract;
+
+      // Get the current state to see if we already have nodes data
+      const state = getState() as any;
+      const currentNodes = state.nodes?.nodes || [];
+
+      // Create a nodes lookup map for O(1) access
+      const nodesMap = new Map();
+      currentNodes.forEach((node: Node) => {
+        nodesMap.set(node.Address.toLowerCase(), node);
+      });
+
+      // Fetch delegation data
       const delegationsData = await getDelegationsFromContract(address, useNewContract);
-      console.log("Delegations from contract:", delegationsData);
 
       if (!delegationsData.length) {
         return [];
       }
 
-      const nodeData = await fetchNodesClients();
-      const nodes = nodeData.data || [];
+      // Only fetch nodes if we don't already have them
+      let nodes = currentNodes;
+      if (nodes.length === 0) {
+        const nodeData = await fetchNodesClients();
+        nodes = nodeData.data || [];
 
-      // Always use old contract address
+        // Update the map with new nodes data
+        nodes.forEach((node: Node) => {
+          nodesMap.set(node.Address.toLowerCase(), node);
+        });
+      }
+
       const nodeLicenseContract = CONFIG.oldNodeLicenseAddress.toLowerCase();
 
       const enhancedDelegations = delegationsData
@@ -200,11 +280,9 @@ export const fetchDelegationsFromContract = createAsyncThunk(
           delegation.amount > 0
         )
         .map(delegation => {
-          const nodeInfo = nodes.find((node: Node) =>
-            node.Address.toLowerCase() === delegation.to.toLowerCase()
-          );
-
-          console.log(`Processing delegation to ${delegation.to} with tokenId ${delegation.tokenId}`);
+          const nodeAddress = delegation.to.toLowerCase();
+          // Use map lookup instead of find for faster performance
+          const nodeInfo = nodesMap.get(nodeAddress);
 
           return {
             Address: delegation.to,
@@ -221,13 +299,76 @@ export const fetchDelegationsFromContract = createAsyncThunk(
           } as Node;
         });
 
-      // Log for debugging
-      console.log(`Found ${enhancedDelegations.length} node license delegations from contract:`);
-      console.log(enhancedDelegations);
-
       return enhancedDelegations;
     } catch (error) {
       console.error("Error in fetchDelegationsFromContract:", error);
+      throw error;
+    }
+  }
+);
+
+export const fetchNewDelegationsFromContract = createAsyncThunk(
+  "NODES/FETCH_NEW_DELEGATIONS_FROM_CONTRACT",
+  async (address: Address, { getState }) => {
+    try {
+      // Get the current state to see if we already have nodes data
+      const state = getState() as any;
+      const currentNodes = state.nodes?.nodes || [];
+
+      // Create a nodes lookup map for O(1) access
+      const nodesMap = new Map();
+      currentNodes.forEach((node: Node) => {
+        nodesMap.set(node.Address.toLowerCase(), node);
+      });
+
+      const delegationsData = await getDelegationsFromContract(address, true); // true = use new contract
+
+      if (!delegationsData.length) {
+        return [];
+      }
+
+      // Only fetch nodes if we don't already have them
+      let nodes = currentNodes;
+      if (nodes.length === 0) {
+        const nodeData = await fetchNodesClients();
+        nodes = nodeData.data || [];
+
+        // Update the map with new nodes data
+        nodes.forEach((node: Node) => {
+          nodesMap.set(node.Address.toLowerCase(), node);
+        });
+      }
+
+      const newNodeLicenseContract = CONFIG.newNodeLicenseAddress.toLowerCase();
+
+      const enhancedDelegations = delegationsData
+        .filter(delegation =>
+          delegation.contract_.toLowerCase() === newNodeLicenseContract &&
+          delegation.amount > 0
+        )
+        .map(delegation => {
+          const nodeAddress = delegation.to.toLowerCase();
+          // Use map lookup instead of find for faster performance
+          const nodeInfo = nodesMap.get(nodeAddress);
+
+          return {
+            Address: delegation.to,
+            NFTAmount: delegation.amount,
+            NFTTokenID: delegation.tokenId,
+            OperatorName: nodeInfo?.OperatorName || "Node Operator",
+            TotalTime: nodeInfo?.TotalTime || 0,
+            LastHeartbeat: nodeInfo?.LastHeartbeat || new Date(),
+            CreatedAt: nodeInfo?.CreatedAt || new Date(),
+            CommissionRate: nodeInfo?.CommissionRate || 0,
+            Status: nodeInfo?.Status || "Active",
+            AllUptimePercentage: nodeInfo?.AllUptimePercentage || 0,
+            WeeklyUptimePercentage: nodeInfo?.WeeklyUptimePercentage || 0,
+          } as Node;
+        });
+
+      return enhancedDelegations;
+    } catch (error) {
+      console.error("Error in fetchNewDelegationsFromContract:", error);
       throw error;
     }
   }
@@ -274,6 +415,15 @@ const nodesSlice = createSlice({
         state.delegateLicenseStatus = Status.SUCCESS;
       })
       .addCase(delegateLicense.rejected, (state) => {
+        state.delegateLicenseStatus = Status.ERROR;
+      })
+      .addCase(delegateNewNodeLicense.pending, (state) => {
+        state.delegateLicenseStatus = Status.PENDING;
+      })
+      .addCase(delegateNewNodeLicense.fulfilled, (state) => {
+        state.delegateLicenseStatus = Status.SUCCESS;
+      })
+      .addCase(delegateNewNodeLicense.rejected, (state) => {
         state.delegateLicenseStatus = Status.ERROR;
       })
       .addCase(fetchNodeLicenseBalances.pending, (state) => {
@@ -332,11 +482,20 @@ const nodesSlice = createSlice({
       })
       .addCase(fetchDelegationsFromContract.fulfilled, (state, action) => {
         state.fetchDelegationsFromContractStatus = Status.SUCCESS;
-        // Always update the delegations array, even if it's empty
         state.user.delegations = action.payload;
       })
       .addCase(fetchDelegationsFromContract.rejected, (state) => {
         state.fetchDelegationsFromContractStatus = Status.ERROR;
+      })
+      .addCase(fetchNewDelegationsFromContract.pending, (state) => {
+        state.fetchNewDelegationsFromContractStatus = Status.PENDING;
+      })
+      .addCase(fetchNewDelegationsFromContract.fulfilled, (state, action) => {
+        state.fetchNewDelegationsFromContractStatus = Status.SUCCESS;
+        state.user.newDelegations = action.payload;
+      })
+      .addCase(fetchNewDelegationsFromContract.rejected, (state) => {
+        state.fetchNewDelegationsFromContractStatus = Status.ERROR;
       })
   },
 });

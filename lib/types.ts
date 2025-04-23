@@ -547,6 +547,7 @@ export interface NodesUser {
   licences: NodeLicense[];
   newLicences: NodeLicense[];
   delegations: Node[];
+  newDelegations?: Node[];
 }
 
 export enum Status {

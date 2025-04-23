@@ -6,6 +6,7 @@ import {AnimatePresence, motion} from "framer-motion";
 import {useFormik} from "formik";
 import * as Yup from "yup";
 import {Address} from "viem";
+import {useAccount} from "wagmi";
 
 import {useAppDispatch, useAppSelector} from "@/store/store";
 import {Error} from "@/components/ui/Form";
@@ -13,13 +14,13 @@ import {
   delegateLicense,
   selectNodesSlice,
   setDelegateLicenseModal,
-  closeModal,
   resetDelegationStatus,
 } from "@/store/nodesSlice";
 import Spinner from "@/components/ui/Spinner";
 
 import close from "@/assets/close.svg";
 import {Status} from "@/lib/types";
+import {useOutsideClick} from "@/lib/hooks/useOutsideClick";
 
 type DelegateLicenseFormValues = {
   to: Address;
@@ -30,64 +31,89 @@ type DelegateLicenseFormValues = {
 const DelegateLicenseModal = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const nodesSlice = useAppSelector(selectNodesSlice);
+  const {address} = useAccount();
   const [isTierDropdownOpen, setIsTierDropdownOpen] = useState(false);
   const initialized = useRef(false);
-
-  // Internal state to control modal visibility
-  const [isVisible, setIsVisible] = useState(false);
   const isDelegatingRef = useRef(false);
+  const [isVisible, setIsVisible] = useState(false);
 
-  // Sync internal visibility with Redux state
   useEffect(() => {
-    // Update our internal state based on Redux
     setIsVisible(nodesSlice.delegateLicenseModal.open);
   }, [nodesSlice.delegateLicenseModal.open]);
 
-  // Handle closing the modal safely
-  const handleCloseModal = useCallback(() => {
-    // Don't allow closing during delegation
-    if (isDelegatingRef.current) {
-      console.log("Cannot close modal during delegation");
-      return;
+  useEffect(() => {
+    if (
+      isDelegatingRef.current &&
+      nodesSlice.delegateLicenseStatus === Status.SUCCESS
+    ) {
+      isDelegatingRef.current = false;
     }
 
-    // First set our internal visibility to false
+    if (
+      isDelegatingRef.current &&
+      nodesSlice.delegateLicenseStatus === Status.ERROR
+    ) {
+      isDelegatingRef.current = false;
+    }
+  }, [nodesSlice.delegateLicenseStatus]);
+
+  const handleCloseModal = useCallback(() => {
     setIsVisible(false);
 
-    // Reset the delegation status to IDLE when closing the modal
     if (nodesSlice.delegateLicenseStatus === Status.SUCCESS) {
       setTimeout(() => {
         dispatch(resetDelegationStatus());
       }, 100);
     }
 
-    // Then update Redux state with a small delay to prevent flashes
     setTimeout(() => {
       dispatch(setDelegateLicenseModal({open: false}));
-    }, 50);
+    }, 100);
   }, [dispatch, nodesSlice.delegateLicenseStatus]);
 
-  // Handle backdrop click - only close when clicking directly on the backdrop
   const handleBackdropClick = useCallback(
-    (e: React.MouseEvent) => {
-      // Don't allow closing during delegation
-      if (isDelegatingRef.current) return;
-
-      // Only close if the click is directly on the backdrop element (not any of its children)
-      if (e.target === e.currentTarget) {
-        e.preventDefault();
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (e.target === e.currentTarget && !isDelegatingRef.current) {
         handleCloseModal();
       }
     },
-    [handleCloseModal]
+    [handleCloseModal, isDelegatingRef]
   );
 
-  // Combine licenses from old contract only - use useMemo instead of useEffect
   const availableLicenses = useMemo(() => {
     if (!nodesSlice.user || !nodesSlice.user.licences) return [];
-    // Only use old contract licenses (from licences array, not newLicences)
     return nodesSlice.user.licences.filter((license) => license.balance > 0);
   }, [nodesSlice.user.licences]);
+
+  // Calculate available tokens for delegation (total balance minus already delegated)
+  const availableTokensForDelegation = useMemo(() => {
+    if (
+      !nodesSlice.user ||
+      !nodesSlice.user.licences ||
+      !nodesSlice.user.delegations
+    ) {
+      return {};
+    }
+
+    // Initialize with total balances
+    const available: Record<number, number> = {};
+    nodesSlice.user.licences.forEach((license) => {
+      available[license.tokenId] = license.balance;
+    });
+
+    // Subtract already delegated amounts
+    nodesSlice.user.delegations.forEach((delegation) => {
+      const tokenId = delegation.NFTTokenID + 1; // Adjust for 1-based indexing in UI
+      if (available[tokenId]) {
+        available[tokenId] = Math.max(
+          0,
+          available[tokenId] - delegation.NFTAmount
+        );
+      }
+    });
+
+    return available;
+  }, [nodesSlice.user?.licences, nodesSlice.user?.delegations]);
 
   const formik = useFormik<DelegateLicenseFormValues>({
     initialValues: {
@@ -120,13 +146,11 @@ const DelegateLicenseModal = (): JSX.Element => {
             to: values.to,
             tokenId: values.tokenId,
             amount: values.amount,
+            userAddress: address,
           })
         ).unwrap();
 
-        // Don't close the modal automatically on success
         isDelegatingRef.current = false;
-
-        // Success is now handled by the render function based on delegateLicenseStatus
       } catch (error: any) {
         console.error("Delegation failed:", error);
         isDelegatingRef.current = false;
@@ -134,12 +158,9 @@ const DelegateLicenseModal = (): JSX.Element => {
     },
   });
 
-  // Reset form and properly set initial tokenId when modal visibility changes
   const prevVisibleRef = useRef(isVisible);
   useEffect(() => {
-    // When modal opens, initialize with the first available license
     if (!prevVisibleRef.current && isVisible && availableLicenses.length > 0) {
-      // Reset and initialize form with first available license
       const firstLicense = availableLicenses[0];
       formik.setValues({
         to: nodesSlice.delegateLicenseModal.address || "0x",
@@ -149,44 +170,36 @@ const DelegateLicenseModal = (): JSX.Element => {
       initialized.current = true;
     }
 
-    // When modal closes, reset initialization flag
     if (prevVisibleRef.current && !isVisible) {
       initialized.current = false;
 
-      // Delayed reset to avoid conflicts
       setTimeout(() => {
         formik.resetForm();
       }, 50);
     }
 
-    // Update ref for next render
     prevVisibleRef.current = isVisible;
   }, [isVisible, availableLicenses, nodesSlice.delegateLicenseModal.address]);
 
-  // Update to address when modal opens with a specific address
   const prevAddressRef = useRef(nodesSlice.delegateLicenseModal.address);
   useEffect(() => {
     const modalAddress = nodesSlice.delegateLicenseModal.address;
 
-    // Only update when the address changes and is valid
     if (
       modalAddress &&
       modalAddress !== prevAddressRef.current &&
       formik.values.to === "0x"
     ) {
-      formik.setFieldValue("to", modalAddress, false); // false = don't validate
+      formik.setFieldValue("to", modalAddress, false);
     }
 
-    // Update ref for next comparison
     prevAddressRef.current = modalAddress;
-  }, [nodesSlice.delegateLicenseModal.address]); // Deliberately omit formik from deps
+  }, [nodesSlice.delegateLicenseModal.address]);
 
-  // Early return if not visible
   if (!isVisible) {
     return <React.Fragment />;
   }
 
-  // Create local variables for status checks
   const isSuccess = nodesSlice.delegateLicenseStatus === Status.SUCCESS;
   const isPending =
     nodesSlice.delegateLicenseStatus === Status.PENDING ||
@@ -299,7 +312,6 @@ const DelegateLicenseModal = (): JSX.Element => {
                                     : "w-full"
                                 }`}
                                 onClick={() => {
-                                  // Explicitly set tokenId and ensure it's updated immediately
                                   formik.setValues({
                                     ...formik.values,
                                     tokenId: license.tokenId - 1,
@@ -310,9 +322,6 @@ const DelegateLicenseModal = (): JSX.Element => {
                               >
                                 <div className="flex flex-col items-center p-1">
                                   <span>Tier {license.tokenId}</span>
-                                  <span className="text-gray-400">
-                                    Balance: {license.balance}
-                                  </span>
                                 </div>
                               </button>
                             );
@@ -333,6 +342,7 @@ const DelegateLicenseModal = (): JSX.Element => {
                   >
                     License amount
                   </label>
+
                   <input
                     type="number"
                     id="amount"
@@ -351,14 +361,21 @@ const DelegateLicenseModal = (): JSX.Element => {
                   />
                 </div>
               </div>
+              <div className="text-sm text-text-heading-gray">
+                <span className="font-medium">Available for delegation:</span>
+                <span className="ml-1">
+                  {availableTokensForDelegation[formik.values.tokenId + 1] || 0}{" "}
+                  tokens
+                </span>
+              </div>
               <div className="mt-3 flex flex-col gap-1.5">
                 <button
                   type="submit"
-                  className={`transition-all ease-in-out flex justify-center items-center gap-2 border rounded-full font-semibold leading-none p-4 
+                  className={`transition-all ease-in-out flex justify-center items-center gap-2 border rounded-full font-semibold leading-none p-4 hover:bg-[transparent]
                     ${
                       isError
                         ? "bg-[#FFEBE9] text-[#FD0F0F] border-[#FD0F0F]"
-                        : "bg-[rgb(180,249,186)] text-black border-[rgb(180,249,186)] hover:bg-[rgb(160,229,166)] hover:border-[rgb(160,229,166)]"
+                        : "bg-[rgb(180,249,186)] text-black border-[rgb(180,249,186)] hover:border-black enabled:hover:text-black"
                     }
                     disabled:bg-iron disabled:border-iron disabled:text-white disabled:cursor-not-allowed`}
                   disabled={isPending || formik.isSubmitting}

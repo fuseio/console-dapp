@@ -7,10 +7,9 @@ import {
   Info,
   Ghost,
   WalletMinimal,
-  ChevronsLeft,
-  ChevronLeft as ChevronLeftIcon,
-  ChevronRight as ChevronRightIcon,
-  ChevronsRight,
+  ChevronLeft,
+  ChevronRight,
+  Search,
 } from "lucide-react";
 import {
   Column,
@@ -29,11 +28,9 @@ import {
 import {useAccount} from "wagmi";
 
 import {Node, Status} from "@/lib/types";
-import {useOutsideClick} from "@/lib/hooks/useOutsideClick";
 import {eclipseAddress, getUserNodes} from "@/lib/helpers";
 import {useAppDispatch, useAppSelector} from "@/store/store";
 import {
-  fetchDelegations,
   fetchNodes,
   NodesStateType,
   selectNodesSlice,
@@ -48,6 +45,7 @@ import {Notice, renderPageNumbers, Skeleton} from "@/components/ui/Table";
 import nodeops from "@/assets/nodeops.svg";
 import fuseIcon from "@/assets/fuse-icon.svg";
 import dappnode from "@/assets/dappnode.png";
+import {useOutsideClick} from "@/lib/hooks/useOutsideClick";
 
 declare module "@tanstack/react-table" {
   // see: https://github.com/TanStack/table/discussions/5222
@@ -61,7 +59,7 @@ declare module "@tanstack/react-table" {
 
 type FilterProps = {
   column: Column<any, unknown>;
-  closeFilter: (value: string) => void;
+  setFilterOpen: (value: string) => void;
 };
 
 type RowsProps = {
@@ -152,43 +150,37 @@ const Rows = ({table, nodesSlice, isMyDelegatesTab}: RowsProps) => {
 const VerifierTable = () => {
   const [filterOpen, setFilterOpen] = useState("");
   const [isMyDelegatesTab, setIsMyDelegatesTab] = useState(false);
+  const [hasFetchedDelegations, setHasFetchedDelegations] = useState(false);
   const dispatch = useAppDispatch();
   const nodesSlice = useAppSelector(selectNodesSlice);
   const {address} = useAccount();
   const userNodes = getUserNodes(nodesSlice.user);
 
-  // Filter data based on the selected tab
+  // Add a memoized node address map for fast lookups
+  const nodesAddressMap = useMemo(() => {
+    const map = new Map();
+    nodesSlice.nodes.forEach((node) => {
+      map.set(node.Address.toLowerCase(), node);
+    });
+    return map;
+  }, [nodesSlice.nodes]);
+
   const filteredData = useMemo(() => {
     if (!isMyDelegatesTab) {
       return nodesSlice.nodes;
     }
 
-    // For "My Delegated Licenses" tab, we need to properly merge delegation data
-    // with the complete node data to show accurate information
     if (nodesSlice.user.delegations.length === 0) {
       return [];
     }
 
+    // Use the memoized address map for O(1) lookups instead of O(n) find operations
     return nodesSlice.user.delegations.map((delegation) => {
-      // Find the corresponding node data from the nodes array
-      // Use lowercase comparison to avoid case sensitivity issues
-      const nodeData = nodesSlice.nodes.find(
-        (node) =>
-          node.Address.toLowerCase() === delegation.Address.toLowerCase()
-      );
+      const nodeData = nodesAddressMap.get(delegation.Address.toLowerCase());
 
-      if (!nodeData) {
-        console.warn(
-          `No matching node found for delegation address: ${delegation.Address}`
-        );
-      }
-
-      // Create a complete record by combining delegation and node data
       return {
-        ...delegation, // Keep all delegation fields
-        ...(nodeData || {}), // Override with node data where available
-
-        // Ensure critical fields are explicitly copied, defaulting to reasonable values if not found
+        ...delegation,
+        ...(nodeData || {}),
         NFTAmount: delegation.NFTAmount || 0,
         AllUptimePercentage: nodeData?.AllUptimePercentage || 0,
         WeeklyUptimePercentage: nodeData?.WeeklyUptimePercentage || 0,
@@ -196,14 +188,7 @@ const VerifierTable = () => {
         Status: nodeData?.Status || "Unknown",
       };
     });
-  }, [isMyDelegatesTab, nodesSlice.nodes, nodesSlice.user.delegations]);
-
-  // For debugging: Log the merged data when in "My Delegated Licenses" tab
-  useEffect(() => {
-    if (isMyDelegatesTab && filteredData.length > 0) {
-      console.log("Delegated nodes with merged data:", filteredData);
-    }
-  }, [isMyDelegatesTab, filteredData]);
+  }, [isMyDelegatesTab, nodesAddressMap, nodesSlice.user.delegations]);
 
   const columns = useMemo<ColumnDef<Node, any>[]>(
     () => [
@@ -362,7 +347,7 @@ const VerifierTable = () => {
     data: filteredData,
     columns,
     globalFilterFn: "arrIncludesSome",
-    debugTable: true,
+    debugTable: false, // Turn off debug mode for performance
     initialState: {
       pagination: {
         pageSize: 25,
@@ -376,33 +361,79 @@ const VerifierTable = () => {
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
-  // Switch to the "All" tab
   const showAllNodes = useCallback(() => {
     setIsMyDelegatesTab(false);
   }, []);
 
-  // Switch to "My Delegated Licenses" tab
   const showMyDelegates = useCallback(() => {
     setIsMyDelegatesTab(true);
 
-    // Use contract as source of truth for delegations
+    // Only fetch if they haven't been fetched already and the fetch isn't currently in progress
+    if (
+      address &&
+      !hasFetchedDelegations &&
+      nodesSlice.fetchDelegationsFromContractStatus !== Status.PENDING
+    ) {
+      dispatch(
+        fetchDelegationsFromContract({
+          address,
+          useNewContract: false,
+        })
+      );
+      setHasFetchedDelegations(true);
+    }
+  }, [
+    address,
+    dispatch,
+    hasFetchedDelegations,
+    nodesSlice.fetchDelegationsFromContractStatus,
+  ]);
+
+  // Single fetch with wallet address if available
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (nodesSlice.fetchNodesStatus === Status.IDLE) {
+          console.log(
+            "Fetching nodes with address:",
+            address || "not connected"
+          );
+
+          // Pass user address directly in the payload
+          await dispatch(
+            fetchNodes({
+              userAddress: address || undefined,
+            })
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [dispatch, address, nodesSlice.fetchNodesStatus]);
+
+  // Reset the delegation fetch flag if the user's address changes
+  useEffect(() => {
     if (address) {
-      // Pass the address as an object parameter
-      dispatch(
-        fetchDelegationsFromContract({
-          address,
-          useNewContract: false,
-        })
-      );
+      setHasFetchedDelegations(false);
     }
-  }, [address, dispatch]);
+  }, [address]);
 
-  // Load both nodes and delegations when component mounts
+  // Listen for revokeLicenseModal changes to refresh delegations after revocation
   useEffect(() => {
-    dispatch(fetchNodes());
+    // When the modal closes and we were on the My Delegations tab, refresh the delegations
+    const modalJustClosed =
+      !nodesSlice.revokeLicenseModal.open && isMyDelegatesTab && address;
 
-    if (address && isMyDelegatesTab) {
-      // Use contract as source of truth for delegations
+    if (modalJustClosed) {
+      console.log("Revoke modal just closed, refreshing delegations");
+
+      // Reset fetch flag to trigger a refresh
+      setHasFetchedDelegations(false);
+
+      // Direct fetch to ensure we get the latest data
       dispatch(
         fetchDelegationsFromContract({
           address,
@@ -410,12 +441,21 @@ const VerifierTable = () => {
         })
       );
     }
-  }, [dispatch, address, isMyDelegatesTab]);
+  }, [nodesSlice.revokeLicenseModal.open, isMyDelegatesTab, address, dispatch]);
 
-  // Load delegations again when switching to My Delegated Licenses tab
+  // Listen for delegateLicenseModal changes to refresh delegations after delegation
   useEffect(() => {
-    if (isMyDelegatesTab && address) {
-      // Use contract as source of truth for delegations
+    // When the modal closes and we were on the My Delegations tab, refresh the delegations
+    const modalJustClosed =
+      !nodesSlice.delegateLicenseModal.open && isMyDelegatesTab && address;
+
+    if (modalJustClosed) {
+      console.log("Delegate modal just closed, refreshing delegations");
+
+      // Reset fetch flag to trigger a refresh
+      setHasFetchedDelegations(false);
+
+      // Direct fetch to ensure we get the latest data
       dispatch(
         fetchDelegationsFromContract({
           address,
@@ -423,22 +463,21 @@ const VerifierTable = () => {
         })
       );
     }
-  }, [isMyDelegatesTab, dispatch, address]);
+  }, [
+    nodesSlice.delegateLicenseModal.open,
+    isMyDelegatesTab,
+    address,
+    dispatch,
+  ]);
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-bold text-fuse-black">
-          {isMyDelegatesTab ? "My Delegated Licenses" : "All Nodes"}
-        </h3>
-      </div>
-      <section className="flex flex-col gap-4">
-        <header className="flex justify-end items-center gap-3">
-          <div>Delegators</div>
-          <div>
-            <button
-              onClick={showAllNodes}
-              className={`
+    <section className="flex flex-col gap-4">
+      <header className="flex justify-end items-center gap-3">
+        <div>Delegators</div>
+        <div>
+          <button
+            onClick={showAllNodes}
+            className={`
                 transition-all ease-in-out 
                 ${
                   !isMyDelegatesTab
@@ -447,12 +486,12 @@ const VerifierTable = () => {
                 }
                 text-sm font-semibold rounded-s-full px-7 py-3
               `}
-            >
-              All
-            </button>
-            <button
-              onClick={showMyDelegates}
-              className={`
+          >
+            All
+          </button>
+          <button
+            onClick={showMyDelegates}
+            className={`
                 transition-all ease-in-out 
                 ${
                   isMyDelegatesTab
@@ -461,161 +500,283 @@ const VerifierTable = () => {
                 }
                 text-sm font-semibold rounded-e-full px-7 py-3
               `}
-            >
-              My Delegated Licenses
-            </button>
-          </div>
-        </header>
-
-        <div className="rounded-lg overflow-hidden shadow">
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr className="border-b border-light-gray">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <>
-                    {headerGroup.headers.map((header, index) => (
-                      <th
-                        key={header.id}
-                        className={`px-2 py-4 bg-gray-50 font-medium text-base ${
-                          index === 0 ? "ps-8" : ""
-                        } ${
-                          index === headerGroup.headers.length - 1 ? "pe-8" : ""
-                        }`}
-                      >
-                        <div
-                          className={`flex gap-1 items-center select-none ${
-                            header.column.getCanSort() ? "cursor-pointer" : ""
-                          }`}
-                          onClick={header.column.getToggleSortingHandler()}
-                        >
-                          <div>
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                          </div>
+          >
+            My Delegations
+          </button>
+        </div>
+      </header>
+      <div className="bg-white rounded-[1.25rem] xl:overflow-auto">
+        <div className="px-8 py-7">
+          Total of {table.getPrePaginationRowModel().rows.length} nodes.
+        </div>
+        <table className="w-full border-spacing-2">
+          <thead className="bg-transaction-bg text-sm text-text-dark-gray">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header, index) => {
+                  return (
+                    <th
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      className={`whitespace-nowrap font-normal px-2 py-2 ${
+                        index === 0 ? "ps-8" : ""
+                      } ${
+                        index === headerGroup.headers.length - 1 ? "pe-8" : ""
+                      }`}
+                      style={{
+                        width: `${
+                          header.getSize() !== 150
+                            ? `${header.getSize()}px`
+                            : "auto"
+                        }`,
+                      }}
+                    >
+                      {!header.isPlaceholder && (
+                        <div className="flex items-center gap-2">
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {header.column.columnDef.meta?.tooltip && (
+                            <div className="group relative hover:text-black">
+                              <Info size={12} />
+                              <div className="tooltip-text-up hidden top-[200%] left-1/2 -translate-x-1/2 absolute bg-white p-4 rounded-2xl w-[400px] text-sm whitespace-normal shadow-xl group-hover:block">
+                                {header.column.columnDef.meta.tooltip}
+                              </div>
+                            </div>
+                          )}
                           {header.column.getCanSort() && (
-                            <div className="flex flex-col text-light-gray">
-                              <ChevronUp
-                                size={16}
-                                className={`-mb-1 ${
-                                  header.column.getIsSorted() === "asc"
-                                    ? "text-black"
-                                    : ""
-                                }`}
-                              />
-                              <ChevronDown
-                                size={16}
-                                className={`-mt-1 ${
-                                  header.column.getIsSorted() === "desc"
-                                    ? "text-black"
-                                    : ""
-                                }`}
-                              />
-                            </div>
-                          )}
-                          {header.column.columnDef?.meta?.tooltip && (
-                            <div className="cursor-help">
-                              <Info size={16} className="text-light-gray" />
-                            </div>
-                          )}
-                          {header.column.getCanFilter() &&
-                            !header.column.columnDef?.meta
-                              ?.disableFiltering && (
+                            <div className="flex flex-col items-center">
                               <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  filterOpen === header.id
-                                    ? setFilterOpen("")
-                                    : setFilterOpen(header.id);
-                                }}
+                                onClick={() =>
+                                  header.column.toggleSorting(false)
+                                }
+                                disabled={header.column.getIsSorted() === "asc"}
                                 className={`${
-                                  header.column.getIsFiltered()
-                                    ? "bg-success text-white"
-                                    : "hover:bg-gray-100"
-                                } rounded-full w-5 h-5 flex items-center justify-center`}
+                                  header.column.getIsSorted() === "asc"
+                                    ? "text-fuse-green"
+                                    : ""
+                                }`}
+                              >
+                                <ChevronUp size={10} strokeWidth={3} />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  header.column.toggleSorting(true)
+                                }
+                                disabled={
+                                  header.column.getIsSorted() === "desc"
+                                }
+                                className={`${
+                                  header.column.getIsSorted() === "desc"
+                                    ? "text-fuse-green"
+                                    : ""
+                                }`}
+                              >
+                                <ChevronDown size={10} strokeWidth={3} />
+                              </button>
+                            </div>
+                          )}
+                          {header.column.getCanFilter() ? (
+                            <div className="relative flex items-center">
+                              <button
+                                onClick={() => setFilterOpen(header.id)}
+                                className={`${
+                                  filterOpen === header.id ? "text-black" : ""
+                                } hover:text-black`}
                               >
                                 <FilterIcon size={12} />
                               </button>
-                            )}
+                              {filterOpen === header.id && (
+                                <div className="absolute top-full left-0 text-base">
+                                  <Filter
+                                    column={header.column}
+                                    setFilterOpen={setFilterOpen}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          ) : null}
                         </div>
-                      </th>
-                    ))}
-                  </>
-                ))}
+                      )}
+                    </th>
+                  );
+                })}
               </tr>
-            </thead>
-            <tbody>
-              <Rows
-                table={table}
-                nodesSlice={nodesSlice}
-                isMyDelegatesTab={isMyDelegatesTab}
-              />
-            </tbody>
-          </table>
-        </div>
-
-        <div className="flex justify-between items-center flex-wrap">
-          <div className="flex gap-4 items-center py-2">
-            <div>
-              <b>
-                {table.getFilteredRowModel().rows.length} of{" "}
-                {table.getPreFilteredRowModel().rows.length}
-              </b>{" "}
-              rows
-            </div>
-            <label className="flex gap-1 items-center">
-              <span>Page Size:</span>
-              <select
-                className="border-0 border-b border-black py-1 bg-transparent w-12"
-                value={table.getState().pagination.pageSize}
-                onChange={(e) => {
-                  table.setPageSize(Number(e.target.value));
-                }}
-              >
-                {[25, 50, 100].map((pageSize) => (
-                  <option key={pageSize} value={pageSize}>
-                    {pageSize}
-                  </option>
-                ))}
-              </select>
-            </label>
+            ))}
+          </thead>
+          <tbody>
+            <Rows
+              table={table}
+              nodesSlice={nodesSlice}
+              isMyDelegatesTab={isMyDelegatesTab}
+            />
+          </tbody>
+        </table>
+        <footer className="px-8 py-7 flex justify-between items-center gap-2">
+          <div className="flex items-center gap-2">
+            <div className="whitespace-nowrap">View records per page</div>
+            <select
+              value={table.getState().pagination.pageSize}
+              onChange={(e) => {
+                table.setPageSize(Number(e.target.value));
+              }}
+              className="border border-light-gray rounded-md text-text-dark-gray p-2"
+            >
+              {[25, 50, 100].map((pageSize) => (
+                <option key={pageSize} value={pageSize}>
+                  {pageSize}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage()}
-              className="flex items-center justify-center p-2 hover:bg-light-gray rounded-full disabled:text-gray-300 disabled:hover:bg-white"
-            >
-              <ChevronsLeft size={16} />
-            </button>
-            <button
+              className="border border-light-gray rounded-md text-text-dark-gray w-8 p-1 enabled:hover:bg-light-gray"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              className="flex items-center justify-center p-2 hover:bg-light-gray rounded-full disabled:text-gray-300 disabled:hover:bg-white"
             >
-              <ChevronLeftIcon size={16} />
+              <ChevronLeft />
             </button>
-            <div className="flex gap-1">{renderPageNumbers(table)}</div>
+            {renderPageNumbers(table)}
             <button
+              className="border border-light-gray rounded-md text-text-dark-gray w-8 p-1 enabled:hover:bg-light-gray"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              className="flex items-center justify-center p-2 hover:bg-light-gray rounded-full disabled:text-gray-300 disabled:hover:bg-white"
             >
-              <ChevronRightIcon size={16} />
-            </button>
-            <button
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              disabled={!table.getCanNextPage()}
-              className="flex items-center justify-center p-2 hover:bg-light-gray rounded-full disabled:text-gray-300 disabled:hover:bg-white"
-            >
-              <ChevronsRight size={16} />
+              <ChevronRight />
             </button>
           </div>
-        </div>
-      </section>
-    </div>
+          <div className="w-60 md:hidden"></div>
+        </footer>
+      </div>
+    </section>
   );
 };
+
+function Filter({column, setFilterOpen}: FilterProps) {
+  const {filterVariant} = column.columnDef.meta ?? {};
+  const uniqueValues = column.getFacetedUniqueValues();
+  const columnFilterValue = column.getFilterValue();
+  const filterRef = useOutsideClick<any>(() => setFilterOpen(""));
+
+  const sortedUniqueValues = useMemo(
+    () => Array.from(uniqueValues.keys()).sort(),
+    [uniqueValues]
+  );
+
+  const handleFilter = useCallback(
+    (value: string | number) => {
+      column.setFilterValue(value);
+    },
+    [column]
+  );
+
+  return filterVariant === "select" ? (
+    <div
+      ref={filterRef}
+      className="flex flex-col bg-white w-max shadow-xl rounded-xl"
+    >
+      <label className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-light-gray">
+        <input
+          type="checkbox"
+          checked={
+            !columnFilterValue || (columnFilterValue as string[]).length === 0
+          }
+          onChange={(e) => {
+            column.setFilterValue(e.target.checked ? [] : null);
+          }}
+        />
+        All
+      </label>
+      {sortedUniqueValues.map((value) => (
+        <label
+          key={value}
+          className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-light-gray"
+        >
+          <input
+            type="checkbox"
+            checked={(columnFilterValue as string[])?.includes(value)}
+            onChange={(e) => {
+              const currentValues = (columnFilterValue as string[]) || [];
+              if (e.target.checked) {
+                column.setFilterValue([...currentValues, value]);
+              } else {
+                column.setFilterValue(currentValues.filter((v) => v !== value));
+              }
+            }}
+          />
+          {value}
+        </label>
+      ))}
+    </div>
+  ) : filterVariant === "text" ? (
+    <div
+      ref={filterRef}
+      className="flex flex-col bg-white w-max shadow-xl rounded-xl"
+    >
+      <div className="flex items-center gap-2 p-2">
+        <Search size={16} />
+        <DebouncedInput
+          type="text"
+          value={(columnFilterValue ?? "") as string}
+          onChange={handleFilter}
+          placeholder="Search..."
+          className="w-full bg-[transparent] focus:outline-none"
+        />
+      </div>
+      <div className="flex flex-col">
+        {sortedUniqueValues
+          .filter((value) =>
+            value
+              .toString()
+              .toLowerCase()
+              .includes((columnFilterValue ?? "").toString().toLowerCase())
+          )
+          .map((value: any) => (
+            <button
+              key={value}
+              onClick={() => handleFilter(value)}
+              className="p-2 rounded-md text-start hover:bg-light-gray"
+            >
+              {value}
+            </button>
+          ))}
+      </div>
+    </div>
+  ) : null;
+}
+function DebouncedInput({
+  value: initialValue,
+  onChange,
+  debounce = 500,
+  ...props
+}: {
+  value: string | number;
+  onChange: (value: string | number) => void;
+  debounce?: number;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">) {
+  const [value, setValue] = useState(initialValue);
+
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      onChange(value);
+    }, debounce);
+
+    return () => clearTimeout(timeout);
+  }, [debounce, onChange, value]);
+
+  return (
+    <input
+      {...props}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+    />
+  );
+}
 
 export default VerifierTable;

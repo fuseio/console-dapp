@@ -12,6 +12,7 @@ import {
   setRedelegationModal,
   fetchDelegationsFromContract,
   allowRedelegationModalReopening,
+  fetchNewDelegationsFromContract,
 } from "@/store/nodesSlice";
 import {useAppDispatch, useAppSelector} from "@/store/store";
 import VerifierTable from "@/components/nodes/VerifierTable";
@@ -22,6 +23,7 @@ import {
   needsRedelegation,
   hex,
 } from "@/lib/helpers";
+import {Status} from "@/lib/types";
 
 const Header = () => {
   return (
@@ -160,14 +162,11 @@ const Home = () => {
   const {address} = useAccount();
   const nodesSlice = useAppSelector(selectNodesSlice);
   const modalTimerRef = useRef<NodeJS.Timeout | null>(null);
-  // Track previous modal state
   const hasModalClosedRef = useRef(false);
 
-  // Fetch user data when address is available
   useEffect(() => {
     if (!address) return;
 
-    // Fetch old license balances
     dispatch(
       fetchNodeLicenseBalances({
         accounts: Array.from({length: 10}, () => address),
@@ -175,7 +174,6 @@ const Home = () => {
       })
     );
 
-    // Fetch new license balances
     dispatch(
       fetchNewNodeLicenseBalances({
         accounts: Array.from({length: 10}, () => address),
@@ -183,13 +181,14 @@ const Home = () => {
       })
     );
 
-    // Fetch delegations using contract data for more reliability
     dispatch(
       fetchDelegationsFromContract({
         address: address,
-        useNewContract: false, // Use old contract
+        useNewContract: false, 
       })
     );
+
+    dispatch(fetchNewDelegationsFromContract(address));
   }, [address, dispatch]);
 
   useEffect(() => {
@@ -197,29 +196,43 @@ const Home = () => {
       fetchNodeLicenseBalancesStatus,
       fetchNewNodeLicenseBalancesStatus,
       fetchDelegationsFromContractStatus,
+      fetchNewDelegationsFromContractStatus,
       user,
       redelegationModal,
       preventRedelegationModalReopening,
     } = nodesSlice;
 
     const isDataLoaded =
-      fetchNodeLicenseBalancesStatus !== "pending" &&
-      fetchNewNodeLicenseBalancesStatus !== "pending" &&
-      fetchDelegationsFromContractStatus !== "pending";
+      fetchNodeLicenseBalancesStatus === Status.SUCCESS &&
+      fetchNewNodeLicenseBalancesStatus === Status.SUCCESS &&
+      fetchDelegationsFromContractStatus === Status.SUCCESS &&
+      fetchNewDelegationsFromContractStatus === Status.SUCCESS;
 
     if (address && isDataLoaded) {
-      // Only open the modal if:
-      // 1. Redelegation is needed
-      // 2. The modal isn't already open
-      // 3. We're not preventing reopening (user just closed it)
+      const requiresRedelegation = needsRedelegation(user);
+
+      console.log("Redelegation status:", {
+        requiresRedelegation,
+        modalOpen: redelegationModal.open,
+        preventReopening: preventRedelegationModalReopening,
+        delegations: user.delegations.length,
+        newDelegations: user.newDelegations?.length || 0,
+        oldLicenses: user.licences.map(
+          (l) => `ID: ${l.tokenId}, balance: ${l.balance}`
+        ),
+        newLicenses: user.newLicences.map(
+          (l) => `ID: ${l.tokenId}, balance: ${l.balance}`
+        ),
+      });
+
       if (
-        needsRedelegation(user) &&
+        requiresRedelegation &&
         !redelegationModal.open &&
         !preventRedelegationModalReopening
       ) {
         dispatch(setRedelegationModal({open: true}));
-      } else if (!needsRedelegation(user) && modalTimerRef.current) {
-        // If no redelegation needed, clear any existing timer
+      } else if (!requiresRedelegation && modalTimerRef.current) {
+        // If redelegation is no longer needed, clear any pending reopen timer
         clearTimeout(modalTimerRef.current);
         modalTimerRef.current = null;
       }
@@ -230,31 +243,23 @@ const Home = () => {
     nodesSlice.fetchNodeLicenseBalancesStatus,
     nodesSlice.fetchNewNodeLicenseBalancesStatus,
     nodesSlice.fetchDelegationsFromContractStatus,
+    nodesSlice.fetchNewDelegationsFromContractStatus,
     nodesSlice.redelegationModal.open,
     nodesSlice.preventRedelegationModalReopening,
     dispatch,
   ]);
 
-  // Track modal close event and set timer
   useEffect(() => {
     const {redelegationModal, user, preventRedelegationModalReopening} =
       nodesSlice;
 
-    // Only set a timer when modal is closed and we need to prevent immediate reopen
     if (preventRedelegationModalReopening && !redelegationModal.open) {
-      // Track that modal has been closed
-      hasModalClosedRef.current = true;
-
-      // Clear any existing timer
       if (modalTimerRef.current) {
         clearTimeout(modalTimerRef.current);
       }
 
-      console.log("Setting redelegation timer for 10 seconds...");
-
-      // Set new timer to allow reopening after 10 seconds
+      console.log("Setting redelegation modal to reappear in 5 minutes...");
       modalTimerRef.current = setTimeout(() => {
-        // Only allow reopening if redelegation is still needed
         if (needsRedelegation(nodesSlice.user)) {
           console.log("Timer completed: allowing redelegation modal to reopen");
           dispatch(allowRedelegationModalReopening());
@@ -262,13 +267,12 @@ const Home = () => {
           console.log("Timer completed: redelegation no longer needed");
         }
         modalTimerRef.current = null;
-      }, 100000);
+      }, 30000);
     }
 
-    // Cleanup function to clear the timer on unmount
     return () => {
       if (modalTimerRef.current) {
-        console.log("Clearing redelegation timer");
+        console.log("Clearing redelegation timer on unmount");
         clearTimeout(modalTimerRef.current);
         modalTimerRef.current = null;
       }
