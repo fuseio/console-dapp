@@ -331,13 +331,13 @@ const RedelegationModal = memo((): JSX.Element => {
         </div>
 
         <p className="mt-4 text-sm text-text-heading-gray">
-          We've reminted your node licenses. Please redelegate them to maintain
+          Weve reminted your node licenses. Please redelegate them to maintain
           your rewards.
         </p>
 
         <div className="mt-6 space-y-4">
           {operators.length > 0 ? (
-            operators.map((operator, idx) => (
+            operators.map((operator) => (
               <div key={operator.uniqueKey} className="border rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <div>

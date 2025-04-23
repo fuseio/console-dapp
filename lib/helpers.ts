@@ -339,4 +339,4 @@ export const operatorLastInvoice = (invoices: Invoice[]) => {
   };
 }
 
-export const consoleV2LaunchDate = new Date('2025-02-01')
+export const consoleV2LaunchDate = new Date("2025-02-01")
