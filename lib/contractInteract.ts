@@ -161,7 +161,7 @@ export const delegateNewNodeLicense = async (to: Address, tokenId: number, amoun
   return tx;
 };
 
-export const getOutgoingDelegations = async (to: Address, tokenId: number, amount: number) => {
+export const getOutgoingDelegations = async () => {
   const walletClient = await getWalletClient(config, { chainId: fuse.id });
   if (!walletClient) {
     return;
@@ -199,19 +199,13 @@ export const getNewNodeLicenseBalances = async (accounts: Address[], tokenIds: b
   return balances;
 };
 
-// Cache to store delegation results by address
 const delegationCache = new Map();
-const CACHE_EXPIRY = 10 * 1000; // 10 seconds cache expiry
+const CACHE_EXPIRY = 10 * 1000;
 
-/**
- * Fetches delegations directly from the contract with type safety and error handling
- * @param address User wallet address
- * @param useNewContract Whether to use the new delegation contract (default: false to use old contract)
- * @returns Parsed delegation data with complete type information
- */
+
 export const getDelegationsFromContract = async (
   address: Address,
-  useNewContract: boolean = false // Default to the old delegation contract
+  useNewContract: boolean = false
 ): Promise<Array<{
   to: Address;
   from: Address;
@@ -226,10 +220,8 @@ export const getDelegationsFromContract = async (
       throw new Error("No wallet address provided");
     }
 
-    // Create a cache key based on address and contract type
     const cacheKey = `${address.toLowerCase()}_${useNewContract ? 'new' : 'old'}`;
 
-    // Check cache first
     const cachedData = delegationCache.get(cacheKey);
     if (cachedData && (Date.now() - cachedData.timestamp < CACHE_EXPIRY)) {
       return cachedData.data;
@@ -239,7 +231,6 @@ export const getDelegationsFromContract = async (
       ? CONFIG.newDelegateRegistryAddress
       : CONFIG.oldDelegateRegistryAddress;
 
-    // Get raw delegations data from contract
     const rawDelegations = await readContract(config, {
       address: delegationContractAddress,
       abi: DelegateRegistryABI,
@@ -251,20 +242,18 @@ export const getDelegationsFromContract = async (
       return [];
     }
 
-    // Transform and normalize the data to match the actual contract response structure
     const result = rawDelegations.map((delegation: any) => {
       return {
-        type_: Number(delegation.type_), // Type 5 is ERC1155
+        type_: Number(delegation.type_),
         to: delegation.to as Address,
         from: delegation.from as Address,
         rights: delegation.rights as string,
-        contract_: delegation.contract_ as Address, // Note: field is contract_ not contract
+        contract_: delegation.contract_ as Address,
         tokenId: Number(delegation.tokenId),
         amount: Number(delegation.amount),
       };
     });
 
-    // Store in cache with timestamp
     delegationCache.set(cacheKey, {
       data: result,
       timestamp: Date.now()

@@ -1,5 +1,4 @@
 "use client";
-
 import React, {useEffect, useState, useMemo, useCallback, useRef} from "react";
 import Image from "next/image";
 import {AnimatePresence, motion} from "framer-motion";
@@ -20,7 +19,6 @@ import Spinner from "@/components/ui/Spinner";
 
 import close from "@/assets/close.svg";
 import {Status} from "@/lib/types";
-import {useOutsideClick} from "@/lib/hooks/useOutsideClick";
 
 type DelegateLicenseFormValues = {
   to: Address;
@@ -85,7 +83,6 @@ const DelegateLicenseModal = (): JSX.Element => {
     return nodesSlice.user.licences.filter((license) => license.balance > 0);
   }, [nodesSlice.user.licences]);
 
-  // Calculate available tokens for delegation (total balance minus already delegated)
   const availableTokensForDelegation = useMemo(() => {
     if (
       !nodesSlice.user ||
@@ -95,15 +92,13 @@ const DelegateLicenseModal = (): JSX.Element => {
       return {};
     }
 
-    // Initialize with total balances
     const available: Record<number, number> = {};
     nodesSlice.user.licences.forEach((license) => {
       available[license.tokenId] = license.balance;
     });
 
-    // Subtract already delegated amounts
     nodesSlice.user.delegations.forEach((delegation) => {
-      const tokenId = delegation.NFTTokenID + 1; // Adjust for 1-based indexing in UI
+      const tokenId = delegation.NFTTokenID + 1;
       if (available[tokenId]) {
         available[tokenId] = Math.max(
           0,

@@ -223,17 +223,7 @@ export const getUserNodes = (user: NodesUser) => {
   }
 }
 
-/**
- * Determines if a user needs to redelegate their old NFTs to new operators.
- * Shows the redelegation modal if:
- * 1. User has delegated old NFTs (to any operator)
- * 2. User has new NFTs that have NOT been redelegated yet with matching tokenId and amount
- * 
- * @param user The user object containing license and delegation information
- * @returns true if redelegation is needed, false otherwise
- */
 export const needsRedelegation = (user: NodesUser): boolean => {
-  // Early returns for edge cases
   if (!user) {
     console.log("No user data, no redelegation needed");
     return false;
@@ -244,46 +234,37 @@ export const needsRedelegation = (user: NodesUser): boolean => {
     return false;
   }
 
-  // Handle case where newLicences might not be initialized
   if (!user.newLicences) {
     console.log("No newLicences data, no redelegation needed");
     return false;
   }
 
-  // REQUIREMENT 3: No need to check if there are no old NFTs
   const hasOldLicenses = user.licences.some(license => license.balance > 0);
   if (!hasOldLicenses) {
     console.log("No old NFTs with balance, no redelegation needed");
     return false;
   }
 
-  // REQUIREMENT 2: No need to check if there are no delegations
   const oldDelegations = user.delegations.filter(
     delegation => delegation.NFTAmount > 0
   );
 
-  // If no old delegated NFTs, no need for redelegation
   if (oldDelegations.length === 0) {
     console.log("No old delegated NFTs, no redelegation needed");
     return false;
   }
 
-  // Get new delegations if they exist
   const newDelegations = user.newDelegations || [];
 
-  // Check if user has any new NFTs with positive balance that can be delegated
   const hasNewLicensesWithBalance = user.newLicences.some(license => license.balance > 0);
 
-  // If there are no new licenses and no new delegations, we can't redelegate
   if (!hasNewLicensesWithBalance && newDelegations.length === 0) {
     console.log("No new licenses with balance, can't redelegate");
     return false;
   }
 
-  // NEW CHECK: If the user has delegated new NFTs to any address, check if they've delegated at least
-  // as many new NFTs as old NFTs, regardless of address
+
   if (newDelegations.length > 0) {
-    // Count total old delegations by tokenId
     const oldDelegationsByTokenId = new Map<number, number>();
     for (const oldDel of oldDelegations) {
       const tokenId = oldDel.NFTTokenID;
@@ -291,7 +272,6 @@ export const needsRedelegation = (user: NodesUser): boolean => {
       oldDelegationsByTokenId.set(tokenId, currentAmount + oldDel.NFTAmount);
     }
 
-    // Count total new delegations by tokenId
     const newDelegationsByTokenId = new Map<number, number>();
     for (const newDel of newDelegations) {
       const tokenId = newDel.NFTTokenID;
@@ -299,7 +279,6 @@ export const needsRedelegation = (user: NodesUser): boolean => {
       newDelegationsByTokenId.set(tokenId, currentAmount + newDel.NFTAmount);
     }
 
-    // Check if all old tokenIds have been delegated in sufficient amounts
     let allTokenIdsRedelegated = true;
     for (const [tokenId, oldAmount] of oldDelegationsByTokenId.entries()) {
       const newAmount = newDelegationsByTokenId.get(tokenId) || 0;
@@ -309,7 +288,6 @@ export const needsRedelegation = (user: NodesUser): boolean => {
       }
     }
 
-    // If all token IDs have been delegated in sufficient amounts, no need for redelegation
     if (allTokenIdsRedelegated) {
       console.log("All token IDs redelegated in sufficient amounts, no redelegation needed");
       return false;

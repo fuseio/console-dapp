@@ -1,4 +1,4 @@
-import {useEffect, useRef, useCallback} from "react";
+import {useEffect, useRef} from "react";
 import {useAccount} from "wagmi";
 import fuseIcon from "@/assets/fuse-icon.svg";
 import Image from "next/image";
@@ -162,7 +162,6 @@ const Home = () => {
   const {address} = useAccount();
   const nodesSlice = useAppSelector(selectNodesSlice);
   const modalTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const hasModalClosedRef = useRef(false);
 
   useEffect(() => {
     if (!address) return;
@@ -184,7 +183,7 @@ const Home = () => {
     dispatch(
       fetchDelegationsFromContract({
         address: address,
-        useNewContract: false, 
+        useNewContract: false,
       })
     );
 
@@ -232,7 +231,6 @@ const Home = () => {
       ) {
         dispatch(setRedelegationModal({open: true}));
       } else if (!requiresRedelegation && modalTimerRef.current) {
-        // If redelegation is no longer needed, clear any pending reopen timer
         clearTimeout(modalTimerRef.current);
         modalTimerRef.current = null;
       }
@@ -250,24 +248,20 @@ const Home = () => {
   ]);
 
   useEffect(() => {
-    const {redelegationModal, user, preventRedelegationModalReopening} =
-      nodesSlice;
+    const {redelegationModal, preventRedelegationModalReopening} = nodesSlice;
 
     if (preventRedelegationModalReopening && !redelegationModal.open) {
       if (modalTimerRef.current) {
         clearTimeout(modalTimerRef.current);
       }
 
-      console.log("Setting redelegation modal to reappear in 5 minutes...");
       modalTimerRef.current = setTimeout(() => {
         if (needsRedelegation(nodesSlice.user)) {
-          console.log("Timer completed: allowing redelegation modal to reopen");
           dispatch(allowRedelegationModalReopening());
         } else {
-          console.log("Timer completed: redelegation no longer needed");
         }
         modalTimerRef.current = null;
-      }, 30000);
+      }, 3000);
     }
 
     return () => {

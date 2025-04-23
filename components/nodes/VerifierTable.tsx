@@ -174,7 +174,6 @@ const VerifierTable = () => {
       return [];
     }
 
-    // Use the memoized address map for O(1) lookups instead of O(n) find operations
     return nodesSlice.user.delegations.map((delegation) => {
       const nodeData = nodesAddressMap.get(delegation.Address.toLowerCase());
 
@@ -347,7 +346,7 @@ const VerifierTable = () => {
     data: filteredData,
     columns,
     globalFilterFn: "arrIncludesSome",
-    debugTable: false, // Turn off debug mode for performance
+    debugTable: false,
     initialState: {
       pagination: {
         pageSize: 25,
@@ -368,7 +367,6 @@ const VerifierTable = () => {
   const showMyDelegates = useCallback(() => {
     setIsMyDelegatesTab(true);
 
-    // Only fetch if they haven't been fetched already and the fetch isn't currently in progress
     if (
       address &&
       !hasFetchedDelegations &&
@@ -389,7 +387,6 @@ const VerifierTable = () => {
     nodesSlice.fetchDelegationsFromContractStatus,
   ]);
 
-  // Single fetch with wallet address if available
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -399,7 +396,6 @@ const VerifierTable = () => {
             address || "not connected"
           );
 
-          // Pass user address directly in the payload
           await dispatch(
             fetchNodes({
               userAddress: address || undefined,
@@ -414,26 +410,21 @@ const VerifierTable = () => {
     fetchData();
   }, [dispatch, address, nodesSlice.fetchNodesStatus]);
 
-  // Reset the delegation fetch flag if the user's address changes
   useEffect(() => {
     if (address) {
       setHasFetchedDelegations(false);
     }
   }, [address]);
 
-  // Listen for revokeLicenseModal changes to refresh delegations after revocation
   useEffect(() => {
-    // When the modal closes and we were on the My Delegations tab, refresh the delegations
     const modalJustClosed =
       !nodesSlice.revokeLicenseModal.open && isMyDelegatesTab && address;
 
     if (modalJustClosed) {
       console.log("Revoke modal just closed, refreshing delegations");
 
-      // Reset fetch flag to trigger a refresh
       setHasFetchedDelegations(false);
 
-      // Direct fetch to ensure we get the latest data
       dispatch(
         fetchDelegationsFromContract({
           address,
@@ -443,19 +434,15 @@ const VerifierTable = () => {
     }
   }, [nodesSlice.revokeLicenseModal.open, isMyDelegatesTab, address, dispatch]);
 
-  // Listen for delegateLicenseModal changes to refresh delegations after delegation
   useEffect(() => {
-    // When the modal closes and we were on the My Delegations tab, refresh the delegations
     const modalJustClosed =
       !nodesSlice.delegateLicenseModal.open && isMyDelegatesTab && address;
 
     if (modalJustClosed) {
       console.log("Delegate modal just closed, refreshing delegations");
 
-      // Reset fetch flag to trigger a refresh
       setHasFetchedDelegations(false);
 
-      // Direct fetch to ensure we get the latest data
       dispatch(
         fetchDelegationsFromContract({
           address,

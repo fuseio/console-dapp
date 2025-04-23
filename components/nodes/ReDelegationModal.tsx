@@ -3,7 +3,6 @@
 import Image from "next/image";
 import {useEffect, useState, useCallback, Fragment, memo, useRef} from "react";
 import {useAccount} from "wagmi";
-import {Address} from "viem";
 
 import {useAppDispatch, useAppSelector} from "@/store/store";
 import {
@@ -20,28 +19,21 @@ import {
 import Spinner from "@/components/ui/Spinner";
 
 import close from "@/assets/close.svg";
-import {Node, Status} from "@/lib/types";
+import {Status} from "@/lib/types";
 import {eclipseAddress} from "@/lib/helpers";
 
-// Update OperatorDelegation to include token ID information
 type OperatorDelegation = {
   address: `0x${string}`;
   name: string;
   amount: number;
   tokenId: number;
-  uniqueKey: string; // Add uniqueKey for identifying unique delegations
+  uniqueKey: string;
   isRedelegated: boolean;
   isPartiallyRedelegated?: boolean;
   amountRedelegated?: number;
   amountRemaining?: number;
 };
 
-// Properly extend Node interface by using type assertion in the component instead of extending
-type EnrichedNode = Node & {
-  OperatorName?: string;
-};
-
-// Memo the component to prevent unnecessary rerenders
 const RedelegationModal = memo((): JSX.Element => {
   const dispatch = useAppDispatch();
   const {address} = useAccount();
@@ -52,7 +44,6 @@ const RedelegationModal = memo((): JSX.Element => {
   >(null);
   const [isVisible, setIsVisible] = useState(false);
 
-  // Sync internal visibility with Redux state
   useEffect(() => {
     if (nodesSlice.redelegationModal.open) {
       setIsVisible(true);
@@ -61,9 +52,7 @@ const RedelegationModal = memo((): JSX.Element => {
 
   const isDelegatingRef = useRef(false);
 
-  // Add effect to auto-close modal when no valid candidates for redelegation
   useEffect(() => {
-    // Only run this check when modal is visible and we have loaded data
     if (
       isVisible &&
       nodesSlice.fetchDelegationsFromContractStatus === Status.SUCCESS &&
@@ -75,16 +64,13 @@ const RedelegationModal = memo((): JSX.Element => {
         "ReDelegationModal checking if redelegation is needed with loaded data"
       );
 
-      // REQUIREMENT 1: Check if all delegations have already been redelegated
       const allAlreadyRedelegated =
         operators.length > 0 && operators.every((op) => op.isRedelegated);
 
-      // REQUIREMENT 2: Check if old NFTs aren't delegated to any operator
       const hasOldDelegations = nodesSlice.user.delegations.some(
         (d) => d.NFTAmount > 0
       );
 
-      // REQUIREMENT 3: Check if wallet has old NFTs
       const hasOldNFTs = nodesSlice.user.licences.some((l) => l.balance > 0);
 
       console.log("Redelegation requirements check:", {
@@ -95,7 +81,6 @@ const RedelegationModal = memo((): JSX.Element => {
           !allAlreadyRedelegated && hasOldDelegations && hasOldNFTs,
       });
 
-      // Auto-close the modal if any requirement is not met
       if (allAlreadyRedelegated || !hasOldDelegations || !hasOldNFTs) {
         console.log("Conditions not met, auto-closing redelegation modal");
         setTimeout(() => {
@@ -361,7 +346,6 @@ const RedelegationModal = memo((): JSX.Element => {
                       {operator.amount} licenses of Tier {operator.tokenId + 1}
                     </div>
                   </div>
-
                   {operator.isRedelegated ? (
                     <span className="text-sm rounded-full px-3 py-1 bg-green-100 text-green-800">
                       Redelegated

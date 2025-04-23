@@ -74,17 +74,14 @@ export const delegateLicense = createAsyncThunk(
     userAddress?: Address
   }, { dispatch }) => {
     try {
-      // Always use old contract (delegateNodeLicense)
       await delegateNodeLicense(to, tokenId, amount);
 
-      // If this is a revocation (amount = 0), we need to refresh the user's delegations
       if (amount === 0 && userAddress) {
         await dispatch(fetchDelegationsFromContract({
           address: userAddress,
           useNewContract: false
         }));
       } else {
-        // For regular delegation, refresh the node's delegations
         await dispatch(fetchDelegationsFromContract({
           address: to,
           useNewContract: false
@@ -109,8 +106,6 @@ export const delegateNewNodeLicense = createAsyncThunk(
     amount: number
   }, { dispatch }) => {
     try {
-      console.log(`Delegating new node license: to=${to}, tokenId=${tokenId}, amount=${amount}`);
-
       await delegateNewNodeLicenseApi(to, tokenId, amount);
 
       await dispatch(fetchDelegationsFromContract({
@@ -177,16 +172,11 @@ export const fetchNodes = createAsyncThunk(
   "NODES/FETCH_NODES",
   async (payload: { userAddress?: string } = {}, { dispatch }) => {
     try {
-      console.log("Starting nodes fetch");
       const nodes = await fetchNodesClients();
 
-      // Get user address from payload if available
       const { userAddress } = payload;
 
       if (userAddress) {
-        console.log("User address available in fetchNodes, immediately fetching delegations:", userAddress);
-
-        // Fetch delegations immediately after nodes
         await dispatch(
           fetchDelegationsFromContract({
             address: userAddress as `0x${string}`,
@@ -243,30 +233,25 @@ export const fetchDelegationsFromContract = createAsyncThunk(
       const address = params.address;
       const useNewContract = params.useNewContract;
 
-      // Get the current state to see if we already have nodes data
       const state = getState() as any;
       const currentNodes = state.nodes?.nodes || [];
 
-      // Create a nodes lookup map for O(1) access
       const nodesMap = new Map();
       currentNodes.forEach((node: Node) => {
         nodesMap.set(node.Address.toLowerCase(), node);
       });
 
-      // Fetch delegation data
       const delegationsData = await getDelegationsFromContract(address, useNewContract);
 
       if (!delegationsData.length) {
         return [];
       }
 
-      // Only fetch nodes if we don't already have them
       let nodes = currentNodes;
       if (nodes.length === 0) {
         const nodeData = await fetchNodesClients();
         nodes = nodeData.data || [];
 
-        // Update the map with new nodes data
         nodes.forEach((node: Node) => {
           nodesMap.set(node.Address.toLowerCase(), node);
         });
@@ -281,7 +266,6 @@ export const fetchDelegationsFromContract = createAsyncThunk(
         )
         .map(delegation => {
           const nodeAddress = delegation.to.toLowerCase();
-          // Use map lookup instead of find for faster performance
           const nodeInfo = nodesMap.get(nodeAddress);
 
           return {
@@ -311,11 +295,9 @@ export const fetchNewDelegationsFromContract = createAsyncThunk(
   "NODES/FETCH_NEW_DELEGATIONS_FROM_CONTRACT",
   async (address: Address, { getState }) => {
     try {
-      // Get the current state to see if we already have nodes data
       const state = getState() as any;
       const currentNodes = state.nodes?.nodes || [];
 
-      // Create a nodes lookup map for O(1) access
       const nodesMap = new Map();
       currentNodes.forEach((node: Node) => {
         nodesMap.set(node.Address.toLowerCase(), node);
@@ -327,13 +309,11 @@ export const fetchNewDelegationsFromContract = createAsyncThunk(
         return [];
       }
 
-      // Only fetch nodes if we don't already have them
       let nodes = currentNodes;
       if (nodes.length === 0) {
         const nodeData = await fetchNodesClients();
         nodes = nodeData.data || [];
 
-        // Update the map with new nodes data
         nodes.forEach((node: Node) => {
           nodesMap.set(node.Address.toLowerCase(), node);
         });
@@ -348,7 +328,6 @@ export const fetchNewDelegationsFromContract = createAsyncThunk(
         )
         .map(delegation => {
           const nodeAddress = delegation.to.toLowerCase();
-          // Use map lookup instead of find for faster performance
           const nodeInfo = nodesMap.get(nodeAddress);
 
           return {
