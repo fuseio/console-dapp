@@ -546,7 +546,9 @@ export type NodeLicense = {
 
 export interface NodesUser {
   licences: NodeLicense[];
+  newLicences: NodeLicense[];
   delegations: Node[];
+  newDelegations?: Node[];
 }
 
 export enum Status {
@@ -566,6 +568,7 @@ export type Node = {
   Status: string;
   AllUptimePercentage: number;
   WeeklyUptimePercentage: number;
+  NFTTokenID: number;
 }
 
 export type DelegateLicenseModal = {

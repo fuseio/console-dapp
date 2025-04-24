@@ -19,6 +19,8 @@ type CONFIG = {
   paymasterAddress: Address;
   delegateRegistryAddress: Address;
   nodeLicenseAddress: Address;
+  delegateRegistryAddressV2: Address;
+  nodeLicenseAddressV2: Address;
 }
 
 export const CONFIG: CONFIG = {
@@ -30,6 +32,8 @@ export const CONFIG: CONFIG = {
   paymasterAddress: "0xEA1Ba4305A07cEd2bB5e42224D71aBE0BC3C3f28",
   delegateRegistryAddress: "0xf9689022f129aEb4495f6C33bacF4bCabA1F8fca",
   nodeLicenseAddress: "0xB42F66f690816D2B076D26B20697Aa594dc1Fd2f",
+  delegateRegistryAddressV2: "0x8f50b06ABE999DC3Da94b97a0AeEcD6CBe55210E",
+  nodeLicenseAddressV2: "0xd4A5D16Fa00D3057A4A96197Db4bc1Ec5a3a5910"
 };
 
 export const chainConfig = createChainConfig(chains);
