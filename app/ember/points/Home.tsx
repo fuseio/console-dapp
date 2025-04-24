@@ -53,6 +53,7 @@ const Home = () => {
         }, 5000);
       }, 2000);
     } catch (error) {
+      console.log(error);
       setSubscriptionStatus("error");
       setSubscriptionMessage(
         "There was an error subscribing. Please try again."
@@ -94,7 +95,7 @@ const Home = () => {
             Fuse Ember Mainnet Launch and Token Migration
           </h1>
           <p className="max-w-[24.69rem] text-[1.25rem] xl:text-[1.1rem] lg:text-base md:text-sm leading-[130%] tracking-0 text-[#666666]">
-            We're in the final stages of building the Fuse Ember mainnet. Once
+            Were in the final stages of building the Fuse Ember mainnet. Once
             the network is launched, the one-way migration process for FUSE
             tokens from the legacy Layer-1 chain to the new Layer-2 platform
             will begin.
@@ -160,8 +161,8 @@ const Home = () => {
               {(isFloat(user.points) ? user.points.toFixed(2) : user.points) ===
               0 ? (
                 <p className="text-[1.25rem] xl:text-[1.1rem] lg:text-base md:text-sm leading-[130%] tracking-[0%] text-[#FFFFFF] text-center xl:text-center">
-                  The Points campaign has ended. Unfortunately, you haven't
-                  earned any points - but don't worry, there's still plenty to
+                  The Points campaign has ended. Unfortunately, you havent
+                  earned any points - but dont worry, theres still plenty to
                   look forward to! The Fuse Ember mainnet is launching soon, and
                   FUSE tokens will be migrated to a faster, more efficient, more
                   flexible Layer-2 network.
