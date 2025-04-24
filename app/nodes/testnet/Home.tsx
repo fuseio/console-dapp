@@ -87,20 +87,6 @@ const Info = () => {
   const userNodes = getUserNodes(nodesSlice.user);
 
   useEffect(() => {
-    console.log("Current user node data:", {
-      licences: nodesSlice.user.licences,
-      newLicences: nodesSlice.user.newLicences,
-      delegations: nodesSlice.user.delegations,
-      delegationStatus: nodesSlice.fetchDelegationsFromContractStatus,
-    });
-  }, [
-    nodesSlice.user.licences,
-    nodesSlice.user.newLicences,
-    nodesSlice.user.delegations,
-    nodesSlice.fetchDelegationsFromContractStatus,
-  ]);
-
-  useEffect(() => {
     if (address) {
       dispatch(
         fetchNodeLicenseBalances({
@@ -210,20 +196,6 @@ const Home = () => {
     if (address && isDataLoaded) {
       const requiresRedelegation = needsRedelegation(user);
 
-      console.log("Redelegation status:", {
-        requiresRedelegation,
-        modalOpen: redelegationModal.open,
-        preventReopening: preventRedelegationModalReopening,
-        delegations: user.delegations.length,
-        newDelegations: user.newDelegations?.length || 0,
-        oldLicenses: user.licences.map(
-          (l) => `ID: ${l.tokenId}, balance: ${l.balance}`
-        ),
-        newLicenses: user.newLicences.map(
-          (l) => `ID: ${l.tokenId}, balance: ${l.balance}`
-        ),
-      });
-
       if (
         requiresRedelegation &&
         !redelegationModal.open &&
@@ -235,17 +207,7 @@ const Home = () => {
         modalTimerRef.current = null;
       }
     }
-  }, [
-    address,
-    nodesSlice.user,
-    nodesSlice.fetchNodeLicenseBalancesStatus,
-    nodesSlice.fetchNewNodeLicenseBalancesStatus,
-    nodesSlice.fetchDelegationsFromContractStatus,
-    nodesSlice.fetchNewDelegationsFromContractStatus,
-    nodesSlice.redelegationModal.open,
-    nodesSlice.preventRedelegationModalReopening,
-    dispatch,
-  ]);
+  }, [address, nodesSlice, dispatch]);
 
   useEffect(() => {
     const {redelegationModal, preventRedelegationModalReopening} = nodesSlice;
@@ -261,12 +223,11 @@ const Home = () => {
         } else {
         }
         modalTimerRef.current = null;
-      }, 3000);
+      }, 10000);
     }
 
     return () => {
       if (modalTimerRef.current) {
-        console.log("Clearing redelegation timer on unmount");
         clearTimeout(modalTimerRef.current);
         modalTimerRef.current = null;
       }

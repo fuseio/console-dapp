@@ -17,10 +17,10 @@ type CONFIG = {
   blockRewardAddress: Address;
   bootApi: string;
   paymasterAddress: Address;
-  oldDelegateRegistryAddress: Address;
-  oldNodeLicenseAddress: Address;
-  newDelegateRegistryAddress: Address;
-  newNodeLicenseAddress: Address;
+  delegateRegistryAddress: Address;
+  nodeLicenseAddress: Address;
+  delegateRegistryAddressV2: Address;
+  nodeLicenseAddressV2: Address;
 }
 
 export const CONFIG: CONFIG = {
@@ -30,10 +30,10 @@ export const CONFIG: CONFIG = {
   blockRewardAddress: "0x63D4efeD2e3dA070247bea3073BCaB896dFF6C9B",
   bootApi: "https://bot.fuse.io/api/v1",
   paymasterAddress: "0xEA1Ba4305A07cEd2bB5e42224D71aBE0BC3C3f28",
-  oldDelegateRegistryAddress: "0xf9689022f129aEb4495f6C33bacF4bCabA1F8fca",
-  oldNodeLicenseAddress: "0xB42F66f690816D2B076D26B20697Aa594dc1Fd2f",
-  newDelegateRegistryAddress: "0x8f50b06ABE999DC3Da94b97a0AeEcD6CBe55210E",
-  newNodeLicenseAddress: "0xd4A5D16Fa00D3057A4A96197Db4bc1Ec5a3a5910"
+  delegateRegistryAddress: "0xf9689022f129aEb4495f6C33bacF4bCabA1F8fca",
+  nodeLicenseAddress: "0xB42F66f690816D2B076D26B20697Aa594dc1Fd2f",
+  delegateRegistryAddressV2: "0x8f50b06ABE999DC3Da94b97a0AeEcD6CBe55210E",
+  nodeLicenseAddressV2: "0xd4A5D16Fa00D3057A4A96197Db4bc1Ec5a3a5910"
 };
 
 export const chainConfig = createChainConfig(chains);

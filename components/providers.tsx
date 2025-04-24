@@ -1,11 +1,13 @@
 "use client";
-
 import {useEffect, useState} from "react";
 import ReactGA from "react-ga4";
 import {Provider} from "react-redux";
 import {YMInitializer} from "react-yandex-metrika";
 import {WagmiProvider} from "wagmi";
 
+import DelegateLicenseModal from "@/components/nodes/DelegateLicenseModal";
+import RevokeLicenseModal from "@/components/nodes/RevokeLicenseModal";
+import ReDelegationModal from "@/components/nodes/ReDelegationModal";
 import {
   NEXT_PUBLIC_AMPLITUDE_API_KEY,
   NEXT_PUBLIC_AMPLITUDE_SERVER_URL,
@@ -80,6 +82,9 @@ export function Providers({children}: {children: React.ReactNode}) {
             <DynamicWagmiConnector>
               <WalletModal isDisconnected={isDisconnected} />
               <TransfiModal />
+              <DelegateLicenseModal />
+              <RevokeLicenseModal />
+              <ReDelegationModal />
               {children}
             </DynamicWagmiConnector>
           </QueryClientProvider>

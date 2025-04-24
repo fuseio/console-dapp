@@ -5,10 +5,6 @@ import localFont from "next/font/local";
 import Script from "next/script";
 import HolyLoader from "holy-loader";
 
-import DelegateLicenseModal from "@/components/nodes/DelegateLicenseModal";
-import RevokeLicenseModal from "@/components/nodes/RevokeLicenseModal";
-import ReDelegationModal from "@/components/nodes/ReDelegationModal";
-
 const monaSans = localFont({
   src: "./MonaSans.woff2",
   display: "swap",
@@ -35,12 +31,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
       </head>
       <body className={monaSans.className}>
         <HolyLoader color="#A3F5AA" />
-        <Providers>
-          {children}
-          <DelegateLicenseModal />
-          <RevokeLicenseModal />
-          <ReDelegationModal />
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
       <Script
         src="https://widget.mava.app"

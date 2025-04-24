@@ -53,7 +53,6 @@ declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
     filterVariant?: "text" | "select";
     tooltip?: string;
-    disableFiltering?: boolean;
   }
 }
 

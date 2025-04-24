@@ -127,10 +127,10 @@ export const delegateNodeLicense = async (to: Address, tokenId: number, amount: 
   const rights: Address = "0x4675736520456d626572204e6f6465204c6963656e7365000000000000000000"
   const tx = await writeContract(config, {
     account,
-    address: CONFIG.oldDelegateRegistryAddress,
+    address: CONFIG.delegateRegistryAddress,
     abi: DelegateRegistryABI,
     functionName: "delegateERC1155",
-    args: [to, CONFIG.oldNodeLicenseAddress, BigInt(tokenId), rights, BigInt(amount)],
+    args: [to, CONFIG.nodeLicenseAddress, BigInt(tokenId), rights, BigInt(amount)],
   });
   await waitForTransactionReceipt(config, {
     hash: tx,
@@ -148,10 +148,10 @@ export const delegateNewNodeLicense = async (to: Address, tokenId: number, amoun
   const rights: Address = "0x4675736520456d626572204e6f6465204c6963656e7365000000000000000000"
   const tx = await writeContract(config, {
     account,
-    address: CONFIG.newDelegateRegistryAddress,
+    address: CONFIG.delegateRegistryAddressV2,
     abi: DelegateRegistryABI,
     functionName: "delegateERC1155",
-    args: [to, CONFIG.newNodeLicenseAddress, BigInt(tokenId), rights, BigInt(amount)],
+    args: [to, CONFIG.nodeLicenseAddressV2, BigInt(tokenId), rights, BigInt(amount)],
   });
   console.log("tx", tx);
 
@@ -170,7 +170,7 @@ export const getOutgoingDelegations = async () => {
   const account = accounts[0];
   const tx = await readContract(config, {
     account,
-    address: CONFIG.newDelegateRegistryAddress,
+    address: CONFIG.delegateRegistryAddressV2,
     abi: DelegateRegistryABI,
     functionName: "getOutgoingDelegations",
     args: [account],
@@ -181,7 +181,7 @@ export const getOutgoingDelegations = async () => {
 
 export const getNodeLicenseBalances = async (accounts: Address[], tokenIds: bigint[]) => {
   const balances = await publicClient().readContract({
-    address: CONFIG.oldNodeLicenseAddress,
+    address: CONFIG.nodeLicenseAddress,
     abi: ERC1155ABI,
     functionName: "balanceOfBatch",
     args: [accounts, tokenIds],
@@ -191,7 +191,7 @@ export const getNodeLicenseBalances = async (accounts: Address[], tokenIds: bigi
 
 export const getNewNodeLicenseBalances = async (accounts: Address[], tokenIds: bigint[]) => {
   const balances = await publicClient().readContract({
-    address: CONFIG.newNodeLicenseAddress,
+    address: CONFIG.nodeLicenseAddressV2,
     abi: ERC1155ABI,
     functionName: "balanceOfBatch",
     args: [accounts, tokenIds],
@@ -228,8 +228,8 @@ export const getDelegationsFromContract = async (
     }
 
     const delegationContractAddress = useNewContract
-      ? CONFIG.newDelegateRegistryAddress
-      : CONFIG.oldDelegateRegistryAddress;
+      ? CONFIG.delegateRegistryAddressV2
+      : CONFIG.delegateRegistryAddress;
 
     const rawDelegations = await readContract(config, {
       address: delegationContractAddress,

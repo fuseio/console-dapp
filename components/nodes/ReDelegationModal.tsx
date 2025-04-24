@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import {useEffect, useState, useCallback, Fragment, memo, useRef} from "react";
 import {useAccount} from "wagmi";
@@ -83,10 +81,12 @@ const RedelegationModal = memo((): JSX.Element => {
 
       if (allAlreadyRedelegated || !hasOldDelegations || !hasOldNFTs) {
         console.log("Conditions not met, auto-closing redelegation modal");
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           setIsVisible(false);
           dispatch(setRedelegationModal({open: false}));
         }, 100);
+
+        return () => clearTimeout(timeoutId);
       }
     }
   }, [
@@ -109,15 +109,25 @@ const RedelegationModal = memo((): JSX.Element => {
 
     setIsVisible(false);
 
+    // Store timeouts for cleanup
+    const timeouts: NodeJS.Timeout[] = [];
+
     if (nodesSlice.delegateLicenseStatus === Status.SUCCESS) {
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         dispatch(resetDelegationStatus());
       }, 100);
+      timeouts.push(timeoutId);
     }
 
-    setTimeout(() => {
+    const modalTimeoutId = setTimeout(() => {
       dispatch(setRedelegationModal({open: false}));
     }, 50);
+    timeouts.push(modalTimeoutId);
+
+    // Return cleanup function
+    return () => {
+      timeouts.forEach(clearTimeout);
+    };
   }, [dispatch, nodesSlice.delegateLicenseStatus]);
 
   const handleBackdropClick = useCallback(
@@ -295,9 +305,11 @@ const RedelegationModal = memo((): JSX.Element => {
 
       handleCloseModal();
 
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         dispatch(allowRedelegationModalReopening());
       }, 300000);
+
+      return () => clearTimeout(timeoutId);
     },
     [handleCloseModal, dispatch]
   );

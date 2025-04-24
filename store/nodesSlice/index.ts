@@ -257,7 +257,7 @@ export const fetchDelegationsFromContract = createAsyncThunk(
         });
       }
 
-      const nodeLicenseContract = CONFIG.oldNodeLicenseAddress.toLowerCase();
+      const nodeLicenseContract = CONFIG.nodeLicenseAddress.toLowerCase();
 
       const enhancedDelegations = delegationsData
         .filter(delegation =>
@@ -319,7 +319,7 @@ export const fetchNewDelegationsFromContract = createAsyncThunk(
         });
       }
 
-      const newNodeLicenseContract = CONFIG.newNodeLicenseAddress.toLowerCase();
+      const newNodeLicenseContract = CONFIG.nodeLicenseAddressV2.toLowerCase();
 
       const enhancedDelegations = delegationsData
         .filter(delegation =>
@@ -492,10 +492,5 @@ export const {
   resetDelegationStatus,
 } = nodesSlice.actions;
 
-export const closeModal = () => (dispatch: any) => {
-  dispatch(setDelegateLicenseModal({ open: false }));
-  dispatch(setRevokeLicenseModal({ open: false }));
-  dispatch(setRedelegationModal({ open: false }));
-};
 
 export default nodesSlice.reducer;

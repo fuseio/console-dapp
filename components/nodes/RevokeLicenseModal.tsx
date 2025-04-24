@@ -15,9 +15,10 @@ import Spinner from "@/components/ui/Spinner";
 import close from "@/assets/close.svg";
 import {Status, Node} from "@/lib/types";
 import {Error} from "@/components/ui/Form";
+import {Address} from "viem";
 
 type DelegateLicenseFormValues = {
-  to: string;
+  to: Address;
   tokenId: number;
   amount: number;
 };
@@ -35,6 +36,9 @@ const RevokeLicenseModal = (): JSX.Element => {
 
   const [isVisible, setIsVisible] = useState(false);
   const [isRevoking, setIsRevoking] = useState(false);
+
+  // Reference to store timeout IDs for cleanup
+  const timeoutIds = React.useRef<NodeJS.Timeout[]>([]);
 
   useEffect(() => {
     setIsVisible(nodesSlice.revokeLicenseModal.open);
@@ -54,15 +58,27 @@ const RevokeLicenseModal = (): JSX.Element => {
     setIsVisible(false);
 
     if (nodesSlice.delegateLicenseStatus === Status.SUCCESS) {
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         dispatch(resetDelegationStatus());
       }, 100);
+      // Store timeout ID for cleanup
+      timeoutIds.current.push(timeoutId);
     }
 
-    setTimeout(() => {
+    const modalTimeoutId = setTimeout(() => {
       dispatch(setRevokeLicenseModal({open: false}));
     }, 100);
+    // Store timeout ID for cleanup
+    timeoutIds.current.push(modalTimeoutId);
   }, [dispatch, nodesSlice.delegateLicenseStatus]);
+
+  useEffect(() => {
+    // Cleanup function to clear all timeouts when component unmounts
+    return () => {
+      timeoutIds.current.forEach(clearTimeout);
+      timeoutIds.current = [];
+    };
+  }, []);
 
   const formik = useFormik<DelegateLicenseFormValues>({
     initialValues: {
@@ -90,16 +106,9 @@ const RevokeLicenseModal = (): JSX.Element => {
       if (nodesSlice.delegateLicenseStatus !== Status.PENDING && !isRevoking) {
         setIsRevoking(true);
 
-        console.log("Revoking license:", {
-          to: values.to,
-          tokenId: values.tokenId,
-          amount: 0,
-          userAddress: address,
-        });
-
         dispatch(
           delegateLicense({
-            to: values.to as `0x${string}`,
+            ...values,
             tokenId: values.tokenId,
             amount: 0,
             userAddress: address,
