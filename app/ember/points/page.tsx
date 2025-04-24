@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import {useEffect} from "react";
+import {useRouter} from "next/navigation";
 
-import { path } from "@/lib/helpers";
-import { useAppDispatch, useAppSelector } from "@/store/store";
-import { setSelectedNavbar } from "@/store/navbarSlice";
+import {path} from "@/lib/helpers";
+import {useAppDispatch, useAppSelector} from "@/store/store";
+import {setSelectedNavbar} from "@/store/navbarSlice";
 import Home from "./Home";
 import Footer from "@/components/Footer";
 import Topbar from "@/components/Topbar";
 import WaitlistModal from "@/components/airdrop/WaitlistModal";
-import { retrieveAirdropUser, selectAirdropSlice } from "@/store/airdropSlice";
+import {retrieveAirdropUser, selectAirdropSlice} from "@/store/airdropSlice";
 import QuestModal from "@/components/airdrop/QuestModal";
 import ClaimTestnetFuseModal from "@/components/airdrop/ClaimTestnetFuseModal";
 import TwitterErrorModal from "@/components/airdrop/TwitterErrorModal";
@@ -23,11 +23,11 @@ const AirdropEcosystem = () => {
   useEffect(() => {
     dispatch(setSelectedNavbar("ember"));
     dispatch(retrieveAirdropUser());
-  }, [dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
     if (airdropSlice.isHydrated && !airdropSlice.isUser) {
-      router.push(path.AIRDROP)
+      router.push(path.AIRDROP);
     }
   }, [airdropSlice.isHydrated, airdropSlice.isUser, router]);
 

@@ -1,274 +1,72 @@
-import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import {useState} from "react";
 
-import Copy from "@/components/ui/Copy";
-import { convertTimestampToUTC, IS_SERVER, isFloat, isSocialFollowed, path } from "@/lib/helpers";
-import { useAppDispatch, useAppSelector } from "@/store/store";
-import { selectAirdropSlice, setIsClaimTestnetFuseModalOpen, setIsQuestModalOpen, setIsTwitterErrorModalOpen, setSelectedQuest } from "@/store/airdropSlice";
-import Avatar from "@/components/ui/Avatar";
-import { CardBody, CardContainer, CardItem } from "@/components/ui/Card3D";
-import Quest from "@/components/airdrop/Quest";
-import { AirdropQuests } from "@/lib/types";
+import {isFloat, path} from "@/lib/helpers";
+import {useAppSelector} from "@/store/store";
+import {selectAirdropSlice} from "@/store/airdropSlice";
+import ConnectWallet from "@/components/ConnectWallet";
 
-import copyIcon from "@/assets/copy-gray.svg";
-import rightCaret from "@/assets/right-caret.svg";
-import rightCaretBlack from "@/assets/right-caret-black.svg";
+import firstBlockBg from "@/assets/token-migration-first-block.svg";
+import secondBlockBg from "@/assets/token-migration-sbg.svg";
 import leftArrow from "@/assets/left-arrow.svg";
-import questionMark from "@/assets/questionmark-border.svg";
 import pointHexagon from "@/assets/fuse-foundation-point-hexagon.svg";
-import fuseAirdropPhase from "@/assets/fuse-foundation.svg";
-import bridgeFuse from "@/assets/bridge-fuse.svg";
-import followX from "@/assets/twitter-x-green.svg";
-import verifyDiscord from "@/assets/verify-discord-green.svg";
-import joinTelegram from "@/assets/join-telegram-green.svg";
-import volt from "@/assets/volt-wallet-green.svg";
-import artrific from "@/assets/artrific-green.svg";
-import meridian from "@/assets/meridian-green.svg";
-import meridianYellow from "@/assets/meridian-yellow.svg";
-import voltageLiquidityYellow from "@/assets/voltage-liquidity-yellow.svg";
-import gooddollarYellow from "@/assets/gooddollar-yellow.svg";
+import innerEllipse from "@/assets/inner-ellipse.svg";
+import outerEllipse from "@/assets/outer-ellipse.svg";
+import emailButton from "@/assets/email-button.svg";
+import ellipseQuestionMark from "@/assets/migration-tokens-question.svg";
+
+import {useAccount} from "wagmi";
 
 const Home = () => {
-  const dispatch = useAppDispatch();
-  const { user, twitterAuthUrl } = useAppSelector(selectAirdropSlice);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const twitterConnected = searchParams.get('twitter-connected');
+  const {user} = useAppSelector(selectAirdropSlice);
+  const {isConnected} = useAccount();
+  const [email, setEmail] = useState("");
+  const [subscriptionStatus, setSubscriptionStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const [subscriptionMessage, setSubscriptionMessage] = useState("");
 
-  const [quests, setQuests] = useState<AirdropQuests>([
-    {
-      id: "followFuseOnTwitter",
-      title: "Follow @Fuse_network on X",
-      description: "Get 50 point for following an official Fuse Network X account",
-      point: "50 Points",
-      frequency: "One-time",
-      image: followX,
-      buttons: [
-        {
-          text: "Go to X",
-          isFunction: true,
-        }
-      ]
-    },
-    {
-      id: "telegramSubscription",
-      title: "Join Fuse Telegram",
-      description: "Get 50 point for joining an official Fuse Network Telegram channel  \n**Verify the quest 1 hour after completing it on Layer3**",
-      point: "50 Points",
-      frequency: "One-time",
-      image: joinTelegram,
-      buttons: [
-        {
-          text: "Go to Quest",
-          link: "https://app.layer3.xyz/quests/join-fuse-telegram",
-        },
-        {
-          text: "Verify Quest",
-          isFunction: true,
-        }
-      ]
-    },
-    {
-      id: "joinFuseDiscord",
-      title: "Join Fuse Discord",
-      description: "Get 50 point for joining an official Fuse network Discord channel  \n**Verify the quest 1 hour after completing it on Layer3**",
-      point: "50 Points",
-      frequency: "One-time",
-      image: verifyDiscord,
-      buttons: [
-        {
-          text: "Go to Quest",
-          link: "https://app.layer3.xyz/quests/join-fuse-discord",
-        },
-        {
-          text: "Verify Quest",
-          isFunction: true,
-        }
-      ]
-    },
-    {
-      id: "exploreVoltageDex",
-      title: "Explore Voltage Finance",
-      description: "Trade, invest, and earn with just a few clicks.  \n**Verify the quest 1 hour after completing it on Layer3**",
-      point: "125 Points",
-      frequency: "One-time",
-      image: volt,
-      buttons: [
-        {
-          text: "Go to Quest",
-          link: "https://app.layer3.xyz/quests/voltage-on-fuse-network",
-        },
-        {
-          text: "Verify Quest",
-          isFunction: true,
-        }
-      ]
-    },
-    {
-      id: "liquidityVoltage",
-      title: "Provide Liquidity to Voltage",
-      point: "Up to 8 points per $1 in pool daily",
-      image: voltageLiquidityYellow,
-      buttons: [
-        {
-          text: "Go to Voltage",
-          link: "https://voltage.finance/pools",
-        },
-      ]
-    },
-    {
-      id: "exploreVoltWallet",
-      title: "Install the Volt wallet",
-      description: "The Volt wallet is the best mobile solution for interacting with the Fuse network, as it is built and developed by the Fuse team. Explore its features and get 200 points.  \n**Verify the quest 1 hour after completing it on Layer3**",
-      point: "200 Points",
-      frequency: "One-time",
-      image: volt,
-      buttons: [
-        {
-          text: "Go to Quest",
-          link: "https://app.layer3.xyz/quests/explore-volt-wallet",
-        },
-        {
-          text: "Verify Quest",
-          isFunction: true,
-        }
-      ]
-    },
-    {
-      id: "exploreMeridian",
-      title: "Explore Meridian Finance",
-      description: "The All-in-one DeFi Hub for EVM-Compatible Networks.  \n**Verify the quest 1 hour after completing it on Layer3**\n",
-      point: "175 Points",
-      frequency: "One-time",
-      image: meridian,
-      buttons: [
-        {
-          text: "Go to Quest",
-          link: "https://app.layer3.xyz/quests/explore-meridian-finance",
-        },
-        {
-          text: "Verify Quest",
-          isFunction: true,
-        }
-      ]
-    },
-    {
-      id: "provideMeridianLiquidity",
-      title: "Lend on Meridian",
-      point: "Up to 8 points per $1 in pool daily",
-      image: meridianYellow,
-      buttons: [
-        {
-          text: "Go to Meridian Lend",
-          link: "https://lend.meridianfinance.net/markets/",
-        },
-      ]
-    },
-    {
-      id: "borrowOnMeridian",
-      title: "Borrow on Meridian",
-      description: "Borrow any asset on Meridian to get 12 points per $1 borrowed every day.  \n**Points will begin to accrue 24 hours after the borrow transaction.**",
-      point: "12 points per $1 borrowed daily",
-      image: meridianYellow,
-      buttons: [
-        {
-          text: "Go to Meridian Borrow",
-          link: "https://lend.meridianfinance.net/borrow/",
-        },
-      ]
-    },
-    {
-      id: "exploreArtrificOnFuse",
-      title: "Create an NFT on Artrific",
-      description: "Create an NFT on the leading NFT marketplace on Fuse Network and get 300 points  \n**Verify the quest 1 hour after completing it on Layer3**\n",
-      point: "300 Points",
-      frequency: "One-time",
-      image: artrific,
-      buttons: [
-        {
-          text: "Go to Quest",
-          link: "https://app.layer3.xyz/quests/explore-artrific-nft-marketplace-on-fuse-network",
-        },
-        {
-          text: "Verify Quest",
-          isFunction: true,
-        }
-      ]
-    },
-    {
-      id: "g$Claim",
-      title: "Claim G$ on GoodDapp",
-      description: "To get 30 points daily, you need to take 6 steps:  \n**Step 1:**\nGo to quest on the Layer3 platform  \n**Step 2:**\nConnect to Layer3 a wallet participating in the airdrop  \n**Step 3:**\nGo to GoodDapp  \n**Step 4:**\nClaim G$ token on Fuse Network  \n**Step 5:**\nVerify quest completion on the Layer3  \n**Step 6:**\nRepeat every day. After 5 claims, the quest will renew automatically and allow you to claim more and more.  \n**Verify the quest 1 hour after completing it on Layer3**",
-      point: "30 Points per claim",
-      frequency: "Once a day",
-      image: gooddollarYellow,
-      buttons: [
-        {
-          text: "Go to Quest",
-          link: "https://app.layer3.xyz/streaks/claim-dollarg",
-        },
-        {
-          text: "Verify Quest",
-          isFunction: true,
-          endpoint: "gooddollar",
-        }
-      ]
-    },
-  ])
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !email.includes("@")) return;
 
-  function referralLink() {
-    const host = !IS_SERVER ? window?.location?.host : ""
-    return `${host}/ember?ref=${user.referralCode}`
-  }
+    setSubscriptionStatus("loading");
 
-  useEffect(() => {
-    setQuests((prevQuests) => {
-      const newQuests = [...prevQuests];
-      newQuests.map((newQuest) => {
-        if (newQuest.frequency !== "One-time") {
-          return newQuest;
-        }
+    try {
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = `https://magic.beehiiv.com/v1/e8385c43-f27c-410c-93de-7f07b6492818?email=${encodeURIComponent(
+        email
+      )}&redirect=false`;
+      document.body.appendChild(iframe);
 
-        user.completedQuests?.map((completedQuest) => {
-          let completedQuestId = completedQuest.type;
-          if (completedQuest.stakingType) {
-            completedQuestId = `${completedQuest.type}-${completedQuest.stakingType}`;
-          }
-          if (newQuest.id === completedQuestId) {
-            newQuest.completed = true;
-          }
-        })
-        return newQuest;
-      });
-      return newQuests;
-    })
-  }, [user.completedQuests])
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+        setSubscriptionStatus("success");
+        setSubscriptionMessage("Successfully subscribed to the newsletter!");
+        setEmail("");
 
-  useEffect(() => {
-    if (twitterConnected === "true") {
-      if (localStorage.getItem("airdrop-isClaimTestnetFuse")) {
-        dispatch(setIsClaimTestnetFuseModalOpen(true));
-        localStorage.removeItem("airdrop-isClaimTestnetFuse");
-      }
-    } else if (twitterConnected === "false") {
-      dispatch(setIsTwitterErrorModalOpen(true));
+        setTimeout(() => {
+          setSubscriptionStatus("idle");
+          setSubscriptionMessage("");
+        }, 5000);
+      }, 2000);
+    } catch (error) {
+      setSubscriptionStatus("error");
+      setSubscriptionMessage(
+        "There was an error subscribing. Please try again."
+      );
+
+      setTimeout(() => {
+        setSubscriptionStatus("idle");
+        setSubscriptionMessage("");
+      }, 5000);
     }
-
-    if (twitterConnected) {
-      router.replace(path.AIRDROP_ECOSYSTEM);
-    }
-  }, [dispatch, router, twitterConnected])
-
-  useEffect(() => {
-    if (twitterAuthUrl) {
-      router.push(twitterAuthUrl);
-    }
-  }, [router, twitterAuthUrl])
+  };
 
   return (
-    <div className="w-8/9 grow flex flex-col text-fuse-black my-20 xl:my-12 xl:w-9/12 md:w-9/10 max-w-7xl">
+    <div className="w-8/9 grow flex flex-col text-fuse-black my-20 xl:my-12 lg:my-8 md:my-6 px-4 md:px-6 xl:px-0 xl:w-9/12 md:w-[95%] max-w-7xl mx-auto">
       <Link
         href={path.AIRDROP}
         className="group flex items-center gap-1.5 hover:opacity-70"
@@ -280,239 +78,200 @@ const Home = () => {
           height={13}
           className="transition ease-in-out group-hover:-translate-x-0.5"
         />
-        <div className="leading-none font-semibold">
-          Ember
-        </div>
+        <div className="leading-none font-semibold">Ember</div>
       </Link>
-      <div className="flex justify-between items-center mt-4">
-        <h1 className="text-7xl font-semibold md:text-4xl">
-          Points
+      <div className="flex items-center justify-center text-center mt-4 w-full">
+        <h1 className="text-7xl font-semibold xl:text-6xl lg:text-5xl md:text-4xl sm:text-3xl w-full max-w-[474px]">
+          Fuse Token Migration
         </h1>
       </div>
-      <div className="flex flex-wrap justify-between gap-6 bg-lightest-gray rounded-[20px] mt-11 mb-[100px] xl:mb-11 p-8">
-        <div className="flex flex-row items-center gap-6">
-          <div>
-            <Avatar size={80} />
-          </div>
-          <div className="md:shrink">
-            <p className="text-lg leading-none text-text-dark-gray font-medium">
-              My rewards
-            </p>
-            <div className="flex items-center gap-1.5 mt-6 xl:mt-2 mb-2">
-              <Image
-                src={pointHexagon}
-                alt="point hexagon"
-                width={26}
-                height={32}
-              />
-              <p className="text-5xl xl:text-4xl md:text-3xl leading-none font-bold">
+      <h2 className="text-[20px] mt-[1.2rem] leading-[148%] tracking-[0%] text-center text-[#666666] lg:text-lg md:text-base">
+        Fuse token is migrating to the new Fuse Ember L2 mainnet soon!
+      </h2>
+      <div className="flex flex-wrap justify-between gap-6 bg-lightest-gray rounded-[1.25rem] mt-28 xl:mt-20 lg:mt-16 md:mt-10 mb-[6.25rem] xl:mb-16 lg:mb-12 md:mb-8 p-12 xl:p-8 lg:p-6 md:p-5 w-full lg:h-auto h-[24.19rem] relative overflow-hidden">
+        <div className="max-w-[34.63rem] lg:max-w-full md:max-w-full h-auto flex flex-col gap-[2rem] xl:gap-4 lg:gap-3 relative z-10">
+          <h1 className="w-full xl:w-full h-auto font-semibold text-[2.5rem] xl:text-[2rem] lg:text-[1.75rem] md:text-[1.5rem] leading-[121%] tracking-0">
+            Fuse Ember Mainnet Launch and Token Migration
+          </h1>
+          <p className="max-w-[24.69rem] text-[1.25rem] xl:text-[1.1rem] lg:text-base md:text-sm leading-[130%] tracking-0 text-[#666666]">
+            We're in the final stages of building the Fuse Ember mainnet. Once
+            the network is launched, the one-way migration process for FUSE
+            tokens from the legacy Layer-1 chain to the new Layer-2 platform
+            will begin.
+          </p>
+        </div>
+        <Image
+          src={firstBlockBg}
+          alt="Token migration illustration"
+          className="absolute top-0 right-0 h-full w-auto object-cover lg:opacity-10 md:opacity-10"
+          priority
+        />
+      </div>
+      <div className="flex xl:flex-col lg:flex-col md:flex-col space-x-0 xl:space-x-0 gap-[11.81rem] xl:gap-8 lg:gap-6 md:gap-4 bg-lightest-gray rounded-[1.25rem] pl-[8.5rem] pr-[8.5rem] xl:px-8 lg:px-6 md:px-4 w-full h-auto xl:h-auto lg:h-auto relative overflow-hidden py-12 xl:py-10 lg:py-8 md:py-6 xl:items-center">
+        <div className="max-w-[19.5rem] xl:max-w-full lg:max-w-full md:max-w-full mt-[3.125rem] xl:mt-5 lg:mt-4 md:mt-2 z-10 mx-auto xl:mx-auto">
+          <div className="relative w-[312px] h-[312px] xl:w-[250px] xl:h-[250px] lg:w-[200px] lg:h-[200px] md:w-[180px] md:h-[180px] flex items-center justify-center mx-auto">
+            <Image
+              src={outerEllipse}
+              alt="outerEllipse"
+              width={312}
+              height={312}
+              className="absolute top-0 left-0 w-full h-full"
+            />
+            <Image
+              src={innerEllipse}
+              alt="innerEllipse"
+              width={278.4}
+              height={278.4}
+              className="absolute top-[16.8px] left-[16.8px] xl:top-[13px] xl:left-[13px] lg:top-[10px] lg:left-[10px] md:top-[9px] md:left-[9px] w-[89%] h-[89%]"
+            />
+            <Image
+              src={pointHexagon}
+              alt="hexagon"
+              width={98}
+              height={113}
+              className="absolute top-[88px] xl:top-[70px] lg:top-[50px] md:top-[45px] w-[30%]"
+            />
+            {isConnected ? (
+              <p className="absolute top-[60%] text-white text-[72px] xl:text-[56px] lg:text-[48px] md:text-[40px] font-bold">
                 {isFloat(user.points) ? user.points.toFixed(2) : user.points}
               </p>
-            </div>
-            {user.pointsLastUpdatedAt ? (
-              <div className="flex md:flex-col items-center md:items-start gap-2">
-                <p className="text-sm text-text-dark-gray font-medium">
-                  Last update {convertTimestampToUTC(user.pointsLastUpdatedAt)}
-                </p>
-                <div className="group relative cursor-pointer flex justify-center items-center mb-1">
-                  <Image
-                    src={questionMark}
-                    alt="question mark"
-                    width={13}
-                    height={13}
-                  />
-                  <div className="tooltip-text-up hidden top-8 absolute bg-white p-6 rounded-2xl w-[290px] shadow-lg group-hover:block text-black text-sm font-medium">
-                    <p>
-                      Rewards calculation updated every 24 hours. Next update {convertTimestampToUTC(user.nextRewardDistributionTime)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : <div></div>}
-          </div>
-        </div>
-        <div>
-          <p className="text-lg xl:text-base leading-none text-text-dark-gray font-medium">
-            Your Rank
-          </p>
-          <p className="text-5xl xl:text-4xl leading-none font-bold mt-6 xl:mt-2 mb-2 lg:m-0">
-            {new Intl.NumberFormat().format(user.leaderboardPosition)}
-          </p>
-          <Link
-            href={path.AIRDROP_LEADERBOARD}
-            className="group flex items-center gap-1 text-sm text-text-dark-gray"
-          >
-            View Leaderboard
-            <Image
-              src={rightCaret}
-              alt="right caret"
-              width={7}
-              height={13}
-              className="transition ease-in-out group-hover:translate-x-0.5"
-            />
-          </Link>
-        </div>
-        <div className="relative w-1/3 xl:w-fit">
-          <Image
-            src={fuseAirdropPhase}
-            alt="Fuse Airdrop phase"
-            width={220}
-            height={250}
-            className="absolute -top-3/4 xl:hidden"
-          />
-          <div className="ms-52 xl:ms-0 flex flex-col gap-2">
-            <p className="text-sm max-w-48">
-              Fuse is migrating to a zkEvm L2 (Fuse Ember) and taking its robust comunity with it
-            </p>
-            <a
-              href="https://docs.fuse.io/fuse-ember/airdrop/phase1"
-              target="_blank"
-              className="group flex items-center gap-1 font-semibold"
-            >
-              Learn more
+            ) : (
               <Image
-                src={rightCaretBlack}
-                alt="right caret"
-                width={7}
-                height={13}
-                className="transition ease-in-out group-hover:translate-x-0.5"
+                src={ellipseQuestionMark}
+                alt="question mark"
+                width={28}
+                height={48}
+                className="absolute top-[119px] xl:top-[90px] lg:top-[65px] md:top-[55px]"
               />
-            </a>
+            )}
+          </div>
+          <div className="md:shrink">
+            <div className="flex items-center gap-1.5 mt-6 xl:mt-2 mb-2">
+              <p className="text-5xl xl:text-4xl md:text-3xl leading-none font-bold"></p>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="flex flex-col gap-8 xl:gap-6">
-        <h2 className="text-3xl font-semibold">
-          Start earning rewards
-        </h2>
-        <div className="flex flex-row md:flex-col gap-[30px] xl:gap-5">
-          <CardContainer containerClassName="block p-0 w-1/2 md:w-auto min-h-[283px] xl:min-h-56" className="block h-full">
-            <CardBody className="bg-fuse-black text-white rounded-[20px] flex md:flex-col justify-between md:gap-4 p-10 xl:p-[30px] w-auto h-full">
-              <div className="flex flex-col justify-between md:gap-2">
-                <div className="flex flex-col gap-4 xl:gap-3 md:gap-2">
-                  <CardItem
-                    as="p"
-                    translateZ="200"
-                    className="text-2xl xl:text-xl text-success font-bold"
-                  >
-                    Bridge FUSE
-                  </CardItem>
-                  <CardItem
-                    as="p"
-                    translateZ="100"
-                    className="text-lg xl:text-base text-pale-slate font-medium max-w-[200px] md:max-w-[243px]"
-                  >
-                    Get 4 points daily on every $1 you bridge to Fuse
-                  </CardItem>
-                </div>
-                <div>
-                  <CardItem translateZ="80">
-                    <button
-                      className="transition ease-in-out border border-success rounded-full text-success leading-none font-semibold px-9 py-4 xl:px-7 xl:py-2.5 hover:bg-success hover:text-black"
-                      onClick={() => {
-                        dispatch(setIsQuestModalOpen(true));
-                        dispatch(setSelectedQuest({
-                          id: "bridge",
-                          title: "Bridge FUSE",
-                          point: "4 point per 1 USD bridged",
-                          image: bridgeFuse,
-                          buttons: [
-                            {
-                              text: "Go to the Bridge",
-                              link: "https://console.fuse.io/bridge",
-                            }
-                          ],
-                        }));
-                      }}
-                    >
-                      Learn More
-                    </button>
-                  </CardItem>
-                </div>
+        <div className="relative z-10 max-w-[32rem] h-[16.375rem] xl:h-auto lg:h-auto flex flex-col gap-[2rem] xl:gap-4 lg:gap-3 text-white mt-[75px] xl:mt-8 lg:mt-6 md:mt-4 justify-center lg:items-center xl:items-center xl:mx-auto xl:text-center">
+          {isConnected ? (
+            <>
+              <h1 className="w-[32rem] xl:w-full h-[3rem] xl:h-auto font-semibold text-[2rem] xl:text-[1.75rem] lg:text-[1.5rem] md:text-[1.35rem] leading-[121%] text-center xl:text-center">
+                Your Points
+              </h1>
+              {(isFloat(user.points) ? user.points.toFixed(2) : user.points) ===
+              0 ? (
+                <p className="text-[1.25rem] xl:text-[1.1rem] lg:text-base md:text-sm leading-[130%] tracking-[0%] text-[#FFFFFF] text-center xl:text-center">
+                  The Points campaign has ended. Unfortunately, you haven't
+                  earned any points - but don't worry, there's still plenty to
+                  look forward to! The Fuse Ember mainnet is launching soon, and
+                  FUSE tokens will be migrated to a faster, more efficient, more
+                  flexible Layer-2 network.
+                </p>
+              ) : (
+                <p className="text-[1.25rem] xl:text-[1.1rem] leading-[130%] tracking-[0%] text-[#FFFFFF] text-center xl:text-center">
+                  The Points campaign has ended. You have earned {user.points}{" "}
+                  points. Thank you for participating! You points will be
+                  converted to FUSE tokens following the Fuse Ember mainnet
+                  launch. Stay tuned for more updates!
+                </p>
+              )}
+
+              <p className="text-[1.25rem] xl:text-[1.1rem] leading-[130%] tracking-[0%] text-[#FFFFFF] text-center xl:text-center">
+                Subscribe to our newsletter for regular updates.
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="flex flex-col gap-4 items-center xl:items-center">
+                <h1 className="w-full h-[3rem] xl:h-auto font-semibold text-[2rem] xl:text-[1.75rem] lg:text-[1.5rem] md:text-[1.35rem] leading-[121%] text-center xl:text-center">
+                  Your Points
+                </h1>
+                <p className="text-[1.25rem] xl:text-[1.1rem] lg:text-base md:text-sm leading-[130%] tracking-[0%] text-[#FFFFFF] text-center xl:text-center">
+                  Did you participate in the Points campaign? Connect your
+                  wallet to check how many points you earned.
+                </p>
+                <p className="text-[1.25rem] xl:text-[1.1rem] lg:text-base md:text-sm leading-[130%] tracking-[0%] text-[#FFFFFF] text-center xl:text-center">
+                  Your points will be converted to FUSE tokens following the
+                  Fuse Ember mainnet launch.
+                </p>
+                <ConnectWallet
+                  className="mt-6 xl:mt-4 bg-[transparent] text-white border border-white hover:bg-opacity-90"
+                  defaultClassName="font-semibold py-3 px-10 rounded-full w-fit transition-all"
+                />
               </div>
-              <CardItem
-                translateZ="40"
-                className="md:m-auto"
+            </>
+          )}
+        </div>
+        <Image
+          src={secondBlockBg}
+          alt="Token migration background"
+          className="absolute top-0 left-0 w-full h-full object-cover"
+          priority
+        />
+      </div>
+      <div className="flex flex-wrap md:flex-col sm:flex-col justify-between gap-6 bg-lightest-gray rounded-[20px] mt-11 xl:mt-8 lg:mt-6 md:mt-5 mb-[100px] xl:mb-16 lg:mb-12 md:mb-8 p-8 xl:p-6 lg:p-5 md:p-4">
+        <div className="flex flex-col flex-1 max-w-[50%] md:max-w-full sm:max-w-full">
+          <h2 className="text-[2.5rem] xl:text-[2.2rem] lg:text-[1.8rem] md:text-[1.5rem] font-bold mb-4 md:mb-3 sm:mb-2">
+            Keep me posted
+          </h2>
+          <p className="text-[1.25rem] xl:text-[1.1rem] lg:text-base md:text-sm text-[#666666] leading-[150%]">
+            Stay up-to-date with the latest news and developments by subscribing
+            to the Fuse newsletter.
+          </p>
+        </div>
+        <div className="flex items-center md:mt-4 sm:mt-3 md:w-full sm:w-full">
+          <div className="relative md:w-full sm:w-full">
+            <form
+              className="flex items-center w-full relative"
+              onSubmit={handleSubscribe}
+            >
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="bg-white rounded-full py-4 px-6 pr-16 w-[350px] md:w-full text-[1rem]"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <button
+                type="submit"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full flex items-center justify-center"
               >
                 <Image
-                  src={bridgeFuse}
-                  alt="bridge Fuse"
-                  width={227}
-                  height={167}
+                  src={emailButton}
+                  alt="email button"
+                  width={50}
+                  height={50}
                 />
-              </CardItem>
-            </CardBody>
-          </CardContainer>
-          <CardContainer containerClassName="block p-0 w-1/2 md:w-auto min-h-[283px] xl:min-h-56 md:min-h-[430px]" className="block h-full md:min-h-[430px]">
-            <CardBody className="bg-fuse-black text-white rounded-[20px] flex flex-col justify-between md:justify-start xl:gap-2 md:gap-12 p-10 xl:p-[30px] w-auto h-full md:min-h-[430px] bg-[url('/vectors/globe.svg')] md:bg-[url('/vectors/globe-mobile.svg')] bg-no-repeat bg-right-bottom md:bg-bottom xl:bg-contain">
-              <div className="flex flex-col gap-4 xl:gap-3">
-                <CardItem
-                  as="p"
-                  translateZ="50"
-                  className="text-2xl xl:text-xl text-success font-bold"
-                >
-                  Invite friends
-                </CardItem>
-                <CardItem
-                  as="p"
-                  translateZ="60"
-                  className="text-lg xl:text-base text-pale-slate font-medium max-w-[243px]"
-                >
-                  {"Get 20% of your friend's total points"}
-                </CardItem>
+              </button>
+            </form>
+
+            {subscriptionStatus !== "idle" && subscriptionMessage && (
+              <div
+                className={`mt-2 text-sm ${
+                  subscriptionStatus === "error"
+                    ? "text-red-500"
+                    : "text-green-500"
+                }`}
+              >
+                {subscriptionMessage}
               </div>
-              <div className="flex flex-col gap-2.5 xl:gap-2">
-                <CardItem
-                  as="p"
-                  translateZ="40"
-                  className="text-sm xl:text-xs text-pale-slate font-medium"
-                >
-                  Invite link
-                </CardItem>
-                <div className="flex items-center gap-1.5 xl:gap-1">
-                  <CardItem
-                    as="p"
-                    translateZ="70"
-                    className="truncate text-2xl xl:text-xl text-white font-bold max-w-sm"
-                  >
-                    {referralLink()}
-                  </CardItem>
-                  <CardItem translateZ="80">
-                    <Copy
-                      src={copyIcon}
-                      text={referralLink()}
-                      tooltipText="Referral link copied"
-                      className="transition ease-in-out cursor-pointer hover:opacity-60"
-                    />
-                  </CardItem>
-                </div>
-              </div>
-            </CardBody>
-          </CardContainer>
-        </div>
-      </div>
-      <div className="flex flex-col gap-8 xl:gap-6 mt-24 xl:mt-16">
-        <h2 className="text-3xl font-semibold">
-          {isSocialFollowed(user) ? "Join our Socials and explore the Ecosystem" : "Follow Fuse on X to unlock quests"}
-        </h2>
-        <div className="grid grid-cols-3 md:grid-cols-1 auto-rows-min gap-[30px] xl:gap-5">
-          {quests.filter((quest) => quest.frequency === "One-time").map((quest) => (
-            <Quest key={quest.title} quest={quest} />
-          ))}
-        </div>
-      </div>
-      <div className="flex flex-col gap-8 xl:gap-6 mt-24 xl:mt-16">
-        <h2 className="text-3xl font-semibold">
-          {isSocialFollowed(user) ? "Get multipliers for your points!" : "Follow Fuse on X to unlock multiplier quests"}
-        </h2>
-        <div className="grid grid-cols-3 md:grid-cols-1 auto-rows-min gap-[30px] xl:gap-5">
-          {quests.filter((quest) => quest.frequency !== "One-time").map((quest) => (
-            <Quest key={quest.title} quest={quest} />
-          ))}
+            )}
+
+            <div className="mt-4 text-sm text-[#666666]">
+              <a
+                href="https://fsue.beehiiv.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-black"
+              >
+                Or subscribe directly on Beehiiv
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Home;
