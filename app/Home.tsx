@@ -1,30 +1,31 @@
-import Link from 'next/link';
-import * as amplitude from '@amplitude/analytics-browser';
-import { useAccount } from 'wagmi';
-import { useRouter } from 'next/navigation';
+import Link from "next/link";
+import * as amplitude from "@amplitude/analytics-browser";
+import {useAccount} from "wagmi";
+import {useRouter} from "next/navigation";
 
-import DocumentSupport from '@/components/DocumentSupport';
-import { eclipseAddress, path } from '@/lib/helpers';
-import DeveloperTools from '@/components/DeveloperTools';
-import EdisonBanner from '@/components/build/EdisonBanner';
+import DocumentSupport from "@/components/DocumentSupport";
+import {eclipseAddress, path} from "@/lib/helpers";
+import DeveloperTools from "@/components/DeveloperTools";
+import EdisonBanner from "@/components/build/EdisonBanner";
 
 const Home = () => {
-  const { isConnected, address } = useAccount();
+  const {isConnected, address} = useAccount();
   const router = useRouter();
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
       <div className="w-8/9 flex flex-col gap-28 md:gap-20 mt-20 mb-40 md:mb-20 md:mt-10 md:w-9/10 max-w-7xl">
-        <div className='flex flex-col gap-10 md:gap-5'>
+        <div className="flex flex-col gap-10 md:gap-5">
           <div>
             <h1 className="text-5xl text-fuse-black font-semibold leading-none md:text-4xl">
-              Hello{isConnected ? `, ${address ? eclipseAddress(address) : ''}` : ""}
+              Hello
+              {isConnected ? `, ${address ? eclipseAddress(address) : ""}` : ""}
             </h1>
             <p className="text-[20px]/7 font-normal mt-4 text-text-dark-gray md:text-base">
               The one-stop-shop for all Fuse token holders.
             </p>
           </div>
-          <div className="transition-all ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] md:min-h-[514px] p-12 md:p-6 bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-[right_top] md:bg-[center_bottom]">
+          <div className="transition-all ease-in-out bg-lightest-gray hover:bg-success rounded-[20px] md:min-h-[514px] p-12 pb-[4.25rem] md:p-6 md:pb-[2.125rem] bg-[url('/vectors/build-mobiles.svg')] hover:bg-[url('/vectors/build-mobiles-white.svg')] bg-no-repeat bg-[right_top] md:bg-[center_bottom]">
             <p className="text-[40px] md:text-[32px] leading-tight text-fuse-black font-semibold">
               Build your Web3 project with Fuse
             </p>
@@ -41,8 +42,8 @@ const Home = () => {
             </Link>
           </div>
           <EdisonBanner
-            title="Become an operator to get access to Edison"
-            description="Explore how easy it is to build Web3 applications with Edison AI agent."
+            title="AI agent that can help you and your customers onboard to web3"
+            description=" Get help onboarding to Fuse - ask Edison anything you want to know about the chain, the ecosystem dev tools and more!"
             onClick={() => router.push(path.BUILD)}
           />
         </div>
@@ -60,7 +61,8 @@ const Home = () => {
                 Stake
               </p>
               <p className="text-text-dark-gray max-w-[309.2px]">
-                Earn annually and enhance the security and efficiency of the Fuse blockchain.
+                Earn annually and enhance the security and efficiency of the
+                Fuse blockchain.
               </p>
             </Link>
             <Link
@@ -72,7 +74,8 @@ const Home = () => {
                 Bridge
               </p>
               <p className="text-text-dark-gray max-w-[325px]">
-                Transfer funds to and from other blockchains to Fuse quickly and affordably.
+                Transfer funds to and from other blockchains to Fuse quickly and
+                affordably.
               </p>
             </Link>
             <Link
