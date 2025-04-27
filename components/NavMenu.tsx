@@ -1,21 +1,21 @@
-import { useState } from "react";
+import {useState} from "react";
 import Link from "next/link";
 import Image from "next/image";
-import dynamic from 'next/dynamic';
-import { useMediaQuery } from "usehooks-ts";
+import dynamic from "next/dynamic";
+import {useMediaQuery} from "usehooks-ts";
 import * as amplitude from "@amplitude/analytics-browser";
-import { useAccount } from "wagmi";
-import { motion, Variants } from "framer-motion";
+import {useAccount} from "wagmi";
+import {motion, Variants} from "framer-motion";
 
-import { MenuItems } from "@/lib/types";
-import { useAppSelector } from "@/store/store";
-import { path, walletType } from "@/lib/helpers";
-import { selectOperatorSlice } from "@/store/operatorSlice";
+import {MenuItems} from "@/lib/types";
+import {useAppSelector} from "@/store/store";
+import {path, walletType} from "@/lib/helpers";
+import {selectOperatorSlice} from "@/store/operatorSlice";
 
 import rightCaret from "@/assets/right-caret-black.svg";
 import aiStarAnimation from "@/assets/ai-star-animation.json";
 
-const Lottie = dynamic(() => import('lottie-react'), { ssr: false });
+const Lottie = dynamic(() => import("lottie-react"), {ssr: false});
 
 type NavMenuProps = {
   menuItems?: MenuItems;
@@ -28,12 +28,12 @@ type NavMenuProps = {
 
 type OpenMenuItemEvent = {
   [k: string]: string;
-}
+};
 
 const openMenuItemEvent: OpenMenuItemEvent = {
-  "Staking": "Go to Staking",
-  "Bridge": "Go to Bridge"
-}
+  Staking: "Go to Staking",
+  Bridge: "Go to Bridge",
+};
 
 const menu: Variants = {
   closed: (isCenter) => ({
@@ -65,36 +65,54 @@ const NavMenu = ({
   isOpen = false,
   selected = "",
   isResponsive = false,
-  className = `items-center justify-between w-auto order-1 md:absolute md:left-[50%] md:-translate-x-[50%] rounded-md ${isResponsive ? "md:w-full md:translate-y-8 md:top-1/2 md:bg-black" : ""}`,
+  className = `items-center justify-between w-auto order-1 md:absolute md:left-[50%] md:-translate-x-[50%] rounded-md ${
+    isResponsive ? "md:w-full md:translate-y-8 md:top-1/2 md:bg-black" : ""
+  }`,
   liClassName = "w-fit",
 }: NavMenuProps) => {
   const matches = useMediaQuery("(min-width: 768px)");
-  const { address, connector } = useAccount();
-  const { isAuthenticated } = useAppSelector(selectOperatorSlice);
+  const {address, connector} = useAccount();
+  const {isAuthenticated} = useAppSelector(selectOperatorSlice);
   const [isHover, setIsHover] = useState(-1);
 
   return (
     <>
       {(isOpen || matches) && (
         <div className={className}>
-          <ul className={`flex flex-row items-center gap-2 p-0 mt-0 font-medium text-base/4 ${isResponsive ? "md:flex-col md:items-start md:p-4" : ""}`}>
+          <ul
+            className={`flex flex-row items-center gap-2 p-0 mt-0 font-medium text-base/4 ${
+              isResponsive ? "md:flex-col md:items-start md:p-4" : ""
+            }`}
+          >
             {menuItems.map((item, index) => (
-              <div
-                key={index}
-                className="relative md:w-full"
-              >
+              <div key={index} className="relative md:w-full">
                 <Link
-                  href={isAuthenticated && path.BUILD.includes(item.title.toLowerCase()) ? path.DASHBOARD : item.link}
-                  className={`group flex justify-center items-center gap-1 rounded-full h-9 px-4 hover:bg-lightest-gray ${isResponsive ? "md:w-full md:justify-start" : ""} ${liClassName} ${(item.title.toLowerCase() === selected ? `bg-lightest-gray py-2.5 cursor-default ${isResponsive ? "md:text-white" : ""}` : `cursor-pointer group ${isResponsive ? "md:text-gray" : ""}`)}`}
-                  aria-current={
+                  href={
+                    isAuthenticated &&
+                    path.BUILD.includes(item.title.toLowerCase())
+                      ? path.DASHBOARD
+                      : item.link
+                  }
+                  className={`group flex justify-center items-center gap-1 rounded-full h-9 px-4 hover:bg-lightest-gray ${
+                    isResponsive ? "md:w-full md:justify-start" : ""
+                  } ${liClassName} ${
                     item.title.toLowerCase() === selected
-                      ? "page"
-                      : "false"
+                      ? `bg-lightest-gray py-2.5 cursor-default ${
+                          isResponsive ? "md:text-white" : ""
+                        }`
+                      : `cursor-pointer group ${
+                          isResponsive ? "md:text-gray" : ""
+                        }`
+                  }`}
+                  aria-current={
+                    item.title.toLowerCase() === selected ? "page" : "false"
                   }
                   onClick={() => {
                     amplitude.track(openMenuItemEvent[item.title], {
-                      walletType: connector ? walletType[connector.id] : undefined,
-                      walletAddress: address
+                      walletType: connector
+                        ? walletType[connector.id]
+                        : undefined,
+                      walletAddress: address,
                     });
                   }}
                   onMouseEnter={() => setIsHover(index)}
@@ -126,12 +144,12 @@ const NavMenu = ({
                     onMouseEnter={() => setIsHover(index)}
                     onMouseLeave={() => setIsHover(-1)}
                   >
-                    <div className="flex flex-col gap-3.5">
+                    <div className="flex flex-col gap-0">
                       {item.submenu.map((subItem, subIndex) => (
                         <Link
                           href={subItem.link}
                           key={subIndex}
-                          className="text-base/4 text-fuse-black font-medium px-4 py-6 hover:bg-lightest-gray rounded-2xl"
+                          className="text-base/4 text-fuse-black font-medium px-4 last p-6 hover:bg-[#f3f3f3] rounded-2xl"
                           onClick={subItem.onClick}
                         >
                           {subItem.title}
