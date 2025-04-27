@@ -324,7 +324,7 @@ const RedelegationModal = memo((): JSX.Element => {
       onClick={handleBackdropClick}
     >
       <div
-        className="bg-white w-[520px] max-w-[95%] z-50 rounded-[20px] pt-[40px] px-[40px] pb-[40px] md:px-5 md:py-8 flex flex-col"
+        className="bg-white w-[620px] max-w-[95%] z-50 rounded-[20px] pt-[40px] px-[40px] pb-[40px] md:px-5 md:py-8 flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-start">
@@ -343,8 +343,17 @@ const RedelegationModal = memo((): JSX.Element => {
         </div>
 
         <p className="mt-4 text-sm text-text-heading-gray">
-          Weve reminted your node licenses. Please redelegate them to maintain
-          your rewards.
+          Dear Fuse Ember node license owner, for security purposes we have
+          reminted node licenses and have already sent you the same number of
+          NFT licenses that you purchased during the Node Sale.
+          <br />
+          Now you just need to click on the "Redelegate" button to delegate new
+          NFT licenses to the same node operator to whom the old ones were
+          delegated.
+          <br />
+          <br />
+          You will not lose the reward points earned for maintaining the node or
+          delegation.
         </p>
 
         <div className="mt-6 space-y-4">
