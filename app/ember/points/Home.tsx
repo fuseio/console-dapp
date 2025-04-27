@@ -1,19 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
-import {useState} from "react";
-
 import {isFloat, path} from "@/lib/helpers";
 import {useAppSelector} from "@/store/store";
 import {selectAirdropSlice} from "@/store/airdropSlice";
 import ConnectWallet from "@/components/ConnectWallet";
-
 import firstBlockBg from "@/assets/token-migration-first-block.svg";
 import secondBlockBg from "@/assets/token-migration-sbg.svg";
 import leftArrow from "@/assets/left-arrow.svg";
 import pointHexagon from "@/assets/fuse-foundation-point-hexagon.svg";
 import innerEllipse from "@/assets/inner-ellipse.svg";
 import outerEllipse from "@/assets/outer-ellipse.svg";
-import emailButton from "@/assets/email-button.svg";
 import ellipseQuestionMark from "@/assets/migration-tokens-question.svg";
 
 import {useAccount} from "wagmi";
@@ -21,50 +17,6 @@ import {useAccount} from "wagmi";
 const Home = () => {
   const {user} = useAppSelector(selectAirdropSlice);
   const {isConnected} = useAccount();
-  const [email, setEmail] = useState("");
-  const [subscriptionStatus, setSubscriptionStatus] = useState<
-    "idle" | "loading" | "success" | "error"
-  >("idle");
-  const [subscriptionMessage, setSubscriptionMessage] = useState("");
-
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !email.includes("@")) return;
-
-    setSubscriptionStatus("loading");
-
-    try {
-      const iframe = document.createElement("iframe");
-      iframe.style.display = "none";
-      iframe.src = `https://magic.beehiiv.com/v1/e8385c43-f27c-410c-93de-7f07b6492818?email=${encodeURIComponent(
-        email
-      )}&redirect=false`;
-      document.body.appendChild(iframe);
-
-      setTimeout(() => {
-        document.body.removeChild(iframe);
-        setSubscriptionStatus("success");
-        setSubscriptionMessage("Successfully subscribed to the newsletter!");
-        setEmail("");
-
-        setTimeout(() => {
-          setSubscriptionStatus("idle");
-          setSubscriptionMessage("");
-        }, 5000);
-      }, 2000);
-    } catch (error) {
-      console.log(error);
-      setSubscriptionStatus("error");
-      setSubscriptionMessage(
-        "There was an error subscribing. Please try again."
-      );
-
-      setTimeout(() => {
-        setSubscriptionStatus("idle");
-        setSubscriptionMessage("");
-      }, 5000);
-    }
-  };
 
   return (
     <div className="w-8/9 grow flex flex-col text-fuse-black my-20 xl:my-12 lg:my-8 md:my-6 px-4 md:px-6 xl:px-0 xl:w-9/12 md:w-[95%] max-w-7xl mx-auto">
@@ -220,55 +172,16 @@ const Home = () => {
           </p>
         </div>
         <div className="flex items-center md:mt-4 sm:mt-3 md:w-full sm:w-full">
-          <div className="relative md:w-full sm:w-full">
-            <form
-              className="flex items-center w-full relative"
-              onSubmit={handleSubscribe}
-            >
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="bg-white rounded-full py-4 px-6 pr-16 w-[350px] md:w-full text-[1rem]"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <button
-                type="submit"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full flex items-center justify-center"
-              >
-                <Image
-                  src={emailButton}
-                  alt="email button"
-                  width={50}
-                  height={50}
-                />
-              </button>
-            </form>
-
-            {subscriptionStatus !== "idle" && subscriptionMessage && (
-              <div
-                className={`mt-2 text-sm ${
-                  subscriptionStatus === "error"
-                    ? "text-red-500"
-                    : "text-green-500"
-                }`}
-              >
-                {subscriptionMessage}
-              </div>
-            )}
-
-            <div className="mt-4 text-sm text-[#666666]">
-              <a
-                href="https://fsue.beehiiv.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:text-black"
-              >
-                Or subscribe directly on Beehiiv
-              </a>
-            </div>
-          </div>
+          <iframe
+            src="https://embeds.beehiiv.com/5ca0b43e-9cb7-46fc-9d16-11efead9d360?slim=true"
+            data-test-id="beehiiv-embed"
+            height="52"
+            style={{
+              margin: 0,
+              borderRadius: "0px !important",
+              backgroundColor: "transparent",
+            }}
+          ></iframe>
         </div>
       </div>
     </div>
