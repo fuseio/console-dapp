@@ -1,12 +1,10 @@
 import Image from "next/image";
-import Link from "next/link";
-import {isFloat, path} from "@/lib/helpers";
+import {isFloat} from "@/lib/helpers";
 import {useAppSelector} from "@/store/store";
 import {selectAirdropSlice} from "@/store/airdropSlice";
 import ConnectWallet from "@/components/ConnectWallet";
 import firstBlockBg from "@/assets/token-migration-first-block.svg";
 import secondBlockBg from "@/assets/token-migration-sbg.svg";
-import leftArrow from "@/assets/left-arrow.svg";
 import pointHexagon from "@/assets/fuse-foundation-point-hexagon.svg";
 import innerEllipse from "@/assets/inner-ellipse.svg";
 import outerEllipse from "@/assets/outer-ellipse.svg";
