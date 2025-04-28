@@ -347,7 +347,7 @@ const RedelegationModal = memo((): JSX.Element => {
           reminted node licenses and have already sent you the same number of
           NFT licenses that you purchased during the Node Sale.
           <br />
-          Now you just need to click on the &quotRedelegate&quot button to
+          Now you just need to click on the &quot;Redelegate&quot; button to
           delegate new NFT licenses to the same node operator to whom the old
           ones were delegated.
           <br />
