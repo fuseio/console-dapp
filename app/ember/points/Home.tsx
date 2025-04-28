@@ -20,19 +20,6 @@ const Home = () => {
 
   return (
     <div className="w-8/9 grow flex flex-col text-fuse-black my-20 xl:my-12 lg:my-8 md:my-6 px-4 md:px-6 xl:px-0 xl:w-9/12 md:w-[95%] max-w-7xl mx-auto">
-      <Link
-        href={path.AIRDROP}
-        className="group flex items-center gap-1.5 hover:opacity-70"
-      >
-        <Image
-          src={leftArrow}
-          alt="back to Ember"
-          width={7}
-          height={13}
-          className="transition ease-in-out group-hover:-translate-x-0.5"
-        />
-        <div className="leading-none font-semibold">Ember</div>
-      </Link>
       <div className="flex items-center justify-center text-center mt-4 w-full">
         <h1 className="text-7xl font-semibold xl:text-6xl lg:text-5xl md:text-4xl sm:text-3xl w-full max-w-[474px]">
           Fuse Token Migration
