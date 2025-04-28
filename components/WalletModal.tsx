@@ -3,9 +3,6 @@ import metamask from "@/public/metamask.png";
 import rabby from "@/public/rabby.jpg";
 import wc from "@/assets/wc.svg";
 import coinbase from "@/assets/coinbase.svg";
-import fb from "@/assets/fb.svg";
-import twitter2 from "@/assets/twitter2.svg";
-import discord2 from "@/assets/discord2.svg";
 import google from "@/assets/google.svg";
 import twitch from "@/assets/twitch.svg";
 import gh from "@/assets/gh.svg";
@@ -203,27 +200,6 @@ export const Wallet = ({
           id="google"
           connectingWalletId={connectingWalletId}
           onClick={() => connectWallet(ProviderEnum.Google, true)}
-        />
-        <SocialButton
-          icon={fb}
-          className="bg-[#F3F3F3] h-[55px]"
-          id="facebook"
-          connectingWalletId={connectingWalletId}
-          onClick={() => connectWallet(ProviderEnum.Facebook, true)}
-        />
-        <SocialButton
-          icon={twitter2}
-          className="bg-[#F3F3F3] h-[55px]"
-          id="twitter"
-          connectingWalletId={connectingWalletId}
-          onClick={() => connectWallet(ProviderEnum.Twitter, true)}
-        />
-        <SocialButton
-          icon={discord2}
-          className="bg-[#F3F3F3] h-[55px]"
-          id="discord"
-          connectingWalletId={connectingWalletId}
-          onClick={() => connectWallet(ProviderEnum.Discord, true)}
         />
         <SocialButton
           icon={twitch}
