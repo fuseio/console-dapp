@@ -7,6 +7,7 @@ import {useAppSelector} from "@/store/store";
 import {selectNavbarSlice} from "@/store/navbarSlice";
 import {cn, path} from "@/lib/helpers";
 import Image from "next/image";
+import {selectOperatorSlice} from "@/store/operatorSlice";
 
 type TopbarProps = {
   className?: string;
@@ -15,35 +16,13 @@ type TopbarProps = {
 const Topbar = ({className}: TopbarProps) => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const {isTransfiModalOpen, selected} = useAppSelector(selectNavbarSlice);
-
-  const AirdropSubmenu = useMemo(
-    () => [
-      {
-        title: "Fuse Ember Testnet",
-        link: path.AIRDROP_GRANT,
-      },
-      {
-        title: "Points",
-        link: path.AIRDROP_ECOSYSTEM,
-      },
-      {
-        title: "Testnet Nodes",
-        link: path.TESTNET_NODES,
-      },
-    ],
-    []
-  );
+  const operatorSlice = useAppSelector(selectOperatorSlice);
 
   const menuItems = useMemo(
     () => [
       {
         title: "Home",
         link: path.HOME,
-      },
-      {
-        title: "Ember",
-        link: path.AIRDROP,
-        submenu: AirdropSubmenu,
       },
       {
         title: "Bridge",
@@ -53,8 +32,16 @@ const Topbar = ({className}: TopbarProps) => {
         title: "Staking",
         link: path.STAKING,
       },
+      {
+        title: "Build",
+        link: operatorSlice.isAuthenticated
+          ? path.DASHBOARD
+          : operatorSlice.isOperatorExist
+          ? path.BUILD_REGISTER
+          : path.BUILD,
+      },
     ],
-    [AirdropSubmenu]
+    [operatorSlice.isAuthenticated, operatorSlice.isOperatorExist]
   );
 
   return (
