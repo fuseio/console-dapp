@@ -86,8 +86,6 @@ export const path = {
   AI_AGENT_CHAT: "/build/edison/chat",
   BUILD_API_KEYS: "/build/keys",
   BUILD_BILLING: "/build/billing",
-  AIRDROP: "/ember",
-  AIRDROP_LEADERBOARD: "/ember/leaderboard",
   AIRDROP_ECOSYSTEM: "/ember/points",
   AIRDROP_GRANT: "/ember/grant",
   NODES: "/nodes",
