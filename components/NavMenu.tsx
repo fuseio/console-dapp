@@ -73,7 +73,6 @@ const NavMenu = ({
   const matches = useMediaQuery("(min-width: 768px)");
   const {address, connector} = useAccount();
   const {isAuthenticated} = useAppSelector(selectOperatorSlice);
-  const operatorSlice = useAppSelector(selectOperatorSlice);
   const [isHover, setIsHover] = useState(-1);
 
   return (
@@ -145,12 +144,12 @@ const NavMenu = ({
                     onMouseEnter={() => setIsHover(index)}
                     onMouseLeave={() => setIsHover(-1)}
                   >
-                    <div className="flex flex-col gap-3.5">
+                    <div className="flex flex-col gap-0">
                       {item.submenu.map((subItem, subIndex) => (
                         <Link
                           href={subItem.link}
                           key={subIndex}
-                          className="text-base/4 text-fuse-black font-medium px-4 py-6 hover:bg-lightest-gray rounded-2xl"
+                          className="text-base/4 text-fuse-black font-medium px-4 last p-6 hover:bg-[#f3f3f3] rounded-2xl"
                           onClick={subItem.onClick}
                         >
                           {subItem.title}
@@ -161,17 +160,6 @@ const NavMenu = ({
                 )}
               </div>
             ))}
-            <Link
-              href={
-                operatorSlice.isAuthenticated
-                  ? path.DASHBOARD
-                  : operatorSlice.isOperatorExist
-                  ? path.BUILD_REGISTER
-                  : path.BUILD
-              }
-            >
-              Build
-            </Link>
           </ul>
         </div>
       )}

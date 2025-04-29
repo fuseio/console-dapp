@@ -32,6 +32,14 @@ const Topbar = ({className}: TopbarProps) => {
         title: "Staking",
         link: path.STAKING,
       },
+      {
+        title: "Build",
+        link: operatorSlice.isAuthenticated
+          ? path.DASHBOARD
+          : operatorSlice.isOperatorExist
+          ? path.BUILD_REGISTER
+          : path.BUILD,
+      },
     ],
     [operatorSlice.isAuthenticated, operatorSlice.isOperatorExist]
   );
