@@ -1,9 +1,9 @@
-import { useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { TriangleAlert, X } from "lucide-react";
+import {useEffect} from "react";
+import {AnimatePresence, motion} from "framer-motion";
+import {TriangleAlert, X} from "lucide-react";
 
-import { useAppDispatch, useAppSelector } from "@/store/store";
-import { selectNodesSlice, setIsNoLicenseModalOpen } from "@/store/nodesSlice";
+import {useAppDispatch, useAppSelector} from "@/store/store";
+import {selectNodesSlice, setIsNoLicenseModalOpen} from "@/store/nodesSlice";
 
 const NoLicenseModal = (): JSX.Element => {
   const nodesSlice = useAppSelector(selectNodesSlice);
@@ -21,16 +21,16 @@ const NoLicenseModal = (): JSX.Element => {
     <AnimatePresence>
       {nodesSlice.isNoLicenseModalOpen && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          initial={{opacity: 0}}
+          animate={{opacity: 1}}
+          exit={{opacity: 0}}
           className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-60 z-50 flex"
           id="no-license-modal-bg"
         >
           <motion.div
-            initial={{ opacity: 0, top: "0" }}
-            animate={{ opacity: 1, top: "50%" }}
-            exit={{ opacity: 0, top: "0" }}
+            initial={{opacity: 0, top: "0"}}
+            animate={{opacity: 1, top: "50%"}}
+            exit={{opacity: 0, top: "0"}}
             transition={{
               duration: 0.3,
             }}
@@ -48,7 +48,8 @@ const NoLicenseModal = (): JSX.Element => {
                   No available licenses
                 </p>
                 <p className="text-sm text-text-heading-gray">
-                  All of your licenses have been delegated. You need to acquire more licenses or revoke some existing ones to continue
+                  All of your licenses have been delegated. You need to acquire
+                  more licenses or revoke some existing ones to continue
                 </p>
                 <TriangleAlert color="var(--red-berry)" size={60} />
               </div>

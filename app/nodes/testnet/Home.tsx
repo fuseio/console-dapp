@@ -1,18 +1,29 @@
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 import {useAccount} from "wagmi";
 import fuseIcon from "@/assets/fuse-icon.svg";
 import Image from "next/image";
 import {
   fetchNodeLicenseBalances,
+  fetchNewNodeLicenseBalances,
   selectNodesSlice,
   setDelegateLicenseModal,
   setIsNoLicenseModalOpen,
   fetchTestnetPoints,
+  setRedelegationModal,
+  fetchDelegationsFromContract,
+  allowRedelegationModalReopening,
+  fetchNewDelegationsFromContract,
 } from "@/store/nodesSlice";
 import {useAppDispatch, useAppSelector} from "@/store/store";
 import VerifierTable from "@/components/nodes/VerifierTable";
 import {setIsWalletModalOpen} from "@/store/navbarSlice";
-import {eclipseAddress, getUserNodes, hex} from "@/lib/helpers";
+import {
+  eclipseAddress,
+  getUserNodes,
+  needsRedelegation,
+  hex,
+} from "@/lib/helpers";
+import {Status} from "@/lib/types";
 
 const Header = () => {
   return (
@@ -112,25 +123,122 @@ const Info = () => {
           <div className="text-sm">Status</div>
         </div>
       </div>
-      <button
-        onClick={() => {
-          if (!address) {
-            return dispatch(setIsWalletModalOpen(true));
-          }
-          if (!userNodes.canDelegate) {
-            return dispatch(setIsNoLicenseModalOpen(true));
-          }
-          dispatch(setDelegateLicenseModal({open: true, address: undefined}));
-        }}
-        className="transition-all ease-in-out border border-success bg-success rounded-full font-semibold leading-none p-3 hover:bg-[transparent] hover:border-black"
-      >
-        Delegate my License
-      </button>
+      <div className="flex flex-col gap-2">
+        <button
+          onClick={() => {
+            if (!address) {
+              return dispatch(setIsWalletModalOpen(true));
+            }
+            if (!userNodes.canDelegate) {
+              return dispatch(setIsNoLicenseModalOpen(true));
+            }
+            dispatch(setDelegateLicenseModal({open: true, address: undefined}));
+          }}
+          className="transition-all ease-in-out border border-success bg-success rounded-full font-semibold leading-none p-3 hover:bg-[transparent] hover:border-black"
+        >
+          Delegate my License
+        </button>
+      </div>
     </section>
   );
 };
 
 const Home = () => {
+  const dispatch = useAppDispatch();
+  const {address} = useAccount();
+  const nodesSlice = useAppSelector(selectNodesSlice);
+  const modalTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!address) return;
+
+    dispatch(
+      fetchNodeLicenseBalances({
+        accounts: Array.from({length: 10}, () => address),
+        tokenIds: Array.from({length: 10}, (_, i) => i),
+      })
+    );
+
+    dispatch(
+      fetchNewNodeLicenseBalances({
+        accounts: Array.from({length: 10}, () => address),
+        tokenIds: Array.from({length: 10}, (_, i) => i),
+      })
+    );
+
+    dispatch(
+      fetchDelegationsFromContract({
+        address: address,
+        useNewContract: false,
+      })
+    );
+
+    dispatch(fetchNewDelegationsFromContract(address));
+  }, [address, dispatch]);
+
+  useEffect(() => {
+    const {
+      fetchNodeLicenseBalancesStatus,
+      fetchNewNodeLicenseBalancesStatus,
+      fetchDelegationsFromContractStatus,
+      fetchNewDelegationsFromContractStatus,
+      user,
+      redelegationModal,
+      preventRedelegationModalReopening,
+    } = nodesSlice;
+
+    const isDataLoaded =
+      fetchNodeLicenseBalancesStatus === Status.SUCCESS &&
+      fetchNewNodeLicenseBalancesStatus === Status.SUCCESS &&
+      fetchDelegationsFromContractStatus === Status.SUCCESS &&
+      fetchNewDelegationsFromContractStatus === Status.SUCCESS;
+
+    if (address && isDataLoaded) {
+      const requiresRedelegation = needsRedelegation(user);
+
+      if (
+        requiresRedelegation &&
+        !redelegationModal.open &&
+        !preventRedelegationModalReopening
+      ) {
+        dispatch(setRedelegationModal({open: true}));
+      } else if (!requiresRedelegation && modalTimerRef.current) {
+        clearTimeout(modalTimerRef.current);
+        modalTimerRef.current = null;
+      }
+    }
+  }, [address, nodesSlice, dispatch]);
+
+  useEffect(() => {
+    const {redelegationModal, preventRedelegationModalReopening} = nodesSlice;
+
+    if (preventRedelegationModalReopening && !redelegationModal.open) {
+      if (modalTimerRef.current) {
+        clearTimeout(modalTimerRef.current);
+      }
+
+      modalTimerRef.current = setTimeout(() => {
+        if (needsRedelegation(nodesSlice.user)) {
+          dispatch(allowRedelegationModalReopening());
+        } else {
+        }
+        modalTimerRef.current = null;
+      }, 10000);
+    }
+
+    return () => {
+      if (modalTimerRef.current) {
+        clearTimeout(modalTimerRef.current);
+        modalTimerRef.current = null;
+      }
+    };
+  }, [
+    nodesSlice.redelegationModal.open,
+    nodesSlice.preventRedelegationModalReopening,
+    nodesSlice.user,
+    dispatch,
+  ]);
+
   return (
     <main className="flex flex-col gap-10 grow w-8/9 my-20 max-w-7xl md:w-full md:my-12 md:px-4 md:overflow-hidden">
       <Header />

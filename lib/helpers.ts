@@ -86,8 +86,6 @@ export const path = {
   AI_AGENT_CHAT: "/build/edison/chat",
   BUILD_API_KEYS: "/build/keys",
   BUILD_BILLING: "/build/billing",
-  AIRDROP: "/ember",
-  AIRDROP_LEADERBOARD: "/ember/leaderboard",
   AIRDROP_ECOSYSTEM: "/ember/points",
   AIRDROP_GRANT: "/ember/grant",
   NODES: "/nodes",
@@ -223,6 +221,81 @@ export const getUserNodes = (user: NodesUser) => {
   }
 }
 
+export const needsRedelegation = (user: NodesUser): boolean => {
+  if (!user) {
+    console.log("No user data, no redelegation needed");
+    return false;
+  }
+
+  if (!user.licences || !user.delegations) {
+    console.log("Missing licences or delegations data, no redelegation needed");
+    return false;
+  }
+
+  if (!user.newLicences) {
+    console.log("No newLicences data, no redelegation needed");
+    return false;
+  }
+
+  const hasOldLicenses = user.licences.some(license => license.balance > 0);
+  if (!hasOldLicenses) {
+    console.log("No old NFTs with balance, no redelegation needed");
+    return false;
+  }
+
+  const oldDelegations = user.delegations.filter(
+    delegation => delegation.NFTAmount > 0
+  );
+
+  if (oldDelegations.length === 0) {
+    console.log("No old delegated NFTs, no redelegation needed");
+    return false;
+  }
+
+  const newDelegations = user.newDelegations || [];
+
+  const hasNewLicensesWithBalance = user.newLicences.some(license => license.balance > 0);
+
+  if (!hasNewLicensesWithBalance && newDelegations.length === 0) {
+    console.log("No new licenses with balance, can't redelegate");
+    return false;
+  }
+
+
+  if (newDelegations.length > 0) {
+    const oldDelegationsByTokenId = new Map<number, number>();
+    for (const oldDel of oldDelegations) {
+      const tokenId = oldDel.NFTTokenID;
+      const currentAmount = oldDelegationsByTokenId.get(tokenId) || 0;
+      oldDelegationsByTokenId.set(tokenId, currentAmount + oldDel.NFTAmount);
+    }
+
+    const newDelegationsByTokenId = new Map<number, number>();
+    for (const newDel of newDelegations) {
+      const tokenId = newDel.NFTTokenID;
+      const currentAmount = newDelegationsByTokenId.get(tokenId) || 0;
+      newDelegationsByTokenId.set(tokenId, currentAmount + newDel.NFTAmount);
+    }
+
+    let allTokenIdsRedelegated = true;
+    for (const [tokenId, oldAmount] of oldDelegationsByTokenId.entries()) {
+      const newAmount = newDelegationsByTokenId.get(tokenId) || 0;
+      if (newAmount < oldAmount) {
+        allTokenIdsRedelegated = false;
+        break;
+      }
+    }
+
+    if (allTokenIdsRedelegated) {
+      console.log("All token IDs redelegated in sufficient amounts, no redelegation needed");
+      return false;
+    }
+  }
+
+  console.log("Redelegation needed");
+  return true;
+}
+
 export const getTotalTransaction = (isActivated: boolean) => {
   return isActivated ? 1_000_000 : 1000;
 }
@@ -264,4 +337,4 @@ export const operatorLastInvoice = (invoices: Invoice[]) => {
   };
 }
 
-export const consoleV2LaunchDate = new Date('2025-02-01')
+export const consoleV2LaunchDate = new Date("2025-02-01")
