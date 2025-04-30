@@ -142,7 +142,7 @@ const Hero = () => {
     <section className="flex flex-col items-center justify-center min-h-screen bg-[url('/flash-background.png')] bg-cover bg-center">
       <div className="w-8/9 max-w-3xl mx-auto flex flex-col justify-center items-center gap-8 text-center">
         <h1 className="text-[4.375rem] leading-none text-fuse-black font-semibold md:text-4xl">
-          Test, Build, and Earn on FUSE Ember
+          Test, Build, and on Fuse Ember
         </h1>
         <p className="text-[2.188rem] text-fuse-black font-semibold leading-none md:text-lg">
           First blockchain for Businesses and Real-World Payments

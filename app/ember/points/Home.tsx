@@ -97,7 +97,7 @@ const Home = () => {
               </h1>
               {(isFloat(user.points) ? user.points.toFixed(2) : user.points) ===
               0 ? (
-                <p className="text-[1.25rem] xl:text-[1.1rem] lg:text-base md:text-sm leading-[130%] tracking-[0%] text-[#FFFFFF] text-center xl:text-center">
+                <p className="text-[1.25rem] xl:text-[1.1rem] lg:text-base md:text-sm leading-[130%] tracking-[0%] text-[#FFFFFF] text-start xl:text-start">
                   The Points campaign has ended. Unfortunately, you havent
                   earned any points - but dont worry, theres still plenty to
                   look forward to! The Fuse Ember mainnet is launching soon, and
@@ -105,7 +105,7 @@ const Home = () => {
                   flexible Layer-2 network.
                 </p>
               ) : (
-                <p className="text-[1.25rem] xl:text-[1.1rem] leading-[130%] tracking-[0%] text-[#FFFFFF] text-center xl:text-center">
+                <p className="text-[1.25rem] xl:text-[1.1rem] leading-[130%] tracking-[0%] text-[#FFFFFF] text-start xl:text-start">
                   The Points campaign has ended. You have earned {user.points}{" "}
                   points. Thank you for participating! You points will be
                   converted to FUSE tokens following the Fuse Ember mainnet
@@ -113,7 +113,7 @@ const Home = () => {
                 </p>
               )}
 
-              <p className="text-[1.25rem] xl:text-[1.1rem] leading-[130%] tracking-[0%] text-[#FFFFFF] text-center xl:text-center">
+              <p className="text-[1.25rem] xl:text-[1.1rem] leading-[130%] tracking-[0%] text-[#FFFFFF] text-start xl:text-start">
                 Subscribe to our newsletter for regular updates.
               </p>
             </>
@@ -123,11 +123,11 @@ const Home = () => {
                 <h1 className="w-full h-[3rem] xl:h-auto font-semibold text-[2rem] xl:text-[1.75rem] lg:text-[1.5rem] md:text-[1.35rem] leading-[121%] text-center xl:text-center">
                   Your Points
                 </h1>
-                <p className="text-[1.25rem] xl:text-[1.1rem] lg:text-base md:text-sm leading-[130%] tracking-[0%] text-[#FFFFFF] text-center xl:text-center">
+                <p className="text-[1.25rem] xl:text-[1.1rem] lg:text-base md:text-sm leading-[130%] tracking-[0%] text-[#FFFFFF] text-start xl:text-start">
                   Did you participate in the Points campaign? Connect your
                   wallet to check how many points you earned.
                 </p>
-                <p className="text-[1.25rem] xl:text-[1.1rem] lg:text-base md:text-sm leading-[130%] tracking-[0%] text-[#FFFFFF] text-center xl:text-center">
+                <p className="text-[1.25rem] xl:text-[1.1rem] lg:text-base md:text-sm leading-[130%] tracking-[0%] text-[#FFFFFF] text-start xl:text-start">
                   Your points will be converted to FUSE tokens following the
                   Fuse Ember mainnet launch.
                 </p>

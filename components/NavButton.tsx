@@ -29,12 +29,12 @@ const NavButton = ({isOpen, setOpen}: NavButtonProps) => {
         link: path.AIRDROP_GRANT,
       },
       {
-        title: "Token Migration",
-        link: path.AIRDROP_ECOSYSTEM,
-      },
-      {
         title: "Testnet Nodes",
         link: path.TESTNET_NODES,
+      },
+      {
+        title: "Token Migration",
+        link: path.AIRDROP_ECOSYSTEM,
       },
     ],
     []
