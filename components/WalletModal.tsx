@@ -286,7 +286,7 @@ const WalletModal = ({ isDisconnected, setIsDisconnected }: WalletModalProps) =>
       
       router.replace(path.BUILD_REGISTER)
     }
-  }, [dispatch, isDisconnected, pathname])
+  }, [dispatch, isDisconnected, pathname, router])
 
   useEffect(() => {
     dispatch(setHydrate());
