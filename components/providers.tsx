@@ -80,7 +80,7 @@ export function Providers({children}: {children: React.ReactNode}) {
               }}
             />
             <DynamicWagmiConnector>
-              <WalletModal isDisconnected={isDisconnected} />
+              <WalletModal isDisconnected={isDisconnected} setIsDisconnected={setIsDisconnected} />
               <TransfiModal />
               <DelegateLicenseModal />
               <RevokeLicenseModal />

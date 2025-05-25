@@ -19,10 +19,12 @@ import { useConnectWithOtp, useSocialAccounts, useWalletOptions } from "@dynamic
 import Modal from "./ui/Modal";
 import { Dispatch } from "@reduxjs/toolkit";
 import { authenticateAirdropUser, setHydrateAirdrop, setLogoutAirdrop } from "@/store/airdropSlice";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { path } from "@/lib/helpers";
 
 type WalletModalProps = {
   isDisconnected: boolean;
+  setIsDisconnected: (isDisconnected: boolean) => void
 }
 
 type WalletProps = {
@@ -260,10 +262,12 @@ export const Wallet = ({
   );
 };
 
-const WalletModal = ({ isDisconnected }: WalletModalProps) => {
+const WalletModal = ({ isDisconnected, setIsDisconnected }: WalletModalProps) => {
   const dispatch = useAppDispatch();
   const { isWalletModalOpen } = useAppSelector(selectNavbarSlice);
   const { isConnected, address } = useAccount();
+  const pathname = usePathname()
+  const router = useRouter();
 
   useEffect(() => {
     if (isConnected) {
@@ -273,10 +277,16 @@ const WalletModal = ({ isDisconnected }: WalletModalProps) => {
 
   useEffect(() => {
     if (isDisconnected) {
+      setIsDisconnected(false);
       dispatch(setLogout());
       dispatch(setLogoutAirdrop());
+
+      const isProtectedRoute = pathname.startsWith(path.BUILD)
+      if(!isProtectedRoute) return;
+      
+      router.replace(path.BUILD_REGISTER)
     }
-  }, [dispatch, isDisconnected])
+  }, [dispatch, isDisconnected, pathname])
 
   useEffect(() => {
     dispatch(setHydrate());
