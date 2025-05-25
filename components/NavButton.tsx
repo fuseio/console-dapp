@@ -25,16 +25,17 @@ const NavButton = ({isOpen, setOpen}: NavButtonProps) => {
   const AirdropSubmenu = useMemo(
     () => [
       {
+        title: "Read about Ember",
+        link: "https://docs.fuse.io/fuse-ember/about-fuse-ember-l2/",
+        target: "_blank",
+      },
+      {
         title: "Fuse Ember Testnet",
         link: path.AIRDROP_GRANT,
       },
       {
         title: "Testnet Nodes",
         link: path.TESTNET_NODES,
-      },
-      {
-        title: "Token Migration",
-        link: path.AIRDROP_ECOSYSTEM,
       },
     ],
     []
@@ -111,6 +112,7 @@ const NavButton = ({isOpen, setOpen}: NavButtonProps) => {
             {AirdropSubmenu.map((subItem, subIndex) => (
               <Link
                 href={subItem.link}
+                target={subItem.target}
                 key={subIndex}
                 className="text-base/4 text-fuse-black font-medium px-4 py-6 hover:bg-lightest-gray rounded-2xl"
               >
