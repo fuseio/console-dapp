@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "@/components/ui/Button";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { fetchOperator, generateSecretApiKey, selectOperatorSlice, setIsRollSecretKeyModalOpen, withRefreshToken } from "@/store/operatorSlice";
+import { generateSecretApiKey, selectOperatorSlice, setIsRollSecretKeyModalOpen, withRefreshToken } from "@/store/operatorSlice";
 import Image from "next/image";
 import copy from "@/assets/copy-black.svg";
 import roll from "@/assets/roll.svg";
@@ -11,17 +11,11 @@ import show from "@/assets/show.svg";
 import hide from "@/assets/hide.svg";
 import DeveloperTools from "@/components/DeveloperTools";
 import SubMenu from "@/components/build/SubMenu";
-import { useWalletClient } from "wagmi";
 
 const Home = () => {
   const dispatch = useAppDispatch();
   const operatorSlice = useAppSelector(selectOperatorSlice);
   const [showSecretKey, setShowSecretKey] = useState(false);
-  const walletClient = useWalletClient()
-
-  useEffect(() => {
-    dispatch(withRefreshToken(() => dispatch(fetchOperator({ account: walletClient.data?.account }))));
-  }, [dispatch, walletClient.data?.account])
 
   return (
     <div className="w-full bg-light-gray flex flex-col items-center">
