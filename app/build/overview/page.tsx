@@ -24,7 +24,7 @@ const Operator = () => {
   useEffect(() => {
     if (!operatorSlice.isHydrated) return;
     if (!operatorSlice.isAuthenticated) {
-      router.replace(path.BUILD_REGISTER)
+      router.replace(path.BUILD)
     }
   }, [operatorSlice.isHydrated, operatorSlice.isAuthenticated, router]);
 

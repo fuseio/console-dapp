@@ -284,7 +284,7 @@ const WalletModal = ({ isDisconnected, setIsDisconnected }: WalletModalProps) =>
       const isProtectedRoute = pathname.startsWith(path.BUILD)
       if(!isProtectedRoute) return;
       
-      router.replace(path.BUILD_REGISTER)
+      router.replace(path.BUILD)
     }
   }, [dispatch, isDisconnected, pathname, router])
 
