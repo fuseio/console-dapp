@@ -3,7 +3,7 @@ import Button from "@/components/ui/Button";
 import { getTotalTransaction, path, subscriptionInformation } from "@/lib/helpers";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { selectBalanceSlice } from "@/store/balanceSlice";
-import { fetchOperator, fetchSponsoredTransactions, fetchSponsorIdBalance, selectOperatorSlice, setIsSubscriptionModalOpen, setIsTopupAccountModalOpen, setWithdrawModal, withRefreshToken } from "@/store/operatorSlice";
+import { fetchSponsoredTransactions, fetchSponsorIdBalance, selectOperatorSlice, setIsSubscriptionModalOpen, setIsTopupAccountModalOpen, setWithdrawModal, withRefreshToken } from "@/store/operatorSlice";
 import TopupAccountModal from "@/components/dashboard/TopupAccountModal";
 import Image from "next/image";
 import RollSecretKeyModal from "@/components/dashboard/RollSecretKeyModal";
@@ -28,7 +28,6 @@ import CheckoutSuccess from "@/components/build/CheckoutSuccess";
 import OperatorNotice from "@/components/build/OperatorNotice";
 import { AccountBalanceInfo, SponsoredTransactionInfo } from "@/components/build/OperatorInfo";
 import useWithdrawToken from "@/lib/hooks/useWithdrawToken";
-import { useWalletClient } from "wagmi";
 
 type OperatorAccountBalanceProps = {
   balance: TokenUsdBalance;
@@ -176,7 +175,6 @@ const Home = () => {
   const { isBalance } = useWithdrawToken({
     address: operatorSlice.operator.user.etherspotSmartWalletAddress
   });
-  const walletClient = useWalletClient()
 
   useEffect(() => {
     (async () => {
@@ -192,10 +190,6 @@ const Home = () => {
       }
     })();
   }, [operatorSlice.withdrawStatus, operatorSlice.withdraw.amount, operatorSlice.withdraw.coinGeckoId, operatorSlice.withdraw.token])
-
-  useEffect(() => {
-    dispatch(withRefreshToken(() => dispatch(fetchOperator({ account: walletClient.data?.account }))));
-  }, [dispatch, walletClient.data?.account])
 
   useEffect(() => {
     if (operatorSlice.isAuthenticated) {
