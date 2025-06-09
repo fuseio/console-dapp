@@ -403,7 +403,7 @@ const Earn = () => {
           Prize pool
         </p>
         <p className="bg-linear-gradient-sand bg-clip-text drop-shadow-light-tan text-[8.75rem] leading-none text-[transparent] font-bold md:drop-shadow-none md:text-3xl">
-          3,900,000 FUSE
+          60,000,000 FUSE
         </p>
         <Image
           src={prizePool}
