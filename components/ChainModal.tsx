@@ -24,11 +24,9 @@ const ChainModal = ({
   const {isConnected, chain} = useAccount();
   const {handleLogOut} = useDynamicContext();
 
-  // Use external control if provided, otherwise use internal logic
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
 
   useEffect(() => {
-    // Only use automatic detection if not externally controlled
     if (externalIsOpen === undefined) {
       if (isConnected && chain?.id !== fuse.id) setInternalIsOpen(true);
       else setInternalIsOpen(false);

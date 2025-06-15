@@ -160,7 +160,6 @@ const VerifierTable = () => {
   const FUSE_CHAIN_ID = 122;
   const isOnFuseChain = chainId === FUSE_CHAIN_ID;
 
-  // Add a memoized node address map for fast lookups
   const nodesAddressMap = useMemo(() => {
     const map = new Map();
     nodesSlice.nodes.forEach((node) => {
