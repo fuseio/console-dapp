@@ -1,5 +1,5 @@
 import {useEffect, useRef} from "react";
-import {useAccount} from "wagmi";
+import {useAccount, useChainId} from "wagmi";
 import fuseIcon from "@/assets/fuse-icon.svg";
 import Image from "next/image";
 import {
@@ -8,6 +8,7 @@ import {
   selectNodesSlice,
   setDelegateLicenseModal,
   setIsNoLicenseModalOpen,
+  setIsChainModalOpen,
   fetchTestnetPoints,
   setRedelegationModal,
   fetchDelegationsFromContract,
@@ -83,8 +84,12 @@ export const TestnetPoints = () => {
 const Info = () => {
   const dispatch = useAppDispatch();
   const {address} = useAccount();
+  const chainId = useChainId();
   const nodesSlice = useAppSelector(selectNodesSlice);
   const userNodes = getUserNodes(nodesSlice.user);
+
+  const FUSE_CHAIN_ID = 122;
+  const isOnFuseChain = chainId === FUSE_CHAIN_ID;
 
   useEffect(() => {
     if (address) {
@@ -132,6 +137,10 @@ const Info = () => {
             if (!userNodes.canDelegate) {
               return dispatch(setIsNoLicenseModalOpen(true));
             }
+            if (!isOnFuseChain) {
+              return dispatch(setIsChainModalOpen(true));
+            }
+
             dispatch(setDelegateLicenseModal({open: true, address: undefined}));
           }}
           className="transition-all ease-in-out border border-success bg-success rounded-full font-semibold leading-none p-3 hover:bg-[transparent] hover:border-black"
