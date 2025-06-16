@@ -218,7 +218,7 @@ const RedelegationModal = memo((): JSX.Element => {
       setOperators(operators);
       console.log("Updated operators with unique keys:", operators);
     }
-  }, [nodesSlice.user?.delegations, nodesSlice.user?.newDelegations]);
+  }, [nodesSlice.user]);
 
   const handleRedelegate = useCallback(
     async (operator: OperatorDelegation, e: React.MouseEvent) => {

@@ -1,29 +1,45 @@
-import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import {motion} from "framer-motion";
+import React, {useEffect, useState} from "react";
 import close from "@/assets/close.svg";
 import fuseGray from "@/assets/fuse-gray.svg";
 import Button from "@/components/ui/Button";
-import { useAccount, useSwitchChain } from "wagmi";
-import { fuse } from "viem/chains";
+import {useAccount, useSwitchChain} from "wagmi";
+import {fuse} from "viem/chains";
 import Image from "next/image";
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import {useDynamicContext} from "@dynamic-labs/sdk-react-core";
 
 type ChainModalProps = {
   description?: string;
-}
+  isOpen?: boolean;
+  onClose?: () => void;
+};
 
 const ChainModal = ({
-  description = "Please switch to the Fuse Network to continue"
+  description = "Please switch to the Fuse Network to continue",
+  isOpen: externalIsOpen,
+  onClose,
 }: ChainModalProps): JSX.Element => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { switchChain } = useSwitchChain()
-  const { isConnected, chain } = useAccount();
-  const { handleLogOut } = useDynamicContext();
+  const [internalIsOpen, setInternalIsOpen] = useState<boolean>(false);
+  const {switchChain} = useSwitchChain();
+  const {isConnected, chain} = useAccount();
+  const {handleLogOut} = useDynamicContext();
+
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
 
   useEffect(() => {
-    if (isConnected && chain?.id !== fuse.id) setIsOpen(true);
-    else setIsOpen(false);
-  }, [chain, isConnected]);
+    if (externalIsOpen === undefined) {
+      if (isConnected && chain?.id !== fuse.id) setInternalIsOpen(true);
+      else setInternalIsOpen(false);
+    }
+  }, [chain, isConnected, externalIsOpen]);
+
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      setInternalIsOpen(false);
+    }
+  };
 
   return (
     <>
@@ -33,8 +49,8 @@ const ChainModal = ({
           id="modal-bg"
         >
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
             transition={{
               duration: 0.5,
             }}
@@ -46,7 +62,7 @@ const ChainModal = ({
               width={30}
               height={30}
               className="absolute top-7 right-6 cursor-pointer"
-              onClick={() => setIsOpen(false)}
+              onClick={handleClose}
             />
             <p className="text-2xl text-dune font-bold max-w-[218.24px]">
               Wrong Network Connected
@@ -58,14 +74,14 @@ const ChainModal = ({
               src={fuseGray}
               alt="Fuse gray"
               className="m-auto"
-              onClick={() => setIsOpen(false)}
+              onClick={handleClose}
             />
             <Button
               text="Switch to Fuse chain"
               className="transition ease-in-out w-full bg-success text-lg font-bold text-black rounded-xl mt-[31.7px] mb-2.5 hover:bg-black hover:text-white"
               padding="py-3.5"
               onClick={() => {
-                switchChain({ chainId: fuse.id });
+                switchChain({chainId: fuse.id});
               }}
             />
             <Button
@@ -74,7 +90,7 @@ const ChainModal = ({
               padding="py-3.5"
               onClick={() => {
                 handleLogOut();
-                setIsOpen(false);
+                handleClose();
               }}
             />
           </motion.div>

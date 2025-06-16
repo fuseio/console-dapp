@@ -25,7 +25,8 @@ import {
   getFacetedRowModel,
   Table,
 } from "@tanstack/react-table";
-import {useAccount} from "wagmi";
+import {useAccount, useChainId} from "wagmi";
+import {fuse} from "viem/chains";
 
 import {Node, Status} from "@/lib/types";
 import {eclipseAddress, getUserNodes} from "@/lib/helpers";
@@ -35,9 +36,10 @@ import {
   NodesStateType,
   selectNodesSlice,
   setDelegateLicenseModal,
+  setRevokeLicenseModal,
   setIsNoCapacityModalOpen,
   setIsNoLicenseModalOpen,
-  setRevokeLicenseModal,
+  setIsChainModalOpen,
   fetchDelegationsFromContract,
 } from "@/store/nodesSlice";
 import {Notice, renderPageNumbers, Skeleton} from "@/components/ui/Table";
@@ -153,9 +155,11 @@ const VerifierTable = () => {
   const dispatch = useAppDispatch();
   const nodesSlice = useAppSelector(selectNodesSlice);
   const {address} = useAccount();
+  const chainId = useChainId();
   const userNodes = getUserNodes(nodesSlice.user);
 
-  // Add a memoized node address map for fast lookups
+  const isOnFuseChain = chainId === fuse.id;
+
   const nodesAddressMap = useMemo(() => {
     const map = new Map();
     nodesSlice.nodes.forEach((node) => {
@@ -295,14 +299,18 @@ const VerifierTable = () => {
           if (isMyDelegatesTab) {
             return (
               <button
-                onClick={() =>
+                onClick={() => {
+                  if (!isOnFuseChain) {
+                    dispatch(setIsChainModalOpen(true));
+                    return;
+                  }
                   dispatch(
                     setRevokeLicenseModal({
                       open: true,
                       address: info.row.original.Address,
                     })
-                  )
-                }
+                  );
+                }}
                 className="px-3 py-2 border border-black bg-white text-black rounded-full leading-none font-semibold hover:bg-red-50 hover:text-red-700 hover:border-red-700"
               >
                 Revoke
@@ -317,6 +325,8 @@ const VerifierTable = () => {
                   dispatch(setIsNoCapacityModalOpen(true));
                 } else if (!userNodes.canDelegate) {
                   dispatch(setIsNoLicenseModalOpen(true));
+                } else if (!isOnFuseChain) {
+                  dispatch(setIsChainModalOpen(true));
                 } else {
                   dispatch(
                     setDelegateLicenseModal({
@@ -338,7 +348,7 @@ const VerifierTable = () => {
         enableSorting: false,
       },
     ],
-    [dispatch, userNodes.canDelegate, isMyDelegatesTab]
+    [dispatch, userNodes.canDelegate, isMyDelegatesTab, isOnFuseChain]
   );
 
   const table = useReactTable({

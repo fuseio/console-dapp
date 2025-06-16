@@ -80,7 +80,7 @@ const DelegateLicenseModal = (): JSX.Element => {
   const availableLicenses = useMemo(() => {
     if (!nodesSlice.user || !nodesSlice.user.licences) return [];
     return nodesSlice.user.licences.filter((license) => license.balance > 0);
-  }, [nodesSlice.user.licences]);
+  }, [nodesSlice.user]);
 
   const availableTokensForDelegation = useMemo(() => {
     if (
@@ -107,7 +107,7 @@ const DelegateLicenseModal = (): JSX.Element => {
     });
 
     return available;
-  }, [nodesSlice.user?.licences, nodesSlice.user?.delegations]);
+  }, [nodesSlice.user]);
 
   const formik = useFormik<DelegateLicenseFormValues>({
     initialValues: {
@@ -233,8 +233,8 @@ const DelegateLicenseModal = (): JSX.Element => {
               type="button"
               onClick={handleCloseModal}
               className="mt-4 transition-all ease-in-out flex justify-center items-center gap-2 border rounded-full font-semibold leading-none p-4 
-                bg-[rgb(180,249,186)] text-black border-[rgb(180,249,186)]
-                hover:bg-[rgb(160,229,166)] hover:border-[rgb(160,229,166)]"
+                  bg-[rgb(180,249,186)] text-black border-[rgb(180,249,186)]
+                  hover:bg-[rgb(160,229,166)] hover:border-[rgb(160,229,166)]"
             >
               Close
             </button>
@@ -366,12 +366,12 @@ const DelegateLicenseModal = (): JSX.Element => {
                 <button
                   type="submit"
                   className={`transition-all ease-in-out flex justify-center items-center gap-2 border rounded-full font-semibold leading-none p-4 hover:bg-[transparent]
-                    ${
-                      isError
-                        ? "bg-[#FFEBE9] text-[#FD0F0F] border-[#FD0F0F]"
-                        : "bg-[rgb(180,249,186)] text-black border-[rgb(180,249,186)] hover:border-black enabled:hover:text-black"
-                    }
-                    disabled:bg-iron disabled:border-iron disabled:text-white disabled:cursor-not-allowed`}
+                      ${
+                        isError
+                          ? "bg-[#FFEBE9] text-[#FD0F0F] border-[#FD0F0F]"
+                          : "bg-[rgb(180,249,186)] text-black border-[rgb(180,249,186)] hover:border-black enabled:hover:text-black"
+                      }
+                      disabled:bg-iron disabled:border-iron disabled:text-white disabled:cursor-not-allowed`}
                   disabled={isPending || formik.isSubmitting}
                 >
                   {isPending ? (
