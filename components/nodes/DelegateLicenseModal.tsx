@@ -80,7 +80,7 @@ const DelegateLicenseModal = (): JSX.Element => {
   const availableLicenses = useMemo(() => {
     if (!nodesSlice.user || !nodesSlice.user.licences) return [];
     return nodesSlice.user.licences.filter((license) => license.balance > 0);
-  }, [nodesSlice.user.licences]);
+  }, [nodesSlice.user]);
 
   const availableTokensForDelegation = useMemo(() => {
     if (
@@ -107,7 +107,7 @@ const DelegateLicenseModal = (): JSX.Element => {
     });
 
     return available;
-  }, [nodesSlice.user?.licences, nodesSlice.user?.delegations]);
+  }, [nodesSlice.user]);
 
   const formik = useFormik<DelegateLicenseFormValues>({
     initialValues: {

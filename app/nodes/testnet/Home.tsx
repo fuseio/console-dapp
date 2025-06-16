@@ -216,7 +216,17 @@ const Home = () => {
         modalTimerRef.current = null;
       }
     }
-  }, [address, nodesSlice, dispatch]);
+  }, [
+    address,
+    nodesSlice.fetchNodeLicenseBalancesStatus,
+    nodesSlice.fetchNewNodeLicenseBalancesStatus,
+    nodesSlice.fetchDelegationsFromContractStatus,
+    nodesSlice.fetchNewDelegationsFromContractStatus,
+    nodesSlice.user,
+    nodesSlice.redelegationModal.open,
+    nodesSlice.preventRedelegationModalReopening,
+    dispatch,
+  ]);
 
   useEffect(() => {
     const {redelegationModal, preventRedelegationModalReopening} = nodesSlice;
