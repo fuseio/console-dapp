@@ -1,5 +1,6 @@
 import {useEffect, useRef} from "react";
 import {useAccount, useChainId} from "wagmi";
+import {fuse} from "viem/chains";
 import fuseIcon from "@/assets/fuse-icon.svg";
 import Image from "next/image";
 import {
@@ -88,8 +89,7 @@ const Info = () => {
   const nodesSlice = useAppSelector(selectNodesSlice);
   const userNodes = getUserNodes(nodesSlice.user);
 
-  const FUSE_CHAIN_ID = 122;
-  const isOnFuseChain = chainId === FUSE_CHAIN_ID;
+  const isOnFuseChain = chainId === fuse.id;
 
   useEffect(() => {
     if (address) {

@@ -26,6 +26,7 @@ import {
   Table,
 } from "@tanstack/react-table";
 import {useAccount, useChainId} from "wagmi";
+import {fuse} from "viem/chains";
 
 import {Node, Status} from "@/lib/types";
 import {eclipseAddress, getUserNodes} from "@/lib/helpers";
@@ -157,8 +158,7 @@ const VerifierTable = () => {
   const chainId = useChainId();
   const userNodes = getUserNodes(nodesSlice.user);
 
-  const FUSE_CHAIN_ID = 122;
-  const isOnFuseChain = chainId === FUSE_CHAIN_ID;
+  const isOnFuseChain = chainId === fuse.id;
 
   const nodesAddressMap = useMemo(() => {
     const map = new Map();

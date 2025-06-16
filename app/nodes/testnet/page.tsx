@@ -8,6 +8,7 @@ import {useAppDispatch, useAppSelector} from "@/store/store";
 import {setSelectedNavbar} from "@/store/navbarSlice";
 import {selectNodesSlice, setIsChainModalOpen} from "@/store/nodesSlice";
 import {useChainId} from "wagmi";
+import {fuse} from "viem/chains";
 import Footer from "@/components/Footer";
 import NoLicenseModal from "@/components/nodes/NoLicenseModal";
 import NoCapacityModal from "@/components/nodes/NoCapacityModal";
@@ -20,15 +21,13 @@ const Nodes = () => {
   const nodesSlice = useAppSelector(selectNodesSlice);
   const chainId = useChainId();
 
-  const FUSE_CHAIN_ID = 122;
-
   useEffect(() => {
     dispatch(setSelectedNavbar("nodes"));
   }, [dispatch]);
 
   // Auto-close chain modal when switched to Fuse chain
   useEffect(() => {
-    if (nodesSlice.isChainModalOpen && chainId === FUSE_CHAIN_ID) {
+    if (nodesSlice.isChainModalOpen && chainId === fuse.id) {
       dispatch(setIsChainModalOpen(false));
     }
   }, [chainId, nodesSlice.isChainModalOpen, dispatch]);
