@@ -4,7 +4,6 @@ import sFuse from "@/assets/sFuse.svg";
 import weth from "@/assets/weth.svg";
 import usdt from "@/assets/usdt-logo.svg";
 import eth from "@/public/eth.png";
-import fdm from "@/assets/fdm.svg";
 import bnb from "@/assets/bnb.svg";
 import pol from "@/assets/pol-token.svg";
 import maker from "@/assets/maker-token.svg";
@@ -80,13 +79,6 @@ export const coins: CoinConfigLike[] = [
     icon: usdt,
     coinGeckoId: "tether-bridged",
     isStargate: true,
-  },
-  {
-    name: "Freedom",
-    symbol: "FDM",
-    decimals: 18,
-    icon: fdm,
-    coinGeckoId: "freedom-coin",
   },
   {
     name: "BNB",
