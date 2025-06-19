@@ -22,6 +22,7 @@ export interface NodesStateType {
   isNodeInstallModalOpen: boolean;
   isNoLicenseModalOpen: boolean;
   isNoCapacityModalOpen: boolean;
+  isChainModalOpen: boolean;
   delegateLicenseModal: DelegateLicenseModal;
   delegateLicenseStatus: Status;
   user: NodesUser;
@@ -43,6 +44,7 @@ const INIT_STATE: NodesStateType = {
   isNodeInstallModalOpen: false,
   isNoLicenseModalOpen: false,
   isNoCapacityModalOpen: false,
+  isChainModalOpen: false,
   delegateLicenseModal: initDelegateLicenseModal,
   delegateLicenseStatus: Status.IDLE,
   user: initUser,
@@ -366,6 +368,9 @@ const nodesSlice = createSlice({
     setIsNoCapacityModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isNoCapacityModalOpen = action.payload
     },
+    setIsChainModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isChainModalOpen = action.payload
+    },
     setDelegateLicenseModal: (state, action: PayloadAction<DelegateLicenseModal>) => {
       state.delegateLicenseModal = action.payload
     },
@@ -485,6 +490,7 @@ export const {
   setIsNodeInstallModalOpen,
   setIsNoLicenseModalOpen,
   setIsNoCapacityModalOpen,
+  setIsChainModalOpen,
   setDelegateLicenseModal,
   setRevokeLicenseModal,
   setRedelegationModal,
