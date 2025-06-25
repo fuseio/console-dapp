@@ -220,6 +220,16 @@ export const getUserNodes = (user: NodesUser) => {
     canDelegate
   }
 }
+export const getUserNodesV1 = (user: NodesUser) => {
+  const balance = user.newLicences.reduce((acc, licence) => acc + licence.balance, 0);
+  const delegated = user.newDelegations?.reduce((acc, node) => acc + node.NFTAmount, 0) ?? 0;
+  const canDelegate = balance > delegated
+  return {
+    balance,
+    delegated,
+    canDelegate
+  }
+}
 
 export const needsRedelegation = (user: NodesUser): boolean => {
   if (!user) {

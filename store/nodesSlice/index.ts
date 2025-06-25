@@ -25,6 +25,7 @@ export interface NodesStateType {
   isChainModalOpen: boolean;
   delegateLicenseModal: DelegateLicenseModal;
   delegateLicenseStatus: Status;
+  delegateNewLicenseStatus: Status;
   user: NodesUser;
   fetchNodeLicenseBalancesStatus: Status;
   fetchNewNodeLicenseBalancesStatus: Status;
@@ -47,6 +48,7 @@ const INIT_STATE: NodesStateType = {
   isChainModalOpen: false,
   delegateLicenseModal: initDelegateLicenseModal,
   delegateLicenseStatus: Status.IDLE,
+  delegateNewLicenseStatus: Status.IDLE,
   user: initUser,
   fetchNodeLicenseBalancesStatus: Status.IDLE,
   fetchNewNodeLicenseBalancesStatus: Status.IDLE,
@@ -101,19 +103,28 @@ export const delegateNewNodeLicense = createAsyncThunk(
   async ({
     to,
     tokenId,
-    amount
+    amount,
+    userAddress
   }: {
     to: Address,
     tokenId: number,
-    amount: number
+    amount: number,
+    userAddress?: Address
   }, { dispatch }) => {
     try {
       await delegateNewNodeLicenseApi(to, tokenId, amount);
+      if (amount === 0 && userAddress) {
+        await dispatch(fetchDelegationsFromContract({
+          address: userAddress,
+          useNewContract: true
+        }));
+      } else {
+        await dispatch(fetchDelegationsFromContract({
+          address: to,
+          useNewContract: true
+        }));
+      }
 
-      await dispatch(fetchDelegationsFromContract({
-        address: to,
-        useNewContract: true
-      }));
 
       return { success: true };
     } catch (error) {
@@ -179,14 +190,9 @@ export const fetchNodes = createAsyncThunk(
       const { userAddress } = payload;
 
       if (userAddress) {
-        await dispatch(
-          fetchDelegationsFromContract({
-            address: userAddress as `0x${string}`,
-            useNewContract: false,
-          })
-        );
+        console.log("User address available for future delegation fetch:", userAddress);
       } else {
-        console.log("No user address available, skipping delegations fetch");
+        console.log("No user address available");
       }
 
       return nodes.data ?? [];
@@ -234,7 +240,7 @@ export const fetchDelegationsFromContract = createAsyncThunk(
     try {
       const address = params.address;
       const useNewContract = params.useNewContract;
-
+      console.log('useNewContract', useNewContract);
       const state = getState() as any;
       const currentNodes = state.nodes?.nodes || [];
 
@@ -244,7 +250,7 @@ export const fetchDelegationsFromContract = createAsyncThunk(
       });
 
       const delegationsData = await getDelegationsFromContract(address, useNewContract);
-
+      console.log('delegationsData', delegationsData);
       if (!delegationsData.length) {
         return [];
       }
@@ -372,10 +378,20 @@ const nodesSlice = createSlice({
       state.isChainModalOpen = action.payload
     },
     setDelegateLicenseModal: (state, action: PayloadAction<DelegateLicenseModal>) => {
-      state.delegateLicenseModal = action.payload
+      state.delegateLicenseModal = action.payload;
+      // Reset status when opening modal
+      if (action.payload.open) {
+        state.delegateLicenseStatus = Status.IDLE;
+        state.delegateNewLicenseStatus = Status.IDLE;
+      }
     },
     setRevokeLicenseModal: (state, action: PayloadAction<DelegateLicenseModal>) => {
-      state.revokeLicenseModal = action.payload
+      state.revokeLicenseModal = action.payload;
+      // Reset status when opening modal
+      if (action.payload.open) {
+        state.delegateLicenseStatus = Status.IDLE;
+        state.delegateNewLicenseStatus = Status.IDLE;
+      }
     },
     setRedelegationModal: (state, action: PayloadAction<DelegateLicenseModal>) => {
       state.redelegationModal = action.payload
@@ -402,13 +418,13 @@ const nodesSlice = createSlice({
         state.delegateLicenseStatus = Status.ERROR;
       })
       .addCase(delegateNewNodeLicense.pending, (state) => {
-        state.delegateLicenseStatus = Status.PENDING;
+        state.delegateNewLicenseStatus = Status.PENDING;
       })
       .addCase(delegateNewNodeLicense.fulfilled, (state) => {
-        state.delegateLicenseStatus = Status.SUCCESS;
+        state.delegateNewLicenseStatus = Status.SUCCESS;
       })
       .addCase(delegateNewNodeLicense.rejected, (state) => {
-        state.delegateLicenseStatus = Status.ERROR;
+        state.delegateNewLicenseStatus = Status.ERROR;
       })
       .addCase(fetchNodeLicenseBalances.pending, (state) => {
         state.fetchNodeLicenseBalancesStatus = Status.PENDING;
