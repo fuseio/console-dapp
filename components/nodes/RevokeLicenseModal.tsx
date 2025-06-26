@@ -6,10 +6,10 @@ import * as Yup from "yup";
 import {useAccount} from "wagmi";
 import {useAppDispatch, useAppSelector} from "@/store/store";
 import {
-  delegateLicense,
   selectNodesSlice,
   setRevokeLicenseModal,
   resetDelegationStatus,
+  delegateNewNodeLicense,
 } from "@/store/nodesSlice";
 import Spinner from "@/components/ui/Spinner";
 import close from "@/assets/close.svg";
@@ -28,7 +28,7 @@ const RevokeLicenseModal = (): JSX.Element => {
   const nodesSlice = useAppSelector(selectNodesSlice);
   const {address} = useAccount();
 
-  const delegation = nodesSlice.user.delegations.find(
+  const delegation = nodesSlice.user.newDelegations?.find(
     (delegation: Node) =>
       delegation.Address.toLowerCase() ===
       nodesSlice.revokeLicenseModal.address?.toLowerCase()
@@ -37,7 +37,6 @@ const RevokeLicenseModal = (): JSX.Element => {
   const [isVisible, setIsVisible] = useState(false);
   const [isRevoking, setIsRevoking] = useState(false);
 
-  // Reference to store timeout IDs for cleanup
   const timeoutIds = React.useRef<NodeJS.Timeout[]>([]);
 
   useEffect(() => {
@@ -45,35 +44,32 @@ const RevokeLicenseModal = (): JSX.Element => {
   }, [nodesSlice.revokeLicenseModal.open]);
 
   useEffect(() => {
-    if (isRevoking && nodesSlice.delegateLicenseStatus === Status.SUCCESS) {
+    if (isRevoking && nodesSlice.delegateNewLicenseStatus === Status.SUCCESS) {
       setIsRevoking(false);
     }
 
-    if (isRevoking && nodesSlice.delegateLicenseStatus === Status.ERROR) {
+    if (isRevoking && nodesSlice.delegateNewLicenseStatus === Status.ERROR) {
       setIsRevoking(false);
     }
-  }, [nodesSlice.delegateLicenseStatus, isRevoking]);
+  }, [nodesSlice.delegateNewLicenseStatus, isRevoking]);
 
   const handleCloseModal = useCallback(() => {
     setIsVisible(false);
 
-    if (nodesSlice.delegateLicenseStatus === Status.SUCCESS) {
+    if (nodesSlice.delegateNewLicenseStatus === Status.SUCCESS) {
       const timeoutId = setTimeout(() => {
         dispatch(resetDelegationStatus());
       }, 100);
-      // Store timeout ID for cleanup
       timeoutIds.current.push(timeoutId);
     }
 
     const modalTimeoutId = setTimeout(() => {
       dispatch(setRevokeLicenseModal({open: false}));
     }, 100);
-    // Store timeout ID for cleanup
     timeoutIds.current.push(modalTimeoutId);
-  }, [dispatch, nodesSlice.delegateLicenseStatus]);
+  }, [dispatch, nodesSlice.delegateNewLicenseStatus]);
 
   useEffect(() => {
-    // Cleanup function to clear all timeouts when component unmounts
     return () => {
       timeoutIds.current.forEach(clearTimeout);
       timeoutIds.current = [];
@@ -103,11 +99,14 @@ const RevokeLicenseModal = (): JSX.Element => {
         .required("Required"),
     }),
     onSubmit: (values) => {
-      if (nodesSlice.delegateLicenseStatus !== Status.PENDING && !isRevoking) {
+      if (
+        nodesSlice.delegateNewLicenseStatus !== Status.PENDING &&
+        !isRevoking
+      ) {
         setIsRevoking(true);
 
         dispatch(
-          delegateLicense({
+          delegateNewNodeLicense({
             ...values,
             tokenId: values.tokenId,
             amount: 0,
@@ -139,10 +138,10 @@ const RevokeLicenseModal = (): JSX.Element => {
     return <React.Fragment />;
   }
 
-  const isSuccess = nodesSlice.delegateLicenseStatus === Status.SUCCESS;
+  const isSuccess = nodesSlice.delegateNewLicenseStatus === Status.SUCCESS;
   const isPending =
-    nodesSlice.delegateLicenseStatus === Status.PENDING || isRevoking;
-  const isError = nodesSlice.delegateLicenseStatus === Status.ERROR;
+    nodesSlice.delegateNewLicenseStatus === Status.PENDING || isRevoking;
+  const isError = nodesSlice.delegateNewLicenseStatus === Status.ERROR;
 
   return (
     <div

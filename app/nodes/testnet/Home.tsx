@@ -21,9 +21,9 @@ import VerifierTable from "@/components/nodes/VerifierTable";
 import {setIsWalletModalOpen} from "@/store/navbarSlice";
 import {
   eclipseAddress,
-  getUserNodes,
   needsRedelegation,
   hex,
+  getUserNodesV1,
 } from "@/lib/helpers";
 import {Status} from "@/lib/types";
 
@@ -87,7 +87,7 @@ const Info = () => {
   const {address} = useAccount();
   const chainId = useChainId();
   const nodesSlice = useAppSelector(selectNodesSlice);
-  const userNodes = getUserNodes(nodesSlice.user);
+  const userNodes = getUserNodesV1(nodesSlice.user);
 
   const isOnFuseChain = chainId === fuse.id;
 
@@ -161,28 +161,27 @@ const Home = () => {
   useEffect(() => {
     if (!address) return;
 
-    dispatch(
-      fetchNodeLicenseBalances({
-        accounts: Array.from({length: 10}, () => address),
-        tokenIds: Array.from({length: 10}, (_, i) => i),
-      })
-    );
-
-    dispatch(
-      fetchNewNodeLicenseBalances({
-        accounts: Array.from({length: 10}, () => address),
-        tokenIds: Array.from({length: 10}, (_, i) => i),
-      })
-    );
-
-    dispatch(
-      fetchDelegationsFromContract({
-        address: address,
-        useNewContract: false,
-      })
-    );
-
-    dispatch(fetchNewDelegationsFromContract(address));
+    Promise.all([
+      dispatch(
+        fetchNodeLicenseBalances({
+          accounts: Array.from({length: 10}, () => address),
+          tokenIds: Array.from({length: 10}, (_, i) => i),
+        })
+      ),
+      dispatch(
+        fetchNewNodeLicenseBalances({
+          accounts: Array.from({length: 10}, () => address),
+          tokenIds: Array.from({length: 10}, (_, i) => i),
+        })
+      ),
+      dispatch(
+        fetchDelegationsFromContract({
+          address: address,
+          useNewContract: false,
+        })
+      ),
+      dispatch(fetchNewDelegationsFromContract(address)),
+    ]);
   }, [address, dispatch]);
 
   useEffect(() => {

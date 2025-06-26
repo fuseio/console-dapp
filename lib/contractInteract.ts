@@ -181,7 +181,7 @@ export const getOutgoingDelegations = async () => {
 
 export const getNodeLicenseBalances = async (accounts: Address[], tokenIds: bigint[]) => {
   const balances = await publicClient().readContract({
-    address: CONFIG.nodeLicenseAddress,
+    address: CONFIG.nodeLicenseAddressV2,
     abi: ERC1155ABI,
     functionName: "balanceOfBatch",
     args: [accounts, tokenIds],
