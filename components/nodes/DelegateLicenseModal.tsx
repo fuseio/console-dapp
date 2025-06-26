@@ -9,10 +9,10 @@ import {useAccount} from "wagmi";
 import {useAppDispatch, useAppSelector} from "@/store/store";
 import {Error} from "@/components/ui/Form";
 import {
-  delegateLicense,
   selectNodesSlice,
   setDelegateLicenseModal,
   resetDelegationStatus,
+  delegateNewNodeLicense,
 } from "@/store/nodesSlice";
 import Spinner from "@/components/ui/Spinner";
 
@@ -41,23 +41,23 @@ const DelegateLicenseModal = (): JSX.Element => {
   useEffect(() => {
     if (
       isDelegatingRef.current &&
-      nodesSlice.delegateLicenseStatus === Status.SUCCESS
+      nodesSlice.delegateNewLicenseStatus === Status.SUCCESS
     ) {
       isDelegatingRef.current = false;
     }
 
     if (
       isDelegatingRef.current &&
-      nodesSlice.delegateLicenseStatus === Status.ERROR
+      nodesSlice.delegateNewLicenseStatus === Status.ERROR
     ) {
       isDelegatingRef.current = false;
     }
-  }, [nodesSlice.delegateLicenseStatus]);
+  }, [nodesSlice.delegateNewLicenseStatus]);
 
   const handleCloseModal = useCallback(() => {
     setIsVisible(false);
 
-    if (nodesSlice.delegateLicenseStatus === Status.SUCCESS) {
+    if (nodesSlice.delegateNewLicenseStatus === Status.SUCCESS) {
       setTimeout(() => {
         dispatch(resetDelegationStatus());
       }, 100);
@@ -66,7 +66,7 @@ const DelegateLicenseModal = (): JSX.Element => {
     setTimeout(() => {
       dispatch(setDelegateLicenseModal({open: false}));
     }, 100);
-  }, [dispatch, nodesSlice.delegateLicenseStatus]);
+  }, [dispatch, nodesSlice.delegateNewLicenseStatus]);
 
   const handleBackdropClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -78,25 +78,25 @@ const DelegateLicenseModal = (): JSX.Element => {
   );
 
   const availableLicenses = useMemo(() => {
-    if (!nodesSlice.user || !nodesSlice.user.licences) return [];
-    return nodesSlice.user.licences.filter((license) => license.balance > 0);
+    if (!nodesSlice.user || !nodesSlice.user.newLicences) return [];
+    return nodesSlice.user.newLicences.filter((license) => license.balance > 0);
   }, [nodesSlice.user]);
 
   const availableTokensForDelegation = useMemo(() => {
     if (
       !nodesSlice.user ||
-      !nodesSlice.user.licences ||
-      !nodesSlice.user.delegations
+      !nodesSlice.user.newLicences ||
+      !nodesSlice.user.newDelegations
     ) {
       return {};
     }
 
     const available: Record<number, number> = {};
-    nodesSlice.user.licences.forEach((license) => {
+    nodesSlice.user.newLicences.forEach((license) => {
       available[license.tokenId] = license.balance;
     });
 
-    nodesSlice.user.delegations.forEach((delegation) => {
+    nodesSlice.user.newDelegations.forEach((delegation) => {
       const tokenId = delegation.NFTTokenID + 1;
       if (available[tokenId]) {
         available[tokenId] = Math.max(
@@ -136,7 +136,7 @@ const DelegateLicenseModal = (): JSX.Element => {
         isDelegatingRef.current = true;
 
         await dispatch(
-          delegateLicense({
+          delegateNewNodeLicense({
             to: values.to,
             tokenId: values.tokenId,
             amount: values.amount,
@@ -194,11 +194,11 @@ const DelegateLicenseModal = (): JSX.Element => {
     return <React.Fragment />;
   }
 
-  const isSuccess = nodesSlice.delegateLicenseStatus === Status.SUCCESS;
+  const isSuccess = nodesSlice.delegateNewLicenseStatus === Status.SUCCESS;
   const isPending =
-    nodesSlice.delegateLicenseStatus === Status.PENDING ||
+    nodesSlice.delegateNewLicenseStatus === Status.PENDING ||
     isDelegatingRef.current;
-  const isError = nodesSlice.delegateLicenseStatus === Status.ERROR;
+  const isError = nodesSlice.delegateNewLicenseStatus === Status.ERROR;
 
   return (
     <div

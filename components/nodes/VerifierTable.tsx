@@ -29,7 +29,7 @@ import {useAccount, useChainId} from "wagmi";
 import {fuse} from "viem/chains";
 
 import {Node, Status} from "@/lib/types";
-import {eclipseAddress, getUserNodes} from "@/lib/helpers";
+import {eclipseAddress, getUserNodesV1} from "@/lib/helpers";
 import {useAppDispatch, useAppSelector} from "@/store/store";
 import {
   fetchNodes,
@@ -40,7 +40,7 @@ import {
   setIsNoCapacityModalOpen,
   setIsNoLicenseModalOpen,
   setIsChainModalOpen,
-  fetchDelegationsFromContract,
+  fetchNewDelegationsFromContract,
 } from "@/store/nodesSlice";
 import {Notice, renderPageNumbers, Skeleton} from "@/components/ui/Table";
 
@@ -116,7 +116,7 @@ const Rows = ({table, nodesSlice, isMyDelegatesTab}: RowsProps) => {
   }
 
   if (isMyDelegatesTab) {
-    if (nodesSlice.fetchDelegationsFromContractStatus === Status.PENDING) {
+    if (nodesSlice.fetchNewDelegationsFromContractStatus === Status.PENDING) {
       return (
         <Skeleton length={3} span={table.getVisibleFlatColumns().length} />
       );
@@ -156,7 +156,7 @@ const VerifierTable = () => {
   const nodesSlice = useAppSelector(selectNodesSlice);
   const {address} = useAccount();
   const chainId = useChainId();
-  const userNodes = getUserNodes(nodesSlice.user);
+  const userNodes = getUserNodesV1(nodesSlice.user);
 
   const isOnFuseChain = chainId === fuse.id;
 
@@ -173,11 +173,18 @@ const VerifierTable = () => {
       return nodesSlice.nodes;
     }
 
-    if (nodesSlice.user.delegations.length === 0) {
+    if (nodesSlice.fetchNewDelegationsFromContractStatus === Status.PENDING) {
       return [];
     }
 
-    return nodesSlice.user.delegations.map((delegation) => {
+    if (
+      !nodesSlice.user.newDelegations ||
+      nodesSlice.user.newDelegations.length === 0
+    ) {
+      return [];
+    }
+
+    return nodesSlice.user.newDelegations.map((delegation) => {
       const nodeData = nodesAddressMap.get(delegation.Address.toLowerCase());
 
       return {
@@ -190,7 +197,12 @@ const VerifierTable = () => {
         Status: nodeData?.Status || "Unknown",
       };
     });
-  }, [isMyDelegatesTab, nodesAddressMap, nodesSlice.user.delegations]);
+  }, [
+    isMyDelegatesTab,
+    nodesAddressMap,
+    nodesSlice.user.newDelegations,
+    nodesSlice.fetchNewDelegationsFromContractStatus,
+  ]);
 
   const columns = useMemo<ColumnDef<Node, any>[]>(
     () => [
@@ -379,21 +391,16 @@ const VerifierTable = () => {
     if (
       address &&
       !hasFetchedDelegations &&
-      nodesSlice.fetchDelegationsFromContractStatus !== Status.PENDING
+      nodesSlice.fetchNewDelegationsFromContractStatus !== Status.PENDING
     ) {
-      dispatch(
-        fetchDelegationsFromContract({
-          address,
-          useNewContract: false,
-        })
-      );
+      dispatch(fetchNewDelegationsFromContract(address));
       setHasFetchedDelegations(true);
     }
   }, [
     address,
     dispatch,
     hasFetchedDelegations,
-    nodesSlice.fetchDelegationsFromContractStatus,
+    nodesSlice.fetchNewDelegationsFromContractStatus,
   ]);
 
   useEffect(() => {
@@ -426,45 +433,28 @@ const VerifierTable = () => {
   }, [address]);
 
   useEffect(() => {
-    const modalJustClosed =
-      !nodesSlice.revokeLicenseModal.open && isMyDelegatesTab && address;
+    const modalJustClosed = !nodesSlice.revokeLicenseModal.open && address;
 
     if (modalJustClosed) {
       console.log("Revoke modal just closed, refreshing delegations");
 
       setHasFetchedDelegations(false);
 
-      dispatch(
-        fetchDelegationsFromContract({
-          address,
-          useNewContract: false,
-        })
-      );
+      dispatch(fetchNewDelegationsFromContract(address));
     }
-  }, [nodesSlice.revokeLicenseModal.open, isMyDelegatesTab, address, dispatch]);
+  }, [nodesSlice.revokeLicenseModal.open, address, dispatch]);
 
   useEffect(() => {
-    const modalJustClosed =
-      !nodesSlice.delegateLicenseModal.open && isMyDelegatesTab && address;
+    const modalJustClosed = !nodesSlice.delegateLicenseModal.open && address;
 
     if (modalJustClosed) {
       console.log("Delegate modal just closed, refreshing delegations");
 
       setHasFetchedDelegations(false);
 
-      dispatch(
-        fetchDelegationsFromContract({
-          address,
-          useNewContract: false,
-        })
-      );
+      dispatch(fetchNewDelegationsFromContract(address));
     }
-  }, [
-    nodesSlice.delegateLicenseModal.open,
-    isMyDelegatesTab,
-    address,
-    dispatch,
-  ]);
+  }, [nodesSlice.delegateLicenseModal.open, address, dispatch]);
 
   return (
     <section className="flex flex-col gap-4">
