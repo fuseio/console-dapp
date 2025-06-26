@@ -1,4 +1,4 @@
-import {useState, useMemo, useCallback, useEffect, useRef} from "react";
+import {useState, useMemo, useCallback, useEffect} from "react";
 import Image, {StaticImageData} from "next/image";
 import {
   ChevronUp,
@@ -40,7 +40,6 @@ import {
   setIsNoCapacityModalOpen,
   setIsNoLicenseModalOpen,
   setIsChainModalOpen,
-  fetchDelegationsFromContract,
   fetchNewDelegationsFromContract,
 } from "@/store/nodesSlice";
 import {Notice, renderPageNumbers, Skeleton} from "@/components/ui/Table";
