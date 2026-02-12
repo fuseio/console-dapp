@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
 import { OriginalTokenBridgeAbi } from "@/lib/abi/OriginalTokenBridge";
-import { AdapterParams } from "@layerzerolabs/ui-core";
-import { serializeAdapterParams } from "@layerzerolabs/ui-evm";
+import { encodeAdapterParamsV1 } from "@/lib/layerzero";
 import {
   getPublicClient,
   getWalletClient,
@@ -39,13 +38,13 @@ export const bridgeOriginal = async (
     functionName: "minDstGasLookup",
     args: [dstChainId, 0],
   });
-  const adapterParams = AdapterParams.forV1(Number(dstGasLimit));
+  const adapterParams = encodeAdapterParamsV1(Number(dstGasLimit));
   const nativeFee = (
     await publicClient.readContract({
       address: bridgeAddress,
       abi: OriginalTokenBridgeAbi,
       functionName: "estimateBridgeFee",
-      args: [false, serializeAdapterParams(adapterParams) as Address],
+      args: [false, adapterParams],
     })
   )[0];
   const increasedNativeFee = (Number(nativeFee) * 1.2).toFixed(0);
@@ -71,7 +70,7 @@ export const bridgeOriginal = async (
         amt,
         address,
         callParams,
-        serializeAdapterParams(adapterParams) as Address,
+        adapterParams,
       ],
       value: BigInt(increasedNativeFee),
     });
@@ -107,13 +106,13 @@ export const bridgeNative = async (
     functionName: "minDstGasLookup",
     args: [dstChainId, 0],
   });
-  const adapterParams = AdapterParams.forV1(Number(dstGasLimit));
+  const adapterParams = encodeAdapterParamsV1(Number(dstGasLimit));
   const nativeFee = (
     await publicClient.readContract({
       address: bridgeAddress,
       abi: OriginalTokenBridgeAbi,
       functionName: "estimateBridgeFee",
-      args: [false, serializeAdapterParams(adapterParams) as Address],
+      args: [false, adapterParams],
     })
   )[0];
   const increasedNativeFee = (BigInt(nativeFee) * BigInt(12)) / BigInt(10);
@@ -138,7 +137,7 @@ export const bridgeNative = async (
         amt,
         address,
         callParams,
-        serializeAdapterParams(adapterParams) as Address,
+        adapterParams,
       ],
       value: amt + BigInt(increasedNativeFee),
     });
@@ -164,13 +163,13 @@ export const estimateOriginalNativeFee = async (
     functionName: "minDstGasLookup",
     args: [138, 0],
   });
-  const adapterParams = AdapterParams.forV1(Number(dstGasLimit));
+  const adapterParams = encodeAdapterParamsV1(Number(dstGasLimit));
   const nativeFee = (
     await publicClient(rpcUrl).readContract({
       address: bridgeAddress,
       abi: OriginalTokenBridgeAbi,
       functionName: "estimateBridgeFee",
-      args: [false, serializeAdapterParams(adapterParams) as Address],
+      args: [false, adapterParams],
     })
   )[0];
   const increasedNativeFee = (Number(nativeFee) * 1.2).toFixed(0);

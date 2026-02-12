@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
 import { WrappedTokenBridgeAbi } from "@/lib/abi/WrappedTokenBridge";
-import { AdapterParams } from "@layerzerolabs/ui-core";
-import { serializeAdapterParams } from "@layerzerolabs/ui-evm";
+import { encodeAdapterParamsV1 } from "@/lib/layerzero";
 import {
   getAccount,
   getPublicClient,
@@ -40,7 +39,7 @@ export const bridgeWrapped = async (
     args: [lzChainId, 1],
   });
   const amt = parseUnits(amount, decimals);
-  const adapterParams = AdapterParams.forV1(Number(dstGasLimit));
+  const adapterParams = encodeAdapterParamsV1(Number(dstGasLimit));
   const nativeFee = (
     await publicClient.readContract({
       address: bridgeAddress,
@@ -49,7 +48,7 @@ export const bridgeWrapped = async (
       args: [
         lzChainId,
         false,
-        serializeAdapterParams(adapterParams) as Address,
+        adapterParams,
       ],
     })
   )[0];
@@ -76,7 +75,7 @@ export const bridgeWrapped = async (
         address,
         false,
         callParams,
-        serializeAdapterParams(adapterParams) as Address,
+        adapterParams,
       ],
       value: increasedNativeFee,
       connector,
@@ -112,13 +111,13 @@ export const bridgeAndUnwrapNative = async (
     args: [lzChainId, 1],
   });
   const amt = parseUnits(amount, decimals);
-  const adapterParams = AdapterParams.forV1(Number(dstGasLimit));
+  const adapterParams = encodeAdapterParamsV1(Number(dstGasLimit));
   const nativeFee = (
     await publicClient.readContract({
       address: bridgeAddress,
       abi: WrappedTokenBridgeAbi,
       functionName: "estimateBridgeFee",
-      args: [lzChainId, true, serializeAdapterParams(adapterParams) as Address],
+      args: [lzChainId, true, adapterParams],
     })
   )[0];
   const increasedNativeFee = (Number(nativeFee) * 1.2).toFixed(0);
@@ -145,7 +144,7 @@ export const bridgeAndUnwrapNative = async (
         address,
         true,
         callParams,
-        serializeAdapterParams(adapterParams) as Address,
+        adapterParams,
       ],
       value: BigInt(increasedNativeFee),
     });
@@ -172,7 +171,7 @@ export const estimateWrappedNativeFee = async (
     functionName: "minDstGasLookup",
     args: [lzChainId, 1],
   });
-  const adapterParams = AdapterParams.forV1(Number(dstGasLimit));
+  const adapterParams = encodeAdapterParamsV1(Number(dstGasLimit));
   const nativeFee = (
     await publicClient(rpcUrl).readContract({
       address: bridgeAddress,
@@ -181,7 +180,7 @@ export const estimateWrappedNativeFee = async (
       args: [
         lzChainId,
         false,
-        serializeAdapterParams(adapterParams) as Address,
+        adapterParams,
       ],
     })
   )[0];
