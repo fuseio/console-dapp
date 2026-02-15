@@ -4,10 +4,9 @@ import info from "@/assets/info.svg";
 import { MessageStatus } from "@layerzerolabs/scan-client";
 import {
   getEstimatedTransactionTime,
-  getNetworkByChainKey,
+  getNetworkName,
   getScanLink,
-} from "@layerzerolabs/ui-core";
-import { getChainKey } from "@layerzerolabs/lz-sdk";
+} from "@/lib/layerzero";
 import { TransactionType } from "@/store/transactionsSlice";
 import Pill from "./Pill";
 import Image from "next/image";
@@ -33,15 +32,13 @@ const Transaction = ({
         <div className="flex col-span-4 justify-between md:col-span-4">
           <span>
             {
-              getNetworkByChainKey(getChainKey(transactionHashes.srcChainId))
-                .name
+              getNetworkName(transactionHashes.srcChainId)
             }
           </span>
           <Image src={right} alt="right" className="h-3 mt-[3px]" />
           <span>
             {
-              getNetworkByChainKey(getChainKey(transactionHashes.dstChainId))
-                .name
+              getNetworkName(transactionHashes.dstChainId)
             }
           </span>
         </div>
