@@ -26,8 +26,7 @@ import {
   estimateWrappedFee,
   selectFeeSlice,
 } from "@/store/feeSlice";
-import { getNativeCurrency } from "@layerzerolabs/ui-core";
-import { getChainKey } from "@layerzerolabs/lz-sdk";
+import { getNativeCurrencySymbol } from "@/lib/layerzero";
 import ToastPane from "@/components/bridge/ToastPane";
 import Pill from "@/components/bridge/Pill";
 import { useAccount, useBalance, useBlockNumber, useConfig } from "wagmi";
@@ -896,15 +895,13 @@ const Home = () => {
                     <span>
                       {(feeSlice.destGasFee + feeSlice.sourceGasFee).toFixed(5)}{" "}
                       {
-                        getNativeCurrency(
-                          getChainKey(
-                            selected === 0
-                              ? appConfig.wrappedBridge.chains[
-                                  selectedChainSlice.depositSelectedChainItem
-                                ].lzChainId
-                              : 138
-                          )
-                        ).symbol
+                        getNativeCurrencySymbol(
+                          selected === 0
+                            ? appConfig.wrappedBridge.chains[
+                                selectedChainSlice.depositSelectedChainItem
+                              ].lzChainId
+                            : 138
+                        )
                       }
                       {" (~$" +
                         (

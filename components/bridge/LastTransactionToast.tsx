@@ -8,10 +8,9 @@ import { selectTransactionsSlice } from "@/store/transactionsSlice";
 import { MessageStatus } from "@layerzerolabs/scan-client";
 import {
   getEstimatedTransactionTime,
-  getNetworkByChainKey,
+  getNetworkName,
   getScanLink,
-} from "@layerzerolabs/ui-core";
-import { getChainKey } from "@layerzerolabs/lz-sdk";
+} from "@/lib/layerzero";
 import Pill from "./Pill";
 import { toggleLastTransactionToast } from "@/store/toastSlice";
 import Image from "next/image";
@@ -52,21 +51,17 @@ const LastTransactionToast = () => {
               <div className="flex font-medium mt-1 text-black">
                 <span>
                   {
-                    getNetworkByChainKey(
-                      getChainKey(
-                        transactionsSlice.transactionHashes[0].srcChainId
-                      )
-                    ).name
+                    getNetworkName(
+                      transactionsSlice.transactionHashes[0].srcChainId
+                    )
                   }
                 </span>
                 <Image src={right} alt="right" className="ml-2" />
                 <span className="ml-2">
                   {
-                    getNetworkByChainKey(
-                      getChainKey(
-                        transactionsSlice.transactionHashes[0].dstChainId
-                      )
-                    ).name
+                    getNetworkName(
+                      transactionsSlice.transactionHashes[0].dstChainId
+                    )
                   }
                 </span>
               </div>
