@@ -20,13 +20,8 @@ import zap from "@/assets/zap.svg"
 import currencyExchange from "@/assets/currency-exchange.svg"
 import automation from "@/assets/automation.svg"
 import shield from "@/assets/shield.svg"
-import dollarLineBorder from "@/assets/dollar-line-border.svg"
-import verified from "@/assets/verified.svg"
-import parachute from "@/assets/parachute.svg"
-import starBorder from "@/assets/star-border.svg"
 import block from "@/assets/block.svg"
 import Link from "next/link";
-import EdisonBanner from "@/components/build/EdisonBanner";
 
 const apps = [
   {
@@ -173,57 +168,6 @@ const fuseboxFeatures = [
   }
 ]
 
-const edisonFeatures = [
-  {
-    name: "Mint a branded Stablecoin",
-    description: "Create your own price-stable token on Fuse",
-    image: {
-      src: dollarLineBorder,
-      width: 40,
-      height: 40
-    },
-    classNames: {
-      description: "max-w-52"
-    }
-  },
-  {
-    name: "Create a payment link",
-    description: "Accept crypto payments with simple links",
-    image: {
-      src: verified,
-      width: 40,
-      height: 40
-    },
-    classNames: {
-      description: "max-w-52"
-    }
-  },
-  {
-    name: "Create an Airdrop",
-    description: "Distribute tokens to your community easily",
-    image: {
-      src: parachute,
-      width: 40,
-      height: 40
-    },
-    classNames: {
-      description: "max-w-52"
-    }
-  },
-  {
-    name: "Research a token",
-    description: "Get insights on any token on the Fuse ecosystem",
-    image: {
-      src: starBorder,
-      width: 40,
-      height: 40
-    },
-    classNames: {
-      description: "max-w-52"
-    }
-  }
-]
-
 const Home = () => {
   const router = useRouter();
   const operatorSlice = useAppSelector(selectOperatorSlice);
@@ -240,9 +184,6 @@ const Home = () => {
             <h1 className="text-[70px] md:text-[32px] leading-tight text-fuse-black font-semibold max-w-[729.99px] mt-[13.98px] mb-[22px]">
               Connect your Business to Web3
             </h1>
-            <p className="text-[20px]/7 text-text-dark-gray mb-[50.52px] md:mb-[18px]">
-              Our AI agent Edison will help you build your idea from A to Z
-            </p>
             <Button
               text="Start building"
               className="transition ease-in-out text-lg leading-none font-semibold bg-pale-green rounded-full hover:bg-white"
@@ -283,26 +224,6 @@ const Home = () => {
         <div className="grid grid-cols-4 gap-10 lg:grid-cols-2 md:grid-cols-1">
           {fuseboxFeatures.map((feature, i) => (
             <article key={i} className="flex flex-col items-start gap-3 bg-white rounded-[20px] p-5">
-              <div className="flex items-center w-10 h-10">
-                <Image src={feature.image.src} alt={feature.name} width={feature.image.width} height={feature.image.height} />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <p className="text-[1.25rem] font-semibold">
-                  {feature.name}
-                </p>
-                <p className={cn("text-sm text-text-dark-gray", feature.classNames?.description)}>
-                  {feature.description}
-                </p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-      <section className="w-8/9 flex flex-col gap-10 md:w-9/10 max-w-7xl mx-auto py-28 md:py-16">
-        <EdisonBanner />
-        <div className="grid grid-cols-4 gap-10 lg:grid-cols-2 md:grid-cols-1">
-          {edisonFeatures.map((feature, i) => (
-            <article key={i} className="flex flex-col items-start gap-3 bg-white rounded-[20px] p-5 pr-4">
               <div className="flex items-center w-10 h-10">
                 <Image src={feature.image.src} alt={feature.name} width={feature.image.width} height={feature.image.height} />
               </div>
