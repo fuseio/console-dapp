@@ -942,10 +942,17 @@ const operatorSlice = createSlice({
       const operator = localStorage.getItem("Fuse-operator");
       const isAuthenticated = localStorage.getItem("Fuse-isOperatorAuthenticated");
       const operatorContactDetail = localStorage.getItem("Fuse-operatorContactDetail");
+      const isAuthenticatedHydrated = isAuthenticated ? JSON.parse(isAuthenticated) : false;
       state.isOperatorExist = isOperatorExist ? JSON.parse(isOperatorExist) : false;
-      state.isValidated = isValidated ? JSON.parse(isValidated) : false;
       state.operator = operator ? JSON.parse(operator) : initOperator;
-      state.isAuthenticated = isAuthenticated ? JSON.parse(isAuthenticated) : false;
+      state.isAuthenticated = isAuthenticatedHydrated;
+      // A persisted "validated" flag is only trustworthy when the user is also
+      // authenticated. Without authentication it is a stale intermediate state (the
+      // user signed the EOA validation message but never finished registering).
+      // Restoring it on reload makes useOperatorRegistration skip the signature step,
+      // stranding the user on the Operator Registration Error screen, so reset it
+      // unless authenticated.
+      state.isValidated = isAuthenticatedHydrated && isValidated ? JSON.parse(isValidated) : false;
       state.operatorContactDetail = operatorContactDetail ? JSON.parse(operatorContactDetail) : initOperatorContactDetail;
       state.isHydrated = true;
     }
