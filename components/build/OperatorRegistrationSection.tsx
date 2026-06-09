@@ -56,7 +56,7 @@ const OperatorRegistrationSection = ({
     );
   }
 
-  return <OperatorRegistrationError />;
+  return <OperatorRegistrationError error={operatorSlice.registrationError} />;
 }
 
 export default OperatorRegistrationSection;

@@ -65,6 +65,7 @@ export interface OperatorStateType {
   isLogin: boolean;
   isLoggedIn: boolean;
   isLoginError: boolean;
+  registrationError: string;
   isOperatorExist: boolean;
   isAuthenticated: boolean;
   isHydrated: boolean;
@@ -112,6 +113,7 @@ const INIT_STATE: OperatorStateType = {
   isLogin: false,
   isLoggedIn: false,
   isLoginError: false,
+  registrationError: "",
   isAuthenticated: false,
   isOperatorExist: false,
   isHydrated: false,
@@ -972,14 +974,16 @@ const operatorSlice = createSlice({
       })
       .addCase(validateOperator.pending, (state) => {
         state.isValidatingOperator = true;
+        state.registrationError = "";
       })
       .addCase(validateOperator.fulfilled, (state) => {
         state.isValidatingOperator = false;
         state.isValidated = true;
         localStorage.setItem("Fuse-isValidated", JSON.stringify(true));
       })
-      .addCase(validateOperator.rejected, (state) => {
+      .addCase(validateOperator.rejected, (state, action) => {
         state.isValidatingOperator = false;
+        state.registrationError = action.error?.message ?? "Failed to validate your account";
       })
       .addCase(fetchOperator.pending, (state) => {
         state.isFetchingOperator = true;
@@ -999,6 +1003,7 @@ const operatorSlice = createSlice({
       .addCase(createOperator.pending, (state) => {
         state.isLoginError = false;
         state.isCreatingOperator = true;
+        state.registrationError = "";
       })
       .addCase(createOperator.fulfilled, (state, action) => {
         state.operator = action.payload;
@@ -1012,8 +1017,9 @@ const operatorSlice = createSlice({
         localStorage.setItem("Fuse-isOperatorAuthenticated", "true");
         localStorage.removeItem("Fuse-operatorContactDetail");
       })
-      .addCase(createOperator.rejected, (state) => {
+      .addCase(createOperator.rejected, (state, action) => {
         state.isCreatingOperator = false;
+        state.registrationError = action.error?.message ?? "Failed to create your operator account";
       })
       .addCase(generateSecretApiKey.pending, (state) => {
         state.isGeneratingSecretApiKey = true;
