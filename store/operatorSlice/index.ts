@@ -16,6 +16,19 @@ import { getERC20Balance } from "@/lib/erc20";
 import { ERC20ABI } from "@/lib/abi/ERC20";
 import { Account, parseEther, parseUnits } from "viem";
 
+// Builds a human-readable message from an API/axios error, preferring the
+// backend's response body so the registration error screen can show a specific
+// reason. The original error message (which includes the HTTP status) is kept
+// in parentheses so callers that branch on it (e.g. withRefreshToken checking
+// for "401") keep working.
+const getApiErrorMessage = (error: any, fallback: string): string => {
+  const data = error?.response?.data;
+  const apiMessage =
+    typeof data === "string" ? data : data?.message ?? data?.error;
+  const baseMessage = error?.message ?? fallback;
+  return apiMessage ? `${apiMessage} (${baseMessage})` : baseMessage;
+};
+
 const initOperator: Operator = {
   user: {
     id: "",
@@ -199,7 +212,7 @@ export const validateOperator = createAsyncThunk<
       return true;
     } catch (error) {
       console.error(error);
-      throw error;
+      throw new Error(getApiErrorMessage(error, "Failed to validate your account"));
     }
   }
 );
@@ -337,7 +350,7 @@ export const createOperator = createAsyncThunk<
       return operator;
     } catch (error) {
       console.log(error);
-      throw error;
+      throw new Error(getApiErrorMessage(error, "Failed to create your operator account"));
     }
   }
 );
@@ -733,7 +746,7 @@ export const fetchSponsoredTransactions = createAsyncThunk(
   async () => {
     try {
       const sponsoredTransactionCount = await fetchSponsoredTransactionCount()
-      return sponsoredTransactionCount.sponsoredTransactions;
+      return sponsoredTransactionCount?.sponsoredTransactions ?? 0;
     } catch (error) {
       console.log(error);
       throw error;
@@ -1103,7 +1116,7 @@ const operatorSlice = createSlice({
       })
       .addCase(fetchSponsoredTransactions.fulfilled, (state, action) => {
         state.isFetchingSponsoredTransactions = false;
-        state.sponsoredTransactions = action.payload;
+        state.sponsoredTransactions = Number.isFinite(action.payload) ? action.payload : 0;
       })
       .addCase(fetchSponsoredTransactions.rejected, (state) => {
         state.isFetchingSponsoredTransactions = false;
