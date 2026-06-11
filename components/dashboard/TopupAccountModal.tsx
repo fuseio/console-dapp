@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { chargeBridge, fetchBridgeSupportedTokens, selectOperatorSlice, setIsTopupAccountModalOpen, withRefreshToken } from "@/store/operatorSlice";
+import { chargeBridge, fetchBridgeSupportedTokens, selectOperatorSlice, setIsTopupAccountModalOpen, withRefreshToken, wrapToken } from "@/store/operatorSlice";
 import copy from "@/assets/copy-black.svg";
 import qr from "@/assets/qr.svg";
 import leftArrow from "@/assets/left-arrow.svg";
@@ -33,6 +33,10 @@ type TopupFormValues = {
   amount: string;
 }
 
+type WrapTokenFormValues = {
+  amount: string;
+}
+
 type CopyAddressProps = {
   setQrCode: (qrCode: Address) => void;
   address: Address;
@@ -49,6 +53,10 @@ type BridgeTimeProps = {
   setBridgeEndTime: (bridgeEndTime: BridgeEndTime) => void;
 }
 
+type FuseNetworkProps = {
+  setQrCode: (qrCode: Address) => void;
+}
+
 type OtherNetworkProps = {
   setQrCode: (qrCode: Address) => void;
 }
@@ -63,15 +71,15 @@ const chains: Record<string, string> = {
 
 function filterTokens(data: ChargeBridgeSupportedTokens, tokenSymbol = "FUSE") {
   const filteredData: ChargeBridgeSupportedTokens = {};
-  
+
   Object.keys(data).forEach(chainId => {
-      const filteredTokens = data[chainId].filter(token => token.symbol === tokenSymbol);
-      
-      if (filteredTokens.length > 0) {
-          filteredData[chainId] = filteredTokens;
-      }
+    const filteredTokens = data[chainId].filter(token => token.symbol === tokenSymbol);
+
+    if (filteredTokens.length > 0) {
+      filteredData[chainId] = filteredTokens;
+    }
   });
-  
+
   return filteredData;
 }
 
@@ -245,6 +253,62 @@ const BridgeTime = ({ bridgeEndTime, setBridgeEndTime }: BridgeTimeProps) => {
   )
 }
 
+const FuseNetwork = ({ setQrCode }: FuseNetworkProps) => {
+  const dispatch = useAppDispatch();
+  const operatorSlice = useAppSelector(selectOperatorSlice);
+
+  const formik = useFormik<WrapTokenFormValues>({
+    initialValues: {
+      amount: "",
+    },
+    validationSchema: Yup.object({
+      amount: Yup.string().required('Required'),
+    }),
+    onSubmit: values => dispatch(wrapToken(values)),
+  });
+
+  return (
+    <div className="flex flex-col gap-4">
+      <CopyAddress
+        setQrCode={setQrCode}
+        address={operatorSlice.operator.user.smartWalletAddress}
+        alt="copy smart contract account address"
+      />
+      <div className="flex items-center gap-2">
+        <hr className="w-full border-gray-alpha-40" />
+        <span className="text-xs leading-none text-text-dark-gray">OR</span>
+        <hr className="w-full border-gray-alpha-40" />
+      </div>
+      <form
+        onSubmit={formik.handleSubmit}
+        className="flex flex-col gap-4"
+      >
+        <input
+          type="text"
+          name="amount"
+          id="amount"
+          className={cn("w-full h-12 p-4 rounded-full bg-light-gray border border-light-gray",
+            (formik.errors.amount && formik.touched.amount) && "border-[#FD0F0F]"
+          )}
+          placeholder="FUSE amount"
+          value={formik.values.amount}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+        />
+        <button
+          type="submit"
+          className={cn("transition ease-in-out flex justify-center items-center gap-2 p-3 leading-none font-semibold border rounded-full hover:bg-[transparent]",
+            (operatorSlice.wrapTokenStatus === Status.ERROR) ? 'bg-[#FD0F0F] border-[#FD0F0F] text-white hover:text-[#FD0F0F]' : 'bg-black border-black text-white hover:text-black'
+          )}
+        >
+          {operatorSlice.wrapTokenStatus === Status.SUCCESS ? 'Successfully wrapped' : 'Wrap'}
+          {operatorSlice.wrapTokenStatus === Status.PENDING && <Spinner />}
+        </button>
+      </form>
+    </div>
+  )
+}
+
 const OtherNetwork = ({ setQrCode }: OtherNetworkProps) => {
   const dispatch = useAppDispatch();
   const operatorSlice = useAppSelector(selectOperatorSlice);
@@ -401,10 +465,8 @@ const TopupAccountModal = (): JSX.Element => {
                 </p>
                 <Tabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
                 {selectedTab === Tab.FUSE && (
-                  <CopyAddress
+                  <FuseNetwork
                     setQrCode={setQrCode}
-                    address={operatorSlice.operator.user.smartWalletAddress}
-                    alt="copy smart contract account address"
                   />
                 )}
                 {selectedTab === Tab.OTHER && (

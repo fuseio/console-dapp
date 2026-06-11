@@ -1,9 +1,10 @@
 import { ERC20ABI } from "@/lib/abi/ERC20";
-import { Address, createPublicClient, http, parseUnits } from "viem";
+import { Address, createPublicClient, http, parseEther, parseUnits } from "viem";
 import { getWalletClient, waitForTransactionReceipt } from "wagmi/actions";
 import { hex } from "./helpers";
 import { config } from "./wagmi";
 import { fuse } from "viem/chains";
+import { WrappedTokenABI } from "@/lib/abi/WrappedToken";
 
 const publicClient = (rpcUrl: string) => {
   return createPublicClient({
@@ -83,3 +84,28 @@ export const getERC20Decimals = async (
   });
   return decimals;
 };
+
+export const depositToken = async (
+  contractAddress: Address,
+  amount: string,
+  chainId: number = fuse.id
+) => {
+  const walletClient = await getWalletClient(config, { chainId });
+  if (!walletClient) {
+    return;
+  }
+  const accounts = await walletClient.getAddresses();
+  const account = accounts[0];
+  const tx = await walletClient.writeContract({
+    account,
+    address: contractAddress,
+    abi: WrappedTokenABI,
+    functionName: "deposit",
+    args: [],
+    value: parseEther(amount),
+  });
+  await waitForTransactionReceipt(config, {
+    hash: tx,
+  });
+  return tx;
+}
