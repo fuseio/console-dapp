@@ -107,6 +107,11 @@
     "website": "https://zoyadev.com"
   },
   "0x53e2033F86C1a54bEbAE893DC8C9fAe179b3Faa2": {
+    "name": "Coineus_old",
+    "image": "logos/Coineus.jpg",
+    "website": "https://coineus.app"
+  },
+  "0x8446d85c3a62efe4f6d39cb7dadee523a3cf96a1": {
     "name": "Coineus",
     "image": "logos/Coineus.jpg",
     "website": "https://coineus.app"
