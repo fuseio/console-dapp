@@ -24,6 +24,8 @@ import {
 } from "@/store/operatorSlice";
 import {
   useConnectWithOtp,
+  useEmbeddedWallet,
+  useIsLoggedIn,
   useSocialAccounts,
   useWalletOptions,
 } from "@dynamic-labs/sdk-react-core";
@@ -52,8 +54,17 @@ export const Wallet = ({className}: WalletProps): JSX.Element => {
   const emailRef = useRef<HTMLInputElement>(null);
   const {connectWithEmail, verifyOneTimePassword} = useConnectWithOtp();
   const [isProcessingEmail, setIsProcessingEmail] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [otpError, setOtpError] = useState("");
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [isConnectingWallet, setIsConnectingWallet] = useState(false);
+  const [walletConnectionError, setWalletConnectionError] = useState("");
+  const [isEmbeddedAuthFlow, setIsEmbeddedAuthFlow] = useState(false);
+  const walletCreationAttempted = useRef(false);
   const dispatch = useAppDispatch();
-  const {address} = useAccount();
+  const {address, isConnected} = useAccount();
+  const isLoggedIn = useIsLoggedIn();
+  const {createEmbeddedWallet, userHasEmbeddedWallet} = useEmbeddedWallet();
   const {signInWithSocialAccount} = useSocialAccounts();
   const {selectWalletOption} = useWalletOptions();
   const {isLogin, isOperatorWalletModalOpen} =
@@ -67,12 +78,19 @@ export const Wallet = ({className}: WalletProps): JSX.Element => {
     event.preventDefault();
     if (!emailRef.current?.value) return;
 
+    setEmailError("");
+    setOtpError("");
+    setWalletConnectionError("");
+    walletCreationAttempted.current = false;
+
     try {
       await connectWithEmail(emailRef.current.value);
       setIsProcessingEmail(true);
+      setIsEmbeddedAuthFlow(true);
       localStorage.setItem("Fuse-loginHint", emailRef.current.value);
     } catch (error) {
       console.error("Email connection failed:", error);
+      setEmailError("Couldn't send the verification code. Check the address and try again.");
     }
   };
 
@@ -83,10 +101,21 @@ export const Wallet = ({className}: WalletProps): JSX.Element => {
 
     const otp = event.currentTarget.otp.value;
 
+    setOtpError("");
+    setWalletConnectionError("");
+    setIsVerifyingOtp(true);
+
     try {
       await verifyOneTimePassword(otp);
+      // OTP is verified and the user is now authenticated with Dynamic. Actually
+      // connecting the wallet (and creating the embedded wallet when the
+      // environment requires it) is handled by the effect below, so a clear error
+      // can be shown if the headless flow doesn't connect a wallet on its own.
     } catch (error) {
       console.error("OTP verification failed:", error);
+      setOtpError("Invalid or expired code. Please request a new one and try again.");
+    } finally {
+      setIsVerifyingOtp(false);
     }
   };
 
@@ -115,6 +144,54 @@ export const Wallet = ({className}: WalletProps): JSX.Element => {
     }
   }, [isConnectedWallet, address, dispatch, referralCode]);
 
+  // Email and social (Google/Twitch/GitHub) sign in through Dynamic's headless
+  // flow and authenticate the user, but in connect-only mode the embedded wallet
+  // is not always auto-created/connected (it depends on the environment's
+  // embedded-wallet settings, e.g. automatic embedded wallet creation). Without
+  // this the user ends up authenticated with no connected wallet, stuck on the
+  // connect modal. Once authenticated via one of those flows, ensure a wallet is
+  // connected and surface a clear error if it cannot be.
+  useEffect(() => {
+    if (!isEmbeddedAuthFlow || !isLoggedIn || isConnected) return;
+    if (walletCreationAttempted.current) return;
+    walletCreationAttempted.current = true;
+
+    let cancelled = false;
+    const couldNotConnectMessage =
+      "You're signed in, but we couldn't connect a wallet to your account. Please try a different login option or contact support.";
+    setIsConnectingWallet(true);
+    setWalletConnectionError("");
+
+    (async () => {
+      try {
+        if (userHasEmbeddedWallet()) return;
+        const wallet = await createEmbeddedWallet();
+        if (!wallet && !cancelled) {
+          setWalletConnectionError(couldNotConnectMessage);
+        }
+      } catch (error) {
+        console.error("Embedded wallet connection failed:", error);
+        if (!cancelled) {
+          setWalletConnectionError(couldNotConnectMessage);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsConnectingWallet(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    isEmbeddedAuthFlow,
+    isLoggedIn,
+    isConnected,
+    createEmbeddedWallet,
+    userHasEmbeddedWallet,
+  ]);
+
   const connectionEvent = (id: string) => {
     ReactGA.event({
       category: "Connection",
@@ -129,6 +206,11 @@ export const Wallet = ({className}: WalletProps): JSX.Element => {
   ) => {
     connectionEvent(id);
     setConnectingWalletId(id);
+    setWalletConnectionError("");
+    walletCreationAttempted.current = false;
+    // Social logins create a Dynamic embedded wallet (connected by the effect
+    // above); external wallets connect directly and must not trigger it.
+    setIsEmbeddedAuthFlow(isSocial);
 
     if (isSocial) {
       await signInWithSocialAccount(id as ProviderEnum);
@@ -169,6 +251,15 @@ export const Wallet = ({className}: WalletProps): JSX.Element => {
             What is Web3 wallet?
           </a>
         </span>
+      )}
+      {(isConnectingWallet || walletConnectionError) && (
+        <div className="w-full pt-4">
+          {isConnectingWallet ? (
+            <p className="text-sm text-text-dark-gray">Connecting your wallet…</p>
+          ) : (
+            <p className="text-sm text-[#FD0F0F]">{walletConnectionError}</p>
+          )}
+        </div>
       )}
       <div className="grid grid-cols-3 w-full pt-[43.5px] gap-2.5">
         <WalletButton
@@ -254,6 +345,9 @@ export const Wallet = ({className}: WalletProps): JSX.Element => {
           Send OTP
         </button>
       </form>
+      {emailError && (
+        <p className="w-full text-sm text-[#FD0F0F] pt-2">{emailError}</p>
+      )}
       {isProcessingEmail && (
         <form onSubmit={onSubmitOtpHandler} className="mt-4 w-full">
           <div className="flex bg-[#F2F2F2] p-2 rounded-[40px] h-[45px]">
@@ -266,10 +360,18 @@ export const Wallet = ({className}: WalletProps): JSX.Element => {
           </div>
           <button
             type="submit"
-            className="bg-black w-full mt-2 text-white rounded-[40px] text-base leading-none font-bold h-[45px]"
+            disabled={isVerifyingOtp || isConnectingWallet}
+            className="bg-black w-full mt-2 text-white rounded-[40px] text-base leading-none font-bold h-[45px] disabled:opacity-60"
           >
-            Verify OTP
+            {isVerifyingOtp
+              ? "Verifying…"
+              : isConnectingWallet
+              ? "Connecting wallet…"
+              : "Verify OTP"}
           </button>
+          {otpError && (
+            <p className="text-sm text-[#FD0F0F] pt-2">{otpError}</p>
+          )}
         </form>
       )}
     </div>
