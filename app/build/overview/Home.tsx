@@ -26,6 +26,7 @@ import useTokenUsdBalance from "@/lib/hooks/useTokenUsdBalance";
 import { TokenUsdBalance } from "@/lib/types";
 import CheckoutSuccess from "@/components/build/CheckoutSuccess";
 import OperatorNotice from "@/components/build/OperatorNotice";
+import UpgradeWalletNotice from "@/components/build/UpgradeWalletNotice";
 import { AccountBalanceInfo, SponsoredTransactionInfo } from "@/components/build/OperatorInfo";
 import useWithdrawToken from "@/lib/hooks/useWithdrawToken";
 
@@ -221,6 +222,7 @@ const Home = () => {
           </p>
         </div>
         {checkoutSuccess && <CheckoutSuccess />}
+        <UpgradeWalletNotice />
         {(operatorSlice.isHydrated && !operatorSlice.operator.user.isActivated) && (
           <OperatorNotice
             title="Get access to all services on Fuse"
