@@ -23,7 +23,10 @@ import {
   setLogout,
 } from "@/store/operatorSlice";
 import {
+  ChainEnum,
   useConnectWithOtp,
+  useDynamicContext,
+  useDynamicWaas,
   useEmbeddedWallet,
   useIsLoggedIn,
   useSocialAccounts,
@@ -38,6 +41,11 @@ import {
 } from "@/store/airdropSlice";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {path} from "@/lib/helpers";
+
+// How long to let Dynamic's automatic embedded wallet creation run before
+// creating the wallet ourselves. Long enough to cover an MPC wallet ceremony on
+// a slow connection, short enough that a silent failure doesn't strand the user.
+const AUTO_WALLET_CREATION_TIMEOUT = 15_000;
 
 type WalletModalProps = {
   isDisconnected: boolean;
@@ -64,7 +72,19 @@ export const Wallet = ({className}: WalletProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const {address, isConnected} = useAccount();
   const isLoggedIn = useIsLoggedIn();
-  const {createEmbeddedWallet, userHasEmbeddedWallet} = useEmbeddedWallet();
+  const {setAuthMode} = useDynamicContext();
+  const {
+    createWalletAccount,
+    dynamicWaasIsEnabled,
+    getWaasWallets,
+    getWaasWalletsByCredentials,
+    needsAutoCreateWalletChains,
+  } = useDynamicWaas();
+  const {
+    createEmbeddedWallet,
+    shouldAutoCreateEmbeddedWallet,
+    userHasEmbeddedWallet,
+  } = useEmbeddedWallet();
   const {signInWithSocialAccount} = useSocialAccounts();
   const {selectWalletOption} = useWalletOptions();
   const {isLogin, isOperatorWalletModalOpen} =
@@ -84,6 +104,7 @@ export const Wallet = ({className}: WalletProps): JSX.Element => {
     walletCreationAttempted.current = false;
 
     try {
+      setAuthMode("connect-and-sign");
       await connectWithEmail(emailRef.current.value);
       setIsProcessingEmail(true);
       setIsEmbeddedAuthFlow(true);
@@ -145,50 +166,81 @@ export const Wallet = ({className}: WalletProps): JSX.Element => {
   }, [isConnectedWallet, address, dispatch, referralCode]);
 
   // Email and social (Google/Twitch/GitHub) sign in through Dynamic's headless
-  // flow and authenticate the user, but in connect-only mode the embedded wallet
-  // is not always auto-created/connected (it depends on the environment's
-  // embedded-wallet settings, e.g. automatic embedded wallet creation). Without
-  // this the user ends up authenticated with no connected wallet, stuck on the
-  // connect modal. Once authenticated via one of those flows, ensure a wallet is
-  // connected and surface a clear error if it cannot be.
+  // flow and authenticate the user, but the operator session is keyed on a
+  // wallet address, so the login isn't finished until a wallet is connected.
+  // Which call creates that wallet depends on the wallet version the Dynamic
+  // environment is set to: V3 (TSS-MPC) wallets come from useDynamicWaas, while
+  // V1/V2 environments still use the Turnkey embedded-wallet hook. Handling
+  // both keeps sign in working either way, instead of breaking the moment the
+  // environment is switched between them.
+  //
+  // Dynamic creates the wallet itself when automatic embedded wallet creation
+  // is enabled, so this waits for it first and only creates one directly if the
+  // SDK isn't going to — or if its attempt never lands. Without the fallback a
+  // failed creation leaves the user authenticated with no wallet, stuck on the
+  // connect modal with nothing explaining why.
   useEffect(() => {
-    if (!isEmbeddedAuthFlow || !isLoggedIn || isConnected) return;
+    if (isConnected) {
+      setIsConnectingWallet(false);
+      return;
+    }
+    if (!isEmbeddedAuthFlow || !isLoggedIn) return;
     if (walletCreationAttempted.current) return;
-    walletCreationAttempted.current = true;
 
-    let cancelled = false;
+    // Never create a second wallet for an operator who already has one. That
+    // includes operators still on a legacy V1/V2 Turnkey wallet — their
+    // operator account and funds are on that address, and they upgrade it in
+    // place through UpgradeWalletNotice rather than being moved to a new one.
+    const hasWallet =
+      userHasEmbeddedWallet() ||
+      getWaasWalletsByCredentials().length > 0 ||
+      getWaasWallets().length > 0;
+    if (hasWallet) return;
+
     const couldNotConnectMessage =
       "You're signed in, but we couldn't connect a wallet to your account. Please try a different login option or contact support.";
     setIsConnectingWallet(true);
     setWalletConnectionError("");
 
-    (async () => {
+    const createWallet = async () => {
+      walletCreationAttempted.current = true;
       try {
-        if (userHasEmbeddedWallet()) return;
-        const wallet = await createEmbeddedWallet();
-        if (!wallet && !cancelled) {
+        const created = dynamicWaasIsEnabled
+          ? (await createWalletAccount([ChainEnum.Evm]))?.some(Boolean)
+          : Boolean(await createEmbeddedWallet());
+        if (!created) {
           setWalletConnectionError(couldNotConnectMessage);
         }
       } catch (error) {
         console.error("Embedded wallet connection failed:", error);
-        if (!cancelled) {
-          setWalletConnectionError(couldNotConnectMessage);
-        }
+        setWalletConnectionError(couldNotConnectMessage);
       } finally {
-        if (!cancelled) {
-          setIsConnectingWallet(false);
-        }
+        setIsConnectingWallet(false);
       }
-    })();
-
-    return () => {
-      cancelled = true;
     };
+
+    // Dynamic is about to create the wallet itself. Give it room to finish —
+    // this effect re-runs once the wallet lands — but don't wait on it forever.
+    const willAutoCreate = dynamicWaasIsEnabled
+      ? needsAutoCreateWalletChains.length > 0
+      : shouldAutoCreateEmbeddedWallet();
+    if (willAutoCreate) {
+      const timeout = setTimeout(createWallet, AUTO_WALLET_CREATION_TIMEOUT);
+      return () => clearTimeout(timeout);
+    }
+
+    createWallet();
   }, [
+    createEmbeddedWallet,
+    createWalletAccount,
+    dynamicWaasIsEnabled,
+    getWaasWallets,
+    getWaasWalletsByCredentials,
+    isConnected,
     isEmbeddedAuthFlow,
     isLoggedIn,
-    isConnected,
-    createEmbeddedWallet,
+    needsAutoCreateWalletChains,
+    shouldAutoCreateEmbeddedWallet,
     userHasEmbeddedWallet,
   ]);
 
@@ -213,8 +265,13 @@ export const Wallet = ({className}: WalletProps): JSX.Element => {
     setIsEmbeddedAuthFlow(isSocial);
 
     if (isSocial) {
+      // Social sign in authenticates the user and has to leave Dynamic holding
+      // the resulting embedded wallet as a verified credential, which
+      // connect-only mode doesn't do.
+      setAuthMode("connect-and-sign");
       await signInWithSocialAccount(id as ProviderEnum);
     } else {
+      setAuthMode("connect-only");
       await selectWalletOption(id);
     }
     localStorage.setItem("Fuse-selectedConnectorId", id);

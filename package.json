@@ -10,9 +10,10 @@
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.11.10",
-    "@dynamic-labs/ethereum": "3.9.4",
-    "@dynamic-labs/sdk-react-core": "3.9.4",
-    "@dynamic-labs/wagmi-connector": "3.9.4",
+    "@dynamic-labs/ethereum": "4.97.0",
+    "@dynamic-labs/sdk-react-core": "4.97.0",
+    "@dynamic-labs/types": "4.97.0",
+    "@dynamic-labs/wagmi-connector": "4.97.0",
     "@fuseio/fusebox-web-sdk": "^0.4.0",
     "@layerzerolabs/scan-client": "^0.0.8",
     "@metamask/jazzicon": "^2.0.0",

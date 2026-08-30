@@ -59,6 +59,10 @@ export function Providers({children}: {children: React.ReactNode}) {
         overrides: {
           evmNetworks: (networks) => mergeNetworks(evmNetworks, networks),
         },
+        // External wallets stay connect-only so connecting MetaMask/Rabby/etc.
+        // doesn't prompt for a signature. The social and email flows switch to
+        // connect-and-sign in WalletModal, because those do authenticate and
+        // need Dynamic to attach an embedded wallet to the user.
         initialAuthenticationMode: "connect-only",
         events: {
           onLogout: () => {
